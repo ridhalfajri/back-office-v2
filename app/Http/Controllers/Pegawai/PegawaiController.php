@@ -38,7 +38,65 @@ class PegawaiController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $title = 'Pegawai';
+        try {
+            $pegawai = Pegawai::select(
+                'id',
+                'nik',
+                'nip',
+                'nama_depan',
+                'nama_belakang',
+                'jenis_kelamin',
+                'agama_id',
+                'golongan_darah',
+                'jenis_kawin_id',
+                'tempat_lahir',
+                'tanggal_lahir',
+                'email_kantor',
+                'email_pribadi',
+                'no_telp',
+                'jenis_pegawai_id',
+                'status_pegawai_id',
+                'status_dinas',
+                'tanggal_berhenti',
+                'tanggal_wafat',
+                'no_kartu_pegawai',
+                'no_bpjs',
+                'no_taspen',
+                'no_enroll',
+                'npwp'
+            )->where('id', $id)->first();
+        } catch (\Throwable $th) {
+            return redirect()->route('pegawai.index')->with('error', 'Gagal memuat halaman');
+        }
+        $pegawai->tanggal_lahir = date('d-F-Y', strtotime($pegawai->tanggal_lahir));
+        switch ($pegawai->jenis_kelamin) {
+            case "L":
+                $pegawai->jenis_kelamin = 'Laki-Laki';
+                break;
+            case "P":
+                $pegawai->jenis_kelamin = 'Perempuan';
+                break;
+            default:
+                $pegawai->jenis_kelamin = '';
+        }
+        switch ($pegawai->status_dinas) {
+            case 0:
+                $pegawai->status_dinas = 'Tidak Aktif';
+                break;
+            case 1:
+                $pegawai->status_dinas = 'Aktif';
+                break;
+            default:
+                $pegawai->status_dinas = '';
+        }
+        if ($pegawai->tanggal_berhenti != null) {
+            $pegawai->tanggal_berhenti = date('d-F-Y', strtotime($pegawai->tanggal_lahir));
+        }
+        if ($pegawai->tanggal_wafat != null) {
+            $pegawai->tanggal_wafat = date('d-F-Y', strtotime($pegawai->tanggal_wafat));
+        }
+        return view('pegawai.show', compact('pegawai', 'title'));
     }
 
     /**

@@ -21,7 +21,7 @@ Route::get('/', function () {
     return view('try');
 });
 Route::prefix('pegawai')->group(function () {
-    Route::get('/datatable', [PegawaiController::class, 'datatable'])->name('pegawai.datatable');
+    Route::post('/datatable', [PegawaiController::class, 'datatable'])->name('pegawai.datatable');
     Route::resource('/', PegawaiController::class, [
         'names' => [
             'index' => 'pegawai.index',

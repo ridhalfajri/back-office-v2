@@ -8,35 +8,40 @@
         href="{{ asset('assets/plugins/datatable/fixedeader/dataTables.fixedheader.bootstrap4.min.css') }}">
 @endpush
 @section('content')
-    <div class="section-body  py-4">
+    <div class="section-body">
         <div class="container-fluid">
-            <div class="row clearfix">
-                <div class="col-lg-12">
-                    <div class="table-responsive mb-4">
-                        <table id="tbl-pegawai" class="table table-hover js-basic-example dataTable table_custom spacing5">
-                            <thead>
-                                <tr>
-                                    <th style="width: 5%">No</th>
-                                    <th>Nama</th>
-                                    <th>NIP</th>
-                                    <th>No Telepon</th>
-                                    <th>Email Kantor</th>
-                                    <th>Aksi</th>
-                                </tr>
-                            </thead>
-                            <tfoot>
-                                <tr>
-                                    <th>No</th>
-                                    <th>Nama</th>
-                                    <th>NIP</th>
-                                    <th>No Telepon</th>
-                                    <th>Email Kantor</th>
-                                    <th>Aksi</th>
-                                </tr>
-                            </tfoot>
-                            <tbody>
-                            </tbody>
-                        </table>
+            <div class="section-body  py-4">
+                <div class="container-fluid">
+                    <div class="row clearfix">
+                        <div class="col-lg-12">
+                            <div class="table-responsive mb-4">
+                                <table id="tbl-pegawai"
+                                    class="table table-hover js-basic-example dataTable table_custom spacing5">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 5%">No</th>
+                                            <th>Nama</th>
+                                            <th>NIP</th>
+                                            <th>No Telepon</th>
+                                            <th>Email Kantor</th>
+                                            <th>Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tfoot>
+                                        <tr>
+                                            <th>No</th>
+                                            <th>Nama</th>
+                                            <th>NIP</th>
+                                            <th>No Telepon</th>
+                                            <th>Email Kantor</th>
+                                            <th>Aksi</th>
+                                        </tr>
+                                    </tfoot>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -64,7 +69,7 @@
                 autoWidth: false,
                 ajax: {
                     url: '{{ route('pegawai.datatable') }}',
-                    type: 'GET',
+                    type: 'POST',
                     headers: {
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
                     }
@@ -93,7 +98,7 @@
                     {
                         data: 'aksi',
                         name: 'aksi',
-                        class: 'text-center'
+                        class: 'text-center actions'
                     },
                 ],
                 columnDefs: [{

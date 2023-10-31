@@ -51,11 +51,7 @@
         </div>
         <div class="page">
             @include('partials.topbar')
-            <div class="section-body">
-                <div class="container-fluid">
-                    @yield('content')
-                </div>
-            </div>
+            @yield('content')
         </div>
     </div>
 
