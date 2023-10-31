@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Propinsi;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -17,5 +18,5 @@ Route::get('/welcome', function () {
     return view('welcome');
 });
 Route::get('/', function () {
-    return view('template');
+    return view('try');
 });
