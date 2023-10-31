@@ -15,6 +15,7 @@
     <!-- Bootstrap Core and vandor -->
     <link rel="stylesheet" href="{{ asset('assets/plugins/bootstrap/css/bootstrap.min.css') }}" />
 
+
     <!-- Core css -->
     <link rel="stylesheet" href="{{ asset('assets/css/main.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/css/default.css') }}" />

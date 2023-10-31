@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\Propinsi;
+use App\Http\Controllers\Pegawai\PegawaiController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -19,4 +19,17 @@ Route::get('/welcome', function () {
 });
 Route::get('/', function () {
     return view('try');
+});
+Route::prefix('pegawai')->group(function () {
+    Route::get('/datatable', [PegawaiController::class, 'datatable'])->name('pegawai.datatable');
+    Route::resource('/', PegawaiController::class, [
+        'names' => [
+            'index' => 'pegawai.index',
+            'store' => 'pegawai.store',
+            'edit' => 'pegawai.edit',
+            'show' => 'pegawai.show',
+            'update' => 'pegawai.update',
+            'destroy' => 'pegawai.destroy',
+        ]
+    ])->parameters(['' => 'id']);
 });
