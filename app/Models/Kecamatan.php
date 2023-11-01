@@ -19,7 +19,6 @@ use App\Models\Desa;
  */
 class Kecamatan extends Model
 {
-    use DistrictTrait;
 
     /**
      * Table name.

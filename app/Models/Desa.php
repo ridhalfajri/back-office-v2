@@ -18,8 +18,6 @@ use App\Models\Kecamatan;
  */
 class Desa extends Model
 {
-    use VillageTrait;
-
     /**
      * Table name.
      *
@@ -36,7 +34,7 @@ class Desa extends Model
         'kecamatan_id'
     ];
 
-	/**
+    /**
      * Desa belongs to Kecamatan.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -48,5 +46,5 @@ class Desa extends Model
     public function pegawai_alamat()
     {
         return $this->hasMany(PegawaiAlamat::class);
-}
+    }
 }

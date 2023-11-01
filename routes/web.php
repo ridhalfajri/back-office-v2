@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\Pegawai\PegawaiAlamatController;
 use App\Http\Controllers\Pegawai\PegawaiController;
+use App\Http\Controllers\PropinsiController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -22,6 +24,7 @@ Route::get('/', function () {
 });
 Route::prefix('pegawai')->group(function () {
     Route::post('/datatable', [PegawaiController::class, 'datatable'])->name('pegawai.datatable');
+    Route::resource('/alamat', PegawaiAlamatController::class);
     Route::resource('/', PegawaiController::class, [
         'names' => [
             'index' => 'pegawai.index',
@@ -32,4 +35,7 @@ Route::prefix('pegawai')->group(function () {
             'destroy' => 'pegawai.destroy',
         ]
     ])->parameters(['' => 'id']);
+});
+Route::prefix('data')->group(function () {
+    Route::get('propinsi', [PropinsiController::class, 'getPropinsi'])->name('propinsi.data');
 });
