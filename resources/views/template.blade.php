@@ -52,6 +52,7 @@
         <div class="page">
             @include('partials.topbar')
             @yield('content')
+            @stack('modal')
         </div>
     </div>
 

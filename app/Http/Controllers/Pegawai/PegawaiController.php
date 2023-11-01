@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Pegawai;
 
 use App\Http\Controllers\Controller;
 use App\Models\Pegawai;
+use App\Models\PegawaiAlamat;
 use App\Models\Propinsi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
@@ -41,9 +42,9 @@ class PegawaiController extends Controller
      */
     public function show(string $id)
     {
-        $propinsi = Propinsi::select('id', 'nama')->get();
         $title = 'Pegawai';
         try {
+            $propinsi = Propinsi::select('id', 'nama')->get();
             $pegawai = Pegawai::select(
                 'id',
                 'nik',
@@ -70,6 +71,8 @@ class PegawaiController extends Controller
                 'no_enroll',
                 'npwp'
             )->where('id', $id)->first();
+            $alamat_domisili = PegawaiAlamat::where('pegawai_id', $pegawai->id)->where('tipe_alamat', 'Domisili')->first();
+            $alamat_asal = PegawaiAlamat::where('pegawai_id', $pegawai->id)->where('tipe_alamat', 'Asal')->first();
         } catch (\Throwable $th) {
             return abort(500);
         }
@@ -103,7 +106,7 @@ class PegawaiController extends Controller
         if ($pegawai->tanggal_wafat != null) {
             $pegawai->tanggal_wafat = date('d-F-Y', strtotime($pegawai->tanggal_wafat));
         }
-        return view('pegawai.show', compact('pegawai', 'title', 'propinsi'));
+        return view('pegawai.show', compact('pegawai', 'title', 'propinsi', 'alamat_domisili', 'alamat_asal'));
     }
 
     /**

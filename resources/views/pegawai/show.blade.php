@@ -31,7 +31,8 @@
                         </li>
                         <li class="nav-item">
                             <a class="nav-link active" id="pills-alamat-tab" data-toggle="pill" href="#pills-alamat"
-                                role="tab" aria-controls="pills-alamat" aria-selected="true">Alamat</a>
+                                role="tab" aria-controls="pills-alamat" aria-selected="true"
+                                onclick="get_data_alamat">Alamat</a>
                         </li>
                     </ul>
                 </div>
@@ -373,6 +374,8 @@
             </div>
         </div>
     </div>
+@endsection
+@push('modal')
     <!-- Modal -->
     <div class="modal fade" id="modal-alamat" tabindex="-1" role="dialog" aria-labelledby="modalAlamatLabel"
         aria-hidden="true">
@@ -396,11 +399,8 @@
                                 <div class="form-group multiselect_div">
                                     <label class="form-label">Tipe Alamat</label>
                                     <div class="form-group multiselect_div">
-                                        <select id="single-selection" name="single_selection"
-                                            class="multiselect multiselect-custom">
-                                            <option value="Domisili">Domisili</option>
-                                            <option value="Asal">Asal</option>
-                                        </select>
+                                        <input type="text" id="tipe_alamat" disabled=""
+                                            class="form-control mt-3 state-valid" value="">
                                     </div>
                                 </div>
                                 <div class="form-group multiselect_div">
@@ -446,20 +446,16 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
-                    <button type="button" class="btn btn-primary" id="store-alamat"
-                        onclick="select_propinsi()">Simpan</button>
+                    <button type="button" class="btn btn-primary" id="store-alamat">Simpan</button>
                 </div>
             </div>
         </div>
     </div>
-@endsection
+@endpush
 @push('script')
     <script src="{{ asset('assets/plugins/bootstrap-multiselect/bootstrap-multiselect.js') }}"></script>
     <script src="{{ asset('assets/plugins/multi-select/js/jquery.multi-select.js') }}"></script>
     <script>
-        $('#single-selection').multiselect({
-            maxHeight: 300
-        });
         $('.select-filter').multiselect({
             enableFiltering: true,
             enableCaseInsensitiveFiltering: true,
@@ -470,6 +466,15 @@
             $('#modal-alamat').modal('show');
 
         })
+        let domisili = function() {
+            const btn_domisili = $("#btn-domisili").data("tipe")
+            $('#tipe_alamat').val("Domisili")
+        }
+        let asal = function() {
+            const btn_asal = $("#btn-asal").data("tipe")
+            $('#tipe_alamat').val("Asal")
+
+        }
 
         let select_propinsi = function() {
             $.ajax({
@@ -520,8 +525,6 @@
                 }
             });
         });
-
-
         $('#kota_id').on('change', function(e) {
             e.preventDefault();
             const id = $(this).val();
@@ -611,6 +614,7 @@
                     desa_id: $('#desa_id').val(),
                     kode_pos: $('#kode_pos').val(),
                     alamat: $('#alamat').val(),
+                    pegawai_id: <?= json_encode($pegawai->id) ?>
                 },
                 success: function(response) {}
             })

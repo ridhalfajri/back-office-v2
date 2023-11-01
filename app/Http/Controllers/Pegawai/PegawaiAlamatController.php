@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Pegawai;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx\Rels;
 
 class PegawaiAlamatController extends Controller
 {
@@ -29,6 +30,8 @@ class PegawaiAlamatController extends Controller
     public function store(Request $request)
     {
         dd($request);
+
+        //TODO:Logic Tentang Add Alamat
     }
 
     /**
