@@ -393,54 +393,40 @@
                                     <input type="text" disabled="" class="form-control mt-3 state-valid"
                                         value="{{ $pegawai->nama_depan . ' ' . $pegawai->nama_belakang }}">
                                 </div>
-                                <div class="form-group">
+                                <div class="form-group multiselect_div">
                                     <label class="form-label">Tipe Alamat</label>
-                                    <select id="tipe_alamat" class="form-control custom-select">
-                                        <option value="Asal">Asal</option>
-                                        <option value="Domisili">Domisili</option>
-                                    </select>
+                                    <div class="form-group multiselect_div">
+                                        <select id="single-selection" name="single_selection"
+                                            class="multiselect multiselect-custom">
+                                            <option value="Domisili">Domisili</option>
+                                            <option value="Asal">Asal</option>
+                                        </select>
+                                    </div>
                                 </div>
                                 <div class="form-group multiselect_div">
                                     <label class="form-label">Propinsi</label>
-                                    <select id="propinsi_id" name="propinsi_id"
-                                        class="select-filter multiselect multiselect-custom">
+                                    <select id="propinsi_id" name="propinsi_id" class="multiselect multiselect-custom">
                                     </select>
                                 </div>
                                 <div class="form-group multiselect_div">
                                     <label class="form-label">Kota</label>
                                     <select id="kota_id" name="kota_id"
                                         class="select-filter multiselect multiselect-custom">
-                                        @foreach ($propinsi as $item)
-                                            <option value="{{ $item->id }}">{{ $item->nama }}</option>
-                                        @endforeach
+                                        <option selected value="">-- Pilih Kota --</option>
                                     </select>
                                 </div>
                                 <div class="form-group multiselect_div">
                                     <label class="form-label">Kecamatan</label>
                                     <select id="kecamatan_id" name="kecamatan_id"
                                         class="select-filter multiselect multiselect-custom">
-                                        <option value="bootstrap">Bootstrap</option>
-                                        <option value="bootstrap-marketplace">Bootstrap Marketplace</option>
-                                        <option value="bootstrap-theme">Bootstrap Theme</option>
-                                        <option value="html">HTML</option>
-                                        <option value="html-template">HTML Template</option>
-                                        <option value="wp-marketplace">WordPress Marketplace</option>
-                                        <option value="wp-plugin">WordPress Plugin</option>
-                                        <option value="wp-theme">WordPress Theme</option>
+                                        <option selected value="">-- Pilih Kecamatan --</option>
                                     </select>
                                 </div>
                                 <div class="form-group multiselect_div">
                                     <label class="form-label">Desa</label>
                                     <select id="desa_id" name="desa_id"
                                         class="select-filter multiselect multiselect-custom">
-                                        <option value="bootstrap">Bootstrap</option>
-                                        <option value="bootstrap-marketplace">Bootstrap Marketplace</option>
-                                        <option value="bootstrap-theme">Bootstrap Theme</option>
-                                        <option value="html">HTML</option>
-                                        <option value="html-template">HTML Template</option>
-                                        <option value="wp-marketplace">WordPress Marketplace</option>
-                                        <option value="wp-plugin">WordPress Plugin</option>
-                                        <option value="wp-theme">WordPress Theme</option>
+                                        <option selected value="">-- Pilih Desa --</option>
                                     </select>
                                 </div>
                                 <div class="form-group">
@@ -460,7 +446,8 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
-                    <button type="button" class="btn btn-primary" id="store-alamat">Simpan</button>
+                    <button type="button" class="btn btn-primary" id="store-alamat"
+                        onclick="select_propinsi()">Simpan</button>
                 </div>
             </div>
         </div>
@@ -470,14 +457,144 @@
     <script src="{{ asset('assets/plugins/bootstrap-multiselect/bootstrap-multiselect.js') }}"></script>
     <script src="{{ asset('assets/plugins/multi-select/js/jquery.multi-select.js') }}"></script>
     <script>
+        $('#single-selection').multiselect({
+            maxHeight: 300
+        });
         $('.select-filter').multiselect({
             enableFiltering: true,
             enableCaseInsensitiveFiltering: true,
             maxHeight: 200
         });
-        $(function() {
+        $('#modal-alamat').on('show.bs.modal', function(e) {
             select_propinsi();
+            $('#modal-alamat').modal('show');
+
         })
+
+        let select_propinsi = function() {
+            $.ajax({
+                url: "{{ route('propinsi.data') }}",
+                type: 'GET',
+                success: function(response) {
+                    let option = '<option selected value="">-- Pilih Propinsi --</option>';
+                    for (let i = 0; i < response.result.length; i++) {
+                        option +=
+                            `<option value="${response.result[i].id}">${response.result[i].nama}</option>`;
+                    }
+                    $('#propinsi_id').append(option);
+                    $('#propinsi_id').multiselect({
+                        enableFiltering: true,
+                        enableCaseInsensitiveFiltering: true,
+                        maxHeight: 200
+                    });
+                }
+            })
+        }
+        $('#propinsi_id').on('change', function(e) {
+            e.preventDefault();
+            const id = $(this).val();
+            $.ajax({
+                type: "POST",
+                url: "{{ route('kota.data') }}",
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                data: {
+                    id: id
+                },
+                cache: false,
+                success: function(response) {
+                    $('#kota_id').multiselect('destroy');
+                    $('#kota_id').html(response);
+                    $('#kota_id').multiselect({
+                        enableFiltering: true,
+                        enableCaseInsensitiveFiltering: true,
+                        maxHeight: 200
+                    });
+                    resetKecamatan();
+                    resetDesa();
+
+                },
+                error: function(data) {
+                    console.log('error : ', data);
+                }
+            });
+        });
+
+
+        $('#kota_id').on('change', function(e) {
+            e.preventDefault();
+            const id = $(this).val();
+            $.ajax({
+                type: "POST",
+                url: "{{ route('kecamatan.data') }}",
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                data: {
+                    id: id
+                },
+                cache: false,
+                success: function(response) {
+                    $('#kecamatan_id').multiselect('destroy');
+                    $('#kecamatan_id').html(response);
+                    $('#kecamatan_id').multiselect({
+                        enableFiltering: true,
+                        enableCaseInsensitiveFiltering: true,
+                        maxHeight: 200
+                    });
+                    resetDesa();
+                },
+                error: function(data) {
+                    console.log('error : ', data);
+                }
+            });
+        });
+        $('#kecamatan_id').on('change', function(e) {
+            e.preventDefault();
+            const id = $(this).val();
+            $.ajax({
+                type: "POST",
+                url: "{{ route('desa.data') }}",
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                data: {
+                    id: id
+                },
+                cache: false,
+                success: function(response) {
+                    $('#desa_id').multiselect('destroy');
+                    $('#desa_id').html(response);
+                    $('#desa_id').multiselect({
+                        enableFiltering: true,
+                        enableCaseInsensitiveFiltering: true,
+                        maxHeight: 200
+                    });
+                },
+                error: function(data) {
+                    console.log('error : ', data);
+                }
+            });
+        });
+        const resetKecamatan = function() {
+            $('#kecamatan_id').multiselect('destroy');
+            $('#kecamatan_id').html('<option selected value="">-- Pilih Kecamatan --</option>');
+            $('#kecamatan_id').multiselect({
+                enableFiltering: true,
+                enableCaseInsensitiveFiltering: true,
+                maxHeight: 200
+            });
+        }
+        const resetDesa = function() {
+            $('#desa_id').multiselect('destroy');
+            $('#desa_id').html('<option selected value="">-- Pilih Desa --</option>');
+            $('#desa_id').multiselect({
+                enableFiltering: true,
+                enableCaseInsensitiveFiltering: true,
+                maxHeight: 200
+            });
+        }
         $('body').on('click', '#store-alamat', function(e) {
             e.preventDefault();
             $.ajax({
@@ -514,22 +631,6 @@
             $('#error_kode_pos').text('');
             $('#alamat').removeClass('is-invalid');
             $('#error_alamat').text('');
-        }
-        let select_propinsi = function() {
-            $.ajax({
-                url: "{{ route('propinsi.data') }}",
-                type: 'GET',
-                success: function(response) {
-                    let option = '<option selected value="">-- Pilih Propinsi --</option>';
-                    for (let i = 0; i < response.result.length; i++) {
-                        option +=
-                            `<option value="${response.result[i].id}">${response.result[i].nama}</option>`;
-                    }
-                    $('#propinsi_id').append(option);
-
-
-                }
-            })
         }
     </script>
 
