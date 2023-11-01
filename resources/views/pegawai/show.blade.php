@@ -377,8 +377,8 @@
 @endsection
 @push('modal')
     <!-- Modal -->
-    <div class="modal fade" id="modal-alamat" tabindex="-1" role="dialog" aria-labelledby="modalAlamatLabel"
-        aria-hidden="true">
+    <div class="modal fade" id="modal-alamat" data-backdrop="static" tabindex="-1" role="dialog"
+        aria-labelledby="modalAlamatLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -407,6 +407,7 @@
                                     <label class="form-label">Propinsi</label>
                                     <select id="propinsi_id" name="propinsi_id" class="multiselect multiselect-custom">
                                     </select>
+                                    <small class="text-danger" id="error_propinsi_id"></small>
                                 </div>
                                 <div class="form-group multiselect_div">
                                     <label class="form-label">Kota</label>
@@ -414,6 +415,7 @@
                                         class="select-filter multiselect multiselect-custom">
                                         <option selected value="">-- Pilih Kota --</option>
                                     </select>
+                                    <small class="text-danger" id="error_kota_id"></small>
                                 </div>
                                 <div class="form-group multiselect_div">
                                     <label class="form-label">Kecamatan</label>
@@ -421,6 +423,7 @@
                                         class="select-filter multiselect multiselect-custom">
                                         <option selected value="">-- Pilih Kecamatan --</option>
                                     </select>
+                                    <small class="text-danger" id="error_kecamatan_id"></small>
                                 </div>
                                 <div class="form-group multiselect_div">
                                     <label class="form-label">Desa</label>
@@ -428,16 +431,19 @@
                                         class="select-filter multiselect multiselect-custom">
                                         <option selected value="">-- Pilih Desa --</option>
                                     </select>
+                                    <small class="text-danger" id="error_desa_id"></small>
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Kode Pos</label>
                                     <input type="number" id="kode_pos" min="0" step="0.01"
                                         oninput="limitDigits(this, 5);" class="form-control mt-3 state-valid"
                                         value="" placeholder="Kode Pos">
+                                    <small class="text-danger" id="error_kode_pos"></small>
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Alamat Lengkap</label>
                                     <textarea id="alamat" rows="3" class="form-control" placeholder="Alamat Lengkap"></textarea>
+                                    <small class="text-danger" id="error_alamat"></small>
                                 </div>
 
                             </div>
@@ -453,6 +459,7 @@
     </div>
 @endpush
 @push('script')
+    <script src="{{ asset('assets/plugins/sweetalert2/sweetalert2.all.min.js') }}"></script>
     <script src="{{ asset('assets/plugins/bootstrap-multiselect/bootstrap-multiselect.js') }}"></script>
     <script src="{{ asset('assets/plugins/multi-select/js/jquery.multi-select.js') }}"></script>
     <script>
@@ -462,31 +469,59 @@
             maxHeight: 200
         });
         $('#modal-alamat').on('show.bs.modal', function(e) {
-            select_propinsi();
-            $('#modal-alamat').modal('show');
+            resetForm()
+            $('#modal-alamat').modal('show')
 
         })
-        let domisili = function() {
-            const btn_domisili = $("#btn-domisili").data("tipe")
-            $('#tipe_alamat').val("Domisili")
+        const domisili = function() {
+            get_data_alamat('Domisili')
         }
-        let asal = function() {
-            const btn_asal = $("#btn-asal").data("tipe")
-            $('#tipe_alamat').val("Asal")
-
+        const asal = function() {
+            get_data_alamat('Asal')
+        }
+        const get_data_alamat = (tipe_alamat) => {
+            $.ajax({
+                url: "{{ route('alamat.get-data-by-id') }}",
+                type: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                },
+                data: {
+                    pegawai_id: <?= $pegawai->id ?>,
+                    tipe_alamat: tipe_alamat
+                },
+                success: function(response) {
+                    if (response.result == null) {
+                        select_propinsi()
+                        $('#tipe_alamat').val(tipe_alamat)
+                    } else {
+                        set_data_edit(response)
+                    }
+                }
+            })
+        }
+        const set_data_edit = (response) => {
+            select_propinsi(response.result.propinsi_id)
+            select_kota(response.result.propinsi_id, response.result.kota_id)
+            select_kecamatan(response.result.kota_id, response.result.kecamatan_id)
+            select_desa(response.result.kecamatan_id, response.result.desa_id)
+            $('#tipe_alamat').val(response.result.tipe_alamat)
+            $('#kode_pos').val(response.result.kode_pos)
+            $('#alamat').val(response.result.alamat)
         }
 
-        let select_propinsi = function() {
+        const select_propinsi = (propinsi_id = null) => {
             $.ajax({
                 url: "{{ route('propinsi.data') }}",
-                type: 'GET',
+                type: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                },
+                data: {
+                    propinsi_id: propinsi_id
+                },
                 success: function(response) {
-                    let option = '<option selected value="">-- Pilih Propinsi --</option>';
-                    for (let i = 0; i < response.result.length; i++) {
-                        option +=
-                            `<option value="${response.result[i].id}">${response.result[i].nama}</option>`;
-                    }
-                    $('#propinsi_id').append(option);
+                    $('#propinsi_id').html(response);
                     $('#propinsi_id').multiselect({
                         enableFiltering: true,
                         enableCaseInsensitiveFiltering: true,
@@ -495,9 +530,7 @@
                 }
             })
         }
-        $('#propinsi_id').on('change', function(e) {
-            e.preventDefault();
-            const id = $(this).val();
+        const select_kota = (id = null, kota_id = null) => {
             $.ajax({
                 type: "POST",
                 url: "{{ route('kota.data') }}",
@@ -505,7 +538,8 @@
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
                 },
                 data: {
-                    id: id
+                    id: id,
+                    kota_id: kota_id
                 },
                 cache: false,
                 success: function(response) {
@@ -518,16 +552,13 @@
                     });
                     resetKecamatan();
                     resetDesa();
-
                 },
                 error: function(data) {
                     console.log('error : ', data);
                 }
             });
-        });
-        $('#kota_id').on('change', function(e) {
-            e.preventDefault();
-            const id = $(this).val();
+        }
+        const select_kecamatan = (id = null, kecamatan_id = null, ) => {
             $.ajax({
                 type: "POST",
                 url: "{{ route('kecamatan.data') }}",
@@ -535,7 +566,8 @@
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
                 },
                 data: {
-                    id: id
+                    id: id,
+                    kecamatan_id: kecamatan_id
                 },
                 cache: false,
                 success: function(response) {
@@ -552,10 +584,8 @@
                     console.log('error : ', data);
                 }
             });
-        });
-        $('#kecamatan_id').on('change', function(e) {
-            e.preventDefault();
-            const id = $(this).val();
+        }
+        const select_desa = (id = null, desa_id = null) => {
             $.ajax({
                 type: "POST",
                 url: "{{ route('desa.data') }}",
@@ -563,7 +593,8 @@
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
                 },
                 data: {
-                    id: id
+                    id: id,
+                    desa_id: desa_id
                 },
                 cache: false,
                 success: function(response) {
@@ -579,6 +610,23 @@
                     console.log('error : ', data);
                 }
             });
+        }
+        $('#propinsi_id').on('change', function(e) {
+            e.preventDefault();
+            const id = $(this).val();
+            select_kota(id)
+        });
+        $('#kota_id').on('change', function(e) {
+            e.preventDefault();
+            const id = $(this).val();
+            select_kecamatan(id)
+
+        });
+        $('#kecamatan_id').on('change', function(e) {
+            e.preventDefault();
+            const id = $(this).val();
+            select_desa(id)
+
         });
         const resetKecamatan = function() {
             $('#kecamatan_id').multiselect('destroy');
@@ -616,24 +664,59 @@
                     alamat: $('#alamat').val(),
                     pegawai_id: <?= json_encode($pegawai->id) ?>
                 },
-                success: function(response) {}
+                success: function(response) {
+                    if (response.errors) {
+                        resetForm()
+                        const err = response.errors
+                        if (err.propinsi_id) {
+                            $('#error_propinsi_id').text(err.propinsi_id)
+                        }
+                        if (err.kota_id) {
+                            $('#error_kota_id').text(err.kota_id)
+                        }
+                        if (err.kecamatan_id) {
+                            $('#error_kecamatan_id').text(err.kecamatan_id)
+                        }
+                        if (err.desa_id) {
+                            $('#error_desa_id').text(err.desa_id)
+                        }
+                        if (err.kode_pos) {
+                            $('#error_kode_pos').text(err.kode_pos)
+                        }
+                        if (err.alamat) {
+                            $('#error_alamat').text(err.alamat)
+                        }
+                        if (err.connection) {
+                            Swal.fire({
+                                title: 'Gagal!',
+                                text: response.errors.connection,
+                                icon: 'error',
+                                confirmButtonText: 'Tutup'
+                            })
+                        }
+                    } else {
+                        resetForm(true)
+                        Swal.fire({
+                            title: 'Tersimpan!',
+                            text: response.success,
+                            icon: 'success',
+                            confirmButtonText: 'Tutup'
+                        })
+                        setTimeout(function() {
+                            location.reload();
+                        }, 1000);
+                    }
+                }
             })
         })
 
         function resetForm(is_success = false) {
-            $('#tipe_alamat').removeClass('is-invalid');
             $('#error_tipe_alamat').text('')
-            $('#propinsi_id').removeClass('is-invalid');
             $('#error_propinsi_id').text('');
-            $('#kota_id').removeClass('is-invalid');
             $('#error_kota_id').text('')
-            $('#kecamatan_id').removeClass('is-invalid');
             $('#error_kecamatan_id').text('');
-            $('#desa_id').removeClass('is-invalid');
             $('#error_desa_id').text('');
-            $('#kode_pos').removeClass('is-invalid');
             $('#error_kode_pos').text('');
-            $('#alamat').removeClass('is-invalid');
             $('#error_alamat').text('');
         }
     </script>
@@ -641,8 +724,8 @@
     {{-- Limit Kode Pos --}}
     <script>
         function limitDigits(input, maxDigits) {
-            let value = input.value.replace(/[^0-9.]/g, ''); // Remove non-numeric characters
-            let parts = value.split('.');
+            const value = input.value.replace(/[^0-9.]/g, ''); // Remove non-numeric characters
+            const parts = value.split('.');
 
             if (parts[0].length > maxDigits) {
                 parts[0] = parts[0].slice(0, maxDigits);

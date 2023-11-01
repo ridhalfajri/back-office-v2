@@ -10,9 +10,9 @@ class DesaController extends Controller
     public function getDesa(Request $request)
     {
         $desa = Desa::select('id', 'nama')->where('kecamatan_id', $request->id)->get();
-        echo "<option>-- Pilih Desa --</option>";
+        echo "<option value=''>-- Pilih Desa --</option>";
         foreach ($desa as $item) {
-            if ($request->kecamatan_id != null && $request->kecamatan_id == $item->id) {
+            if ($request->desa_id != null && $request->desa_id == $item->id) {
                 echo "<option value=" . $item->id . " selected>" . $item->nama . "</option>";
             } else {
                 echo "<option value=" . $item->id . ">" . $item->nama . "</option>";

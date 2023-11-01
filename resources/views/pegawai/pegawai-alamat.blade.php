@@ -11,7 +11,7 @@
                     <a href="javascript:void(0)" data-toggle="dropdown"><i class="fe fe-more-vertical"></i></a>
                     <div class="dropdown-menu dropdown-menu-right">
                         <a href="javascript:void(0)" class="dropdown-item btn-alamat" data-toggle="modal"
-                            data-target="#modal-alamat" id="btn-domisili" onclick="domisili()" data-tipe="Domisili"><i
+                            data-target="#modal-alamat" id="btn-domisili" onclick="domisili()"><i
                                 class="dropdown-icon fa fa-edit"></i>
                             Ubah</a>
                     </div>
@@ -78,7 +78,7 @@
                     <a href="javascript:void(0)" data-toggle="dropdown"><i class="fe fe-more-vertical"></i></a>
                     <div class="dropdown-menu dropdown-menu-right">
                         <a href="javascript:void(0)" class="dropdown-item " data-toggle="modal"
-                            data-target="#modal-alamat" id="btn-asal" onclick="asal()" data-tipe="Asal"><i
+                            data-target="#modal-alamat" id="btn-asal" onclick="asal()"><i
                                 class="dropdown-icon fa fa-edit"></i>
                             Ubah</a>
                     </div>
