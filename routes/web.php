@@ -5,14 +5,10 @@ use App\Http\Controllers\KecamatanController;
 use App\Http\Controllers\KotaController;
 use App\Http\Controllers\Pegawai\PegawaiAlamatController;
 use App\Http\Controllers\Pegawai\PegawaiController;
-<<<<<<< HEAD
 use App\Http\Controllers\GajiController;
 use App\Http\Controllers\JabatanTukinController;
 use App\Http\Controllers\JabatanUnitKerjaController;
-=======
 use App\Http\Controllers\PropinsiController;
-use App\Models\Kota;
->>>>>>> feecaaa7eacb977ba945a6a50b8f516f7b247185
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -46,6 +42,7 @@ Route::resource('/jabatan-unit-kerja', JabatanUnitKerjaController::class);
 
 Route::prefix('pegawai')->group(function () {
     Route::post('/datatable', [PegawaiController::class, 'datatable'])->name('pegawai.datatable');
+    Route::post('/alamat-by-id', [PegawaiAlamatController::class, 'getAlamatById'])->name('alamat.get-data-by-id');
     Route::resource('/alamat', PegawaiAlamatController::class);
     Route::resource('/', PegawaiController::class, [
         'names' => [
@@ -59,7 +56,7 @@ Route::prefix('pegawai')->group(function () {
     ])->parameters(['' => 'id']);
 });
 Route::prefix('data')->group(function () {
-    Route::get('propinsi', [PropinsiController::class, 'getPropinsi'])->name('propinsi.data');
+    Route::post('propinsi', [PropinsiController::class, 'getPropinsi'])->name('propinsi.data');
     Route::post('kota', [KotaController::class, 'getKota'])->name('kota.data');
     Route::post('kecamatan', [KecamatanController::class, 'getKecamatan'])->name('kecamatan.data');
     Route::post('desa', [DesaController::class, 'getDesa'])->name('desa.data');
