@@ -51,6 +51,7 @@
         </div>
         <div class="page">
             @include('partials.topbar')
+            @stack('breadcrumb')
             @yield('content')
         </div>
     </div>
