@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Pegawai;
 
 use App\Http\Controllers\Controller;
 use App\Models\Pegawai;
+use App\Models\Propinsi;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redirect;
 use Yajra\Datatables\Datatables;
 
 class PegawaiController extends Controller
@@ -14,7 +16,8 @@ class PegawaiController extends Controller
      */
     public function index()
     {
-        return view('pegawai.index');
+        $title = "Pegawai";
+        return view('pegawai.index', compact('title'));
     }
 
     /**
@@ -38,6 +41,7 @@ class PegawaiController extends Controller
      */
     public function show(string $id)
     {
+        $propinsi = Propinsi::select('id', 'nama')->get();
         $title = 'Pegawai';
         try {
             $pegawai = Pegawai::select(
@@ -67,7 +71,10 @@ class PegawaiController extends Controller
                 'npwp'
             )->where('id', $id)->first();
         } catch (\Throwable $th) {
-            return redirect()->route('pegawai.index')->with('error', 'Gagal memuat halaman');
+            return abort(500);
+        }
+        if ($pegawai == null) {
+            return redirect()->route('pegawai.index')->with('error', 'Data pegawai tidak ditemukan');
         }
         $pegawai->tanggal_lahir = date('d-F-Y', strtotime($pegawai->tanggal_lahir));
         switch ($pegawai->jenis_kelamin) {
@@ -96,7 +103,7 @@ class PegawaiController extends Controller
         if ($pegawai->tanggal_wafat != null) {
             $pegawai->tanggal_wafat = date('d-F-Y', strtotime($pegawai->tanggal_wafat));
         }
-        return view('pegawai.show', compact('pegawai', 'title'));
+        return view('pegawai.show', compact('pegawai', 'title', 'propinsi'));
     }
 
     /**

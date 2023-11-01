@@ -1,4 +1,7 @@
 @extends('template')
+@push('style')
+    <link rel="stylesheet" href="{{ asset('assets/plugins/multi-select/css/multi-select.css') }}">
+@endpush
 @section('content')
     <div class="section-body">
         <div class="container-fluid">
@@ -16,25 +19,25 @@
             </div>
         </div>
     </div>
+
     <div class="section-body  py-4">
         <div class="container-fluid">
             <div class="row clearfix">
                 <div class="col-12">
                     <ul class="nav nav-tabs mb-3" id="pills-tab" role="tablist">
                         <li class="nav-item">
-                            <a class="nav-link active" id="pills-profile-tab" data-toggle="pill" href="#pills-profile"
+                            <a class="nav-link " id="pills-profile-tab" data-toggle="pill" href="#pills-profile"
                                 role="tab" aria-controls="pills-profile" aria-selected="false">Profile</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" id="pills-blog-tab" data-toggle="pill" href="#pills-blog" role="tab"
-                                aria-controls="pills-blog" aria-selected="true">Blog</a>
+                            <a class="nav-link active" id="pills-alamat-tab" data-toggle="pill" href="#pills-alamat"
+                                role="tab" aria-controls="pills-alamat" aria-selected="true">Alamat</a>
                         </li>
                     </ul>
                 </div>
                 <div class="col-lg-8 col-md-12">
                     <div class="tab-content" id="pills-tabContent">
-                        <div class="tab-pane fade show active" id="pills-profile" role="tabpanel"
-                            aria-labelledby="pills-profile-tab">
+                        <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
                             <div class="card">
                                 <div class="card-header">
                                     <h3 class="card-title">Profile</h3>
@@ -217,160 +220,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="tab-pane fade" id="pills-blog" role="tabpanel" aria-labelledby="pills-blog-tab">
-                            <div class="card">
-                                <div class="card-body">
-                                    <div class="new_post">
-                                        <div class="form-group">
-                                            <textarea rows="4" class="form-control no-resize" placeholder="Please type what you want..."></textarea>
-                                        </div>
-                                        <div class="mt-4 text-right">
-                                            <button class="btn btn-warning"><i class="icon-link"></i></button>
-                                            <button class="btn btn-warning"><i class="icon-camera"></i></button>
-                                            <button class="btn btn-primary">Post</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card blog_single_post">
-                                <div class="img-post">
-                                    <img class="d-block img-fluid" src="../assets/images/gallery/6.jpg"
-                                        alt="First slide">
-                                </div>
-                                <div class="card-body">
-                                    <h4><a href="#">All photographs are accurate</a></h4>
-                                    <p>It is a long established fact that a reader will be distracted by the readable
-                                        content of a page when looking at its layout. The point of using Lorem Ipsum is that
-                                        it has a more-or-less normal</p>
-                                </div>
-                                <div class="footer">
-                                    <div class="actions">
-                                        <a href="javascript:void(0);" class="btn btn-outline-secondary">Continue
-                                            Reading</a>
-                                    </div>
-                                    <ul class="stats list-unstyled">
-                                        <li><a href="javascript:void(0);">General</a></li>
-                                        <li><a href="javascript:void(0);" class="icon-heart"> 28</a></li>
-                                        <li><a href="javascript:void(0);" class="icon-bubbles"> 128</a></li>
-                                    </ul>
-                                </div>
-                                <ul class="list-group card-list-group">
-                                    <li class="list-group-item py-5">
-                                        <div class="media">
-                                            <img class="media-object avatar avatar-md mr-4"
-                                                src="../assets/images/xs/avatar3.jpg" alt="" />
-                                            <div class="media-body">
-                                                <div class="media-heading">
-                                                    <small class="float-right text-muted">4 min</small>
-                                                    <h5>Peter Richards</h5>
-                                                </div>
-                                                <div>
-                                                    Aenean lacinia bibendum nulla sed consectetur. Vestibulum id ligula
-                                                    porta felis euismod semper. Morbi leo risus, porta ac consectetur ac,
-                                                    vestibulum at eros. Cras
-                                                    justo odio, dapibus ac facilisis in, egestas eget quam. Vestibulum id
-                                                    ligula porta felis euismod semper. Cum sociis natoque penatibus et
-                                                    magnis dis parturient montes,
-                                                    nascetur ridiculus mus.
-                                                </div>
-                                                <ul class="media-list">
-                                                    <li class="media mt-4">
-                                                        <img class="media-object avatar mr-4"
-                                                            src="../assets/images/xs/avatar1.jpg" alt="" />
-                                                        <div class="media-body">
-                                                            <strong>Debra Beck: </strong>
-                                                            Donec id elit non mi porta gravida at eget metus. Vivamus
-                                                            sagittis lacus vel augue laoreet rutrum faucibus dolor auctor.
-                                                            Donec ullamcorper nulla non metus
-                                                            auctor fringilla. Praesent commodo cursus magna, vel scelerisque
-                                                            nisl consectetur et. Sed posuere consectetur est at lobortis.
-                                                        </div>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </li>
-                                </ul>
-                            </div>
-                            <div class="card blog_single_post">
-                                <div class="img-post">
-                                    <img class="d-block img-fluid" src="../assets/images/gallery/4.jpg"
-                                        alt="First slide">
-                                </div>
-                                <div class="card-body">
-                                    <h4><a href="#">All photographs are accurate</a></h4>
-                                    <p>It is a long established fact that a reader will be distracted by the readable
-                                        content of a page when looking at its layout. The point of using Lorem Ipsum is that
-                                        it has a more-or-less normal</p>
-                                </div>
-                                <div class="footer">
-                                    <div class="actions">
-                                        <a href="javascript:void(0);" class="btn btn-outline-secondary">Continue
-                                            Reading</a>
-                                    </div>
-                                    <ul class="stats list-unstyled">
-                                        <li><a href="javascript:void(0);">General</a></li>
-                                        <li><a href="javascript:void(0);" class="icon-heart"> 28</a></li>
-                                        <li><a href="javascript:void(0);" class="icon-bubbles"> 128</a></li>
-                                    </ul>
-                                </div>
-                                <ul class="list-group card-list-group">
-                                    <li class="list-group-item py-5">
-                                        <div class="media">
-                                            <img class="media-object avatar avatar-md mr-4"
-                                                src="../assets/images/xs/avatar7.jpg" alt="" />
-                                            <div class="media-body">
-                                                <div class="media-heading">
-                                                    <small class="float-right text-muted">12 min</small>
-                                                    <h5>Peter Richards</h5>
-                                                </div>
-                                                <div>
-                                                    Donec id elit non mi porta gravida at eget metus. Integer posuere erat a
-                                                    ante venenatis dapibus posuere velit aliquet. Cum sociis natoque
-                                                    penatibus et magnis dis
-                                                    parturient montes, nascetur ridiculus mus. Morbi leo risus, porta ac
-                                                    consectetur ac, vestibulum at eros. Lorem ipsum dolor sit amet,
-                                                    consectetur adipiscing elit.
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li class="list-group-item py-5">
-                                        <div class="media">
-                                            <img class="media-object avatar avatar-md mr-4"
-                                                src="../assets/images/xs/avatar6.jpg" alt="" />
-                                            <div class="media-body">
-                                                <div class="media-heading">
-                                                    <small class="float-right text-muted">34 min</small>
-                                                    <h5>Peter Richards</h5>
-                                                </div>
-                                                <div>
-                                                    Donec ullamcorper nulla non metus auctor fringilla. Vestibulum id ligula
-                                                    porta felis euismod semper. Aenean eu leo quam. Pellentesque ornare sem
-                                                    lacinia quam
-                                                    venenatis vestibulum. Etiam porta sem malesuada magna mollis euismod.
-                                                    Donec sed odio dui.
-                                                </div>
-                                                <ul class="media-list">
-                                                    <li class="media mt-4">
-                                                        <img class="media-object avatar mr-4"
-                                                            src="../assets/images/xs/avatar5.jpg" alt="" />
-                                                        <div class="media-body">
-                                                            <strong>Wayne Holland: </strong>
-                                                            Donec id elit non mi porta gravida at eget metus. Vivamus
-                                                            sagittis lacus vel augue laoreet rutrum faucibus dolor auctor.
-                                                            Donec ullamcorper nulla non metus
-                                                            auctor fringilla. Praesent commodo cursus magna, vel scelerisque
-                                                            nisl consectetur et. Sed posuere consectetur est at lobortis.
-                                                        </div>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
+                        @include('pegawai.pegawai-alamat')
                     </div>
                 </div>
                 <div class="col-lg-4 col-md-12">
@@ -523,4 +373,282 @@
             </div>
         </div>
     </div>
+    <!-- Modal -->
+    <div class="modal fade" id="modal-alamat" tabindex="-1" role="dialog" aria-labelledby="modalAlamatLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Alamat</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="col-md-12 col-lg-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label class="form-label">Nama</label>
+                                    <input type="text" disabled="" class="form-control mt-3 state-valid"
+                                        value="{{ $pegawai->nama_depan . ' ' . $pegawai->nama_belakang }}">
+                                </div>
+                                <div class="form-group multiselect_div">
+                                    <label class="form-label">Tipe Alamat</label>
+                                    <div class="form-group multiselect_div">
+                                        <select id="single-selection" name="single_selection"
+                                            class="multiselect multiselect-custom">
+                                            <option value="Domisili">Domisili</option>
+                                            <option value="Asal">Asal</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group multiselect_div">
+                                    <label class="form-label">Propinsi</label>
+                                    <select id="propinsi_id" name="propinsi_id" class="multiselect multiselect-custom">
+                                    </select>
+                                </div>
+                                <div class="form-group multiselect_div">
+                                    <label class="form-label">Kota</label>
+                                    <select id="kota_id" name="kota_id"
+                                        class="select-filter multiselect multiselect-custom">
+                                        <option selected value="">-- Pilih Kota --</option>
+                                    </select>
+                                </div>
+                                <div class="form-group multiselect_div">
+                                    <label class="form-label">Kecamatan</label>
+                                    <select id="kecamatan_id" name="kecamatan_id"
+                                        class="select-filter multiselect multiselect-custom">
+                                        <option selected value="">-- Pilih Kecamatan --</option>
+                                    </select>
+                                </div>
+                                <div class="form-group multiselect_div">
+                                    <label class="form-label">Desa</label>
+                                    <select id="desa_id" name="desa_id"
+                                        class="select-filter multiselect multiselect-custom">
+                                        <option selected value="">-- Pilih Desa --</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Kode Pos</label>
+                                    <input type="number" id="kode_pos" min="0" step="0.01"
+                                        oninput="limitDigits(this, 5);" class="form-control mt-3 state-valid"
+                                        value="" placeholder="Kode Pos">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Alamat Lengkap</label>
+                                    <textarea id="alamat" rows="3" class="form-control" placeholder="Alamat Lengkap"></textarea>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+                    <button type="button" class="btn btn-primary" id="store-alamat"
+                        onclick="select_propinsi()">Simpan</button>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
+@push('script')
+    <script src="{{ asset('assets/plugins/bootstrap-multiselect/bootstrap-multiselect.js') }}"></script>
+    <script src="{{ asset('assets/plugins/multi-select/js/jquery.multi-select.js') }}"></script>
+    <script>
+        $('#single-selection').multiselect({
+            maxHeight: 300
+        });
+        $('.select-filter').multiselect({
+            enableFiltering: true,
+            enableCaseInsensitiveFiltering: true,
+            maxHeight: 200
+        });
+        $('#modal-alamat').on('show.bs.modal', function(e) {
+            select_propinsi();
+            $('#modal-alamat').modal('show');
+
+        })
+
+        let select_propinsi = function() {
+            $.ajax({
+                url: "{{ route('propinsi.data') }}",
+                type: 'GET',
+                success: function(response) {
+                    let option = '<option selected value="">-- Pilih Propinsi --</option>';
+                    for (let i = 0; i < response.result.length; i++) {
+                        option +=
+                            `<option value="${response.result[i].id}">${response.result[i].nama}</option>`;
+                    }
+                    $('#propinsi_id').append(option);
+                    $('#propinsi_id').multiselect({
+                        enableFiltering: true,
+                        enableCaseInsensitiveFiltering: true,
+                        maxHeight: 200
+                    });
+                }
+            })
+        }
+        $('#propinsi_id').on('change', function(e) {
+            e.preventDefault();
+            const id = $(this).val();
+            $.ajax({
+                type: "POST",
+                url: "{{ route('kota.data') }}",
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                data: {
+                    id: id
+                },
+                cache: false,
+                success: function(response) {
+                    $('#kota_id').multiselect('destroy');
+                    $('#kota_id').html(response);
+                    $('#kota_id').multiselect({
+                        enableFiltering: true,
+                        enableCaseInsensitiveFiltering: true,
+                        maxHeight: 200
+                    });
+                    resetKecamatan();
+                    resetDesa();
+
+                },
+                error: function(data) {
+                    console.log('error : ', data);
+                }
+            });
+        });
+
+
+        $('#kota_id').on('change', function(e) {
+            e.preventDefault();
+            const id = $(this).val();
+            $.ajax({
+                type: "POST",
+                url: "{{ route('kecamatan.data') }}",
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                data: {
+                    id: id
+                },
+                cache: false,
+                success: function(response) {
+                    $('#kecamatan_id').multiselect('destroy');
+                    $('#kecamatan_id').html(response);
+                    $('#kecamatan_id').multiselect({
+                        enableFiltering: true,
+                        enableCaseInsensitiveFiltering: true,
+                        maxHeight: 200
+                    });
+                    resetDesa();
+                },
+                error: function(data) {
+                    console.log('error : ', data);
+                }
+            });
+        });
+        $('#kecamatan_id').on('change', function(e) {
+            e.preventDefault();
+            const id = $(this).val();
+            $.ajax({
+                type: "POST",
+                url: "{{ route('desa.data') }}",
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                data: {
+                    id: id
+                },
+                cache: false,
+                success: function(response) {
+                    $('#desa_id').multiselect('destroy');
+                    $('#desa_id').html(response);
+                    $('#desa_id').multiselect({
+                        enableFiltering: true,
+                        enableCaseInsensitiveFiltering: true,
+                        maxHeight: 200
+                    });
+                },
+                error: function(data) {
+                    console.log('error : ', data);
+                }
+            });
+        });
+        const resetKecamatan = function() {
+            $('#kecamatan_id').multiselect('destroy');
+            $('#kecamatan_id').html('<option selected value="">-- Pilih Kecamatan --</option>');
+            $('#kecamatan_id').multiselect({
+                enableFiltering: true,
+                enableCaseInsensitiveFiltering: true,
+                maxHeight: 200
+            });
+        }
+        const resetDesa = function() {
+            $('#desa_id').multiselect('destroy');
+            $('#desa_id').html('<option selected value="">-- Pilih Desa --</option>');
+            $('#desa_id').multiselect({
+                enableFiltering: true,
+                enableCaseInsensitiveFiltering: true,
+                maxHeight: 200
+            });
+        }
+        $('body').on('click', '#store-alamat', function(e) {
+            e.preventDefault();
+            $.ajax({
+                url: "{{ route('alamat.store') }}",
+                type: "POST",
+                headers: {
+                    'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                },
+                data: {
+                    tipe_alamat: $('#tipe_alamat').val(),
+                    propinsi_id: $('#propinsi_id').val(),
+                    kota_id: $('#kota_id').val(),
+                    kecamatan_id: $('#kecamatan_id').val(),
+                    desa_id: $('#desa_id').val(),
+                    kode_pos: $('#kode_pos').val(),
+                    alamat: $('#alamat').val(),
+                },
+                success: function(response) {}
+            })
+        })
+
+        function resetForm(is_success = false) {
+            $('#tipe_alamat').removeClass('is-invalid');
+            $('#error_tipe_alamat').text('')
+            $('#propinsi_id').removeClass('is-invalid');
+            $('#error_propinsi_id').text('');
+            $('#kota_id').removeClass('is-invalid');
+            $('#error_kota_id').text('')
+            $('#kecamatan_id').removeClass('is-invalid');
+            $('#error_kecamatan_id').text('');
+            $('#desa_id').removeClass('is-invalid');
+            $('#error_desa_id').text('');
+            $('#kode_pos').removeClass('is-invalid');
+            $('#error_kode_pos').text('');
+            $('#alamat').removeClass('is-invalid');
+            $('#error_alamat').text('');
+        }
+    </script>
+
+    {{-- Limit Kode Pos --}}
+    <script>
+        function limitDigits(input, maxDigits) {
+            let value = input.value.replace(/[^0-9.]/g, ''); // Remove non-numeric characters
+            let parts = value.split('.');
+
+            if (parts[0].length > maxDigits) {
+                parts[0] = parts[0].slice(0, maxDigits);
+            }
+
+            if (parts[1] && parts[1].length > 2) { // Enforce a maximum of 2 decimal places
+                parts[1] = parts[1].slice(0, 2);
+            }
+
+            input.value = parts.join('.');
+        }
+    </script>
+@endpush

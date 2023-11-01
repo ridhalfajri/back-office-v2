@@ -49,11 +49,13 @@
     </div>
 @endsection
 @push('script')
+    <script src="{{ asset('assets/plugins/sweetalert2/sweetalert2.all.min.js') }}"></script>
     <script src="{{ asset('assets/bundles/dataTables.bundle.js') }}"></script>
     <script src="{{ asset('assets/js/table/datatable.js') }}"></script>
     <script>
         "use strict"
         let table;
+
         $(function() {
             table = $('#tbl-pegawai').DataTable({
                 processing: true,
@@ -123,4 +125,17 @@
             });
         })
     </script>
+    @if (session()->has('error'))
+        <script>
+            const msg = <?php echo json_encode(Session::get('error')); ?>;
+            $(function() {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: msg,
+                })
+                return false;
+            })
+        </script>
+    @endif
 @endpush
