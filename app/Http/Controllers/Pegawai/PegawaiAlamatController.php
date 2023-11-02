@@ -32,6 +32,8 @@ class PegawaiAlamatController extends Controller
      */
     public function store(Request $request)
     {
+        //TODO: Update Alamat
+
         $validate = Validator::make(
             $request->all(),
             [
@@ -69,7 +71,10 @@ class PegawaiAlamatController extends Controller
         if ($validate->fails()) {
             return response()->json(['errors' => $validate->errors()]);
         } else {
-            $pegawai_alamat = new PegawaiAlamat();
+            $pegawai_alamat = PegawaiAlamat::where('pegawai_id', $request->pegawai_id)->where('tipe_alamat', $request->tipe_alamat)->first();
+            if ($pegawai_alamat == null) {
+                $pegawai_alamat = new PegawaiAlamat();
+            }
             $pegawai_alamat->pegawai_id = $request->pegawai_id;
             $pegawai_alamat->tipe_alamat = $request->tipe_alamat;
             $pegawai_alamat->propinsi_id = $request->propinsi_id;

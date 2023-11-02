@@ -1,4 +1,4 @@
-<div class="tab-pane fade show active" id="pills-alamat" role="tabpanel" aria-labelledby="pills-alamat-tab">
+<div class="tab-pane fade" id="pills-alamat" role="tabpanel" aria-labelledby="pills-alamat-tab">
     <div class="card">
         <div class="card-header">
             <h3 class="card-title">Alamat Domisili</h3>

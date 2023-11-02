@@ -26,19 +26,19 @@
                 <div class="col-12">
                     <ul class="nav nav-tabs mb-3" id="pills-tab" role="tablist">
                         <li class="nav-item">
-                            <a class="nav-link " id="pills-profile-tab" data-toggle="pill" href="#pills-profile"
+                            <a class="nav-link active" id="pills-profile-tab" data-toggle="pill" href="#pills-profile"
                                 role="tab" aria-controls="pills-profile" aria-selected="false">Profile</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link active" id="pills-alamat-tab" data-toggle="pill" href="#pills-alamat"
-                                role="tab" aria-controls="pills-alamat" aria-selected="true"
-                                onclick="get_data_alamat">Alamat</a>
+                            <a class="nav-link" id="pills-alamat-tab" data-toggle="pill" href="#pills-alamat" role="tab"
+                                aria-controls="pills-alamat" aria-selected="true" onclick="get_data_alamat">Alamat</a>
                         </li>
                     </ul>
                 </div>
                 <div class="col-lg-8 col-md-12">
                     <div class="tab-content" id="pills-tabContent">
-                        <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
+                        <div class="tab-pane fade show active" id="pills-profile" role="tabpanel"
+                            aria-labelledby="pills-profile-tab">
                             <div class="card">
                                 <div class="card-header">
                                     <h3 class="card-title">Profile</h3>
