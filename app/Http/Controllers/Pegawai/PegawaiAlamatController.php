@@ -32,8 +32,6 @@ class PegawaiAlamatController extends Controller
      */
     public function store(Request $request)
     {
-        //TODO: Update Alamat
-
         $validate = Validator::make(
             $request->all(),
             [
@@ -123,7 +121,7 @@ class PegawaiAlamatController extends Controller
     {
         //
     }
-    public function getAlamatById(Request $request)
+    public function getAlamatByPegawaiId(Request $request)
     {
         try {
             $alamat = PegawaiAlamat::where('pegawai_id', $request->pegawai_id)->where('tipe_alamat', $request->tipe_alamat)->first();

@@ -1,6 +1,13 @@
 @extends('template')
 @push('style')
+    {{-- Multiselect --}}
     <link rel="stylesheet" href="{{ asset('assets/plugins/multi-select/css/multi-select.css') }}">
+    {{-- Datatable --}}
+    <link rel="stylesheet" href="{{ asset('assets/plugins/datatable/dataTables.bootstrap4.min.css') }}">
+    <link rel="stylesheet"
+        href="{{ asset('assets/plugins/datatable/fixedeader/dataTables.fixedcolumns.bootstrap4.min.css') }}">
+    <link rel="stylesheet"
+        href="{{ asset('assets/plugins/datatable/fixedeader/dataTables.fixedheader.bootstrap4.min.css') }}">
 @endpush
 @section('content')
     <div class="section-body">
@@ -33,6 +40,10 @@
                             <a class="nav-link" id="pills-alamat-tab" data-toggle="pill" href="#pills-alamat" role="tab"
                                 aria-controls="pills-alamat" aria-selected="true" onclick="get_data_alamat">Alamat</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="pills-diklat-tab" data-toggle="pill" href="#pills-diklat" role="tab"
+                                aria-controls="pills-diklat" aria-selected="true">Diklat</a>
+                        </li>
                     </ul>
                 </div>
                 <div class="col-lg-8 col-md-12">
@@ -62,6 +73,8 @@
                                 <div class="card-body">
                                     <div class="row clearfix">
                                         <div class="col-md-4">
+                                            <input type="hidden" id="pegawai_id" class="form-control" disabled=""
+                                                placeholder="Id" value="{{ $pegawai->id }}">
                                             <div class="form-group">
                                                 <label class="form-label">NIK</label>
                                                 <input type="text" class="form-control" disabled="" placeholder="NIK"
@@ -78,8 +91,8 @@
                                         <div class="col-sm-6 col-md-4">
                                             <div class="form-group">
                                                 <label class="form-label">NPWP</label>
-                                                <input type="text" class="form-control" disabled="" placeholder="NPWP"
-                                                    value="{{ $pegawai->npwp }}">
+                                                <input type="text" class="form-control" disabled=""
+                                                    placeholder="NPWP" value="{{ $pegawai->npwp }}">
                                             </div>
                                         </div>
                                         <div class="col-sm-6 col-md-6">
@@ -221,7 +234,12 @@
                                 </div>
                             </div>
                         </div>
-                        @include('pegawai.pegawai-alamat')
+                        <div class="tab-pane fade" id="pills-alamat" role="tabpanel" aria-labelledby="pills-alamat-tab">
+                            @include('pegawai.pegawai-alamat')
+                        </div>
+                        <div class="tab-pane fade" id="pills-diklat" role="tabpanel" aria-labelledby="pills-diklat-tab">
+                            @include('pegawai.pegawai-diklat')
+                        </div>
                     </div>
                 </div>
                 <div class="col-lg-4 col-md-12">
@@ -459,6 +477,8 @@
     </div>
 @endpush
 @push('script')
+    <script src="{{ asset('assets/bundles/dataTables.bundle.js') }}"></script>
+    <script src="{{ asset('assets/js/table/datatable.js') }}"></script>
     <script src="{{ asset('assets/plugins/sweetalert2/sweetalert2.all.min.js') }}"></script>
     <script src="{{ asset('assets/plugins/bootstrap-multiselect/bootstrap-multiselect.js') }}"></script>
     <script src="{{ asset('assets/plugins/multi-select/js/jquery.multi-select.js') }}"></script>
@@ -481,7 +501,7 @@
         }
         const get_data_alamat = (tipe_alamat) => {
             $.ajax({
-                url: "{{ route('alamat.get-data-by-id') }}",
+                url: "{{ route('alamat.get-data-by-pegawai-id') }}",
                 type: 'POST',
                 headers: {
                     'X-CSRF-TOKEN': "{{ csrf_token() }}"
@@ -719,10 +739,8 @@
             $('#error_kode_pos').text('');
             $('#error_alamat').text('');
         }
-    </script>
+        // {{-- Limit Kode Pos --}}
 
-    {{-- Limit Kode Pos --}}
-    <script>
         function limitDigits(input, maxDigits) {
             const value = input.value.replace(/[^0-9.]/g, ''); // Remove non-numeric characters
             const parts = value.split('.');
@@ -737,5 +755,83 @@
 
             input.value = parts.join('.');
         }
+    </script>
+    <script>
+        $('#pills-tab a').on('click', function(e) {
+            e.preventDefault()
+            const tab_id = this.getAttribute('id')
+            if (tab_id == 'pills-diklat-tab') {
+                let tbl_diklat;
+                tbl_diklat = $("#tbl-diklat").DataTable({
+                    processing: true,
+                    destroy: true,
+                    serverSide: true,
+                    deferRender: true,
+                    responsive: true,
+                    pageLength: 10,
+                    paging: true,
+                    searching: true,
+                    ordering: true,
+                    info: true,
+                    autoWidth: false,
+                    ajax: {
+                        url: "{{ route('diklat.datatable') }}",
+                        type: "POST",
+                        headers: {
+                            "X-CSRF-TOKEN": $('meta[name="csrf_token"]').attr("content"),
+                        },
+                        data: {
+                            pegawai_id: $("#pegawai_id").val(),
+                        },
+                    },
+                    columns: [{
+                            data: "no",
+                            name: "no",
+                            class: "text-center",
+                        },
+                        {
+                            data: "nama",
+                            name: "nama",
+                        },
+                        {
+                            data: "tanggal_mulai",
+                            name: "tanggal_mulai",
+                        },
+                        {
+                            data: "penyelenggaran",
+                            name: "penyelenggaran",
+                        },
+                        {
+                            data: "aksi",
+                            name: "aksi",
+                            class: "text-center actions",
+                        },
+                    ],
+                    columnDefs: [{
+                        sortable: false,
+                        searchable: false,
+                        targets: [0, -1],
+                    }, ],
+                    order: [
+                        [1, "asc"]
+                    ],
+                });
+
+                tbl_diklat.on("draw.dt", function() {
+                    var info = tbl_diklat.page.info();
+                    tbl_diklat
+                        .column(0, {
+                            search: "applied",
+                            order: "applied",
+                            page: "applied",
+                        })
+                        .nodes()
+                        .each(function(cell, i) {
+                            cell.innerHTML = i + 1 + info.start;
+                        });
+                });
+                $(this).tab('show')
+            }
+        })
     </script>
 @endpush
