@@ -43,7 +43,7 @@ Route::resource('/jabatan-unit-kerja', JabatanUnitKerjaController::class);
 Route::prefix('pegawai')->group(function () {
     Route::post('/datatable', [PegawaiController::class, 'datatable'])->name('pegawai.datatable');
     Route::post('/alamat-by-id', [PegawaiAlamatController::class, 'getAlamatById'])->name('alamat.get-data-by-id');
-    Route::resource('/alamat', PegawaiAlamatController::class);
+    Route::resource('/alamat', PegawaiAlamatController::class)->only(['store']);
     Route::resource('/', PegawaiController::class, [
         'names' => [
             'index' => 'pegawai.index',
@@ -53,7 +53,7 @@ Route::prefix('pegawai')->group(function () {
             'update' => 'pegawai.update',
             'destroy' => 'pegawai.destroy',
         ]
-    ])->parameters(['' => 'id']);
+    ])->parameters(['' => 'id'])->only(['index', 'show']);
 });
 Route::prefix('data')->group(function () {
     Route::post('propinsi', [PropinsiController::class, 'getPropinsi'])->name('propinsi.data');
