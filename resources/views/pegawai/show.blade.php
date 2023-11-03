@@ -722,9 +722,7 @@
                             icon: 'success',
                             confirmButtonText: 'Tutup'
                         })
-                        setTimeout(function() {
-                            location.reload();
-                        }, 1000);
+
                     }
                 }
             })
