@@ -394,7 +394,7 @@
     </div>
 @endsection
 @push('modal')
-    <!-- Modal -->
+    <!-- Modal Alamat -->
     <div class="modal fade" id="modal-alamat" data-backdrop="static" tabindex="-1" role="dialog"
         aria-labelledby="modalAlamatLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -475,6 +475,72 @@
             </div>
         </div>
     </div>
+    <!-- Modal Detail Diklat -->
+    <div class="modal fade" id="modal-detail-diklat" tabindex="-1" role="dialog"
+        aria-labelledby="modalDetailDiklatLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Detail Diklat</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="col-md-12 col-lg-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label class="form-label">Nama</label>
+                                    <input type="text" id="d_nama_jenis_diklat" disabled=""
+                                        class="form-control mt-3 state-valid" value="">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Tanggal Mulai</label>
+                                    <input type="text" id="d_tanggal_mulai" disabled=""
+                                        class="form-control mt-3 state-valid" value="">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Tanggal Akhir</label>
+                                    <input type="text" id="d_tanggal_akhir" disabled=""
+                                        class="form-control mt-3 state-valid" value="">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Jam Pelajaran</label>
+                                    <input type="text" id="d_jam_pelajaran" disabled=""
+                                        class="form-control mt-3 state-valid" value="">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Lokasi</label>
+                                    <input type="text" id="d_lokasi" disabled=""
+                                        class="form-control mt-3 state-valid" value="">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Penyelenggara</label>
+                                    <input type="text" id="d_penyelenggaran" disabled=""
+                                        class="form-control mt-3 state-valid" value="">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Nomor Sertifikat</label>
+                                    <input type="text" id="d_no_sertifikat" disabled=""
+                                        class="form-control mt-3 state-valid" value="">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Tanggal Sertifikat</label>
+                                    <input type="text" id="d_tanggal_sertifikat" disabled=""
+                                        class="form-control mt-3 state-valid" value="">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">File Sertifikat</label>
+                                    <a href="#" id="d_media_sertifikat" class="btn btn-primary">Download</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 @endpush
 @push('script')
     <script src="{{ asset('assets/bundles/dataTables.bundle.js') }}"></script>
@@ -482,6 +548,8 @@
     <script src="{{ asset('assets/plugins/sweetalert2/sweetalert2.all.min.js') }}"></script>
     <script src="{{ asset('assets/plugins/bootstrap-multiselect/bootstrap-multiselect.js') }}"></script>
     <script src="{{ asset('assets/plugins/multi-select/js/jquery.multi-select.js') }}"></script>
+    <script src="{{ asset('assets/js/custom/diklat.js') }}"></script>
+
     <script>
         $('.select-filter').multiselect({
             enableFiltering: true,

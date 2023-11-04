@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\JenisDiklat;
 use App\Models\Pegawai;
 use App\Models\PegawaiRiwayatDiklat;
+use Carbon\Carbon;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -141,11 +142,29 @@ class PegawaiDiklatController extends Controller
     {
         $diklat = PegawaiRiwayatDiklat::select('pegawai_riwayat_diklat.id', 'pegawai_id', 'jenis_diklat.nama as nama', 'jenis_diklat_id', 'tanggal_mulai', 'tanggal_akhir', 'penyelenggaran')
             ->join('jenis_diklat', 'pegawai_riwayat_diklat.jenis_diklat_id', '=', 'jenis_diklat.id')
-            ->where('pegawai_id', $request->pegawai_id)->get();
+            ->where('pegawai_id', $request->pegawai_id)->orderBy('pegawai_riwayat_diklat.created_at', 'ASC')->get();
         return DataTables::of($diklat)
             ->addColumn('no', '')
             ->addColumn('aksi', 'pegawai.aksi-diklat')
             ->rawColumns(['aksi'])
             ->make(true);
+    }
+    public function getDiklatById(Request $request)
+    {
+        try {
+            $diklat = PegawaiRiwayatDiklat::select('id', 'jenis_diklat_id', 'tanggal_mulai', 'tanggal_akhir', 'jam_pelajaran', 'lokasi', 'penyelenggaran', 'no_sertifikat', 'tanggal_sertifikat')
+                ->where('id', $request->id)->first();
+            if ($diklat == null) {
+                return response()->json(['errors' => ['data' => 'Data tidak ditemukan']]);
+            }
+            $diklat->media_sertifikat = $diklat->getMedia("media_sertifikat")[0]->getUrl();
+            $diklat->tanggal_mulai = Carbon::parse($diklat->tanggal_mulai)->translatedFormat('d F Y');
+            $diklat->tanggal_akhir = Carbon::parse($diklat->tanggal_akhir)->translatedFormat('d F Y');
+            $diklat->tanggal_sertifikat = Carbon::parse($diklat->tanggal_sertifikat)->translatedFormat('d F Y');
+            $diklat->jenis_diklat->nama;
+            return response()->json(['result' => $diklat]);
+        } catch (QueryException $e) {
+            return response()->json(['errors' => ['connection' => 'Terjadi kesalahan koneksi']]);
+        }
     }
 }

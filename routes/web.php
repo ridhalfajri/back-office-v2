@@ -45,6 +45,7 @@ Route::prefix('pegawai')->group(function () {
     Route::post('/datatable', [PegawaiController::class, 'datatable'])->name('pegawai.datatable');
     Route::post('/alamat-by-pegawai', [PegawaiAlamatController::class, 'getAlamatByPegawaiId'])->name('alamat.get-data-by-pegawai-id');
     Route::resource('/alamat', PegawaiAlamatController::class)->only(['store']);
+    Route::post('/diklat/diklat-by-id', [PegawaiDiklatController::class, 'getDiklatById'])->name('diklat.get-diklat-by-id');
     Route::post('/diklat/datatable', [PegawaiDiklatController::class, 'datatable'])->name('diklat.datatable');
     Route::get('/diklat/create/{pegawai_id}', [PegawaiDiklatController::class, 'create'])->name('diklat.create');
     Route::resource('/diklat', PegawaiDiklatController::class)->except('create');
