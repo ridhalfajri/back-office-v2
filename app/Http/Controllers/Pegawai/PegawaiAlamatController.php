@@ -124,9 +124,10 @@ class PegawaiAlamatController extends Controller
     public function getAlamatByPegawaiId(Request $request)
     {
         try {
-            $alamat = PegawaiAlamat::where('pegawai_id', $request->pegawai_id)->where('tipe_alamat', $request->tipe_alamat)->first();
+            $alamat = PegawaiAlamat::select('tipe_alamat', 'propinsi_id', 'kota_id', 'kecamatan_id', 'desa_id', 'kode_pos', 'alamat')->where('pegawai_id', $request->pegawai_id)->where('tipe_alamat', $request->tipe_alamat)->first();
             return response()->json(['result' => $alamat]);
         } catch (\Throwable $th) {
+            abort(500);
             //throw $th;
         }
     }

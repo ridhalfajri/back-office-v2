@@ -16,16 +16,18 @@
                         <div class="card-header">
                             <h3 class="card-title">Tambah Riwayat Diklat</h3>
                         </div>
-                        <form id="form-create" action="{{ route('diklat.store') }}" enctype="multipart/form-data"
-                            method="POST" autocomplete="off">
+                        <form id="form-edit" action="{{ route('diklat.update', $diklat->id) }}"
+                            enctype="multipart/form-data" method="POST" autocomplete="off">
+                            @method('PUT')
                             @csrf
                             <div class="card-body">
                                 <div class="row clearfix">
                                     <div class="form-group col-lg-4 col-md-6 col-sm-12">
                                         <label class="form-label">Nama Pegawai</label>
-                                        <input type="text" class="form-control" value="{{ $pegawai->nama }}"
-                                            placeholder="Nama Pegawai" disabled>
-                                        <input type="hidden" name="pegawai_id" id="pegawai_id" value="{{ $pegawai->id }}">
+                                        <input type="text" class="form-control"
+                                            value="{{ $diklat->pegawai->nama_depan }}" placeholder="Nama Pegawai" disabled>
+                                        <input type="hidden" name="pegawai_id" id="pegawai_id"
+                                            value="{{ $diklat->pegawai_id }}">
                                     </div>
                                     <div class="form-group multiselect_div col-lg-4 col-md-6 col-sm-12">
                                         <label class="form-label">Jenis Diklat</label>
@@ -33,7 +35,12 @@
                                             class="select-filter multiselect multiselect-custom">
                                             <option value="">-- Pilih Jenis Diklat--</option>
                                             @foreach ($jenis_diklat as $item)
-                                                <option value="{{ $item->id }}">{{ $item->nama }}</option>
+                                                @if ($item->id == $diklat->jenis_diklat_id)
+                                                    <option value="{{ $item->id }}" selected>{{ $item->nama }}
+                                                    </option>
+                                                @else
+                                                    <option value="{{ $item->id }}">{{ $item->nama }}</option>
+                                                @endif
                                             @endforeach
                                         </select>
                                         <small class="text-danger" id="error_jenis_diklat_id"></small>
@@ -42,10 +49,12 @@
                                         <label>Range</label>
                                         <div class="input-daterange input-group" data-provide="datepicker">
                                             <input type="text" class="input-sm form-control datepicker"
-                                                id="tanggal_mulai" name="tanggal_mulai">
+                                                id="tanggal_mulai" name="tanggal_mulai"
+                                                value="{{ $diklat->tanggal_mulai }}">
                                             <span class="input-group-addon range-to px-3">to</span>
                                             <input type="text" class="input-sm form-control datepicker"
-                                                id="tanggal_akhir" name="tanggal_akhir">
+                                                id="tanggal_akhir" name="tanggal_akhir"
+                                                value="{{ $diklat->tanggal_akhir }}">
                                         </div>
                                         <small class="text-danger" id="error_tanggal_mulai"></small>
                                         <small class="text-danger" id="error_tanggal_akhir"></small>
@@ -53,27 +62,28 @@
                                     <div class="form-group col-lg-4 col-md-6 col-sm-12">
                                         <label class="form-label">Jam Pelajaran</label>
                                         <input type="number" id="jam_pelajaran" min="0" step="0.01"
-                                            oninput="limitDigits(this, 3);" class="form-control state-valid" value=""
-                                            name="jam_pelajaran" placeholder="Jam Pelajaran">
+                                            oninput="limitDigits(this, 3);" class="form-control state-valid"
+                                            value="{{ $diklat->jam_pelajaran }}" name="jam_pelajaran"
+                                            placeholder="Jam Pelajaran">
                                         <small class="text-danger" id="error_jam_pelajaran"></small>
                                     </div>
                                     <div class="form-group col-lg-4 col-md-6 col-sm-12">
                                         <label class="form-label">Lokasi</label>
                                         <input type="text" class="form-control" id="lokasi" name="lokasi"
-                                            placeholder="Lokasi">
+                                            placeholder="Lokasi" value="{{ $diklat->lokasi }}">
                                         <small class="text-danger" id="error_lokasi"></small>
 
                                     </div>
                                     <div class="form-group col-lg-4 col-md-6 col-sm-12">
                                         <label class="form-label">Penyelenggara</label>
                                         <input type="text" class="form-control" id="penyelenggaran" name="penyelenggaran"
-                                            placeholder="Penyelenggara">
+                                            placeholder="Penyelenggara" value="{{ $diklat->penyelenggaran }}">
                                         <small class="text-danger" id="error_penyelenggaran"></small>
                                     </div>
                                     <div class="form-group col-lg-4 col-md-6 col-sm-12">
                                         <label class="form-label">No Sertifikat</label>
                                         <input type="text" class="form-control" id="no_sertifikat" name="no_sertifikat"
-                                            placeholder="No Sertifikat">
+                                            placeholder="No Sertifikat" value="{{ $diklat->no_sertifikat }}">
                                         <small class="text-danger" id="error_no_sertifikat"></small>
                                     </div>
                                     <div class="form-group col-lg-4 col-md-6 col-sm-12">
@@ -81,7 +91,8 @@
                                         <div class="input-group">
                                             <input data-provide="datepicker" id="tanggal_sertifikat"
                                                 name="tanggal_sertifikat" data-date-autoclose="true"
-                                                data-date-format="dd/mm/yyyy" class="form-control datepicker">
+                                                data-date-format="dd/mm/yyyy" class="form-control datepicker"
+                                                value="{{ $diklat->tanggal_sertifikat }}">
                                         </div>
                                         <small class="text-danger" id="error_tanggal_sertifikat"></small>
                                     </div>
@@ -90,12 +101,14 @@
                                         <div class="input-group">
                                             <input type="file" id="media_sertifikat" name="media_sertifikat">
                                             <small class="text-danger" id="error_media_sertifikat"></small>
+                                            <a href='//{{ $diklat->media_sertifikat->getUrl() }}'+>File Sekarang :
+                                                {{ $diklat->media_sertifikat->file_name }}</a>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             <div class="card-footer d-flex justify-content-end">
-                                <a href="{{ route('pegawai.show', $pegawai->id) }}" type="button"
+                                <a href="{{ route('pegawai.show', $diklat->pegawai_id) }}" type="button"
                                     class="btn btn-secondary mr-2">Batal</a>
                                 <button id="store-diklat" type="submit" class="btn btn-primary">Simpan</button>
                             </div>
@@ -125,7 +138,7 @@
             enableCaseInsensitiveFiltering: true,
             maxHeight: 200
         });
-        $('#form-create').submit(function(e) {
+        $('#form-edit').submit(function(e) {
             e.preventDefault();
             const form = $(this);
             const actionUrl = form.attr('action');
@@ -179,7 +192,7 @@
                                 confirmButtonText: 'Tutup'
                             })
                         }
-                    } else {
+                    } else if (response.success) {
                         Swal.fire({
                             title: 'Tersimpan!',
                             text: response.success,

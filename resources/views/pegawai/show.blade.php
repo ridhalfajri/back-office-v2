@@ -38,7 +38,7 @@
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" id="pills-alamat-tab" data-toggle="pill" href="#pills-alamat" role="tab"
-                                aria-controls="pills-alamat" aria-selected="true" onclick="get_data_alamat">Alamat</a>
+                                aria-controls="pills-alamat" aria-selected="true">Alamat</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" id="pills-diklat-tab" data-toggle="pill" href="#pills-diklat" role="tab"
@@ -549,24 +549,9 @@
     <script src="{{ asset('assets/plugins/bootstrap-multiselect/bootstrap-multiselect.js') }}"></script>
     <script src="{{ asset('assets/plugins/multi-select/js/jquery.multi-select.js') }}"></script>
     <script src="{{ asset('assets/js/custom/diklat.js') }}"></script>
+    <script src="{{ asset('assets/js/custom/alamat.js') }}"></script>
 
     <script>
-        $('.select-filter').multiselect({
-            enableFiltering: true,
-            enableCaseInsensitiveFiltering: true,
-            maxHeight: 200
-        });
-        $('#modal-alamat').on('show.bs.modal', function(e) {
-            resetForm()
-            $('#modal-alamat').modal('show')
-
-        })
-        const domisili = function() {
-            get_data_alamat('Domisili')
-        }
-        const asal = function() {
-            get_data_alamat('Asal')
-        }
         const get_data_alamat = (tipe_alamat) => {
             $.ajax({
                 url: "{{ route('alamat.get-data-by-pegawai-id') }}",
@@ -580,7 +565,6 @@
                 },
                 success: function(response) {
                     if (response.result == null) {
-                        select_propinsi()
                         $('#tipe_alamat').val(tipe_alamat)
                     } else {
                         set_data_edit(response)
@@ -588,16 +572,6 @@
                 }
             })
         }
-        const set_data_edit = (response) => {
-            select_propinsi(response.result.propinsi_id)
-            select_kota(response.result.propinsi_id, response.result.kota_id)
-            select_kecamatan(response.result.kota_id, response.result.kecamatan_id)
-            select_desa(response.result.kecamatan_id, response.result.desa_id)
-            $('#tipe_alamat').val(response.result.tipe_alamat)
-            $('#kode_pos').val(response.result.kode_pos)
-            $('#alamat').val(response.result.alamat)
-        }
-
         const select_propinsi = (propinsi_id = null) => {
             $.ajax({
                 url: "{{ route('propinsi.data') }}",
@@ -623,7 +597,7 @@
                 type: "POST",
                 url: "{{ route('kota.data') }}",
                 headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    'X-CSRF-TOKEN': $('meta[name="csrf_token"]').attr("content")
                 },
                 data: {
                     id: id,
@@ -790,6 +764,9 @@
                             icon: 'success',
                             confirmButtonText: 'Tutup'
                         })
+                        setTimeout(function() {
+                            window.location.href = '/pegawai/' + $('#pegawai_id').val()
+                        }, 1000);
 
                     }
                 }
@@ -827,75 +804,8 @@
             e.preventDefault()
             const tab_id = this.getAttribute('id')
             if (tab_id == 'pills-diklat-tab') {
-                let tbl_diklat;
-                tbl_diklat = $("#tbl-diklat").DataTable({
-                    processing: true,
-                    destroy: true,
-                    serverSide: true,
-                    deferRender: true,
-                    responsive: true,
-                    pageLength: 10,
-                    paging: true,
-                    searching: true,
-                    ordering: true,
-                    info: true,
-                    autoWidth: false,
-                    ajax: {
-                        url: "{{ route('diklat.datatable') }}",
-                        type: "POST",
-                        headers: {
-                            "X-CSRF-TOKEN": $('meta[name="csrf_token"]').attr("content"),
-                        },
-                        data: {
-                            pegawai_id: $("#pegawai_id").val(),
-                        },
-                    },
-                    columns: [{
-                            data: "no",
-                            name: "no",
-                            class: "text-center",
-                        },
-                        {
-                            data: "nama",
-                            name: "nama",
-                        },
-                        {
-                            data: "tanggal_mulai",
-                            name: "tanggal_mulai",
-                        },
-                        {
-                            data: "penyelenggaran",
-                            name: "penyelenggaran",
-                        },
-                        {
-                            data: "aksi",
-                            name: "aksi",
-                            class: "text-center actions",
-                        },
-                    ],
-                    columnDefs: [{
-                        sortable: false,
-                        searchable: false,
-                        targets: [0, -1],
-                    }, ],
-                    order: [
-                        [1, "asc"]
-                    ],
-                });
-
-                tbl_diklat.on("draw.dt", function() {
-                    var info = tbl_diklat.page.info();
-                    tbl_diklat
-                        .column(0, {
-                            search: "applied",
-                            order: "applied",
-                            page: "applied",
-                        })
-                        .nodes()
-                        .each(function(cell, i) {
-                            cell.innerHTML = i + 1 + info.start;
-                        });
-                });
+                url = "{{ route('diklat.datatable') }}"
+                get_table_diklat(url)
                 $(this).tab('show')
             }
         })

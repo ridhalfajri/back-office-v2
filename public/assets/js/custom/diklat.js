@@ -50,3 +50,119 @@ $("#modal-detail-diklat").on("show.bs.modal", (e) => {
     });
     $("#modal-detail-diklat").modal("show");
 });
+const get_table_diklat = (url) => {
+    let tbl_diklat;
+    tbl_diklat = $("#tbl-diklat").DataTable({
+        processing: true,
+        destroy: true,
+        serverSide: true,
+        deferRender: true,
+        responsive: true,
+        pageLength: 10,
+        paging: true,
+        searching: true,
+        ordering: true,
+        info: true,
+        autoWidth: false,
+        ajax: {
+            url: url,
+            type: "POST",
+            headers: {
+                "X-CSRF-TOKEN": $('meta[name="csrf_token"]').attr("content"),
+            },
+            data: {
+                pegawai_id: $("#pegawai_id").val(),
+            },
+        },
+        columns: [
+            {
+                data: "no",
+                name: "no",
+                class: "text-center",
+            },
+            {
+                data: "nama",
+                name: "jenis_diklat.nama",
+            },
+            {
+                data: "tanggal_mulai",
+                name: "tanggal_mulai",
+            },
+            {
+                data: "penyelenggaran",
+                name: "penyelenggaran",
+            },
+            {
+                data: "aksi",
+                name: "aksi",
+                class: "text-center actions",
+            },
+        ],
+        columnDefs: [
+            {
+                sortable: false,
+                searchable: false,
+                targets: [0, -1],
+            },
+        ],
+        order: [[1, "asc"]],
+    });
+
+    tbl_diklat.on("draw.dt", function () {
+        var info = tbl_diklat.page.info();
+        tbl_diklat
+            .column(0, {
+                search: "applied",
+                order: "applied",
+                page: "applied",
+            })
+            .nodes()
+            .each(function (cell, i) {
+                cell.innerHTML = i + 1 + info.start;
+            });
+    });
+};
+const delete_diklat = (id) => {
+    Swal.fire({
+        title: "Apakah anda yakin hapus diklat ini?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Hapus",
+        confirmButtonColor: "#DC3444",
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajax({
+                url: "/pegawai/diklat/" + id,
+                type: "DELETE",
+                headers: {
+                    "X-CSRF-TOKEN": $('meta[name="csrf_token"]').attr(
+                        "content"
+                    ),
+                },
+                data: {
+                    id: id,
+                },
+                success: function (response) {
+                    if (response.errors) {
+                        if (response.errors) {
+                            Swal.fire({
+                                title: "Gagal!",
+                                text: response.errors.connection,
+                                icon: "error",
+                                confirmButtonText: "Tutup",
+                            });
+                        }
+                    } else if (response.success) {
+                        Swal.fire({
+                            title: "Dihapus!",
+                            text: response.success,
+                            icon: "success",
+                            confirmButtonText: "Tutup",
+                        });
+                        $("#tbl-diklat").DataTable().ajax.reload();
+                    }
+                },
+            });
+        }
+    });
+};

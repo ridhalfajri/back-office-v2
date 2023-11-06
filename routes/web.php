@@ -27,7 +27,8 @@ Route::get('/welcome', function () {
     return view('welcome');
 });
 Route::get('/', function () {
-    return view('try');
+    $title = 'TRY';
+    return view('try', compact('title'));
 });
 
 

@@ -14,9 +14,10 @@
             data-diklat="{{ route('diklat.get-diklat-by-id') }}" data-toggle="modal" data-target="#modal-detail-diklat"
             id="btn-detail-diklat"><i class="dropdown-icon fe fe-eye"></i>
             Lihat</a>
-        <a href="javascript:void(0)" class="dropdown-item"><i class="dropdown-icon fa fa-edit"></i>
+        <a href="{{ route('diklat.edit', $id) }}" class="dropdown-item"><i class="dropdown-icon fa fa-edit"></i>
             Edit</a>
-        <a href="javascript:void(0)" class="dropdown-item"><i class="dropdown-icon fe fe-trash-2"></i>
+        <a href="javascript:void(0)" onclick="delete_diklat({{ $id }})" class="dropdown-item"><i
+                class="dropdown-icon fe fe-trash-2"></i>
             Hapus</a>
     </div>
 </div>
