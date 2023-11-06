@@ -20,13 +20,14 @@
 
 @section('content')
     <div class="section-body">
-    <div class="col-12">
-        <div class="box-content">
-            <h4 class="box-title">
+    <div class="card">
+        <div class="card-header">
+            <h4 class="card-title">
                 <button type="button" class="btn btn-xs btn-primary" id="btn-add" onclick="window.location.href = '{{ route("jabatan-unit-kerja.create") }}';"><i class="fa fa-plus"></i> Tambah</button>
             </h4>
-            <!-- /.box-title -->
-
+            <!-- /.card-title -->
+        </div>
+        <div class="card-body">
             <!-- /.dropdown js__dropdown -->
             <table id="tbl-data" class="table table-striped table-bordered display" style="width:100%">
                 <thead>

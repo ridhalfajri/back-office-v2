@@ -1,219 +1,160 @@
-@extends('template')
+@extends('layout')
+@push('style')
+    <!-- Plugins css -->
+    <link rel="stylesheet" href="{{ asset('assets/plugins/datatable/dataTables.bootstrap4.min.css') }}">
+    <link rel="stylesheet"
+        href="{{ asset('assets/plugins/datatable/fixedeader/dataTables.fixedcolumns.bootstrap4.min.css') }}">
+    <link rel="stylesheet"
+        href="{{ asset('assets/plugins/datatable/fixedeader/dataTables.fixedheader.bootstrap4.min.css') }}">
 
-@push('styles')
-<!-- Data Tables -->
-<link rel="stylesheet" href="{{ asset('assets/plugin/datatables/dataTables.bootstrap4.min.css') }}">
-<link rel="stylesheet" href="{{ asset('assets/plugin/datatables/extensions/Responsive/css/responsive.bootstrap.min.css') }}">
-<!-- Toastr -->
-<link rel="stylesheet" href="{{ asset('assets/plugin/toastr/toastr.css') }}">
+        {{-- custom css datatable --}}
+    <link rel="stylesheet" href="{{ asset('assets/plugins/datatable/custom.css') }}">
+
 @endpush
 
 @push('breadcrumb')
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
+        <ol class="breadcrumb custom-background-color">
             <li class="breadcrumb-item"><a href="{{ route('jabatan-tukin.index') }}"><i class="fa fa-home"></i></a></li>
-            <!-- <li class="breadcrumb-item"><a href="#">Jabatan Tukin</a></li>        -->
+            <!-- <li class="breadcrumb-item"><a href="#">Gaji</a></li>        -->
             <li class="breadcrumb-item active" aria-current="page">{{ $title }}</li>
         </ol>
-    </nav>
 @endpush
 
 @section('content')
-    <div class="section-body">
-    <div class="col-12">
-        <div class="box-content">
-            <h4 class="box-title">
-                <button type="button" class="btn btn-xs btn-primary" id="btn-add" onclick="window.location.href = '{{ route("jabatan-tukin.create") }}';"><i class="fa fa-plus"></i> Tambah</button>
-            </h4>
-            <!-- /.box-title -->
 
-            <!-- /.dropdown js__dropdown -->
-            <table id="tbl-data" class="table table-striped table-bordered display" style="width:100%">
-                <thead>
-                    <tr>
-                        <th>No.</th>
-						<th>jabatan_id</th>
-						<th>jenis_jabatan_id</th>
-						<th>tukin_id</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-                <tfoot>
-                    <tr>
-                        <th>No.</th>
-						<th>jabatan_id</th>
-						<th>jenis_jabatan_id</th>
-						<th>tukin_id</th>
-                    </tr>
-                </tfoot>
-            </table>
+        <div class="container-fluid">
+            <div class="row clearfix">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="card-title">
+                                <button type="button" class="btn btn-xs btn-primary" id="btn-add" onclick="window.location.href = '{{ route("gaji.create") }}';"><i class="fa fa-plus"></i> Tambah</button>
+                            </h4>
+                        </div>
+                        <div class="card-body">
+                            <table id="tbl-data"
+                            class="table table-hover js-basic-example dataTable table_custom spacing5">
+                            <thead>
+                                <tr>
+                                    <th style="width: 5%">No</th>
+                                    <th>Nama</th>
+                                    <th>NIP</th>
+                                    <th>No Telepon</th>
+                                    <th>Email Kantor</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tfoot>
+                                <tr>
+                                    <th>No</th>
+                                    <th>Nama</th>
+                                    <th>NIP</th>
+                                    <th>No Telepon</th>
+                                    <th>Email Kantor</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </tfoot>
+                            <tbody>
+                            </tbody>
+                        </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <!-- /.box-content -->
-    </div>
-    <!-- /.col-12 -->
-</div>
+
 @endsection
 
-@push('scripts')
-<!-- Data Tables -->
-<script src="{{ asset('assets/plugin/datatables/jquery.dataTables.min.js') }}" type="text/javascript"></script>
-<script src="{{ asset('assets/plugin/datatables/dataTables.bootstrap4.min.js') }}" type="text/javascript"></script>
-<script src="{{ asset('assets/plugin/datatables/extensions/Responsive/js/dataTables.responsive.min.js') }}" type="text/javascript"></script>
-<script src="{{ asset('assets/plugin/datatables/extensions/Responsive/js/responsive.bootstrap.min.js') }}" type="text/javascript"></script>
-<script src="{{ asset('assets/plugin/toastr/toastr.min.js') }}" type="text/javascript"></script>
-<script type="text/javascript">
-    "use strict"
 
-    let table;
+@push('script')
+    <script src="{{ asset('assets/plugins/sweetalert2/sweetalert2.all.min.js') }}"></script>
+    <script src="{{ asset('assets/bundles/dataTables.bundle.js') }}"></script>
+    <script src="{{ asset('assets/js/table/datatable.js') }}"></script>
+    <script>
+        "use strict"
+        let table;
 
-    $(function() {
-        toastr.options = {
-            "closeButton": false,
-            "debug": false,
-            "newestOnTop": false,
-            "progressBar": true,
-            "rtl": false,
-            "positionClass": "toast-top-right",
-            "preventDuplicates": false,
-            "onclick": null,
-            "showDuration": 300,
-            "hideDuration": 1000,
-            "timeOut": 5000,
-            "extendedTimeOut": 1000,
-            "showEasing": "swing",
-            "hideEasing": "linear",
-            "showMethod": "fadeIn",
-            "hideMethod": "fadeOut"
-        };
-
-        @if(session('success'))
-            toastr['success']('{{ session("success") }}');
-        @endif
-
-        table = $('#tbl-data').DataTable({
-            processing: true,
-            serverSide: true,
-            deferRender: true,
-            responsive: true,
-            pageLength: 10,
-            paging: true,
-            searching: true,
-            ordering: true,
-            info: true,
-            autoWidth: false,
-            ajax: {
-                url: '{{ route("jabatan-tukin.datatable") }}',
-                type: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                }
-            },
-            columns: [{
-                    data: 'no',
-                    name: 'no',
-                    class: 'text-center'
+        $(function() {
+            table = $('#tbl-data').DataTable({
+                processing: true,
+                destroy: true,
+                serverSide: true,
+                deferRender: true,
+                responsive: true,
+                pageLength: 10,
+                paging: true,
+                searching: true,
+                ordering: true,
+                info: true,
+                autoWidth: false,
+                ajax: {
+                    url: '{{ route('jabatan-tukin.datatable') }}',
+                    type: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    }
                 },
-                {
-                    data: 'no',
-                    name: 'no',
-                    class: 'text-center'
-                },
-				{
-                    data: 'jabatan_id',
-                    name: 'Jabatan Id',
-                    class: 'text-center'
-                },
-				{
-                    data: 'jenis_jabatan_id',
-                    name: 'Jenis Jabatan Id',
-                    class: 'text-center'
-                },
-				{
-                    data: 'tukin_id',
-                    name: 'Tukin Id',
-                    class: 'text-center'
-                },
-                {
-                    data: 'aksi',
-                    name: 'aksi',
-                    class: 'text-center'
-                },
-            ],
-            columnDefs: [{
-                'sortable': false,
-                'searchable': false,
-                'targets': [0, -1]
-            }],
-            order: [
-                [1, 'asc']
-            ]
-        });
-
-        table.on('draw.dt', function() {
-            var info = table.page.info();
-            table.column(0, {
-                search: 'applied',
-                order: 'applied',
-                page: 'applied'
-            }).nodes().each(function(cell, i) {
-                cell.innerHTML = i + 1 + info.start;
+                columns: [{
+                        data: 'no',
+                        name: 'no',
+                        class: 'text-center'
+                    },
+                    {
+                        data: 'nama',
+                        name: 'nama',
+                    },
+                    {
+                        data: 'nip',
+                        name: 'nip',
+                    },
+                    {
+                        data: 'no_telp',
+                        name: 'no_telp',
+                    },
+                    {
+                        data: 'email_kantor',
+                        name: 'email_kantor',
+                    },
+                    {
+                        data: 'aksi',
+                        name: 'aksi',
+                        class: 'text-center actions'
+                    },
+                ],
+                columnDefs: [{
+                    'sortable': false,
+                    'searchable': false,
+                    'targets': [0, -1]
+                }],
+                order: [
+                    [1, 'asc']
+                ]
             });
-        });
 
-        $('#tbl-data').delegate('button.delete', 'click', function(e) {
-            e.preventDefault();
-
-            var that = $(this);
-
-            swal({
-                title: 'Konfirmasi!',
-                text: 'Apakah anda yakin ingin menghapus data ini?',
-                type: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#dc3545',
-                confirmButtonText: 'Ya',
-                cancelButtonText: 'Tidak',
-                closeOnConfirm: true,
-                closeOnCancel: false
-            }, function(isConfirm) {
-                if (isConfirm) {
-                    delete_data(that.data('id')).then(function(hasil) {
-                        if (hasil.status.error == true) {
-                            toastr['error']('Data Jabatan Tukin gagal di hapus!');
-                        } else {
-                            table.ajax.reload();
-                            toastr['success'](hasil.status.message);
-                        }
-                    }).catch(function(err) {
-                        console.log(err);
-                    })
-
-                } else {
-                    swal('Informasi', 'Hapus data dibatalkan', 'error');
-                }
-            })
-        });
-    });
-
-    function delete_data(id) {
-        return new Promise(function(resolve, reject) {
-            $.ajax({
-                url: "{{ url('jabatan-tukin') }}/" + id,
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                dataType: 'JSON',
-                data: {
-                    _method: 'DELETE'
-                }
-            }).done(function(hasil) {
-                resolve(hasil);
-            }).fail(function() {
-                reject('Gagal menghapus data Jabatan Tukin!');
-            })
+            table.on('draw.dt', function() {
+                var info = table.page.info();
+                table.column(0, {
+                    search: 'applied',
+                    order: 'applied',
+                    page: 'applied'
+                }).nodes().each(function(cell, i) {
+                    cell.innerHTML = i + 1 + info.start;
+                });
+            });
         })
-    }
-</script>
+    </script>
+    @if (session()->has('error'))
+        <script>
+            const msg = <?php echo json_encode(Session::get('error')); ?>;
+            $(function() {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: msg,
+                })
+                return false;
+            })
+        </script>
+    @endif
 @endpush
 

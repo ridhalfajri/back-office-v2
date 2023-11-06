@@ -20,6 +20,8 @@
     <link rel="stylesheet" href="{{ asset('assets/css/main.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/css/default.css') }}" />
 
+    <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}" />
+
     @stack('style')
 </head>
 
@@ -53,12 +55,17 @@
             @include('partials.topbar')
             @stack('breadcrumb')
             @yield('content')
+<<<<<<< HEAD
+=======
             @stack('modal')
+>>>>>>> ed1664d2036b11bb4c635d440d6447a19a5c0964
         </div>
     </div>
 
     <script src="{{ asset('assets/bundles/lib.vendor.bundle.js') }}"></script>
     <script src="{{ asset('assets/js/core.js') }}"></script>
+    {{-- <script src="{{ asset('assets/plugins/jquery/jquery.min.js') }}"></script> --}}
+
     @stack('script')
 </body>
 

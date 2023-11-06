@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Pegawai;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 use App\Models\PegawaiAlamat;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -32,6 +33,7 @@ class PegawaiAlamatController extends Controller
      */
     public function store(Request $request)
     {
+
         $validate = Validator::make(
             $request->all(),
             [

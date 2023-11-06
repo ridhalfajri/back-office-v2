@@ -28,6 +28,15 @@ Route::get('/welcome', function () {
     return view('welcome');
 });
 Route::get('/', function () {
+    $title = "Home";
+    return view('try',compact('title'));
+});
+
+
+Route::post('/gaji/datatable', [GajiController::class, 'datatable'])->name('gaji.datatable');
+Route::resource('/gaji', GajiController::class);
+
+Route::post('/jabatan-tukin/datatable', [JabatanTukinController::class, 'datatable'])->name('jabatan-tukin.datatable');
     $title = 'TRY';
     return view('try', compact('title'));
 });
@@ -46,6 +55,7 @@ Route::resource('/jabatan-unit-kerja', JabatanUnitKerjaController::class);
 
 Route::prefix('pegawai')->group(function () {
     Route::post('/datatable', [PegawaiController::class, 'datatable'])->name('pegawai.datatable');
+
     Route::post('/alamat-by-pegawai', [PegawaiAlamatController::class, 'getAlamatByPegawaiId'])->name('alamat.get-data-by-pegawai-id');
     Route::resource('/alamat', PegawaiAlamatController::class)->only(['store']);
     Route::post('/diklat/diklat-by-id', [PegawaiDiklatController::class, 'getDiklatById'])->name('diklat.get-diklat-by-id');
@@ -55,6 +65,7 @@ Route::prefix('pegawai')->group(function () {
     Route::post('/tmt-gaji/tmt-gaji-by-id', [PegawaiTmtGajiController::class, 'getTmtGajiById'])->name('tmt-gaji.get-tmt-gaji-by-id');
     Route::post('/tmt-gaji/datatable', [PegawaiTmtGajiController::class, 'datatable'])->name('tmt-gaji.datatable');
     Route::resource('/tmt-gaji', PegawaiTmtGajiController::class)->only(['store', 'destroy']);
+    Route::resource('/diklat', PegawaiDiklatController::class)->except('create');
     Route::resource('/', PegawaiController::class, [
         'names' => [
             'index' => 'pegawai.index',
