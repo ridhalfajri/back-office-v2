@@ -182,32 +182,36 @@ class PegawaiDiklatController extends Controller
                 'media_sertifikat.max' => 'ukuran file terlalu besar (maksimal file 1MB)',
             ]
         );
-        try {
-            $diklat = PegawaiRiwayatDiklat::where('id', $id)->first();
-            if ($diklat != null) {
-                $diklat->pegawai_id = $request->pegawai_id;
-                $diklat->jenis_diklat_id = $request->jenis_diklat_id;
-                $diklat->tanggal_mulai = Carbon::parse($diklat->tanggal_mulai)->translatedFormat('Y-m-d');
-                $diklat->tanggal_akhir = Carbon::parse($diklat->tanggal_akhir)->translatedFormat('Y-m-d');
-                $diklat->lokasi = $request->lokasi;
-                $diklat->jam_pelajaran = $request->jam_pelajaran;
-                $diklat->no_sertifikat = $request->no_sertifikat;
-                $diklat->tanggal_sertifikat = Carbon::parse($diklat->tanggal_sertifikat)->translatedFormat('Y-m-d');
-                $diklat->penyelenggaran = $request->penyelenggaran;
+        if ($validate->fails()) {
+            return response()->json(['errors' => $validate->errors()]);
+        } else {
+            try {
+                $diklat = PegawaiRiwayatDiklat::where('id', $id)->first();
+                if ($diklat != null) {
+                    $diklat->pegawai_id = $request->pegawai_id;
+                    $diklat->jenis_diklat_id = $request->jenis_diklat_id;
+                    $diklat->tanggal_mulai = Carbon::parse($diklat->tanggal_mulai)->translatedFormat('Y-m-d');
+                    $diklat->tanggal_akhir = Carbon::parse($diklat->tanggal_akhir)->translatedFormat('Y-m-d');
+                    $diklat->lokasi = $request->lokasi;
+                    $diklat->jam_pelajaran = $request->jam_pelajaran;
+                    $diklat->no_sertifikat = $request->no_sertifikat;
+                    $diklat->tanggal_sertifikat = Carbon::parse($diklat->tanggal_sertifikat)->translatedFormat('Y-m-d');
+                    $diklat->penyelenggaran = $request->penyelenggaran;
 
-                DB::transaction(function () use ($diklat, $request) {
-                    $diklat->save();
-                    if ($request->file('media_sertifikat')) {
-                        $diklat->clearMediaCollection('media_sertifikat');
-                        $diklat->addMediaFromRequest('media_sertifikat')->toMediaCollection('media_sertifikat');
-                    }
-                });
-            } else {
-                return response()->json(['errors' => ['connection' => 'Tidak menemukan data yang diubah']]);
+                    DB::transaction(function () use ($diklat, $request) {
+                        $diklat->save();
+                        if ($request->file('media_sertifikat')) {
+                            $diklat->clearMediaCollection('media_sertifikat');
+                            $diklat->addMediaFromRequest('media_sertifikat')->toMediaCollection('media_sertifikat');
+                        }
+                    });
+                } else {
+                    return response()->json(['errors' => ['connection' => 'Tidak menemukan data yang diubah']]);
+                }
+                return response()->json(['success' => 'Sukses Mengubah Data']);
+            } catch (QueryException $e) {
+                abort(500);
             }
-            return response()->json(['success' => 'Sukses Mengubah Data']);
-        } catch (QueryException $e) {
-            abort(500);
         }
     }
 

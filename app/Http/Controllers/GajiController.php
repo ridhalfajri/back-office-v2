@@ -9,23 +9,24 @@ use Illuminate\Support\Facades\Validator;
 use Yajra\Datatables\Datatables;
 use Intervention\Image\Facades\Image;
 use App\Models\Gaji;
+use Illuminate\Database\QueryException;
 
 class GajiController extends Controller
 {
     /**
-    * Display a listing of the resource.
-    *
-    * @return \Illuminate\Http\Response
-    */
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index()
-    {            
+    {
         $title = 'Gaji';
 
         return view('gaji.index', compact('title'));
     }
-     
+
     public function datatable(Gaji $gaji)
-    {        
+    {
         $data = Gaji::all();
 
         return Datatables::of($data)
@@ -37,100 +38,117 @@ class GajiController extends Controller
 
 
     /**
-    * Show the form for creating a new resource.
-    *
-    * @return \Illuminate\Http\Response
-    */
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function create()
-    {            
+    {
         $title = 'Gaji';
 
         return view('gaji.create', compact('title'));
     }
-        
+
     /**
-    * Store a newly created resource in storage.
-    *
-    * @param  \Illuminate\Http\Request  $request
-    * @return \Illuminate\Http\Response
-    */
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function store(Request $request)
-    {  
+    {
         $this->validate($request, [
-				'golongan_id' => 'required',
-				'masa_kerja' => 'required',
-				'nominal' => 'required',
-        ]);   
-            
+            'golongan_id' => 'required',
+            'masa_kerja' => 'required',
+            'nominal' => 'required',
+        ]);
+
         $input = [];
-			$input['golongan_id'] = $request->golongan_id;
-			$input['masa_kerja'] = $request->masa_kerja;
-			$input['nominal'] = $request->nominal;
+        $input['golongan_id'] = $request->golongan_id;
+        $input['masa_kerja'] = $request->masa_kerja;
+        $input['nominal'] = $request->nominal;
         Gaji::create($input);
 
         return redirect()->route('gaji.index')
-        ->with('success', 'Data Gaji berhasil disimpan');
+            ->with('success', 'Data Gaji berhasil disimpan');
     }
 
     /**
-    * Display the specified resource.
-    *
-    * @param  \App\Models\Models\BidangProfisiensi  $bidangProfisiensi
-    * @return \Illuminate\Http\Response
-    */
+     * Display the specified resource.
+     *
+     * @param  \App\Models\Models\BidangProfisiensi  $bidangProfisiensi
+     * @return \Illuminate\Http\Response
+     */
     public function show(Gaji $gaji)
     {
         //
     }
 
     /**
-    * Show the form for editing the specified resource.
-    *
-    * @param  \App\Models\Models\BidangProfisiensi  $bidangProfisiensi
-    * @return \Illuminate\Http\Response
-    */
+     * Show the form for editing the specified resource.
+     *
+     * @param  \App\Models\Models\BidangProfisiensi  $bidangProfisiensi
+     * @return \Illuminate\Http\Response
+     */
     public function edit(Gaji $gaji)
-    {               
+    {
         $title = 'Edit Gaji';
 
-        return view('gaji.edit', compact('title'),'gaji');
+        return view('gaji.edit', compact('title'), 'gaji');
     }
 
     /**
-    * Update the specified resource in storage.
-    *
-    * @param  \Illuminate\Http\Request  $request
-    * @param  \App\Models\Models\BidangProfisiensi  $bidangProfisiensi
-    * @return \Illuminate\Http\Response
-    */
-    public function update(Request $request,Gaji $gaji)
-    {  
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\Models\BidangProfisiensi  $bidangProfisiensi
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, Gaji $gaji)
+    {
         $this->validate($request, [
-				'golongan_id' => 'required',
-				'masa_kerja' => 'required',
-				'nominal' => 'required',
+            'golongan_id' => 'required',
+            'masa_kerja' => 'required',
+            'nominal' => 'required',
         ]);
 
 
-			$gaji->golongan_id = $request->golongan_id;
-			$gaji->masa_kerja = $request->masa_kerja;
-			$gaji->nominal = $request->nominal;
+        $gaji->golongan_id = $request->golongan_id;
+        $gaji->masa_kerja = $request->masa_kerja;
+        $gaji->nominal = $request->nominal;
         $gaji->save();
 
         return redirect()->route('gaji.index')
-        ->with('success', 'Data Gaji berhasil diupdate');
+            ->with('success', 'Data Gaji berhasil diupdate');
     }
 
     /**
-    * Remove the specified resource from storage.
-    *
-    * @param  \App\Models\Models\BidangProfisiensi  $bidangProfisiensi
-    * @return \Illuminate\Http\Response
-    */        
+     * Remove the specified resource from storage.
+     *
+     * @param  \App\Models\Models\BidangProfisiensi  $bidangProfisiensi
+     * @return \Illuminate\Http\Response
+     */
     public function destroy(Gaji $gaji)
-    {           
+    {
         $gaji->delete();
         return redirect()->route('gaji.index')
-        ->with('success', 'Delete data Gaji berhasil');
+            ->with('success', 'Delete data Gaji berhasil');
+    }
+
+    public function get_gaji(Request $request)
+    {
+        try {
+            $gaji = Gaji::select('id', 'masa_kerja', 'golongan_id', 'nominal')->get();
+            echo "<option value=''>-- Pilih Gaji --</option>";
+            foreach ($gaji as $item) {
+                if ($request->gaji_id != null && $request->gaji_id == $item->id) {
+                    echo "<option value='" . $item->id . "' selected> Gol: " . $item->golongan->nama . " | " . $item->masa_kerja . " Tahun | RP. " . number_format($item->nominal, 2, ',', '.') . "</option>";
+                } else {
+                    echo "<option value='" . $item->id . "'>" . $item->golongan->nama . " | " . $item->masa_kerja . " Tahun | Rp. " . number_format($item->nominal, 2, ',', '.') . "</option>";
+                }
+            }
+        } catch (QueryException $e) {
+            abort(500);
+        }
     }
 }

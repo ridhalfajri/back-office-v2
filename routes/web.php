@@ -9,6 +9,7 @@ use App\Http\Controllers\GajiController;
 use App\Http\Controllers\JabatanTukinController;
 use App\Http\Controllers\JabatanUnitKerjaController;
 use App\Http\Controllers\Pegawai\PegawaiDiklatController;
+use App\Http\Controllers\Pegawai\PegawaiTmtGajiController;
 use App\Http\Controllers\PropinsiController;
 use Illuminate\Support\Facades\Route;
 
@@ -33,6 +34,7 @@ Route::get('/', function () {
 
 
 Route::get('/gaji/datatable', [GajiController::class, 'datatable'])->name('gaji.datatable');
+Route::post('/gaji/get-gaji', [GajiController::class, 'get_gaji'])->name('gaji.get-gaji');
 Route::resource('/gaji', GajiController::class);
 
 Route::get('/jabatan-tukin/datatable', [JabatanTukinController::class, 'datatable'])->name('jabatan-tukin.datatable');
@@ -49,7 +51,10 @@ Route::prefix('pegawai')->group(function () {
     Route::post('/diklat/diklat-by-id', [PegawaiDiklatController::class, 'getDiklatById'])->name('diklat.get-diklat-by-id');
     Route::post('/diklat/datatable', [PegawaiDiklatController::class, 'datatable'])->name('diklat.datatable');
     Route::get('/diklat/create/{pegawai_id}', [PegawaiDiklatController::class, 'create'])->name('diklat.create');
-    Route::resource('/diklat', PegawaiDiklatController::class)->except('create');
+    Route::resource('/diklat', PegawaiDiklatController::class)->except(['create', 'index', 'show']);
+    Route::post('/tmt-gaji/tmt-gaji-by-id', [PegawaiTmtGajiController::class, 'getTmtGajiById'])->name('tmt-gaji.get-tmt-gaji-by-id');
+    Route::post('/tmt-gaji/datatable', [PegawaiTmtGajiController::class, 'datatable'])->name('tmt-gaji.datatable');
+    Route::resource('/tmt-gaji', PegawaiTmtGajiController::class)->only(['store', 'destroy']);
     Route::resource('/', PegawaiController::class, [
         'names' => [
             'index' => 'pegawai.index',

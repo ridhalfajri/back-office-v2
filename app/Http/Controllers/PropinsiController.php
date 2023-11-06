@@ -13,9 +13,9 @@ class PropinsiController extends Controller
         echo "<option value=''>-- Pilih Propinsi --</option>";
         foreach ($propinsi as $item) {
             if ($request->propinsi_id != null && $request->propinsi_id == $item->id) {
-                echo "<option value=" . $item->id . " selected>" . $item->nama . "</option>";
+                echo "<option value='" . $item->id . "' selected>" . $item->nama . "</option>";
             } else {
-                echo "<option value=" . $item->id . ">" . $item->nama . "</option>";
+                echo "<option value='" . $item->id . "'>" . $item->nama . "</option>";
             }
         }
     }
