@@ -1,6 +1,13 @@
 <?php
 
-use App\Models\Propinsi;
+use App\Http\Controllers\DesaController;
+use App\Http\Controllers\KecamatanController;
+use App\Http\Controllers\KotaController;
+use App\Http\Controllers\Pegawai\PegawaiAlamatController;
+use App\Http\Controllers\Pegawai\PegawaiController;
+use App\Http\Controllers\GajiController;
+use App\Http\Controllers\JabatanTukinController;
+use App\Http\Controllers\JabatanUnitKerjaController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -18,5 +25,38 @@ Route::get('/welcome', function () {
     return view('welcome');
 });
 Route::get('/', function () {
-    return view('try');
+    $title = "Home";
+    return view('try',compact('title'));
+});
+
+
+Route::post('/gaji/datatable', [GajiController::class, 'datatable'])->name('gaji.datatable');
+Route::resource('/gaji', GajiController::class);
+
+Route::post('/jabatan-tukin/datatable', [JabatanTukinController::class, 'datatable'])->name('jabatan-tukin.datatable');
+Route::resource('/jabatan-tukin', JabatanTukinController::class);
+
+Route::get('/jabatan-unit-kerja/datatable', [JabatanUnitKerjaController::class, 'datatable'])->name('jabatan-unit-kerja.datatable');
+Route::resource('/jabatan-unit-kerja', JabatanUnitKerjaController::class);
+
+
+Route::prefix('pegawai')->group(function () {
+    Route::post('/datatable', [PegawaiController::class, 'datatable'])->name('pegawai.datatable');
+    Route::resource('/alamat', PegawaiAlamatController::class);
+    Route::resource('/', PegawaiController::class, [
+        'names' => [
+            'index' => 'pegawai.index',
+            'store' => 'pegawai.store',
+            'edit' => 'pegawai.edit',
+            'show' => 'pegawai.show',
+            'update' => 'pegawai.update',
+            'destroy' => 'pegawai.destroy',
+        ]
+    ])->parameters(['' => 'id']);
+});
+Route::prefix('data')->group(function () {
+    Route::get('propinsi', [PropinsiController::class, 'getPropinsi'])->name('propinsi.data');
+    Route::post('kota', [KotaController::class, 'getKota'])->name('kota.data');
+    Route::post('kecamatan', [KecamatanController::class, 'getKecamatan'])->name('kecamatan.data');
+    Route::post('desa', [DesaController::class, 'getDesa'])->name('desa.data');
 });

@@ -15,9 +15,12 @@
     <!-- Bootstrap Core and vandor -->
     <link rel="stylesheet" href="{{ asset('assets/plugins/bootstrap/css/bootstrap.min.css') }}" />
 
+
     <!-- Core css -->
     <link rel="stylesheet" href="{{ asset('assets/css/main.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/css/default.css') }}" />
+
+    <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}" />
 
     @stack('style')
 </head>
@@ -50,16 +53,15 @@
         </div>
         <div class="page">
             @include('partials.topbar')
-            <div class="section-body">
-                <div class="container-fluid">
-                    @yield('content')
-                </div>
-            </div>
+            @stack('breadcrumb')
+            @yield('content')
         </div>
     </div>
 
     <script src="{{ asset('assets/bundles/lib.vendor.bundle.js') }}"></script>
     <script src="{{ asset('assets/js/core.js') }}"></script>
+    {{-- <script src="{{ asset('assets/plugins/jquery/jquery.min.js') }}"></script> --}}
+
     @stack('script')
 </body>
 
