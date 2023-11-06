@@ -7,8 +7,8 @@
         content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta name="description" content="Crush On The most popular Admin Dashboard template and ui kit">
     <meta name="author" content="PuffinTheme the theme designer">
-
-    <link rel="icon" href="favicon.ico" type="image/x-icon" />
+    <meta name="csrf_token" content="{{ csrf_token() }}" />
+    <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon" />
 
     <title>BSN</title>
 
@@ -55,6 +55,10 @@
             @include('partials.topbar')
             @stack('breadcrumb')
             @yield('content')
+<<<<<<< HEAD
+=======
+            @stack('modal')
+>>>>>>> ed1664d2036b11bb4c635d440d6447a19a5c0964
         </div>
     </div>
 

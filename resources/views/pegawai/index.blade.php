@@ -7,7 +7,7 @@
     <link rel="stylesheet"
         href="{{ asset('assets/plugins/datatable/fixedeader/dataTables.fixedheader.bootstrap4.min.css') }}">
 
-<link rel="stylesheet" href="{{ asset('assets/plugins/datatable/custom.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/plugins/datatable/custom.css') }}">
 @endpush
 @section('content')
     <div class="section-body">

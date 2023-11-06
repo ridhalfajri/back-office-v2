@@ -76,7 +76,6 @@ class GajiController extends Controller
 
         return view('gaji.create', compact('title'));
     }
-
     /**
     * Store a newly created resource in storage.
     *

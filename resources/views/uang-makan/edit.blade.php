@@ -12,8 +12,13 @@
 
 @section('content')
     <div class="section-body">
+<<<<<<< HEAD
         <div class="card">
             <div class="card-body">
+=======
+        <div class="col-12">
+            <div class="box-content card white">
+>>>>>>> ed1664d2036b11bb4c635d440d6447a19a5c0964
                 <div class="card-content">
                     @if ($errors->any())
                         <div class="alert alert-danger" role="alert">

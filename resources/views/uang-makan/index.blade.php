@@ -20,6 +20,7 @@
 
 @section('content')
     <div class="section-body">
+<<<<<<< HEAD
     <div class="card">
         <div class="card-header">
             <h4 class="card-title">
@@ -28,6 +29,15 @@
             <!-- /.card-title -->
         </div>
         <div class="card-body">            
+=======
+    <div class="col-12">
+        <div class="box-content">
+            <h4 class="box-title">
+                <button type="button" class="btn btn-xs btn-primary" id="btn-add" onclick="window.location.href = '{{ route("uang-makan.create") }}';"><i class="fa fa-plus"></i> Tambah</button>
+            </h4>
+            <!-- /.box-title -->
+
+>>>>>>> ed1664d2036b11bb4c635d440d6447a19a5c0964
             <!-- /.dropdown js__dropdown -->
             <table id="tbl-data" class="table table-striped table-bordered display" style="width:100%">
                 <thead>

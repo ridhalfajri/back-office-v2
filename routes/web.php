@@ -8,6 +8,11 @@ use App\Http\Controllers\Pegawai\PegawaiController;
 use App\Http\Controllers\GajiController;
 use App\Http\Controllers\JabatanTukinController;
 use App\Http\Controllers\JabatanUnitKerjaController;
+<<<<<<< HEAD
+=======
+use App\Http\Controllers\Pegawai\PegawaiDiklatController;
+use App\Http\Controllers\PropinsiController;
+>>>>>>> ed1664d2036b11bb4c635d440d6447a19a5c0964
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -25,6 +30,7 @@ Route::get('/welcome', function () {
     return view('welcome');
 });
 Route::get('/', function () {
+<<<<<<< HEAD
     $title = "Home";
     return view('try',compact('title'));
 });
@@ -34,6 +40,17 @@ Route::post('/gaji/datatable', [GajiController::class, 'datatable'])->name('gaji
 Route::resource('/gaji', GajiController::class);
 
 Route::post('/jabatan-tukin/datatable', [JabatanTukinController::class, 'datatable'])->name('jabatan-tukin.datatable');
+=======
+    $title = 'TRY';
+    return view('try', compact('title'));
+});
+
+
+Route::get('/gaji/datatable', [GajiController::class, 'datatable'])->name('gaji.datatable');
+Route::resource('/gaji', GajiController::class);
+
+Route::get('/jabatan-tukin/datatable', [JabatanTukinController::class, 'datatable'])->name('jabatan-tukin.datatable');
+>>>>>>> ed1664d2036b11bb4c635d440d6447a19a5c0964
 Route::resource('/jabatan-tukin', JabatanTukinController::class);
 
 Route::get('/jabatan-unit-kerja/datatable', [JabatanUnitKerjaController::class, 'datatable'])->name('jabatan-unit-kerja.datatable');
@@ -42,7 +59,16 @@ Route::resource('/jabatan-unit-kerja', JabatanUnitKerjaController::class);
 
 Route::prefix('pegawai')->group(function () {
     Route::post('/datatable', [PegawaiController::class, 'datatable'])->name('pegawai.datatable');
+<<<<<<< HEAD
     Route::resource('/alamat', PegawaiAlamatController::class);
+=======
+    Route::post('/alamat-by-pegawai', [PegawaiAlamatController::class, 'getAlamatByPegawaiId'])->name('alamat.get-data-by-pegawai-id');
+    Route::resource('/alamat', PegawaiAlamatController::class)->only(['store']);
+    Route::post('/diklat/diklat-by-id', [PegawaiDiklatController::class, 'getDiklatById'])->name('diklat.get-diklat-by-id');
+    Route::post('/diklat/datatable', [PegawaiDiklatController::class, 'datatable'])->name('diklat.datatable');
+    Route::get('/diklat/create/{pegawai_id}', [PegawaiDiklatController::class, 'create'])->name('diklat.create');
+    Route::resource('/diklat', PegawaiDiklatController::class)->except('create');
+>>>>>>> ed1664d2036b11bb4c635d440d6447a19a5c0964
     Route::resource('/', PegawaiController::class, [
         'names' => [
             'index' => 'pegawai.index',
@@ -52,10 +78,17 @@ Route::prefix('pegawai')->group(function () {
             'update' => 'pegawai.update',
             'destroy' => 'pegawai.destroy',
         ]
+<<<<<<< HEAD
     ])->parameters(['' => 'id']);
 });
 Route::prefix('data')->group(function () {
     Route::get('propinsi', [PropinsiController::class, 'getPropinsi'])->name('propinsi.data');
+=======
+    ])->parameters(['' => 'id'])->only(['index', 'show']);
+});
+Route::prefix('data')->group(function () {
+    Route::post('propinsi', [PropinsiController::class, 'getPropinsi'])->name('propinsi.data');
+>>>>>>> ed1664d2036b11bb4c635d440d6447a19a5c0964
     Route::post('kota', [KotaController::class, 'getKota'])->name('kota.data');
     Route::post('kecamatan', [KecamatanController::class, 'getKecamatan'])->name('kecamatan.data');
     Route::post('desa', [DesaController::class, 'getDesa'])->name('desa.data');

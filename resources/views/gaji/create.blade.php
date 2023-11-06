@@ -1,4 +1,4 @@
-@extends('template')
+@extends('layout')
 
 @push('breadcrumb')
     <nav aria-label="breadcrumb">
@@ -24,7 +24,6 @@
 
                     <form method="post"  action="{{ route('gaji.store') }}"  accept-charset="utf-8">
                         @csrf
-
                         <div class="row clearfix">
                             <div class="col-12 col-lg-12 col-md-12">
                                 <div class="form-group ">

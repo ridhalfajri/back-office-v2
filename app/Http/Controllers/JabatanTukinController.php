@@ -66,7 +66,6 @@ class JabatanTukinController extends Controller
 
         return view('jabatan-tukin.create', compact('title'));
     }
-
     /**
     * Store a newly created resource in storage.
     *

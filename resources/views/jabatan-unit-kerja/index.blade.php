@@ -27,7 +27,7 @@
             </h4>
             <!-- /.card-title -->
         </div>
-        <div class="card-body">            
+        <div class="card-body">
             <!-- /.dropdown js__dropdown -->
             <table id="tbl-data" class="table table-striped table-bordered display" style="width:100%">
                 <thead>

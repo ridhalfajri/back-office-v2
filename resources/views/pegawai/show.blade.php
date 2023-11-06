@@ -1,6 +1,17 @@
 @extends('template')
 @push('style')
+<<<<<<< HEAD
     <link rel="stylesheet" href="{{ asset('assets/plugins/multi-select/css/multi-select.css') }}">
+=======
+    {{-- Multiselect --}}
+    <link rel="stylesheet" href="{{ asset('assets/plugins/multi-select/css/multi-select.css') }}">
+    {{-- Datatable --}}
+    <link rel="stylesheet" href="{{ asset('assets/plugins/datatable/dataTables.bootstrap4.min.css') }}">
+    <link rel="stylesheet"
+        href="{{ asset('assets/plugins/datatable/fixedeader/dataTables.fixedcolumns.bootstrap4.min.css') }}">
+    <link rel="stylesheet"
+        href="{{ asset('assets/plugins/datatable/fixedeader/dataTables.fixedheader.bootstrap4.min.css') }}">
+>>>>>>> ed1664d2036b11bb4c635d440d6447a19a5c0964
 @endpush
 @section('content')
     <div class="section-body">
@@ -26,18 +37,36 @@
                 <div class="col-12">
                     <ul class="nav nav-tabs mb-3" id="pills-tab" role="tablist">
                         <li class="nav-item">
+<<<<<<< HEAD
                             <a class="nav-link " id="pills-profile-tab" data-toggle="pill" href="#pills-profile"
                                 role="tab" aria-controls="pills-profile" aria-selected="false">Profile</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link active" id="pills-alamat-tab" data-toggle="pill" href="#pills-alamat"
                                 role="tab" aria-controls="pills-alamat" aria-selected="true">Alamat</a>
+=======
+                            <a class="nav-link active" id="pills-profile-tab" data-toggle="pill" href="#pills-profile"
+                                role="tab" aria-controls="pills-profile" aria-selected="false">Profile</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="pills-alamat-tab" data-toggle="pill" href="#pills-alamat" role="tab"
+                                aria-controls="pills-alamat" aria-selected="true">Alamat</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="pills-diklat-tab" data-toggle="pill" href="#pills-diklat" role="tab"
+                                aria-controls="pills-diklat" aria-selected="true">Diklat</a>
+>>>>>>> ed1664d2036b11bb4c635d440d6447a19a5c0964
                         </li>
                     </ul>
                 </div>
                 <div class="col-lg-8 col-md-12">
                     <div class="tab-content" id="pills-tabContent">
+<<<<<<< HEAD
                         <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
+=======
+                        <div class="tab-pane fade show active" id="pills-profile" role="tabpanel"
+                            aria-labelledby="pills-profile-tab">
+>>>>>>> ed1664d2036b11bb4c635d440d6447a19a5c0964
                             <div class="card">
                                 <div class="card-header">
                                     <h3 class="card-title">Profile</h3>
@@ -61,6 +90,11 @@
                                 <div class="card-body">
                                     <div class="row clearfix">
                                         <div class="col-md-4">
+<<<<<<< HEAD
+=======
+                                            <input type="hidden" id="pegawai_id" class="form-control" disabled=""
+                                                placeholder="Id" value="{{ $pegawai->id }}">
+>>>>>>> ed1664d2036b11bb4c635d440d6447a19a5c0964
                                             <div class="form-group">
                                                 <label class="form-label">NIK</label>
                                                 <input type="text" class="form-control" disabled="" placeholder="NIK"
@@ -77,8 +111,13 @@
                                         <div class="col-sm-6 col-md-4">
                                             <div class="form-group">
                                                 <label class="form-label">NPWP</label>
+<<<<<<< HEAD
                                                 <input type="text" class="form-control" disabled="" placeholder="NPWP"
                                                     value="{{ $pegawai->npwp }}">
+=======
+                                                <input type="text" class="form-control" disabled=""
+                                                    placeholder="NPWP" value="{{ $pegawai->npwp }}">
+>>>>>>> ed1664d2036b11bb4c635d440d6447a19a5c0964
                                             </div>
                                         </div>
                                         <div class="col-sm-6 col-md-6">
@@ -220,7 +259,16 @@
                                 </div>
                             </div>
                         </div>
+<<<<<<< HEAD
                         @include('pegawai.pegawai-alamat')
+=======
+                        <div class="tab-pane fade" id="pills-alamat" role="tabpanel" aria-labelledby="pills-alamat-tab">
+                            @include('pegawai.pegawai-alamat')
+                        </div>
+                        <div class="tab-pane fade" id="pills-diklat" role="tabpanel" aria-labelledby="pills-diklat-tab">
+                            @include('pegawai.pegawai-diklat')
+                        </div>
+>>>>>>> ed1664d2036b11bb4c635d440d6447a19a5c0964
                     </div>
                 </div>
                 <div class="col-lg-4 col-md-12">
@@ -373,9 +421,17 @@
             </div>
         </div>
     </div>
+<<<<<<< HEAD
     <!-- Modal -->
     <div class="modal fade" id="modal-alamat" tabindex="-1" role="dialog" aria-labelledby="modalAlamatLabel"
         aria-hidden="true">
+=======
+@endsection
+@push('modal')
+    <!-- Modal Alamat -->
+    <div class="modal fade" id="modal-alamat" data-backdrop="static" tabindex="-1" role="dialog"
+        aria-labelledby="modalAlamatLabel" aria-hidden="true">
+>>>>>>> ed1664d2036b11bb4c635d440d6447a19a5c0964
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -396,17 +452,26 @@
                                 <div class="form-group multiselect_div">
                                     <label class="form-label">Tipe Alamat</label>
                                     <div class="form-group multiselect_div">
+<<<<<<< HEAD
                                         <select id="single-selection" name="single_selection"
                                             class="multiselect multiselect-custom">
                                             <option value="Domisili">Domisili</option>
                                             <option value="Asal">Asal</option>
                                         </select>
+=======
+                                        <input type="text" id="tipe_alamat" disabled=""
+                                            class="form-control mt-3 state-valid" value="">
+>>>>>>> ed1664d2036b11bb4c635d440d6447a19a5c0964
                                     </div>
                                 </div>
                                 <div class="form-group multiselect_div">
                                     <label class="form-label">Propinsi</label>
                                     <select id="propinsi_id" name="propinsi_id" class="multiselect multiselect-custom">
                                     </select>
+<<<<<<< HEAD
+=======
+                                    <small class="text-danger" id="error_propinsi_id"></small>
+>>>>>>> ed1664d2036b11bb4c635d440d6447a19a5c0964
                                 </div>
                                 <div class="form-group multiselect_div">
                                     <label class="form-label">Kota</label>
@@ -414,6 +479,10 @@
                                         class="select-filter multiselect multiselect-custom">
                                         <option selected value="">-- Pilih Kota --</option>
                                     </select>
+<<<<<<< HEAD
+=======
+                                    <small class="text-danger" id="error_kota_id"></small>
+>>>>>>> ed1664d2036b11bb4c635d440d6447a19a5c0964
                                 </div>
                                 <div class="form-group multiselect_div">
                                     <label class="form-label">Kecamatan</label>
@@ -421,6 +490,10 @@
                                         class="select-filter multiselect multiselect-custom">
                                         <option selected value="">-- Pilih Kecamatan --</option>
                                     </select>
+<<<<<<< HEAD
+=======
+                                    <small class="text-danger" id="error_kecamatan_id"></small>
+>>>>>>> ed1664d2036b11bb4c635d440d6447a19a5c0964
                                 </div>
                                 <div class="form-group multiselect_div">
                                     <label class="form-label">Desa</label>
@@ -428,16 +501,28 @@
                                         class="select-filter multiselect multiselect-custom">
                                         <option selected value="">-- Pilih Desa --</option>
                                     </select>
+<<<<<<< HEAD
+=======
+                                    <small class="text-danger" id="error_desa_id"></small>
+>>>>>>> ed1664d2036b11bb4c635d440d6447a19a5c0964
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Kode Pos</label>
                                     <input type="number" id="kode_pos" min="0" step="0.01"
                                         oninput="limitDigits(this, 5);" class="form-control mt-3 state-valid"
                                         value="" placeholder="Kode Pos">
+<<<<<<< HEAD
+=======
+                                    <small class="text-danger" id="error_kode_pos"></small>
+>>>>>>> ed1664d2036b11bb4c635d440d6447a19a5c0964
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Alamat Lengkap</label>
                                     <textarea id="alamat" rows="3" class="form-control" placeholder="Alamat Lengkap"></textarea>
+<<<<<<< HEAD
+=======
+                                    <small class="text-danger" id="error_alamat"></small>
+>>>>>>> ed1664d2036b11bb4c635d440d6447a19a5c0964
                                 </div>
 
                             </div>
@@ -446,12 +531,17 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+<<<<<<< HEAD
                     <button type="button" class="btn btn-primary" id="store-alamat"
                         onclick="select_propinsi()">Simpan</button>
+=======
+                    <button type="button" class="btn btn-primary" id="store-alamat">Simpan</button>
+>>>>>>> ed1664d2036b11bb4c635d440d6447a19a5c0964
                 </div>
             </div>
         </div>
     </div>
+<<<<<<< HEAD
 @endsection
 @push('script')
     <script src="{{ asset('assets/plugins/bootstrap-multiselect/bootstrap-multiselect.js') }}"></script>
@@ -482,6 +572,117 @@
                             `<option value="${response.result[i].id}">${response.result[i].nama}</option>`;
                     }
                     $('#propinsi_id').append(option);
+=======
+    <!-- Modal Detail Diklat -->
+    <div class="modal fade" id="modal-detail-diklat" tabindex="-1" role="dialog"
+        aria-labelledby="modalDetailDiklatLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Detail Diklat</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="col-md-12 col-lg-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label class="form-label">Nama</label>
+                                    <input type="text" id="d_nama_jenis_diklat" disabled=""
+                                        class="form-control mt-3 state-valid" value="">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Tanggal Mulai</label>
+                                    <input type="text" id="d_tanggal_mulai" disabled=""
+                                        class="form-control mt-3 state-valid" value="">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Tanggal Akhir</label>
+                                    <input type="text" id="d_tanggal_akhir" disabled=""
+                                        class="form-control mt-3 state-valid" value="">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Jam Pelajaran</label>
+                                    <input type="text" id="d_jam_pelajaran" disabled=""
+                                        class="form-control mt-3 state-valid" value="">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Lokasi</label>
+                                    <input type="text" id="d_lokasi" disabled=""
+                                        class="form-control mt-3 state-valid" value="">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Penyelenggara</label>
+                                    <input type="text" id="d_penyelenggaran" disabled=""
+                                        class="form-control mt-3 state-valid" value="">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Nomor Sertifikat</label>
+                                    <input type="text" id="d_no_sertifikat" disabled=""
+                                        class="form-control mt-3 state-valid" value="">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Tanggal Sertifikat</label>
+                                    <input type="text" id="d_tanggal_sertifikat" disabled=""
+                                        class="form-control mt-3 state-valid" value="">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">File Sertifikat</label>
+                                    <a href="#" id="d_media_sertifikat" class="btn btn-primary">Download</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+@endpush
+@push('script')
+    <script src="{{ asset('assets/bundles/dataTables.bundle.js') }}"></script>
+    <script src="{{ asset('assets/js/table/datatable.js') }}"></script>
+    <script src="{{ asset('assets/plugins/sweetalert2/sweetalert2.all.min.js') }}"></script>
+    <script src="{{ asset('assets/plugins/bootstrap-multiselect/bootstrap-multiselect.js') }}"></script>
+    <script src="{{ asset('assets/plugins/multi-select/js/jquery.multi-select.js') }}"></script>
+    <script src="{{ asset('assets/js/custom/diklat.js') }}"></script>
+    <script src="{{ asset('assets/js/custom/alamat.js') }}"></script>
+
+    <script>
+        const get_data_alamat = (tipe_alamat) => {
+            $.ajax({
+                url: "{{ route('alamat.get-data-by-pegawai-id') }}",
+                type: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                },
+                data: {
+                    pegawai_id: <?= $pegawai->id ?>,
+                    tipe_alamat: tipe_alamat
+                },
+                success: function(response) {
+                    if (response.result == null) {
+                        $('#tipe_alamat').val(tipe_alamat)
+                    } else {
+                        set_data_edit(response)
+                    }
+                }
+            })
+        }
+        const select_propinsi = (propinsi_id = null) => {
+            $.ajax({
+                url: "{{ route('propinsi.data') }}",
+                type: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                },
+                data: {
+                    propinsi_id: propinsi_id
+                },
+                success: function(response) {
+                    $('#propinsi_id').html(response);
+>>>>>>> ed1664d2036b11bb4c635d440d6447a19a5c0964
                     $('#propinsi_id').multiselect({
                         enableFiltering: true,
                         enableCaseInsensitiveFiltering: true,
@@ -490,17 +691,29 @@
                 }
             })
         }
+<<<<<<< HEAD
         $('#propinsi_id').on('change', function(e) {
             e.preventDefault();
             const id = $(this).val();
+=======
+        const select_kota = (id = null, kota_id = null) => {
+>>>>>>> ed1664d2036b11bb4c635d440d6447a19a5c0964
             $.ajax({
                 type: "POST",
                 url: "{{ route('kota.data') }}",
                 headers: {
+<<<<<<< HEAD
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
                 },
                 data: {
                     id: id
+=======
+                    'X-CSRF-TOKEN': $('meta[name="csrf_token"]').attr("content")
+                },
+                data: {
+                    id: id,
+                    kota_id: kota_id
+>>>>>>> ed1664d2036b11bb4c635d440d6447a19a5c0964
                 },
                 cache: false,
                 success: function(response) {
@@ -513,18 +726,26 @@
                     });
                     resetKecamatan();
                     resetDesa();
+<<<<<<< HEAD
 
+=======
+>>>>>>> ed1664d2036b11bb4c635d440d6447a19a5c0964
                 },
                 error: function(data) {
                     console.log('error : ', data);
                 }
             });
+<<<<<<< HEAD
         });
 
 
         $('#kota_id').on('change', function(e) {
             e.preventDefault();
             const id = $(this).val();
+=======
+        }
+        const select_kecamatan = (id = null, kecamatan_id = null, ) => {
+>>>>>>> ed1664d2036b11bb4c635d440d6447a19a5c0964
             $.ajax({
                 type: "POST",
                 url: "{{ route('kecamatan.data') }}",
@@ -532,7 +753,12 @@
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
                 },
                 data: {
+<<<<<<< HEAD
                     id: id
+=======
+                    id: id,
+                    kecamatan_id: kecamatan_id
+>>>>>>> ed1664d2036b11bb4c635d440d6447a19a5c0964
                 },
                 cache: false,
                 success: function(response) {
@@ -549,10 +775,15 @@
                     console.log('error : ', data);
                 }
             });
+<<<<<<< HEAD
         });
         $('#kecamatan_id').on('change', function(e) {
             e.preventDefault();
             const id = $(this).val();
+=======
+        }
+        const select_desa = (id = null, desa_id = null) => {
+>>>>>>> ed1664d2036b11bb4c635d440d6447a19a5c0964
             $.ajax({
                 type: "POST",
                 url: "{{ route('desa.data') }}",
@@ -560,7 +791,12 @@
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
                 },
                 data: {
+<<<<<<< HEAD
                     id: id
+=======
+                    id: id,
+                    desa_id: desa_id
+>>>>>>> ed1664d2036b11bb4c635d440d6447a19a5c0964
                 },
                 cache: false,
                 success: function(response) {
@@ -576,6 +812,26 @@
                     console.log('error : ', data);
                 }
             });
+<<<<<<< HEAD
+=======
+        }
+        $('#propinsi_id').on('change', function(e) {
+            e.preventDefault();
+            const id = $(this).val();
+            select_kota(id)
+        });
+        $('#kota_id').on('change', function(e) {
+            e.preventDefault();
+            const id = $(this).val();
+            select_kecamatan(id)
+
+        });
+        $('#kecamatan_id').on('change', function(e) {
+            e.preventDefault();
+            const id = $(this).val();
+            select_desa(id)
+
+>>>>>>> ed1664d2036b11bb4c635d440d6447a19a5c0964
         });
         const resetKecamatan = function() {
             $('#kecamatan_id').multiselect('destroy');
@@ -611,12 +867,62 @@
                     desa_id: $('#desa_id').val(),
                     kode_pos: $('#kode_pos').val(),
                     alamat: $('#alamat').val(),
+<<<<<<< HEAD
                 },
                 success: function(response) {}
+=======
+                    pegawai_id: <?= json_encode($pegawai->id) ?>
+                },
+                success: function(response) {
+                    if (response.errors) {
+                        resetForm()
+                        const err = response.errors
+                        if (err.propinsi_id) {
+                            $('#error_propinsi_id').text(err.propinsi_id)
+                        }
+                        if (err.kota_id) {
+                            $('#error_kota_id').text(err.kota_id)
+                        }
+                        if (err.kecamatan_id) {
+                            $('#error_kecamatan_id').text(err.kecamatan_id)
+                        }
+                        if (err.desa_id) {
+                            $('#error_desa_id').text(err.desa_id)
+                        }
+                        if (err.kode_pos) {
+                            $('#error_kode_pos').text(err.kode_pos)
+                        }
+                        if (err.alamat) {
+                            $('#error_alamat').text(err.alamat)
+                        }
+                        if (err.connection) {
+                            Swal.fire({
+                                title: 'Gagal!',
+                                text: response.errors.connection,
+                                icon: 'error',
+                                confirmButtonText: 'Tutup'
+                            })
+                        }
+                    } else {
+                        resetForm(true)
+                        Swal.fire({
+                            title: 'Tersimpan!',
+                            text: response.success,
+                            icon: 'success',
+                            confirmButtonText: 'Tutup'
+                        })
+                        setTimeout(function() {
+                            window.location.href = '/pegawai/' + $('#pegawai_id').val()
+                        }, 1000);
+
+                    }
+                }
+>>>>>>> ed1664d2036b11bb4c635d440d6447a19a5c0964
             })
         })
 
         function resetForm(is_success = false) {
+<<<<<<< HEAD
             $('#tipe_alamat').removeClass('is-invalid');
             $('#error_tipe_alamat').text('')
             $('#propinsi_id').removeClass('is-invalid');
@@ -639,6 +945,21 @@
         function limitDigits(input, maxDigits) {
             let value = input.value.replace(/[^0-9.]/g, ''); // Remove non-numeric characters
             let parts = value.split('.');
+=======
+            $('#error_tipe_alamat').text('')
+            $('#error_propinsi_id').text('');
+            $('#error_kota_id').text('')
+            $('#error_kecamatan_id').text('');
+            $('#error_desa_id').text('');
+            $('#error_kode_pos').text('');
+            $('#error_alamat').text('');
+        }
+        // {{-- Limit Kode Pos --}}
+
+        function limitDigits(input, maxDigits) {
+            const value = input.value.replace(/[^0-9.]/g, ''); // Remove non-numeric characters
+            const parts = value.split('.');
+>>>>>>> ed1664d2036b11bb4c635d440d6447a19a5c0964
 
             if (parts[0].length > maxDigits) {
                 parts[0] = parts[0].slice(0, maxDigits);
@@ -651,4 +972,18 @@
             input.value = parts.join('.');
         }
     </script>
+<<<<<<< HEAD
+=======
+    <script>
+        $('#pills-tab a').on('click', function(e) {
+            e.preventDefault()
+            const tab_id = this.getAttribute('id')
+            if (tab_id == 'pills-diklat-tab') {
+                url = "{{ route('diklat.datatable') }}"
+                get_table_diklat(url)
+                $(this).tab('show')
+            }
+        })
+    </script>
+>>>>>>> ed1664d2036b11bb4c635d440d6447a19a5c0964
 @endpush

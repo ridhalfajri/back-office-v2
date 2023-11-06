@@ -13,6 +13,9 @@ class KecamatanController extends Controller
         echo "<option>-- Pilih Kecamatan --</option>";
         foreach ($kecamatan as $item) {
             if ($request->kota_id != null && $request->kota_id == $item->id) {
+        echo "<option value=''>-- Pilih Kecamatan --</option>";
+        foreach ($kecamatan as $item) {
+            if ($request->kecamatan_id != null && $request->kecamatan_id == $item->id) {
                 echo "<option value=" . $item->id . " selected>" . $item->nama . "</option>";
             } else {
                 echo "<option value=" . $item->id . ">" . $item->nama . "</option>";
