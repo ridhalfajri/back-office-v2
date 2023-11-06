@@ -1,6 +1,13 @@
 @extends('template')
 @push('style')
+    {{-- Multiselect --}}
     <link rel="stylesheet" href="{{ asset('assets/plugins/multi-select/css/multi-select.css') }}">
+    {{-- Datatable --}}
+    <link rel="stylesheet" href="{{ asset('assets/plugins/datatable/dataTables.bootstrap4.min.css') }}">
+    <link rel="stylesheet"
+        href="{{ asset('assets/plugins/datatable/fixedeader/dataTables.fixedcolumns.bootstrap4.min.css') }}">
+    <link rel="stylesheet"
+        href="{{ asset('assets/plugins/datatable/fixedeader/dataTables.fixedheader.bootstrap4.min.css') }}">
 @endpush
 @section('content')
     <div class="section-body">
@@ -31,7 +38,11 @@
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" id="pills-alamat-tab" data-toggle="pill" href="#pills-alamat" role="tab"
-                                aria-controls="pills-alamat" aria-selected="true" onclick="get_data_alamat">Alamat</a>
+                                aria-controls="pills-alamat" aria-selected="true">Alamat</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="pills-diklat-tab" data-toggle="pill" href="#pills-diklat" role="tab"
+                                aria-controls="pills-diklat" aria-selected="true">Diklat</a>
                         </li>
                     </ul>
                 </div>
@@ -62,6 +73,8 @@
                                 <div class="card-body">
                                     <div class="row clearfix">
                                         <div class="col-md-4">
+                                            <input type="hidden" id="pegawai_id" class="form-control" disabled=""
+                                                placeholder="Id" value="{{ $pegawai->id }}">
                                             <div class="form-group">
                                                 <label class="form-label">NIK</label>
                                                 <input type="text" class="form-control" disabled="" placeholder="NIK"
@@ -78,8 +91,8 @@
                                         <div class="col-sm-6 col-md-4">
                                             <div class="form-group">
                                                 <label class="form-label">NPWP</label>
-                                                <input type="text" class="form-control" disabled="" placeholder="NPWP"
-                                                    value="{{ $pegawai->npwp }}">
+                                                <input type="text" class="form-control" disabled=""
+                                                    placeholder="NPWP" value="{{ $pegawai->npwp }}">
                                             </div>
                                         </div>
                                         <div class="col-sm-6 col-md-6">
@@ -221,7 +234,12 @@
                                 </div>
                             </div>
                         </div>
-                        @include('pegawai.pegawai-alamat')
+                        <div class="tab-pane fade" id="pills-alamat" role="tabpanel" aria-labelledby="pills-alamat-tab">
+                            @include('pegawai.pegawai-alamat')
+                        </div>
+                        <div class="tab-pane fade" id="pills-diklat" role="tabpanel" aria-labelledby="pills-diklat-tab">
+                            @include('pegawai.pegawai-diklat')
+                        </div>
                     </div>
                 </div>
                 <div class="col-lg-4 col-md-12">
@@ -376,7 +394,7 @@
     </div>
 @endsection
 @push('modal')
-    <!-- Modal -->
+    <!-- Modal Alamat -->
     <div class="modal fade" id="modal-alamat" data-backdrop="static" tabindex="-1" role="dialog"
         aria-labelledby="modalAlamatLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -457,31 +475,86 @@
             </div>
         </div>
     </div>
+    <!-- Modal Detail Diklat -->
+    <div class="modal fade" id="modal-detail-diklat" tabindex="-1" role="dialog"
+        aria-labelledby="modalDetailDiklatLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Detail Diklat</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="col-md-12 col-lg-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label class="form-label">Nama</label>
+                                    <input type="text" id="d_nama_jenis_diklat" disabled=""
+                                        class="form-control mt-3 state-valid" value="">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Tanggal Mulai</label>
+                                    <input type="text" id="d_tanggal_mulai" disabled=""
+                                        class="form-control mt-3 state-valid" value="">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Tanggal Akhir</label>
+                                    <input type="text" id="d_tanggal_akhir" disabled=""
+                                        class="form-control mt-3 state-valid" value="">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Jam Pelajaran</label>
+                                    <input type="text" id="d_jam_pelajaran" disabled=""
+                                        class="form-control mt-3 state-valid" value="">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Lokasi</label>
+                                    <input type="text" id="d_lokasi" disabled=""
+                                        class="form-control mt-3 state-valid" value="">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Penyelenggara</label>
+                                    <input type="text" id="d_penyelenggaran" disabled=""
+                                        class="form-control mt-3 state-valid" value="">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Nomor Sertifikat</label>
+                                    <input type="text" id="d_no_sertifikat" disabled=""
+                                        class="form-control mt-3 state-valid" value="">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Tanggal Sertifikat</label>
+                                    <input type="text" id="d_tanggal_sertifikat" disabled=""
+                                        class="form-control mt-3 state-valid" value="">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">File Sertifikat</label>
+                                    <a href="#" id="d_media_sertifikat" class="btn btn-primary">Download</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 @endpush
 @push('script')
+    <script src="{{ asset('assets/bundles/dataTables.bundle.js') }}"></script>
+    <script src="{{ asset('assets/js/table/datatable.js') }}"></script>
     <script src="{{ asset('assets/plugins/sweetalert2/sweetalert2.all.min.js') }}"></script>
     <script src="{{ asset('assets/plugins/bootstrap-multiselect/bootstrap-multiselect.js') }}"></script>
     <script src="{{ asset('assets/plugins/multi-select/js/jquery.multi-select.js') }}"></script>
-    <script>
-        $('.select-filter').multiselect({
-            enableFiltering: true,
-            enableCaseInsensitiveFiltering: true,
-            maxHeight: 200
-        });
-        $('#modal-alamat').on('show.bs.modal', function(e) {
-            resetForm()
-            $('#modal-alamat').modal('show')
+    <script src="{{ asset('assets/js/custom/diklat.js') }}"></script>
+    <script src="{{ asset('assets/js/custom/alamat.js') }}"></script>
 
-        })
-        const domisili = function() {
-            get_data_alamat('Domisili')
-        }
-        const asal = function() {
-            get_data_alamat('Asal')
-        }
+    <script>
         const get_data_alamat = (tipe_alamat) => {
             $.ajax({
-                url: "{{ route('alamat.get-data-by-id') }}",
+                url: "{{ route('alamat.get-data-by-pegawai-id') }}",
                 type: 'POST',
                 headers: {
                     'X-CSRF-TOKEN': "{{ csrf_token() }}"
@@ -492,7 +565,6 @@
                 },
                 success: function(response) {
                     if (response.result == null) {
-                        select_propinsi()
                         $('#tipe_alamat').val(tipe_alamat)
                     } else {
                         set_data_edit(response)
@@ -500,16 +572,6 @@
                 }
             })
         }
-        const set_data_edit = (response) => {
-            select_propinsi(response.result.propinsi_id)
-            select_kota(response.result.propinsi_id, response.result.kota_id)
-            select_kecamatan(response.result.kota_id, response.result.kecamatan_id)
-            select_desa(response.result.kecamatan_id, response.result.desa_id)
-            $('#tipe_alamat').val(response.result.tipe_alamat)
-            $('#kode_pos').val(response.result.kode_pos)
-            $('#alamat').val(response.result.alamat)
-        }
-
         const select_propinsi = (propinsi_id = null) => {
             $.ajax({
                 url: "{{ route('propinsi.data') }}",
@@ -535,7 +597,7 @@
                 type: "POST",
                 url: "{{ route('kota.data') }}",
                 headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    'X-CSRF-TOKEN': $('meta[name="csrf_token"]').attr("content")
                 },
                 data: {
                     id: id,
@@ -703,8 +765,9 @@
                             confirmButtonText: 'Tutup'
                         })
                         setTimeout(function() {
-                            location.reload();
+                            window.location.href = '/pegawai/' + $('#pegawai_id').val()
                         }, 1000);
+
                     }
                 }
             })
@@ -719,10 +782,8 @@
             $('#error_kode_pos').text('');
             $('#error_alamat').text('');
         }
-    </script>
+        // {{-- Limit Kode Pos --}}
 
-    {{-- Limit Kode Pos --}}
-    <script>
         function limitDigits(input, maxDigits) {
             const value = input.value.replace(/[^0-9.]/g, ''); // Remove non-numeric characters
             const parts = value.split('.');
@@ -737,5 +798,16 @@
 
             input.value = parts.join('.');
         }
+    </script>
+    <script>
+        $('#pills-tab a').on('click', function(e) {
+            e.preventDefault()
+            const tab_id = this.getAttribute('id')
+            if (tab_id == 'pills-diklat-tab') {
+                url = "{{ route('diklat.datatable') }}"
+                get_table_diklat(url)
+                $(this).tab('show')
+            }
+        })
     </script>
 @endpush

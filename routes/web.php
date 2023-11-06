@@ -8,6 +8,7 @@ use App\Http\Controllers\Pegawai\PegawaiController;
 use App\Http\Controllers\GajiController;
 use App\Http\Controllers\JabatanTukinController;
 use App\Http\Controllers\JabatanUnitKerjaController;
+use App\Http\Controllers\Pegawai\PegawaiDiklatController;
 use App\Http\Controllers\PropinsiController;
 use Illuminate\Support\Facades\Route;
 
@@ -26,7 +27,8 @@ Route::get('/welcome', function () {
     return view('welcome');
 });
 Route::get('/', function () {
-    return view('try');
+    $title = 'TRY';
+    return view('try', compact('title'));
 });
 
 
@@ -42,8 +44,12 @@ Route::resource('/jabatan-unit-kerja', JabatanUnitKerjaController::class);
 
 Route::prefix('pegawai')->group(function () {
     Route::post('/datatable', [PegawaiController::class, 'datatable'])->name('pegawai.datatable');
-    Route::post('/alamat-by-id', [PegawaiAlamatController::class, 'getAlamatById'])->name('alamat.get-data-by-id');
+    Route::post('/alamat-by-pegawai', [PegawaiAlamatController::class, 'getAlamatByPegawaiId'])->name('alamat.get-data-by-pegawai-id');
     Route::resource('/alamat', PegawaiAlamatController::class)->only(['store']);
+    Route::post('/diklat/diklat-by-id', [PegawaiDiklatController::class, 'getDiklatById'])->name('diklat.get-diklat-by-id');
+    Route::post('/diklat/datatable', [PegawaiDiklatController::class, 'datatable'])->name('diklat.datatable');
+    Route::get('/diklat/create/{pegawai_id}', [PegawaiDiklatController::class, 'create'])->name('diklat.create');
+    Route::resource('/diklat', PegawaiDiklatController::class)->except('create');
     Route::resource('/', PegawaiController::class, [
         'names' => [
             'index' => 'pegawai.index',

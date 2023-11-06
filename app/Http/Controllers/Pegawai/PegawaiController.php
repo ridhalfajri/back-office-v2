@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Pegawai;
 use App\Models\PegawaiAlamat;
 use App\Models\Propinsi;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Yajra\Datatables\Datatables;
@@ -79,7 +80,7 @@ class PegawaiController extends Controller
         if ($pegawai == null) {
             return redirect()->route('pegawai.index')->with('error', 'Data pegawai tidak ditemukan');
         }
-        $pegawai->tanggal_lahir = date('d-F-Y', strtotime($pegawai->tanggal_lahir));
+        $pegawai->tanggal_lahir = Carbon::parse($pegawai->tanggal_lahir)->translatedFormat('d F Y');
         switch ($pegawai->jenis_kelamin) {
             case "L":
                 $pegawai->jenis_kelamin = 'Laki-Laki';
@@ -101,10 +102,10 @@ class PegawaiController extends Controller
                 $pegawai->status_dinas = '';
         }
         if ($pegawai->tanggal_berhenti != null) {
-            $pegawai->tanggal_berhenti = date('d-F-Y', strtotime($pegawai->tanggal_lahir));
+            $pegawai->tanggal_berhenti = Carbon::parse($pegawai->tanggal_berhenti)->translatedFormat('d F Y');
         }
         if ($pegawai->tanggal_wafat != null) {
-            $pegawai->tanggal_wafat = date('d-F-Y', strtotime($pegawai->tanggal_wafat));
+            $pegawai->tanggal_wafat = Carbon::parse($pegawai->tanggal_wafat)->translatedFormat('d F Y');
         }
         return view('pegawai.show', compact('pegawai', 'title', 'propinsi', 'alamat_domisili', 'alamat_asal'));
     }
