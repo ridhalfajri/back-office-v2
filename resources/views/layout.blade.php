@@ -64,10 +64,10 @@
         font-family: 'Open Sans', sans-serif;
         padding-bottom:5px;">
             <h5 class="brand-name">KEPEGAWAIAN</h5>
-            @include('partials.sidebar')
+            @include('partials.side-bar')
         </div>
         <div class="page">
-            @include('partials.topbar')
+            @include('partials.top-bar')
             <nav aria-label="breadcrumb" style="background-color:  #78c0ec">
                 @stack('breadcrumb')
             </nav>
