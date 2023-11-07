@@ -23,4 +23,12 @@ class PegawaiRiwayatPendidikan extends Model implements HasMedia
     {
         return $this->belongsTo(Pendidikan::class);
     }
+    public function propinsi()
+    {
+        return $this->belongsTo(Propinsi::class);
+    }
+    public function kota()
+    {
+        return $this->belongsTo(Kota::class);
+    }
 }

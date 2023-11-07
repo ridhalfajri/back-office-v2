@@ -10,6 +10,7 @@ use App\Http\Controllers\JabatanTukinController;
 use App\Http\Controllers\JabatanUnitKerjaController;
 use App\Http\Controllers\Pegawai\PegawaiDiklatController;
 use App\Http\Controllers\Pegawai\PegawaiTmtGajiController;
+use App\Http\Controllers\Pegawai\RiwayatPendidikanController;
 use App\Http\Controllers\PropinsiController;
 use Illuminate\Support\Facades\Route;
 
@@ -51,10 +52,16 @@ Route::resource('/jabatan-unit-kerja', JabatanUnitKerjaController::class);
 
 
 Route::prefix('pegawai')->group(function () {
-    // Pegawai
-    Route::post('/datatable', [PegawaiController::class, 'datatable'])->name('pegawai.datatable');
+
+    // Pendidikan
+
+    Route::post('/pendidikan/pendidikan-by-id', [RiwayatPendidikanController::class, 'getPendidikanById'])->name('pendidikan.get-pendidikan-by-id');
+    Route::get('/pendidikan/create/{pegawai_id}', [RiwayatPendidikanController::class, 'create'])->name('pendidikan.create');
+    Route::post('/pendidikan/datatable', [RiwayatPendidikanController::class, 'datatable'])->name('pendidikan.datatable');
+    Route::resource('/pendidikan', RiwayatPendidikanController::class)->except(['create']);
 
     // Alamat
+
     Route::post('/alamat-by-pegawai', [PegawaiAlamatController::class, 'getAlamatByPegawaiId'])->name('alamat.get-data-by-pegawai-id');
     Route::resource('/alamat', PegawaiAlamatController::class)->only(['store']);
 
@@ -68,6 +75,9 @@ Route::prefix('pegawai')->group(function () {
     Route::post('/tmt-gaji/tmt-gaji-by-id', [PegawaiTmtGajiController::class, 'getTmtGajiById'])->name('tmt-gaji.get-tmt-gaji-by-id');
     Route::post('/tmt-gaji/datatable', [PegawaiTmtGajiController::class, 'datatable'])->name('tmt-gaji.datatable');
     Route::resource('/tmt-gaji', PegawaiTmtGajiController::class)->only(['store', 'destroy']);
+
+    // Pegawai
+    Route::post('/datatable', [PegawaiController::class, 'datatable'])->name('pegawai.datatable');
     Route::resource('/', PegawaiController::class, [
         'names' => [
             'index' => 'pegawai.index',

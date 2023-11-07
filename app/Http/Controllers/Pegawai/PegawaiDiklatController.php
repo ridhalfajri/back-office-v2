@@ -27,12 +27,12 @@ class PegawaiDiklatController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create($id)
+    public function create($pegawai_id)
     {
         $title = 'Diklat';
         try {
             $jenis_diklat = JenisDiklat::select('id', 'nama')->get();
-            $pegawai = Pegawai::select('id', 'nama_depan', 'nama_belakang')->where('id', $id)->first();
+            $pegawai = Pegawai::select('id', 'nama_depan', 'nama_belakang')->where('id', $pegawai_id)->first();
         } catch (\Throwable $th) {
             abort(500);
         }
@@ -157,7 +157,7 @@ class PegawaiDiklatController extends Controller
                 'penyelenggaran' => ['required', 'max:100'],
                 'no_sertifikat' => ['required', 'max:100'],
                 'tanggal_sertifikat' => ['required', 'date_format:d-m-Y'],
-                'media_sertifikat' => ['required_without:id', 'nullable', 'mimes:pdf,jpg,jpeg,png', 'file', 'max:1024',],
+                'media_sertifikat' => ['nullable', 'mimes:pdf,jpg,jpeg,png', 'file', 'max:1024',],
             ],
             [
                 'pegawai_id.required' => 'pegawai harus diisi',
@@ -177,7 +177,6 @@ class PegawaiDiklatController extends Controller
                 'no_sertifikat.max' => 'penyelnggaran terlalu panjang',
                 'tanggal_sertifikat.required' => 'tanggal sertifikat harus diisi ',
                 'tanggal_sertifikat.date_format' => 'tanggal harus dalam bentuk format yang valid ',
-                'media_sertifikat.required_without' => 'file sertifikat harus diisi',
                 'media_sertifikat.mimes' => 'format file sertifikat harus pdf, jpg, jpeg, png',
                 'media_sertifikat.max' => 'ukuran file terlalu besar (maksimal file 1MB)',
             ]
