@@ -29,7 +29,7 @@ Route::get('/welcome', function () {
 });
 Route::get('/', function () {
     $title = "Home";
-    return view('try',compact('title'));
+    return view('try', compact('title'));
 });
 
 
@@ -37,9 +37,6 @@ Route::post('/gaji/datatable', [GajiController::class, 'datatable'])->name('gaji
 Route::resource('/gaji', GajiController::class);
 
 Route::post('/jabatan-tukin/datatable', [JabatanTukinController::class, 'datatable'])->name('jabatan-tukin.datatable');
-    $title = 'TRY';
-    return view('try', compact('title'));
-});
 
 
 Route::get('/gaji/datatable', [GajiController::class, 'datatable'])->name('gaji.datatable');
@@ -54,18 +51,23 @@ Route::resource('/jabatan-unit-kerja', JabatanUnitKerjaController::class);
 
 
 Route::prefix('pegawai')->group(function () {
+    // Pegawai
     Route::post('/datatable', [PegawaiController::class, 'datatable'])->name('pegawai.datatable');
 
+    // Alamat
     Route::post('/alamat-by-pegawai', [PegawaiAlamatController::class, 'getAlamatByPegawaiId'])->name('alamat.get-data-by-pegawai-id');
     Route::resource('/alamat', PegawaiAlamatController::class)->only(['store']);
+
+    // Diklat
     Route::post('/diklat/diklat-by-id', [PegawaiDiklatController::class, 'getDiklatById'])->name('diklat.get-diklat-by-id');
     Route::post('/diklat/datatable', [PegawaiDiklatController::class, 'datatable'])->name('diklat.datatable');
     Route::get('/diklat/create/{pegawai_id}', [PegawaiDiklatController::class, 'create'])->name('diklat.create');
     Route::resource('/diklat', PegawaiDiklatController::class)->except(['create', 'index', 'show']);
+
+    // TMT Gaji
     Route::post('/tmt-gaji/tmt-gaji-by-id', [PegawaiTmtGajiController::class, 'getTmtGajiById'])->name('tmt-gaji.get-tmt-gaji-by-id');
     Route::post('/tmt-gaji/datatable', [PegawaiTmtGajiController::class, 'datatable'])->name('tmt-gaji.datatable');
     Route::resource('/tmt-gaji', PegawaiTmtGajiController::class)->only(['store', 'destroy']);
-    Route::resource('/diklat', PegawaiDiklatController::class)->except('create');
     Route::resource('/', PegawaiController::class, [
         'names' => [
             'index' => 'pegawai.index',

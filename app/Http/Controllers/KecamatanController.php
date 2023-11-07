@@ -10,9 +10,6 @@ class KecamatanController extends Controller
     public function getKecamatan(Request $request)
     {
         $kecamatan = Kecamatan::select('id', 'nama')->where('kota_id', $request->id)->get();
-        echo "<option>-- Pilih Kecamatan --</option>";
-        foreach ($kecamatan as $item) {
-            if ($request->kota_id != null && $request->kota_id == $item->id) {
         echo "<option value=''>-- Pilih Kecamatan --</option>";
         foreach ($kecamatan as $item) {
             if ($request->kecamatan_id != null && $request->kecamatan_id == $item->id) {
