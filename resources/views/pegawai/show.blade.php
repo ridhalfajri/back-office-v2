@@ -50,6 +50,10 @@
                             <a class="nav-link" id="pills-tmt-gaji-tab" data-toggle="pill" href="#pills-tmt-gaji"
                                 role="tab" aria-controls="pills-tmt-gaji" aria-selected="true">TMT Gaji</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="pills-pendidikan-tab" data-toggle="pill" href="#pills-pendidikan"
+                                role="tab" aria-controls="pills-pendidikan" aria-selected="true">Pendidikan</a>
+                        </li>
                     </ul>
                 </div>
                 <div class="col-lg-8 col-md-12">
@@ -249,6 +253,10 @@
                         <div class="tab-pane fade" id="pills-tmt-gaji" role="tabpanel"
                             aria-labelledby="pills-tmt-gaji-tab">
                             @include('pegawai.tmt_gaji.pegawai-tmt-gaji')
+                        </div>
+                        <div class="tab-pane fade" id="pills-pendidikan" role="tabpanel"
+                            aria-labelledby="pills-pendidikan-tab">
+                            @include('pegawai.pendidikan.pegawai-riwayat-pendidikan')
                         </div>
                     </div>
                 </div>
@@ -621,6 +629,7 @@
     <script src="{{ asset('assets/js/custom/diklat.js') }}"></script>
     <script src="{{ asset('assets/js/custom/alamat.js') }}"></script>
     <script src="{{ asset('assets/js/custom/tmt_gaji.js') }}"></script>
+    <script src="{{ asset('assets/js/custom/pendidikan.js') }}"></script>
 
 
     <script>
@@ -792,6 +801,10 @@
                 url = "{{ route('tmt-gaji.datatable') }}"
                 pegawai_id = "{{ $pegawai->id }}"
                 get_table_tmt_gaji(url, pegawai_id)
+            } else if (tab_id == 'pills-pendidikan-tab') {
+                url = "{{ route('pendidikan.datatable') }}"
+                pegawai_id = "{{ $pegawai->id }}"
+                get_table_pendidikan(url, pegawai_id)
             }
         })
     </script>

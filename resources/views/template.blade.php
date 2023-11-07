@@ -55,10 +55,7 @@
             @include('partials.topbar')
             @stack('breadcrumb')
             @yield('content')
-<<<<<<< HEAD
-=======
             @stack('modal')
->>>>>>> ed1664d2036b11bb4c635d440d6447a19a5c0964
         </div>
     </div>
 
