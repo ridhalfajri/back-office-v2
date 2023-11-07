@@ -29,7 +29,7 @@ Route::get('/welcome', function () {
 });
 Route::get('/', function () {
     $title = "Home";
-    return view('try',compact('title'));
+    return view('try', compact('title'));
 });
 
 
@@ -37,9 +37,6 @@ Route::post('/gaji/datatable', [GajiController::class, 'datatable'])->name('gaji
 Route::resource('/gaji', GajiController::class);
 
 Route::post('/jabatan-tukin/datatable', [JabatanTukinController::class, 'datatable'])->name('jabatan-tukin.datatable');
-    $title = 'TRY';
-    return view('try', compact('title'));
-});
 
 
 Route::get('/gaji/datatable', [GajiController::class, 'datatable'])->name('gaji.datatable');

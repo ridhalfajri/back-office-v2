@@ -37,28 +37,28 @@ class GajiController extends Controller
     {
 
         //  $data = Gaji::select('gaji.id as id','masa_kerja',  DB::raw("CONCAT('Rp. ', FORMAT(nominal, 0)) AS nominal"), 'golongan.nama as nama')->join('golongan', 'golongan.id', '=', 'gaji.golongan_id');
-        $data = Gaji::select('gaji.id as id','masa_kerja', "nominal", 'golongan.nama as nama')->join('golongan', 'golongan.id', '=', 'gaji.golongan_id');
+        $data = Gaji::select('gaji.id as id', 'masa_kerja', "nominal", 'golongan.nama as nama')->join('golongan', 'golongan.id', '=', 'gaji.golongan_id');
 
         return Datatables::of($data)
             ->addColumn('no', '')
             // ->addColumn('aksi', '')
-            ->addColumn('aksi', function($row) {
+            ->addColumn('aksi', function ($row) {
                 $editButton = '<button class="btn btn-sm btn-icon btn-warning on-default edit-btn" data-id="' . $row->id . '"><i class="fa fa-pencil"></i></button>';
                 $deleteButton = '<button class="btn btn-sm btn-icon btn-danger on-default delete-btn" data-id="' . $row->id . '"><i class="fa fa-trash"></i></button>';
 
                 return '<div style="display: inline-block; white-space: nowrap; margin: 0 10px;">' . $editButton . ' ' . $deleteButton . '</div>';
             })
-            ->editColumn('masa_kerja', function($row){
+            ->editColumn('masa_kerja', function ($row) {
                 // Format the data as needed here
                 return $row->masa_kerja . ' Tahun';
             })
             ->filterColumn('masa_kerja', function ($query, $keyword) {
                 $query->whereRaw("CONCAT(masa_kerja,' Tahun') like ?", ["%$keyword%"]);
             })
-            ->editColumn('nominal', function($row){
+            ->editColumn('nominal', function ($row) {
                 // Format the data as needed here
                 $nom =  (float)$row->nominal;
-                return "Rp. ".number_format($nom, 2, ',', ',');
+                return "Rp. " . number_format($nom, 2, ',', ',');
             })
             ->filterColumn('nominal', function ($query, $keyword) {
                 $query->whereRaw("CONCAT('Rp. ', FORMAT(nominal, 0)) like ?", ["%$keyword%"]);
@@ -130,13 +130,13 @@ class GajiController extends Controller
         return view('gaji.edit', compact('title'), 'gaji');
     }
 
-    * Update the specified resource in storage.
+    /* Update the specified resource in storage.
     *
     * @param  \Illuminate\Http\Request  $request
     * @param  \App\Models\Models\BidangProfisiensi  $bidangProfisiensi
     * @return \Illuminate\Http\Response
     */
-    public function update(Request $request,Gaji $gaji)
+    public function update(Request $request, Gaji $gaji)
 
     {
         $this->validate($request, [
@@ -157,11 +157,11 @@ class GajiController extends Controller
 
     /**
 
-    * Remove the specified resource from storage.
-    *
-    * @param  \App\Models\Models\BidangProfisiensi  $bidangProfisiensi
-    * @return \Illuminate\Http\Response
-    */
+     * Remove the specified resource from storage.
+     *
+     * @param  \App\Models\Models\BidangProfisiensi  $bidangProfisiensi
+     * @return \Illuminate\Http\Response
+     */
     public function destroy(Gaji $gaji)
     {
         $gaji->delete();
