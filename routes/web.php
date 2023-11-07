@@ -55,7 +55,7 @@ Route::prefix('pegawai')->group(function () {
 
     // Pendidikan
 
-    Route::post('/pendidikan/pendidikan-by-id', [RiwayatPendidikanController::class, 'getpendidikanById'])->name('pendidikan.get-pendidikan-by-id');
+    Route::post('/pendidikan/pendidikan-by-id', [RiwayatPendidikanController::class, 'getPendidikanById'])->name('pendidikan.get-pendidikan-by-id');
     Route::get('/pendidikan/create/{pegawai_id}', [RiwayatPendidikanController::class, 'create'])->name('pendidikan.create');
     Route::post('/pendidikan/datatable', [RiwayatPendidikanController::class, 'datatable'])->name('pendidikan.datatable');
     Route::resource('/pendidikan', RiwayatPendidikanController::class)->except(['create']);

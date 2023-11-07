@@ -70,3 +70,98 @@ const get_table_pendidikan = (url) => {
             });
     });
 };
+const delete_pendidikan = (id) => {
+    Swal.fire({
+        title: "Apakah anda yakin hapus pendidikan ini?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Hapus",
+        confirmButtonColor: "#DC3444",
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajax({
+                url: "/pegawai/pendidikan/" + id,
+                type: "DELETE",
+                headers: {
+                    "X-CSRF-TOKEN": $('meta[name="csrf_token"]').attr(
+                        "content"
+                    ),
+                },
+                data: {
+                    id: id,
+                },
+                success: function (response) {
+                    if (response.errors) {
+                        if (response.errors) {
+                            Swal.fire({
+                                title: "Gagal!",
+                                text: response.errors.connection,
+                                icon: "error",
+                                confirmButtonText: "Tutup",
+                            });
+                        }
+                    } else if (response.success) {
+                        Swal.fire({
+                            title: "Dihapus!",
+                            text: response.success,
+                            icon: "success",
+                            confirmButtonText: "Tutup",
+                        });
+                        $("#tbl-pendidikan").DataTable().ajax.reload();
+                    }
+                },
+            });
+        }
+    });
+};
+$("#modal-detail-pendidikan").on("show.bs.modal", (e) => {
+    const id = $("#btn-detail-pendidikan").data("id");
+    const url = $("#btn-detail-pendidikan").data("pendidikan");
+    $.ajax({
+        url: url,
+        type: "POST",
+        headers: {
+            "X-CSRF-TOKEN": $('meta[name="csrf_token"]').attr("content"),
+        },
+        data: {
+            id: id,
+        },
+        success: function (response) {
+            if (response.errors) {
+                if (response.errors.data) {
+                    Swal.fire({
+                        title: "Gagal!",
+                        text: response.errors.data,
+                        icon: "error",
+                        confirmButtonText: "Tutup",
+                    });
+                }
+                if (response.errors.connection) {
+                    Swal.fire({
+                        title: "Gagal!",
+                        text: response.errors.connection,
+                        icon: "error",
+                        confirmButtonText: "Tutup",
+                    });
+                }
+            } else {
+                $("#p_pendidikan").val(response.result.pendidikan.nama);
+                $("#p_nama_instansi").val(response.result.nama_instansi);
+                $("#p_propinsi").val(response.result.propinsi.nama);
+                $("#p_kota").val(response.result.kota.nama);
+                $("#p_alamat").val(response.result.alamat);
+                $("#p_kode_gelar_depan").val(response.result.kode_gelar_depan);
+                $("#p_kode_gelar_belakang").val(
+                    response.result.kode_gelar_belakang
+                );
+                $("#p_no_ijazah").val(response.result.no_ijazah);
+                $("#p_tanggal_ijazah").val(response.result.tanggal_ijazah);
+                $("#p_media_ijazah").attr(
+                    "href",
+                    "//" + response.result.media_ijazah
+                );
+            }
+        },
+    });
+    $("#modal-detail-pendidikan").modal("show");
+});

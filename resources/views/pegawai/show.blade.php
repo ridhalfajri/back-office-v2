@@ -617,6 +617,78 @@
             </div>
         </div>
     </div>
+
+    {{-- Modal Pendidikan --}}
+    <div class="modal fade" id="modal-detail-pendidikan" tabindex="-1" role="dialog"
+        aria-labelledby="modalDetailPendidikanLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Detail Pendidikan</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="col-md-12 col-lg-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label class="form-label">Pendidikan</label>
+                                    <input type="text" id="p_pendidikan" disabled=""
+                                        class="form-control mt-3 state-valid" value="">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Nama Instansi</label>
+                                    <input type="text" id="p_nama_instansi" disabled=""
+                                        class="form-control mt-3 state-valid" value="">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Propinsi</label>
+                                    <input type="text" id="p_propinsi" disabled=""
+                                        class="form-control mt-3 state-valid" value="">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Kota</label>
+                                    <input type="text" id="p_kota" disabled=""
+                                        class="form-control mt-3 state-valid" value="">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Alamat</label>
+                                    <input type="text" id="p_alamat" disabled=""
+                                        class="form-control mt-3 state-valid" value="">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Kode Gelar Depan</label>
+                                    <input type="text" id="p_kode_gelar_depan" disabled=""
+                                        class="form-control mt-3 state-valid" value="">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Kode Gelar Belakang</label>
+                                    <input type="text" id="p_kode_gelar_belakang" disabled=""
+                                        class="form-control mt-3 state-valid" value="">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">No Ijazah</label>
+                                    <input type="text" id="p_no_ijazah" disabled=""
+                                        class="form-control mt-3 state-valid" value="">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Tanggal Ijazah</label>
+                                    <input type="text" id="p_tanggal_ijazah" disabled=""
+                                        class="form-control mt-3 state-valid" value="">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">File Sertifikat</label>
+                                    <a href="#" id="p_media_ijazah" class="btn btn-primary">Download</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 @endpush
 @push('script')
     <script src="{{ asset('assets/bundles/dataTables.bundle.js') }}"></script>
