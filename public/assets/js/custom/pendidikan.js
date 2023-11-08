@@ -114,18 +114,10 @@ const delete_pendidikan = (id) => {
         }
     });
 };
-$("#modal-detail-pendidikan").on("show.bs.modal", (e) => {
-    const id = $("#btn-detail-pendidikan").data("id");
-    const url = $("#btn-detail-pendidikan").data("pendidikan");
+const show_pendidikan = (id) => {
     $.ajax({
-        url: url,
-        type: "POST",
-        headers: {
-            "X-CSRF-TOKEN": $('meta[name="csrf_token"]').attr("content"),
-        },
-        data: {
-            id: id,
-        },
+        url: "/pegawai/pendidikan/" + id,
+        type: "GET",
         success: function (response) {
             if (response.errors) {
                 if (response.errors.data) {
@@ -163,5 +155,11 @@ $("#modal-detail-pendidikan").on("show.bs.modal", (e) => {
             }
         },
     });
+};
+$("#modal-detail-pendidikan").on("show.bs.modal", (e) => {
+    const id = $(".btn-detail-pendidikan").data("id");
+    const url = $(".btn-detail-pendidikan").data("pendidikan");
+    console.log(id);
+
     $("#modal-detail-pendidikan").modal("show");
 });

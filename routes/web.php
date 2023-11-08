@@ -8,9 +8,11 @@ use App\Http\Controllers\Pegawai\PegawaiController;
 use App\Http\Controllers\GajiController;
 use App\Http\Controllers\JabatanTukinController;
 use App\Http\Controllers\JabatanUnitKerjaController;
+use App\Http\Controllers\Pegawai\AnakController;
 use App\Http\Controllers\Pegawai\PegawaiDiklatController;
 use App\Http\Controllers\Pegawai\PegawaiTmtGajiController;
 use App\Http\Controllers\Pegawai\RiwayatPendidikanController;
+use App\Http\Controllers\Pegawai\SuamiIstriController;
 use App\Http\Controllers\PropinsiController;
 use Illuminate\Support\Facades\Route;
 
@@ -53,12 +55,23 @@ Route::resource('/jabatan-unit-kerja', JabatanUnitKerjaController::class);
 
 Route::prefix('pegawai')->group(function () {
 
+    // Pasangan
+
+    Route::post('/anak/anak-by-id', [AnakController::class, 'getanakById'])->name('anak.get-anak-by-id');
+    Route::get('/anak/create/{pegawai_id}', [AnakController::class, 'create'])->name('anak.create');
+    Route::post('/anak/datatable', [AnakController::class, 'datatable'])->name('anak.datatable');
+    Route::resource('/anak', AnakController::class)->except(['create', 'show', 'index']);
+
+    // pasangan
+
+    Route::get('/pasangan/create/{pegawai_id}', [SuamiIstriController::class, 'create'])->name('pasangan.create');
+    Route::post('/pasangan/datatable', [SuamiIstriController::class, 'datatable'])->name('pasangan.datatable');
+    Route::resource('/pasangan', SuamiIstriController::class)->except(['create', 'index']);
     // Pendidikan
 
-    Route::post('/pendidikan/pendidikan-by-id', [RiwayatPendidikanController::class, 'getPendidikanById'])->name('pendidikan.get-pendidikan-by-id');
     Route::get('/pendidikan/create/{pegawai_id}', [RiwayatPendidikanController::class, 'create'])->name('pendidikan.create');
     Route::post('/pendidikan/datatable', [RiwayatPendidikanController::class, 'datatable'])->name('pendidikan.datatable');
-    Route::resource('/pendidikan', RiwayatPendidikanController::class)->except(['create']);
+    Route::resource('/pendidikan', RiwayatPendidikanController::class)->except(['create', 'index']);
 
     // Alamat
 
@@ -66,10 +79,9 @@ Route::prefix('pegawai')->group(function () {
     Route::resource('/alamat', PegawaiAlamatController::class)->only(['store']);
 
     // Diklat
-    Route::post('/diklat/diklat-by-id', [PegawaiDiklatController::class, 'getDiklatById'])->name('diklat.get-diklat-by-id');
     Route::post('/diklat/datatable', [PegawaiDiklatController::class, 'datatable'])->name('diklat.datatable');
     Route::get('/diklat/create/{pegawai_id}', [PegawaiDiklatController::class, 'create'])->name('diklat.create');
-    Route::resource('/diklat', PegawaiDiklatController::class)->except(['create', 'index', 'show']);
+    Route::resource('/diklat', PegawaiDiklatController::class)->except(['create', 'index']);
 
     // TMT Gaji
     Route::post('/tmt-gaji/tmt-gaji-by-id', [PegawaiTmtGajiController::class, 'getTmtGajiById'])->name('tmt-gaji.get-tmt-gaji-by-id');

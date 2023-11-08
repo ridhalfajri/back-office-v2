@@ -54,6 +54,10 @@
                             <a class="nav-link" id="pills-pendidikan-tab" data-toggle="pill" href="#pills-pendidikan"
                                 role="tab" aria-controls="pills-pendidikan" aria-selected="true">Pendidikan</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="pills-keluarga-tab" data-toggle="pill" href="#pills-keluarga"
+                                role="tab" aria-controls="pills-keluarga" aria-selected="true">Keluarga</a>
+                        </li>
                     </ul>
                 </div>
                 <div class="col-lg-8 col-md-12">
@@ -257,6 +261,10 @@
                         <div class="tab-pane fade" id="pills-pendidikan" role="tabpanel"
                             aria-labelledby="pills-pendidikan-tab">
                             @include('pegawai.pendidikan.pegawai-riwayat-pendidikan')
+                        </div>
+                        <div class="tab-pane fade" id="pills-keluarga" role="tabpanel"
+                            aria-labelledby="pills-keluarga-tab">
+                            @include('pegawai.keluarga.pegawai-keluarga')
                         </div>
                     </div>
                 </div>
@@ -689,6 +697,116 @@
             </div>
         </div>
     </div>
+
+    {{-- Modal Pendidikan --}}
+    <div class="modal fade bd-example-modal-lg" id="modal-detail-pasangan" tabindex="-1" role="dialog"
+        aria-labelledby="modalDetailPasanganLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Detail Pasangan</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6 col-lg-6">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="form-group">
+                                        <label class="form-label">Nama Pasangan</label>
+                                        <input type="text" id="si_nama" disabled=""
+                                            class="form-control mt-3 state-valid" value="">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">NIK</label>
+                                        <input type="text" id="si_nik" disabled=""
+                                            class="form-control mt-3 state-valid" value="">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Tempat Lahir</label>
+                                        <input type="text" id="si_tempat_lahir" disabled=""
+                                            class="form-control mt-3 state-valid" value="">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Tanggal Lahir</label>
+                                        <input type="text" id="si_tanggal_lahir" disabled=""
+                                            class="form-control mt-3 state-valid" value="">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Tanggal Kawin</label>
+                                        <input type="text" id="si_tanggal_kawin" disabled=""
+                                            class="form-control mt-3 state-valid" value="">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Jenis Kawin</label>
+                                        <input type="text" id="si_jenis_kawin" disabled=""
+                                            class="form-control mt-3 state-valid" value="">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">No Buku Nikah</label>
+                                        <input type="text" id="si_no_buku_nikah" disabled=""
+                                            class="form-control mt-3 state-valid" value="">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">No Kartu</label>
+                                        <input type="text" id="si_no_kartu" disabled=""
+                                            class="form-control mt-3 state-valid" value="">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">PNS</label>
+                                        <input type="text" id="si_is_pns" disabled=""
+                                            class="form-control mt-3 state-valid" value="">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-6">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="form-group">
+                                        <label class="form-label">Pendidikan</label>
+                                        <input type="text" id="si_pendidikan" disabled=""
+                                            class="form-control mt-3 state-valid" value="">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Pekerjaan</label>
+                                        <input type="text" id="si_pekerjaan" disabled=""
+                                            class="form-control mt-3 state-valid" value="">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Status Tunjangan</label>
+                                        <input type="text" id="si_status_tunjangan" disabled=""
+                                            class="form-control mt-3 state-valid" value="">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">No SK Cerai</label>
+                                        <input type="text" id="si_no_sk_cerai" disabled=""
+                                            class="form-control mt-3 state-valid" value="">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">TMT SK Cerai</label>
+                                        <input type="text" id="si_tmt_sk_cerai" disabled=""
+                                            class="form-control mt-3 state-valid" value="">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Buku Nikah</label>
+                                        <a href="#" id="si_media_buku_nikah" class="btn btn-primary">Download</a>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Foto Pasangan</label>
+                                        <div id="foto_pasangan"></div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 @endpush
 @push('script')
     <script src="{{ asset('assets/bundles/dataTables.bundle.js') }}"></script>
@@ -702,6 +820,7 @@
     <script src="{{ asset('assets/js/custom/alamat.js') }}"></script>
     <script src="{{ asset('assets/js/custom/tmt_gaji.js') }}"></script>
     <script src="{{ asset('assets/js/custom/pendidikan.js') }}"></script>
+    <script src="{{ asset('assets/js/custom/keluarga.js') }}"></script>
 
 
     <script>
@@ -877,6 +996,12 @@
                 url = "{{ route('pendidikan.datatable') }}"
                 pegawai_id = "{{ $pegawai->id }}"
                 get_table_pendidikan(url, pegawai_id)
+            } else if (tab_id == 'pills-keluarga-tab') {
+                url_pasangan = "{{ route('pasangan.datatable') }}"
+                url_anak = "{{ route('anak.datatable') }}"
+                pegawai_id = "{{ $pegawai->id }}"
+                get_table_pasangan(url_pasangan, pegawai_id)
+                get_table_anak(url_anak, pegawai_id)
             }
         })
     </script>

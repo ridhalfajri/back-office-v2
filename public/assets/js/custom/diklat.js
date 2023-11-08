@@ -1,15 +1,8 @@
-$("#modal-detail-diklat").on("show.bs.modal", (e) => {
-    const id = $("#btn-detail-diklat").data("id");
-    const url = $("#btn-detail-diklat").data("diklat");
+const show_diklat = (id) => {
     $.ajax({
-        url: url,
-        type: "POST",
-        headers: {
-            "X-CSRF-TOKEN": $('meta[name="csrf_token"]').attr("content"),
-        },
-        data: {
-            id: id,
-        },
+        url: "/pegawai/diklat/" + id,
+        type: "GET",
+
         success: function (response) {
             if (response.errors) {
                 if (response.errors.data) {
@@ -48,8 +41,7 @@ $("#modal-detail-diklat").on("show.bs.modal", (e) => {
             }
         },
     });
-    $("#modal-detail-diklat").modal("show");
-});
+};
 const get_table_diklat = (url) => {
     let tbl_diklat;
     tbl_diklat = $("#tbl-diklat").DataTable({
