@@ -698,7 +698,7 @@
         </div>
     </div>
 
-    {{-- Modal Pendidikan --}}
+    {{-- Modal Pasangan --}}
     <div class="modal fade bd-example-modal-lg" id="modal-detail-pasangan" tabindex="-1" role="dialog"
         aria-labelledby="modalDetailPasanganLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
@@ -799,6 +799,75 @@
                                         <div id="foto_pasangan"></div>
 
                                     </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- Modal Anak --}}
+    <div class="modal fade" id="modal-detail-anak" tabindex="-1" role="dialog" aria-labelledby="modalDetailAnakLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Detail Anak</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="col-md-12 col-lg-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label class="form-label">Nama Anak</label>
+                                    <input type="text" id="an_nama" disabled=""
+                                        class="form-control mt-3 state-valid" value="">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">NIK</label>
+                                    <input type="text" id="an_nik" disabled=""
+                                        class="form-control mt-3 state-valid" value="">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Tempat Lahir</label>
+                                    <input type="text" id="an_tempat_lahir" disabled=""
+                                        class="form-control mt-3 state-valid" value="">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Tanggal Lahir</label>
+                                    <input type="text" id="an_tanggal_lahir" disabled=""
+                                        class="form-control mt-3 state-valid" value="">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Anak Ke</label>
+                                    <input type="text" id="an_anak_ke" disabled=""
+                                        class="form-control mt-3 state-valid" value="">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Status Anak</label>
+                                    <input type="text" id="an_status_anak" disabled=""
+                                        class="form-control mt-3 state-valid" value="">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Status Tunjangan</label>
+                                    <input type="text" id="an_status_tunjangan" disabled=""
+                                        class="form-control mt-3 state-valid" value="">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Pendidikan</label>
+                                    <input type="text" id="an_pendidikan" disabled=""
+                                        class="form-control mt-3 state-valid" value="">
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">Bidang Studi</label>
+                                    <input type="text" id="an_bidang_studi" disabled=""
+                                        class="form-control mt-3 state-valid" value="">
                                 </div>
                             </div>
                         </div>

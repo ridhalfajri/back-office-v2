@@ -60,7 +60,7 @@ Route::prefix('pegawai')->group(function () {
     Route::post('/anak/anak-by-id', [AnakController::class, 'getanakById'])->name('anak.get-anak-by-id');
     Route::get('/anak/create/{pegawai_id}', [AnakController::class, 'create'])->name('anak.create');
     Route::post('/anak/datatable', [AnakController::class, 'datatable'])->name('anak.datatable');
-    Route::resource('/anak', AnakController::class)->except(['create', 'show', 'index']);
+    Route::resource('/anak', AnakController::class)->except(['create', 'index']);
 
     // pasangan
 

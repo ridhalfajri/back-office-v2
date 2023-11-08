@@ -329,7 +329,7 @@ class SuamiIstriController extends Controller
                 }
                 $pasangan->delete();
             });
-            return response()->json(['success' => 'Sukses Mengubah Data']);
+            return response()->json(['success' => 'Sukses Menghapus Data']);
         } catch (QueryException $e) {
             return response()->json(['errors' => ['connection' => 'Data gagal dihapus']]);
         }
@@ -347,9 +347,5 @@ class SuamiIstriController extends Controller
             ->addColumn('aksi', 'pegawai.keluarga.aksi-pasangan')
             ->rawColumns(['aksi'])
             ->make(true);
-    }
-
-    public function getPasanganById(Request $request)
-    {
     }
 }

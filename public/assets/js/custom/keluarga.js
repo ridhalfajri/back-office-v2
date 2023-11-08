@@ -214,7 +214,7 @@ const show_pasangan = (id) => {
 
 const delete_pasangan = (id) => {
     Swal.fire({
-        title: "Apakah anda yakin hapus diklat ini?",
+        title: "Apakah anda yakin hapus anak ini?",
         icon: "warning",
         showCancelButton: true,
         confirmButtonText: "Hapus",
@@ -250,6 +250,92 @@ const delete_pasangan = (id) => {
                             confirmButtonText: "Tutup",
                         });
                         $("#tbl-pasangan").DataTable().ajax.reload();
+                    }
+                },
+            });
+        }
+    });
+};
+
+const show_anak = (id) => {
+    $.ajax({
+        url: "/pegawai/anak/" + id,
+        type: "GET",
+        success: function (response) {
+            if (response.errors) {
+                if (response.errors.data) {
+                    Swal.fire({
+                        title: "Gagal!",
+                        text: response.errors.data,
+                        icon: "error",
+                        confirmButtonText: "Tutup",
+                    });
+                }
+                if (response.errors.connection) {
+                    Swal.fire({
+                        title: "Gagal!",
+                        text: response.errors.connection,
+                        icon: "error",
+                        confirmButtonText: "Tutup",
+                    });
+                }
+            } else {
+                $("#an_nama").val(response.result.nama);
+                $("#an_nik").val(response.result.nik);
+                $("#an_tempat_lahir").val(response.result.tempat_lahir);
+                $("#an_tanggal_lahir").val(response.result.tanggal_lahir);
+                $("#an_anak_ke").val(response.result.anak_ke);
+                $("#an_status_anak").val(response.result.status_anak);
+                $("#an_bidang_studi").val(response.result.bidang_studi);
+                $("#an_pendidikan").val(response.result.pendidikan.nama);
+                if (response.result.is_pns == 1) {
+                    $("#an_status_tunjangan").val("Aktif");
+                } else {
+                    $("#an_status_tunjangan").val("Non Aktif");
+                }
+            }
+        },
+    });
+};
+
+const delete_anak = (id) => {
+    Swal.fire({
+        title: "Apakah anda yakin hapus anak ini?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Hapus",
+        confirmButtonColor: "#DC3444",
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajax({
+                url: "/pegawai/anak/" + id,
+                type: "DELETE",
+                headers: {
+                    "X-CSRF-TOKEN": $('meta[name="csrf_token"]').attr(
+                        "content"
+                    ),
+                },
+                data: {
+                    id: id,
+                },
+                success: function (response) {
+                    if (response.errors) {
+                        if (response.errors) {
+                            Swal.fire({
+                                title: "Gagal!",
+                                text: response.errors.connection,
+                                icon: "error",
+                                confirmButtonText: "Tutup",
+                            });
+                        }
+                    } else if (response.success) {
+                        Swal.fire({
+                            title: "Dihapus!",
+                            text: response.success,
+                            icon: "success",
+                            confirmButtonText: "Tutup",
+                        });
+                        $("#tbl-anak").DataTable().ajax.reload();
                     }
                 },
             });
