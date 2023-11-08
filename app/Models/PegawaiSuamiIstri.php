@@ -24,4 +24,8 @@ class PegawaiSuamiIstri extends Model implements HasMedia
     {
         return $this->belongsTo(Pendidikan::class);
     }
+    public function jenis_kawin()
+    {
+        return $this->belongsTo(JenisKawin::class);
+    }
 }

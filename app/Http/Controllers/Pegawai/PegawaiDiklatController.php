@@ -112,7 +112,21 @@ class PegawaiDiklatController extends Controller
      */
     public function show(string $id)
     {
-        //
+        try {
+            $diklat = PegawaiRiwayatDiklat::select('id', 'jenis_diklat_id', 'tanggal_mulai', 'tanggal_akhir', 'jam_pelajaran', 'lokasi', 'penyelenggaran', 'no_sertifikat', 'tanggal_sertifikat')
+                ->where('id', $id)->first();
+            if ($diklat == null) {
+                return response()->json(['errors' => ['data' => 'Data tidak ditemukan']]);
+            }
+            $diklat->media_sertifikat = $diklat->getMedia("media_sertifikat")[0]->getUrl();
+            $diklat->tanggal_mulai = Carbon::parse($diklat->tanggal_mulai)->translatedFormat('d F Y');
+            $diklat->tanggal_akhir = Carbon::parse($diklat->tanggal_akhir)->translatedFormat('d F Y');
+            $diklat->tanggal_sertifikat = Carbon::parse($diklat->tanggal_sertifikat)->translatedFormat('d F Y');
+            $diklat->jenis_diklat->nama;
+            return response()->json(['result' => $diklat]);
+        } catch (QueryException $e) {
+            return response()->json(['errors' => ['connection' => 'Terjadi kesalahan koneksi']]);
+        }
     }
 
     /**
@@ -252,23 +266,5 @@ class PegawaiDiklatController extends Controller
             })
             ->rawColumns(['aksi'])
             ->make(true);
-    }
-    public function getDiklatById(Request $request)
-    {
-        try {
-            $diklat = PegawaiRiwayatDiklat::select('id', 'jenis_diklat_id', 'tanggal_mulai', 'tanggal_akhir', 'jam_pelajaran', 'lokasi', 'penyelenggaran', 'no_sertifikat', 'tanggal_sertifikat')
-                ->where('id', $request->id)->first();
-            if ($diklat == null) {
-                return response()->json(['errors' => ['data' => 'Data tidak ditemukan']]);
-            }
-            $diklat->media_sertifikat = $diklat->getMedia("media_sertifikat")[0]->getUrl();
-            $diklat->tanggal_mulai = Carbon::parse($diklat->tanggal_mulai)->translatedFormat('d F Y');
-            $diklat->tanggal_akhir = Carbon::parse($diklat->tanggal_akhir)->translatedFormat('d F Y');
-            $diklat->tanggal_sertifikat = Carbon::parse($diklat->tanggal_sertifikat)->translatedFormat('d F Y');
-            $diklat->jenis_diklat->nama;
-            return response()->json(['result' => $diklat]);
-        } catch (QueryException $e) {
-            return response()->json(['errors' => ['connection' => 'Terjadi kesalahan koneksi']]);
-        }
     }
 }

@@ -109,7 +109,22 @@ class RiwayatPendidikanController extends Controller
      */
     public function show(string $id)
     {
-        //
+        try {
+            $pendidikan = PegawaiRiwayatPendidikan::select('id', 'pegawai_id', 'pendidikan_id', 'nama_instansi', 'propinsi_id', 'kota_id', 'alamat', 'kode_gelar_depan', 'kode_gelar_belakang', 'no_ijazah', 'tanggal_ijazah')
+                ->where('id', $id)
+                ->first();
+            if ($pendidikan == null) {
+                return response()->json(['errors' => ['data' => 'Data tidak ditemukan']]);
+            }
+            $pendidikan->media_ijazah = $pendidikan->getMedia("media_ijazah")[0]->getUrl();
+            $pendidikan->tanggal_ijazah = Carbon::parse($pendidikan->tanggal_ijazah)->translatedFormat('d F Y');
+            $pendidikan->pendidikan->nama;
+            $pendidikan->propinsi->nama;
+            $pendidikan->kota->nama;
+            return response()->json(['result' => $pendidikan]);
+        } catch (QueryException $e) {
+            return response()->json(['errors' => ['connection' => 'Terjadi kesalahan koneksi']]);
+        }
     }
 
     /**
@@ -246,24 +261,5 @@ class RiwayatPendidikanController extends Controller
             })
             ->rawColumns(['aksi'])
             ->make(true);
-    }
-    public function getPendidikanById(Request $request)
-    {
-        $pendidikan = PegawaiRiwayatPendidikan::select('id', 'pegawai_id', 'pendidikan_id', 'nama_instansi', 'propinsi_id', 'kota_id', 'alamat', 'kode_gelar_depan', 'kode_gelar_belakang', 'no_ijazah', 'tanggal_ijazah')
-            ->where('id', $request->id)
-            ->first();
-        if ($pendidikan == null) {
-            return response()->json(['errors' => ['data' => 'Data tidak ditemukan']]);
-        }
-        $pendidikan->media_ijazah = $pendidikan->getMedia("media_ijazah")[0]->getUrl();
-        $pendidikan->tanggal_ijazah = Carbon::parse($pendidikan->tanggal_ijazah)->translatedFormat('d F Y');
-        $pendidikan->pendidikan->nama;
-        $pendidikan->propinsi->nama;
-        $pendidikan->kota->nama;
-        return response()->json(['result' => $pendidikan]);
-        try {
-        } catch (QueryException $e) {
-            return response()->json(['errors' => ['connection' => 'Terjadi kesalahan koneksi']]);
-        }
     }
 }
