@@ -10,6 +10,8 @@
         href="{{ asset('assets/plugins/datatable/fixedeader/dataTables.fixedheader.bootstrap4.min.css') }}">
     {{-- DateRange --}}
     <link rel="stylesheet" href="{{ asset('assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker3.min.css') }}" />
+    {{-- File Upload --}}
+    <link rel="stylesheet" href="{{ asset('assets/plugins/dropify/css/dropify.min.css') }}">
 @endpush
 @section('content')
     <div class="section-body">
@@ -57,6 +59,10 @@
                         <li class="nav-item">
                             <a class="nav-link" id="pills-keluarga-tab" data-toggle="pill" href="#pills-keluarga"
                                 role="tab" aria-controls="pills-keluarga" aria-selected="true">Keluarga</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="pills-penghargaan-tab" data-toggle="pill" href="#pills-penghargaan"
+                                role="tab" aria-controls="pills-penghargaan" aria-selected="true">Penghargaan</a>
                         </li>
                     </ul>
                 </div>
@@ -265,6 +271,10 @@
                         <div class="tab-pane fade" id="pills-keluarga" role="tabpanel"
                             aria-labelledby="pills-keluarga-tab">
                             @include('pegawai.keluarga.pegawai-keluarga')
+                        </div>
+                        <div class="tab-pane fade" id="pills-penghargaan" role="tabpanel"
+                            aria-labelledby="pills-penghargaan-tab">
+                            @include('pegawai.penghargaan.pegawai-penghargaan')
                         </div>
                     </div>
                 </div>
@@ -876,6 +886,80 @@
             </div>
         </div>
     </div>
+
+    {{-- Modal Penghargaan --}}
+    <div class="modal fade" id="modal-tambah-penghargaan" tabindex="-1" role="dialog"
+        aria-labelledby="modalDetailPenghargaanLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Tambah Penghargaan</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form id="form-penghargaan" action="{{ route('penghargaan.store') }}" method="POST"
+                    enctype="multipart/form-data" autocomplete="off">
+                    @csrf
+                    <div class="modal-body">
+                        <div class="col-md-12 col-lg-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <input type="hidden" id="id_penghargaan" name="id_penghargaan">
+                                    <input type="hidden" name="pegawai_id" value="{{ $pegawai->id }}">
+                                    <div class="form-group multiselect_div">
+                                        <label class="form-label">Penghargaan</label>
+                                        <select id="penghargaan_id" name="penghargaan_id"
+                                            class="select-filter multiselect multiselect-custom">
+                                            <option selected value="">-- Pilih Kota --</option>
+                                        </select>
+                                        <small class="text-danger" id="error_penghargaan_id"></small>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Nomor SK</label>
+                                        <input type="text" id="no_sk" name="no_sk"
+                                            class="form-control mt-3 state-valid" value=""
+                                            placeholder="Nomor SK">
+                                        <small class="text-danger" id="error_no_sk"></small>
+
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Tanggal SK</label>
+                                        <div class="input-group">
+                                            <input data-provide="datepicker" id="tanggal_sk" name="tanggal_sk"
+                                                data-date-autoclose="true" data-date-format="dd-mm-yyyy"
+                                                class="form-control datepicker" placeholder="Tanggal SK">
+                                        </div>
+                                        <small class="text-danger" id="error_tanggal_sk"></small>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Tahun</label>
+                                        <input type="number" id="tahun" min="0" step="0.01"
+                                            oninput="limitDigits(this, 4);" class="form-control state-valid"
+                                            value="" name="tahun" placeholder="Tahun">
+                                        <small class="text-danger" id="error_tahun"></small>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">SK Penghargaan</label>
+                                        <div class="input-group">
+                                            <input type="file" id="media_sk_penghargaan"
+                                                name="media_sk_penghargaan">
+                                            <small class="text-danger" id="error_media_sk_penghargaan"></small>
+                                            <a href="" id="download_media_sk_penghargaan">Download</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+                        <button type="submit" class="btn btn-primary">Simpan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 @endpush
 @push('script')
     <script src="{{ asset('assets/bundles/dataTables.bundle.js') }}"></script>
@@ -885,11 +969,14 @@
     <script src="{{ asset('assets/plugins/multi-select/js/jquery.multi-select.js') }}"></script>
     {{-- DateRange --}}
     <script src="{{ asset('assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
+    {{-- File Upload --}}
+    <script src="{{ asset('assets/plugins/dropify/js/dropify.min.js') }}"></script>
     <script src="{{ asset('assets/js/custom/diklat.js') }}"></script>
     <script src="{{ asset('assets/js/custom/alamat.js') }}"></script>
     <script src="{{ asset('assets/js/custom/tmt_gaji.js') }}"></script>
     <script src="{{ asset('assets/js/custom/pendidikan.js') }}"></script>
     <script src="{{ asset('assets/js/custom/keluarga.js') }}"></script>
+    <script src="{{ asset('assets/js/custom/penghargaan.js') }}"></script>
 
 
     <script>
@@ -1071,6 +1158,10 @@
                 pegawai_id = "{{ $pegawai->id }}"
                 get_table_pasangan(url_pasangan, pegawai_id)
                 get_table_anak(url_anak, pegawai_id)
+            } else if (tab_id == 'pills-penghargaan-tab') {
+                url = "{{ route('penghargaan.datatable') }}"
+                pegawai_id = "{{ $pegawai->id }}"
+                get_table_penghargaan(url, pegawai_id)
             }
         })
     </script>

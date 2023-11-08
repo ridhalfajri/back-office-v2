@@ -11,6 +11,7 @@ use App\Http\Controllers\JabatanUnitKerjaController;
 use App\Http\Controllers\Pegawai\AnakController;
 use App\Http\Controllers\Pegawai\PegawaiDiklatController;
 use App\Http\Controllers\Pegawai\PegawaiTmtGajiController;
+use App\Http\Controllers\Pegawai\PenghargaanController;
 use App\Http\Controllers\Pegawai\RiwayatPendidikanController;
 use App\Http\Controllers\Pegawai\SuamiIstriController;
 use App\Http\Controllers\PropinsiController;
@@ -54,6 +55,13 @@ Route::resource('/jabatan-unit-kerja', JabatanUnitKerjaController::class);
 
 
 Route::prefix('pegawai')->group(function () {
+
+    // Penghargaan
+
+    Route::post('/penghargaan/sk-penghargaan', [PenghargaanController::class, 'sk_penghargaan'])->name('penghargaan.sk-penghargaan');
+    Route::get('/penghargaan/create/{pegawai_id}', [PenghargaanController::class, 'create'])->name('penghargaan.create');
+    Route::post('/penghargaan/datatable', [PenghargaanController::class, 'datatable'])->name('penghargaan.datatable');
+    Route::resource('/penghargaan', PenghargaanController::class)->except(['create', 'index']);
 
     // Pasangan
 
@@ -102,6 +110,7 @@ Route::prefix('pegawai')->group(function () {
     ])->parameters(['' => 'id'])->only(['index', 'show']);
 });
 Route::prefix('data')->group(function () {
+    Route::post('/penghargaan/get-penghargaan', [PenghargaanController::class, 'get_penghargaan'])->name('gaji.get-penghargaan');
     Route::post('propinsi', [PropinsiController::class, 'getPropinsi'])->name('propinsi.data');
     Route::post('kota', [KotaController::class, 'getKota'])->name('kota.data');
     Route::post('kecamatan', [KecamatanController::class, 'getKecamatan'])->name('kecamatan.data');

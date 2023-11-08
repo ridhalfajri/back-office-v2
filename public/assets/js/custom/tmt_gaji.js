@@ -1,6 +1,6 @@
 const get_table_tmt_gaji = (url, pegawai_id) => {
-    let tbl_diklat;
-    tbl_diklat = $("#tbl-tmt-gaji").DataTable({
+    let tbl_tmt_gaji;
+    tbl_tmt_gaji = $("#tbl-tmt-gaji").DataTable({
         processing: true,
         destroy: true,
         serverSide: true,
@@ -52,9 +52,9 @@ const get_table_tmt_gaji = (url, pegawai_id) => {
         order: [[1, "asc"]],
     });
 
-    tbl_diklat.on("draw.dt", function () {
-        var info = tbl_diklat.page.info();
-        tbl_diklat
+    tbl_tmt_gaji.on("draw.dt", function () {
+        var info = tbl_tmt_gaji.page.info();
+        tbl_tmt_gaji
             .column(0, {
                 search: "applied",
                 order: "applied",
