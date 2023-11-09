@@ -36,18 +36,13 @@ Route::get('/', function () {
     return view('try', compact('title'));
 });
 
-
+// Gaji Pegawai
+Route::get('/gaji/get-golongan', [GajiController::class, 'getGolongan'])->name('gaji.get-golongan');
 Route::post('/gaji/datatable', [GajiController::class, 'datatable'])->name('gaji.datatable');
-Route::resource('/gaji', GajiController::class);
-
-Route::post('/jabatan-tukin/datatable', [JabatanTukinController::class, 'datatable'])->name('jabatan-tukin.datatable');
-
-
-Route::get('/gaji/datatable', [GajiController::class, 'datatable'])->name('gaji.datatable');
 Route::post('/gaji/get-gaji', [GajiController::class, 'get_gaji'])->name('gaji.get-gaji');
 Route::resource('/gaji', GajiController::class);
 
-Route::get('/jabatan-tukin/datatable', [JabatanTukinController::class, 'datatable'])->name('jabatan-tukin.datatable');
+Route::post('/jabatan-tukin/datatable', [JabatanTukinController::class, 'datatable'])->name('jabatan-tukin.datatable');
 Route::resource('/jabatan-tukin', JabatanTukinController::class);
 
 Route::get('/jabatan-unit-kerja/datatable', [JabatanUnitKerjaController::class, 'datatable'])->name('jabatan-unit-kerja.datatable');

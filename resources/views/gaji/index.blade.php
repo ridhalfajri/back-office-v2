@@ -2,87 +2,70 @@
 
 @push('style')
 <!-- Data Tables -->
-<!-- Plugins css -->
 <link rel="stylesheet" href="{{ asset('assets/plugins/datatable/dataTables.bootstrap4.min.css') }}">
-<link rel="stylesheet"
-    href="{{ asset('assets/plugins/datatable/fixedeader/dataTables.fixedcolumns.bootstrap4.min.css') }}">
-<link rel="stylesheet"
-    href="{{ asset('assets/plugins/datatable/fixedeader/dataTables.fixedheader.bootstrap4.min.css') }}">
-{{-- custom css datatable --}}
+<link rel="stylesheet" href="{{ asset('assets/plugins/datatable/fixedeader/dataTables.fixedcolumns.bootstrap4.min.css') }}">
+<link rel="stylesheet" href="{{ asset('assets/plugins/datatable/fixedeader/dataTables.fixedheader.bootstrap4.min.css') }}">
+<!-- custom css datatable -->
 <link rel="stylesheet" href="{{ asset('assets/plugins/datatable/custom.css') }}">
+<link rel="stylesheet" href="{{ asset('assets/plugins/sweetalert/sweetalert.css') }}">
 <!-- Toastr -->
 <link rel="stylesheet" href="{{ asset('assets/plugins/toastr/toastr.css') }}">
-
-
 @endpush
 
 @push('breadcrumb')
-        <ol class="breadcrumb custom-background-color">
-            <li class="breadcrumb-item"><a href="{{ route('gaji.index') }}"><i class="fa fa-home"></i></a></li>
-            <!-- <li class="breadcrumb-item"><a href="#">Gaji</a></li>        -->
-            <li class="breadcrumb-item active" aria-current="page">{{ $title }}</li>
-        </ol>
+    <div class="btn-group btn-breadcrumb">
+        <a href="/" class="btn btn-primary"><i class="fa fa-home"></i></a>
+        <a href="/gaji" class="btn btn-info"><i class="fa fa-list"></i> Gaji</a>
+        <a href="/gaji/create" class="btn btn-success"><i class="fa fa-plus"></i> Gaji Baru</a>
+        {{-- <a href="/gaji" class="btn btn-outline-danger"><i class="fa fa-chevron-circle-left"></i> Kembali</a> --}}
+    </div>
 @endpush
 
 @section('content')
-
-        <div class="container-fluid">
-            <div class="row clearfix">
-                <div class="col-lg-12">
-                    <div class="card">
-                        <div class="card-header">
-                            <h4 class="card-title">
-                                <button type="button" class="btn btn-xs btn-primary" id="btn-add" onclick="window.location.href = '{{ route("gaji.create") }}';"><i class="fa fa-plus"></i> Tambah</button>
-                            </h4>
-                        </div>
-                        <div class="card-body">
-                            <table id="tbl-data" class="table table-compact" style="width:100%">
-                                <thead>
-                                    <tr>
-                                        <th>No.</th>
-                                        <th>Masa kerja</th>
-                                        <th>Nominal</th>
-                                        <th>Golongan</th>
-                                        <th style="width: 40px">Aksi</th>
-                                    </tr>
-                                </thead>
-                                <tbody></tbody>
-
-                                <tfoot>
-                                    <tr>
-                                        <th>No.</th>
-                                        <th>Masa kerja</th>
-                                        <th>Nominal</th>
-                                        <th>Golongan</th>
-                                        <th style="width: 40px">Aksi</th>
-                                    </tr>
-                                </tfoot>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <div class="section-body">
+    <div class="card">
+        {{-- <div class="card-header">
+            <h4 class="card-title">
+                <button type="button" class="btn btn-xs btn-primary" id="btn-add" onclick="window.location.href = '{{ route("gaji.create") }}';"><i class="fa fa-plus"></i> Tambah</button>
+            </h4>
+            <!-- /.card-title -->
+        </div> --}}
+        <div class="card-body">
+            <!-- /.dropdown js__dropdown -->
+            <table id="tbl-data" class="table table-striped table-bordered display" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>No.</th>
+						<th>golongan_id</th>
+						<th>masa_kerja</th>
+						<th>nominal</th>
+                         <th style="width: 40px">aksi</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+                <tfoot>
+                    <tr>
+                        <th>No.</th>
+						<th>golongan</th>
+						<th>masa_kerja</th>
+						<th>nominal</th>
+                         <th style="width: 40px">aksi</th>
+                    </tr>
+                </tfoot>
+            </table>
         </div>
-
+        <!-- /.box-content -->
+    </div>
+    <!-- /.col-12 -->
+</div>
 @endsection
 
 @push('script')
-<!-- Data Tables -->
-
-
-<script src="{{ asset('assets/plugins/sweetalert2/sweetalert2.all.min.js') }}"></script>
+<script src="{{ asset('assets/plugins/sweetalert/sweetalert.min.js') }}"></script>
 <script src="{{ asset('assets/bundles/dataTables.bundle.js') }}"></script>
 <script src="{{ asset('assets/js/table/datatable.js') }}"></script>
-
-{{-- <script src="{{ asset('assets/plugins/datatable/extensions/Responsive/js/dataTables.responsive.min.js') }}" type="text/javascript"></script>
-<script src="{{ asset('assets/plugins/datatable/extensions/Responsive/js/responsive.bootstrap.min.js') }}" type="text/javascript"></script> --}}
-
 <script src="{{ asset('assets/plugins/toastr/toastr.min.js') }}" type="text/javascript"></script>
-<script>
-    $(document).ready(function() {
 
-        });
-</script>
 <script type="text/javascript">
     "use strict"
 
@@ -114,7 +97,6 @@
 
         table = $('#tbl-data').DataTable({
             processing: true,
-            destroy: true,
             serverSide: true,
             deferRender: true,
             responsive: true,
@@ -129,31 +111,27 @@
                 type: 'POST',
                 headers: {
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                error: function(xhr, error, thrown) {
-                    console.log("DataTables error: " + error);
-                    console.log("Server error: " + thrown);
-                    // Display an error message to the user
                 }
             },
-            columns: [{
+            columns: [
+                {
                     data: 'no',
                     name: 'no',
                     class: 'text-center'
                 },
 				{
+                    data: 'nama',
+                    name: 'nama',
+                    class: 'text-center'
+                },
+				{
                     data: 'masa_kerja',
-                    name: 'masa_kerja',
+                    name: 'Masa Kerja',
                     class: 'text-center'
                 },
 				{
                     data: 'nominal',
-                    name: 'nominal',
-                    class: 'text-center'
-                },
-                {
-                    data: 'nama',
-                    name: 'golongan.nama',
+                    name: 'Nominal',
                     class: 'text-center'
                 },
                 {

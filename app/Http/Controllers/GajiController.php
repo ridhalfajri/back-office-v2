@@ -3,20 +3,33 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Validator;
-use Intervention\Image\Facades\Image;
 use App\Models\Gaji;
+use App\Models\Golongan;
 use Illuminate\Database\QueryException;
-
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Redirect;
 use Yajra\Datatables\Datatables;
-
 
 class GajiController extends Controller
 {
+
+    public function getGolongan(Request $request)
+    {
+
+        try {
+            $data = Golongan::select('id', 'nama','nama_pangkat')->orderBy('nama', 'asc')->get();
+            echo "<option value=''>-- Pilih Gaji --</option>";
+            foreach ($data as $item) {
+                if ($request->golongan_id != null && $request->golongan_id == $item->id) {
+                    echo "<option value='" . $item->id . "' selected> Gol: " . $item->nama . " | " . $item->nama_pangkat ."</option>";
+                } else {
+                    echo "<option value='" . $item->id . "'>" . $item->nama . " | " . $item->nama_pangkat ."</option>";
+                }
+            }
+        } catch (QueryException $e) {
+            abort(500);
+        }
+
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -43,8 +56,10 @@ class GajiController extends Controller
             ->addColumn('no', '')
             // ->addColumn('aksi', '')
             ->addColumn('aksi', function ($row) {
-                $editButton = '<button class="btn btn-sm btn-icon btn-warning on-default edit-btn" data-id="' . $row->id . '"><i class="fa fa-pencil"></i></button>';
-                $deleteButton = '<button class="btn btn-sm btn-icon btn-danger on-default delete-btn" data-id="' . $row->id . '"><i class="fa fa-trash"></i></button>';
+
+                $editButton = '<a href="'.route('gaji.edit',  $row->id).'" class="btn btn-sm btn-icon btn-warning on-default edit" title="Ubah"><i class="fa fa-edit text-white"></i></a>';
+                // $editButton = '<button class="btn btn-sm btn-icon btn-warning on-default edit" data-id="' . $row->id . '"><i class="fa fa-pencil"></i></button>';
+                $deleteButton = '<button class="btn btn-sm btn-icon btn-danger on-default delete" data-id="' . $row->id . '" title="Hapus"><i class="fa fa-trash"></i></button>';
 
                 return '<div style="display: inline-block; white-space: nowrap; margin: 0 10px;">' . $editButton . ' ' . $deleteButton . '</div>';
             })
@@ -53,15 +68,17 @@ class GajiController extends Controller
                 return $row->masa_kerja . ' Tahun';
             })
             ->filterColumn('masa_kerja', function ($query, $keyword) {
-                $query->whereRaw("CONCAT(masa_kerja,' Tahun') like ?", ["%$keyword%"]);
+                $query->whereRaw("CONCAT(masa_kerja,' Tahun') like ?", ["%$keyword%"])
+                      ->orWhereRaw("masa_kerja LIKE ?", ["%$keyword%"]);
             })
             ->editColumn('nominal', function ($row) {
                 // Format the data as needed here
                 $nom =  (float)$row->nominal;
-                return "Rp. " . number_format($nom, 2, ',', ',');
+                return "Rp. " . number_format($nom, 0, ',', '.');
             })
             ->filterColumn('nominal', function ($query, $keyword) {
-                $query->whereRaw("CONCAT('Rp. ', FORMAT(nominal, 0)) like ?", ["%$keyword%"]);
+                $query->whereRaw("CONCAT('Rp. ', REPLACE(FORMAT(nominal, 0), ',', '.')) like ?", ["%$keyword%"])
+                      ->orWhereRaw("nominal LIKE ?", ["%$keyword%"]);
             })
 
             ->rawColumns(['aksi'])
@@ -76,9 +93,9 @@ class GajiController extends Controller
      */
     public function create()
     {
-        $title = 'Gaji';
-
-        return view('gaji.create', compact('title'));
+        $title = 'Tambah Gaji';
+        $golongan = Golongan::select('id', 'nama','nama_pangkat')->orderBy('nama', 'asc')->get();
+        return view('gaji.create', compact('title','golongan'));
     }
 
     /**
@@ -89,21 +106,28 @@ class GajiController extends Controller
      */
     public function store(Request $request)
     {
-        $this->validate($request, [
-            'golongan_id' => 'required',
-            'masa_kerja' => 'required',
-            'nominal' => 'required',
+        try {
+            $this->validate($request, [
+                'golongan_id' => 'required',
+                'masa_kerja' => 'required',
+                'nominal' => 'required',
 
-        ]);
+            ]);
 
-        $input = [];
-        $input['golongan_id'] = $request->golongan_id;
-        $input['masa_kerja'] = $request->masa_kerja;
-        $input['nominal'] = $request->nominal;
-        Gaji::create($input);
+            $input = [];
+            $input['golongan_id'] = $request->golongan_id;
+            $input['masa_kerja'] = $request->masa_kerja;
+            $input['nominal'] = $request->nominal;
+            Gaji::create($input);
 
-        return redirect()->route('gaji.index')
-            ->with('success', 'Data Gaji berhasil disimpan');
+            return redirect()->route('gaji.index')
+                ->with('success', 'Data Gaji berhasil disimpan');
+        }catch (QueryException $e) {
+            $msg = $e->getMessage();
+            return redirect()->route('gaji.index')
+                ->with('error', 'Simpan data Gaji gagal, Error: ' . $msg);
+        }
+
     }
 
     /**
@@ -126,33 +150,40 @@ class GajiController extends Controller
     public function edit(Gaji $gaji)
     {
         $title = 'Edit Gaji';
-
-        return view('gaji.edit', compact('title'), 'gaji');
+        $golongan = Golongan::select('id', 'nama','nama_pangkat')->orderBy('nama', 'asc')->get();
+        return view('gaji.edit', compact('title', 'gaji','golongan'));
     }
 
     /* Update the specified resource in storage.
     *
     * @param  \Illuminate\Http\Request  $request
-    * @param  \App\Models\Models\BidangProfisiensi  $bidangProfisiensi
+    *
     * @return \Illuminate\Http\Response
     */
     public function update(Request $request, Gaji $gaji)
-
     {
-        $this->validate($request, [
-            'golongan_id' => 'required',
-            'masa_kerja' => 'required',
-            'nominal' => 'required',
-        ]);
+        try {
+
+            $this->validate($request, [
+                'golongan_id' => 'required',
+                'masa_kerja' => 'required',
+                'nominal' => 'required',
+            ]);
+
+            $gaji->golongan_id = $request->golongan_id;
+            $gaji->masa_kerja = $request->masa_kerja;
+            $gaji->nominal = $request->nominal;
+            $gaji->save();
+
+            return redirect()->route('gaji.index')
+                ->with('success', 'Data Gaji berhasil diubah');
+        } catch (QueryException $e) {
+            $msg = $e->getMessage();
+            return redirect()->route('gaji.index')
+                ->with('error', 'Ubah data Gaji gagal, Error: ' . $msg);
+        }
 
 
-        $gaji->golongan_id = $request->golongan_id;
-        $gaji->masa_kerja = $request->masa_kerja;
-        $gaji->nominal = $request->nominal;
-        $gaji->save();
-
-        return redirect()->route('gaji.index')
-            ->with('success', 'Data Gaji berhasil diupdate');
     }
 
     /**
@@ -164,9 +195,26 @@ class GajiController extends Controller
      */
     public function destroy(Gaji $gaji)
     {
-        $gaji->delete();
-        return redirect()->route('gaji.index')
-            ->with('success', 'Delete data Gaji berhasil');
+        $blnValue = false;
+        $msg = "";
+        try {
+            $gaji->delete();
+            $msg = "Data berhasil dihapus";
+        } catch (QueryException $e) {
+            $blnValue = true;
+            $msg = $e->getMessage();;
+        }
+
+
+        $data = [
+            'status' => [
+                'error' => $blnValue ,
+                'message' => $msg, // You can also include an error message
+            ],
+        ];
+
+        return response()->json($data, 200);
+
     }
 
     public function get_gaji(Request $request)
