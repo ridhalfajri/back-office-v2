@@ -13,7 +13,8 @@
                             <a class="dropdown-item" href="page-profile.html"><i class="dropdown-icon fe fe-user"></i>
                                 Profile</a>
                             <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="login.html"><i class="dropdown-icon fe fe-log-out"></i> Sign
+                            <a class="dropdown-item" href="{{ route('logout.ldap') }}"><i
+                                    class="dropdown-icon fe fe-log-out"></i> Sign
                                 out</a>
                         </div>
                     </div>
