@@ -8,6 +8,7 @@ use App\Http\Controllers\Pegawai\PegawaiController;
 use App\Http\Controllers\GajiController;
 use App\Http\Controllers\JabatanTukinController;
 use App\Http\Controllers\JabatanUnitKerjaController;
+use App\Http\Controllers\LdapController;
 use App\Http\Controllers\Pegawai\AnakController;
 use App\Http\Controllers\Pegawai\PegawaiDiklatController;
 use App\Http\Controllers\Pegawai\PegawaiTmtGajiController;
@@ -31,10 +32,16 @@ use Illuminate\Support\Facades\Route;
 Route::get('/welcome', function () {
     return view('welcome');
 });
-Route::get('/', function () {
-    $title = "Home";
+Route::get('/dashboard', function () {
+    $title = 'Halaman Dashboard';
     return view('try', compact('title'));
+})->name('dashboard');
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [LdapController::class, 'showLoginForm'])->name('login.page');
+    Route::post('/login', [LdapController::class, 'login'])->name('login.check');
 });
+Route::get('/logout', [LdapController::class, 'logout'])->name('logout.ldap');
+
 
 
 Route::post('/gaji/datatable', [GajiController::class, 'datatable'])->name('gaji.datatable');
