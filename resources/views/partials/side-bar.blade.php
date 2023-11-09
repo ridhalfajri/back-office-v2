@@ -5,6 +5,7 @@
         <li><a href="{{ route('pegawai.index') }}"><i class="icon-users"></i><span>Pegawai</span></a></li>
         <li><a href="{{ route('gaji.index') }}"><i class="icon-home"></i><span>Gaji Pegawai</span></a></li>
         <li><a href="{{ route('jabatan-tukin.index') }}"><i class="icon-email"></i><span>Jabatan Tukin</span></a></li>
+        <li><a href="{{ route('jabatan-unit-kerja.index') }}"><i class="icon-email"></i><span>Jabatan Unit Kerja</span></a></li>
 
         <li>
             <a href="javascript:void(0)" class="has-arrow"><i class="icon-lock"></i><span>Authentication</span></a>

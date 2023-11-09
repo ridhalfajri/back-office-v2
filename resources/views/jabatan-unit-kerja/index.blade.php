@@ -1,21 +1,23 @@
-@extends('template')
+@extends('layout')
 
-@push('styles')
+@push('style')
 <!-- Data Tables -->
-<link rel="stylesheet" href="{{ asset('assets/plugin/datatables/dataTables.bootstrap4.min.css') }}">
-<link rel="stylesheet" href="{{ asset('assets/plugin/datatables/extensions/Responsive/css/responsive.bootstrap.min.css') }}">
+<link rel="stylesheet" href="{{ asset('assets/plugins/datatable/dataTables.bootstrap4.min.css') }}">
+<link rel="stylesheet" href="{{ asset('assets/plugins/datatable/fixedeader/dataTables.fixedcolumns.bootstrap4.min.css') }}">
+<link rel="stylesheet" href="{{ asset('assets/plugins/datatable/fixedeader/dataTables.fixedheader.bootstrap4.min.css') }}">
+<!-- custom css datatable -->
+<link rel="stylesheet" href="{{ asset('assets/plugins/datatable/custom.css') }}">
+<link rel="stylesheet" href="{{ asset('assets/plugins/sweetalert/sweetalert.css') }}">
 <!-- Toastr -->
-<link rel="stylesheet" href="{{ asset('assets/plugin/toastr/toastr.css') }}">
+<link rel="stylesheet" href="{{ asset('assets/plugins/toastr/toastr.css') }}">
 @endpush
 
-@push('breadcrumb')
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
+@push('breadcrumb')   
+        <ol class="breadcrumb custom-background-color">
             <li class="breadcrumb-item"><a href="{{ route('jabatan-unit-kerja.index') }}"><i class="fa fa-home"></i></a></li>
             <!-- <li class="breadcrumb-item"><a href="#">Jabatan Unit Kerja</a></li>        -->
             <li class="breadcrumb-item active" aria-current="page">{{ $title }}</li>
         </ol>
-    </nav>
 @endpush
 
 @section('content')
@@ -27,22 +29,24 @@
             </h4>
             <!-- /.card-title -->
         </div>
-        <div class="card-body">
+        <div class="card-body">            
             <!-- /.dropdown js__dropdown -->
             <table id="tbl-data" class="table table-striped table-bordered display" style="width:100%">
                 <thead>
                     <tr>
                         <th>No.</th>
-						<th>jabatan_tukin_id</th>
 						<th>hirarki_unit_kerja_id</th>
+						<th>jabatan_tukin_id</th>
+                         <th style="width: 40px">aksi</th>
                     </tr>
                 </thead>
                 <tbody></tbody>
                 <tfoot>
                     <tr>
                         <th>No.</th>
-						<th>jabatan_tukin_id</th>
 						<th>hirarki_unit_kerja_id</th>
+						<th>jabatan_tukin_id</th>
+                         <th style="width: 40px">aksi</th>
                     </tr>
                 </tfoot>
             </table>
@@ -53,13 +57,12 @@
 </div>
 @endsection
 
-@push('scripts')
-<!-- Data Tables -->
-<script src="{{ asset('assets/plugin/datatables/jquery.dataTables.min.js') }}" type="text/javascript"></script>
-<script src="{{ asset('assets/plugin/datatables/dataTables.bootstrap4.min.js') }}" type="text/javascript"></script>
-<script src="{{ asset('assets/plugin/datatables/extensions/Responsive/js/dataTables.responsive.min.js') }}" type="text/javascript"></script>
-<script src="{{ asset('assets/plugin/datatables/extensions/Responsive/js/responsive.bootstrap.min.js') }}" type="text/javascript"></script>
-<script src="{{ asset('assets/plugin/toastr/toastr.min.js') }}" type="text/javascript"></script>
+@push('script')
+<script src="{{ asset('assets/plugins/sweetalert/sweetalert.min.js') }}"></script>
+<script src="{{ asset('assets/bundles/dataTables.bundle.js') }}"></script>
+<script src="{{ asset('assets/js/table/datatable.js') }}"></script>
+<script src="{{ asset('assets/plugins/toastr/toastr.min.js') }}" type="text/javascript"></script>
+
 <script type="text/javascript">
     "use strict"
 
@@ -107,24 +110,20 @@
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
                 }
             },
-            columns: [{
-                    data: 'no',
-                    name: 'no',
-                    class: 'text-center'
-                },
+            columns: [
                 {
                     data: 'no',
                     name: 'no',
                     class: 'text-center'
                 },
 				{
-                    data: 'jabatan_tukin_id',
-                    name: 'Jabatan Tukin Id',
+                    data: 'hirarki_unit_kerja_id',
+                    name: 'Hirarki Unit Kerja Id',
                     class: 'text-center'
                 },
 				{
-                    data: 'hirarki_unit_kerja_id',
-                    name: 'Hirarki Unit Kerja Id',
+                    data: 'jabatan_tukin_id',
+                    name: 'Jabatan Tukin Id',
                     class: 'text-center'
                 },
                 {

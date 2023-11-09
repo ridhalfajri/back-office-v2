@@ -3,11 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Validator;
 use Yajra\Datatables\Datatables;
-use Intervention\Image\Facades\Image;
+use Illuminate\Database\QueryException;
 use App\Models\JabatanUnitKerja;
 
 class JabatanUnitKerjaController extends Controller
@@ -29,8 +26,14 @@ class JabatanUnitKerjaController extends Controller
         $data = JabatanUnitKerja::all();
 
         return Datatables::of($data)
-            ->addColumn('no', '')
-            ->addColumn('aksi', 'jabatan-unit-kerja.aksi')
+            ->addColumn('no', '')       
+            ->addColumn('aksi', function ($row) {
+
+                $editButton = '<a href="'.route('jabatan-unit-kerja.edit',  $row->id).'" class="btn btn-sm btn-icon btn-warning on-default edit" title="Ubah"><i class="fa fa-pencil text-white"></i></a>';
+                $deleteButton = '<button class="btn btn-sm btn-icon btn-danger on-default delete" data-id="' . $row->id . '" title="Hapus"><i class="fa fa-trash"></i></button>';
+
+                return '<div style="display: inline-block; white-space: nowrap; margin: 0 10px;">' . $editButton . ' ' . $deleteButton . '</div>';
+            })
             ->rawColumns(['aksi'])
             ->make(true);
     }
@@ -55,19 +58,26 @@ class JabatanUnitKerjaController extends Controller
     * @return \Illuminate\Http\Response
     */
     public function store(Request $request)
-    {  
-        $this->validate($request, [
-				'jabatan_tukin_id' => 'required',
+    {
+        try {
+            $this->validate($request, [
 				'hirarki_unit_kerja_id' => 'required',
-        ]);   
+				'jabatan_tukin_id' => 'required',
+            ]);   
             
-        $input = [];
-			$input['jabatan_tukin_id'] = $request->jabatan_tukin_id;
+            $input = [];
 			$input['hirarki_unit_kerja_id'] = $request->hirarki_unit_kerja_id;
-        JabatanUnitKerja::create($input);
+			$input['jabatan_tukin_id'] = $request->jabatan_tukin_id;
+            JabatanUnitKerja::create($input);
 
-        return redirect()->route('jabatan-unit-kerja.index')
-        ->with('success', 'Data Jabatan Unit Kerja berhasil disimpan');
+            return redirect()->route('jabatan-unit-kerja.index')
+            ->with('success', 'Data Jabatan Unit Kerja berhasil disimpan');            
+        }catch (QueryException $e) {
+            $msg = $e->getMessage();          
+            return redirect()->route('jabatan-unit-kerja.index')
+            ->with('error', 'Simpan data Jabatan Unit Kerja gagal, Err: ' . $msg);
+        }
+
     }
 
     /**
@@ -103,30 +113,50 @@ class JabatanUnitKerjaController extends Controller
     */
     public function update(Request $request,JabatanUnitKerja $jabatanUnitKerja)
     {  
-        $this->validate($request, [
-				'jabatan_tukin_id' => 'required',
+        try {
+            $this->validate($request, [
 				'hirarki_unit_kerja_id' => 'required',
-        ]);
-
-
-			$jabatanUnitKerja->jabatan_tukin_id = $request->jabatan_tukin_id;
+				'jabatan_tukin_id' => 'required',
+            ]);
+    
 			$jabatanUnitKerja->hirarki_unit_kerja_id = $request->hirarki_unit_kerja_id;
-        $jabatanUnitKerja->save();
+			$jabatanUnitKerja->jabatan_tukin_id = $request->jabatan_tukin_id;
+            $jabatanUnitKerja->save();
 
-        return redirect()->route('jabatan-unit-kerja.index')
-        ->with('success', 'Data Jabatan Unit Kerja berhasil diupdate');
+            return redirect()->route('jabatan-unit-kerja.index')
+            ->with('success', 'Data Jabatan Unit Kerja berhasil diupdate');                
+        } catch (QueryException $e) {
+            $msg = $e->getMessage();          
+            return redirect()->route('jabatan-unit-kerja.index')
+            ->with('error', 'Ubah data Jabatan Unit Kerja gagal, Err: ' . $msg);
+        }        
     }
 
     /**
     * Remove the specified resource from storage.
     *
-    * @param  \App\Models\Models\BidangProfisiensi  $bidangProfisiensi
+    * @param 
     * @return \Illuminate\Http\Response
     */        
     public function destroy(JabatanUnitKerja $jabatanUnitKerja)
-    {           
-        $jabatanUnitKerja->delete();
-        return redirect()->route('jabatan-unit-kerja.index')
-        ->with('success', 'Delete data Jabatan Unit Kerja berhasil');
+    {         
+        $blnValue = false;
+        $msg = "";
+        try {
+            $jabatanUnitKerja->delete();
+            $msg = "Data berhasil dihapus";
+        } catch (QueryException $e) {
+            $blnValue = true;
+            $msg = $e->getMessage();
+        }
+
+        $data = [
+            'status' => [
+                'error' => $blnValue ,
+                'message' => $msg, // You can also include an error message
+            ],
+        ];
+
+        return response()->json($data, 200);
     }
 }
