@@ -30,7 +30,7 @@
                     <img src="{{ asset('assets/images/bsn.png') }}" class="mt-4" width="80%" alt="">
                 </div>
                 <div class="card-body">
-                    <div id="errors">
+                    <div id="res-alert">
 
                     </div>
                     <div class="card-title">LOGIN</div>
@@ -39,12 +39,12 @@
                         <div class="form-group">
                             <label class="form-label">Username</label>
                             <input type="text" class="form-control" id="username" aria-describedby="username"
-                                placeholder="Username" name="username" value="codingers" required>
+                                placeholder="Username" name="username" value="kadhafi" required>
                         </div>
                         <div class="form-group">
                             <label class="form-label">Password</label>
                             <input type="password" class="form-control" id="password" placeholder="Password"
-                                name="password" value="Bismillah123" required>
+                                name="password" value="a1b2c3d4!" required>
                         </div>
                         <div class="form-footer">
                             <button type="submit" class="btn btn-primary btn-block" title="">Masuk</button>
@@ -98,11 +98,15 @@
                 processData: false,
                 success: function(response) {
                     if (response.errors) {
-                        $('#errors').html(
+                        $('#res-alert').html(
                             `<div class="alert alert-danger" role="alert">${response.errors}</div>`
                         )
                     }
-                    if (response.success) {
+                    if (response.success.create) {
+                        $('#res-alert').html(
+                            `<div class="alert alert-success" role="alert">${response.success.create}</div>`
+                        )
+                    } else if (response.success.url) {
                         window.location.href = response.success.url
                     }
                 }

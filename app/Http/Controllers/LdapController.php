@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Pegawai;
 use App\Models\User;
 use Exception;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -45,7 +47,6 @@ class LdapController extends Controller
                 $result = ldap_search($ldapconn, $ldaptree, $filter, $attr) or die("Error in search query: " . ldap_error($ldapconn));
                 $data = ldap_get_entries($ldapconn, $result);
                 ldap_close($ldapconn);
-
                 if ($data['count'] > 0) {
                     // cek username di sparta
                     $user = User::where('username', $uid)
@@ -55,11 +56,23 @@ class LdapController extends Controller
                     if ($user != NULL) {
                         Auth::login($user);
                         $request->session()->regenerate();
-
                         return response()->json(['success' => ['url' => route('dashboard')]]);
                         // return redirect()->route('pegawai.index');
                     } else {
-                        return response()->json(['errors' => trans('auth.ldap_no_account')]);
+                        try {
+                            $pegawai = Pegawai::where('email_kantor', $data[0]['mail'][0])->first();
+                            if ($pegawai != NULL) {
+                                $user = new User();
+                                $user->username = $request->username;
+                                $user->pegawai_id = $pegawai->id;
+                                $user->is_active = 1;
+                                $user->save();
+                            }
+                            return response()->json(['success' => ['create' => 'akun anda diaktifkan, silahkan login']]);
+                        } catch (QueryException $e) {
+                            return response()->json(['errors' => 'terjadi kesalahan koneksi']);
+                        }
+                        // return response()->json(['errors' => trans('auth.ldap_no_account')]);
                         // return redirect()
                         //     ->back()
                         //     ->withInput($request->only('username', 'remember'))
