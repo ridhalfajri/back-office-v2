@@ -3,15 +3,16 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Validator;
-use Intervention\Image\Facades\Image;
-use App\Models\JabatanTukin;
-use App\Models\Gaji;
-use App\Models\Pegawai;
-use Illuminate\Support\Facades\Redirect;
 use Yajra\Datatables\Datatables;
+use Illuminate\Database\QueryException;
+use App\Models\JabatanTukin;
+use App\Models\JabatanStruktural;
+use App\Models\JabatanFungsional;
+use App\Models\JabatanFungsionalUmum;
+use App\Models\Tukin;
+use App\Models\JenisJabatan;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class JabatanTukinController extends Controller
 {
@@ -22,36 +23,113 @@ class JabatanTukinController extends Controller
     */
     public function index()
     {
-        $title = 'Jabatan Tukin';
+        $title = 'List Data Tunjangan Kinerja Berdasarkan Jabatan';
 
-        return view('jabatan-tukin.index', compact('title'));
+        try {
+            $jabatanTukin = DB::table('jabatan_tukin as a')
+                    ->select('a.id', 'a.jabatan_id', 'a.jenis_jabatan_id', 'b.nama as jenis_jabatan', 'c.grade', 'c.nominal')
+                    ->addSelect(DB::raw('
+                        CASE
+                            WHEN a.jenis_jabatan_id = 1 THEN d.nama
+                            WHEN a.jenis_jabatan_id = 2 THEN e.nama
+                            WHEN a.jenis_jabatan_id = 4 THEN f.nama
+                            ELSE NULL
+                        END AS nama_jabatan
+                    '))
+                    ->join('jenis_jabatan as b', 'a.jenis_jabatan_id', '=', 'b.id')
+                    ->join('tukin as c', 'a.tukin_id', '=', 'c.id')
+                    ->leftJoin('jabatan_struktural as d', 'd.id', '=', 'a.jabatan_id')
+                    ->leftJoin('jabatan_fungsional as e', 'e.id', '=', 'a.jabatan_id')
+                    ->leftJoin('jabatan_fungsional_umum as f', 'f.id', '=', 'a.jabatan_id')
+                    ->get();
+
+            return view('jabatan-tukin.index', compact('title','jabatanTukin'));
+
+        }catch (QueryException $e){
+            Log::error('terjadi kesalahan pada koneksi database  ketika load index data jabatan tukin :' . $e->getMessage());
+                return redirect()->back()->withErrors([
+                    'query' => 'Load data gagal'
+                ]);
+        }
+    }
+
+    public function getjabatan(Request $request)
+    {
+        try {
+            $jenisJabatanId = $request->jenis_jabatan_id;
+
+            if ($jenisJabatanId === "1") {
+                $jabatan = JabatanStruktural::orderBy('nama', 'asc')->get();
+            } else if ($jenisJabatanId == "2") {
+                $jabatan = JabatanFungsional::orderBy('nama', 'asc')->get();
+            } else if ($jenisJabatanId == "4") {
+                $jabatan = JabatanFungsionalUmum::orderBy('nama', 'asc')->get();
+            }
+
+            echo "<option value='' selected disabled>-- Pilih Jabatan --</option>";
+            foreach ($jabatan as $item) {
+                if ($request->jabatan_id != null && $request->jabatan_id == $item->id) {
+                    echo "<option value='" . $item->id . "' selected>" . $item->nama . "</option>";
+                } else {
+                    echo "<option value='" . $item->id . "'>" . $item->nama . "</option>";
+                }
+            }
+        } catch (QueryException $e) {
+            abort(500);
+        }
+    }
+
+    public function getNominal(Request $request)
+    {
+        $nominal = Tukin::select(DB::raw('FORMAT(nominal, 0) as formatted_nominal'))
+            ->where('id', $request->id)
+            ->first();
+
+        return response()->json($nominal);
     }
 
     public function datatable(JabatanTukin $jabatanTukin)
     {
-        // $data = JabatanTukin::all();
+        $data = DB::table('jabatan_tukin as a')
+                    ->select('a.id', 'a.jabatan_id', 'a.jenis_jabatan_id', 'b.nama as jenis_jabatan', 'c.grade', 'c.nominal as nominal')
+                    ->addSelect(DB::raw('
+                        CASE
+                            WHEN a.jenis_jabatan_id = 1 THEN d.nama
+                            WHEN a.jenis_jabatan_id = 2 THEN e.nama
+                            WHEN a.jenis_jabatan_id = 4 THEN f.nama
+                            ELSE NULL
+                        END AS nama_jabatan
+                    '))
+                    ->join('jenis_jabatan as b', 'a.jenis_jabatan_id', '=', 'b.id')
+                    ->join('tukin as c', 'a.tukin_id', '=', 'c.id')
+                    ->leftJoin('jabatan_struktural as d', 'd.id', '=', 'a.jabatan_id')
+                    ->leftJoin('jabatan_fungsional as e', 'e.id', '=', 'a.jabatan_id')
+                    ->leftJoin('jabatan_fungsional_umum as f', 'f.id', '=', 'a.jabatan_id')
+                    ->get();
 
-        //Ini untuk test aja
-        // $data = Gaji::select('gaji.id as id','gaji.masa_kerja as jabatan_id', 'gaji.nominal as jenis_jabatan_id', 'golongan.nama as tukin_id')->join('golongan', 'golongan.id', '=', 'gaji.golongan_id')
-        // ->get();
 
-        // $data = Gaji::select('gaji.id as id','gaji.masa_kerja as nama', 'gaji.nominal as nip', 'gaji.id as no_telp','gaji.masa_kerja as email_kantor')
-        // ->get();
-
-
-
-        // return Datatables::of($data)
-        //     ->addColumn('no', '')
-        //     ->addColumn('aksi', '')
-        //     ->rawColumns(['aksi'])
-        //     ->make(true);
-
-        $pegawai = Pegawai::select('id', 'nip', 'nama_depan', 'nama_belakang', 'no_telp', 'email_kantor')->orderBy('created_at', 'DESC')->get();
-        return DataTables::of($pegawai)
+        return Datatables::of($data)
             ->addColumn('no', '')
-            ->addColumn('aksi', 'pegawai.aksi')
+            ->addColumn('aksi', function ($row) {
+
+                $editButton = '<a href="'.route('jabatan-tukin.edit',  $row->id).'" class="btn btn-sm btn-icon btn-warning on-default edit" title="Ubah"><i class="fa fa-pencil text-white"></i></a>';
+                $deleteButton = '<button class="btn btn-sm btn-icon btn-danger on-default delete" data-id="' . $row->id . '" title="Hapus"><i class="fa fa-trash"></i></button>';
+
+                return '<div style="display: inline-block; white-space: nowrap; margin: 0 10px;">' . $editButton . ' ' . $deleteButton . '</div>';
+            })
+            ->editColumn('nominal', function ($row) {
+                // Format the data as needed here
+                $nom =  (float)$row->nominal;
+                return "Rp " . number_format($nom, 0, ',', '.');
+            })
+            // ->filterColumn('nominal', function ($query, $keyword) {
+            //     $query->whereRaw("CONCAT('Rp. ', REPLACE(FORMAT(nominal, 0), ',', '.')) like ?", ["%$keyword%"])
+            //           ->orWhereRaw("nominal LIKE ?", ["%$keyword%"]);
+            // })
+
             ->rawColumns(['aksi'])
             ->make(true);
+
     }
 
 
@@ -62,10 +140,13 @@ class JabatanTukinController extends Controller
     */
     public function create()
     {
-        $title = 'Jabatan Tukin';
+        $title = 'Tambah Data Tunjangan Kinerja Jabatan';
+        $jenisJabatan = JenisJabatan::where('nama', 'not like', '%Jabatan Rangkap%')->get();
+        $tukin = Tukin::select('id', 'grade', DB::raw("REPLACE(FORMAT(nominal, 0), ',', '.') as nominal"))->get();
 
-        return view('jabatan-tukin.create', compact('title'));
+        return view('jabatan-tukin.create', compact('title','jenisJabatan','tukin'));
     }
+
     /**
     * Store a newly created resource in storage.
     *
@@ -74,26 +155,39 @@ class JabatanTukinController extends Controller
     */
     public function store(Request $request)
     {
-        $this->validate($request, [
-				'jabatan_id' => 'required',
-				'jenis_jabatan_id' => 'required',
-				'tukin_id' => 'required',
-        ]);
+        try {
 
-        $input = [];
+            $this->validate($request, [
+                'jabatan_id' => 'required|unique:jabatan_tukin,jabatan_id,NULL,id,jenis_jabatan_id,'.$request->jenis_jabatan_id.',tukin_id,'.$request->tukin_id,
+                'jenis_jabatan_id' => 'required',
+                'tukin_id' => 'required',
+            ], [
+                'jabatan_id.required' => 'Kolom jabatan harus diisi.',
+                'jabatan_id.unique' => 'Jenis Jabatan, Nama Jabatan dan Tunjangan Kinerja Jabatan sudah ada.',
+                'jenis_jabatan_id.required' => 'Kolom jenis jabatan harus diisi.',
+                'tukin_id.required' => 'Kolom tukin harus diisi.',
+            ]);
+
+            $input = [];
 			$input['jabatan_id'] = $request->jabatan_id;
 			$input['jenis_jabatan_id'] = $request->jenis_jabatan_id;
 			$input['tukin_id'] = $request->tukin_id;
-        JabatanTukin::create($input);
+            JabatanTukin::create($input);
 
-        return redirect()->route('jabatan-tukin.index')
-        ->with('success', 'Data Jabatan Tukin berhasil disimpan');
+            return redirect()->route('jabatan-tukin.index')
+            ->with('success', 'Data Jabatan Tukin berhasil disimpan');
+        }catch (QueryException $e) {
+            $msg = $e->getMessage();
+            return redirect()->route('jabatan-tukin.index')
+            ->with('error', 'Simpan data Jabatan Tukin gagal, Err: ' . $msg);
+        }
+
     }
 
     /**
     * Display the specified resource.
     *
-    * @param  \App\Models\Models\BidangProfisiensi  $bidangProfisiensi
+    * @param
     * @return \Illuminate\Http\Response
     */
     public function show(JabatanTukin $jabatanTukin)
@@ -104,51 +198,78 @@ class JabatanTukinController extends Controller
     /**
     * Show the form for editing the specified resource.
     *
-    * @param  \App\Models\Models\BidangProfisiensi  $bidangProfisiensi
+    * @param
     * @return \Illuminate\Http\Response
     */
     public function edit(JabatanTukin $jabatanTukin)
     {
-        $title = 'Edit Jabatan Tukin';
-
-        return view('jabatan-tukin.edit', compact('title'),'jabatanTukin');
+        $title = 'Ubah Data Jabatan Tukin';
+        $jenisJabatan = JenisJabatan::where('nama', 'not like', '%Jabatan Rangkap%')->get();
+        $tukin = Tukin::select('id', 'grade', DB::raw("REPLACE(FORMAT(nominal, 0), ',', '.') as nominal"))->get();
+        return view('jabatan-tukin.edit', compact('title','jabatanTukin','jenisJabatan','tukin'));
     }
 
     /**
     * Update the specified resource in storage.
     *
     * @param  \Illuminate\Http\Request  $request
-    * @param  \App\Models\Models\BidangProfisiensi  $bidangProfisiensi
+    * @param
     * @return \Illuminate\Http\Response
     */
     public function update(Request $request,JabatanTukin $jabatanTukin)
     {
-        $this->validate($request, [
-				'jabatan_id' => 'required',
-				'jenis_jabatan_id' => 'required',
-				'tukin_id' => 'required',
-        ]);
+        try {
 
+            $this->validate($request, [
+                'jabatan_id' => 'required|unique:jabatan_tukin,jabatan_id,'.$request->id.',id,jenis_jabatan_id,'.$request->jenis_jabatan_id.',tukin_id,'.$request->tukin_id,
+                'jenis_jabatan_id' => 'required',
+                'tukin_id' => 'required',
+            ], [
+                'jabatan_id.required' => 'Kolom jabatan harus diisi.',
+                'jabatan_id.unique' => 'Jenis Jabatan, Nama Jabatan dan Tunjangan Kinerja Jabatan sudah ada.',
+                'jenis_jabatan_id.required' => 'Kolom jenis jabatan harus diisi.',
+                'tukin_id.required' => 'Kolom tukin harus diisi.',
+            ]);
 
 			$jabatanTukin->jabatan_id = $request->jabatan_id;
 			$jabatanTukin->jenis_jabatan_id = $request->jenis_jabatan_id;
 			$jabatanTukin->tukin_id = $request->tukin_id;
-        $jabatanTukin->save();
+            $jabatanTukin->save();
 
-        return redirect()->route('jabatan-tukin.index')
-        ->with('success', 'Data Jabatan Tukin berhasil diupdate');
+            return redirect()->route('jabatan-tukin.index')
+            ->with('success', 'Data Jabatan Tukin berhasil diupdate');
+        } catch (QueryException $e) {
+            $msg = $e->getMessage();
+            return redirect()->route('jabatan-tukin.index')
+            ->with('error', 'Ubah data Jabatan Tukin gagal, Err: ' . $msg);
+        }
     }
 
     /**
     * Remove the specified resource from storage.
     *
-    * @param  \App\Models\Models\BidangProfisiensi  $bidangProfisiensi
+    * @param
     * @return \Illuminate\Http\Response
     */
     public function destroy(JabatanTukin $jabatanTukin)
     {
-        $jabatanTukin->delete();
-        return redirect()->route('jabatan-tukin.index')
-        ->with('success', 'Delete data Jabatan Tukin berhasil');
+        $blnValue = false;
+        $msg = "";
+        try {
+            $jabatanTukin->delete();
+            $msg = "Data berhasil dihapus";
+        } catch (QueryException $e) {
+            $blnValue = true;
+            $msg = $e->getMessage();
+        }
+
+        $data = [
+            'status' => [
+                'error' => $blnValue ,
+                'message' => $msg, // You can also include an error message
+            ],
+        ];
+
+        return response()->json($data, 200);
     }
 }
