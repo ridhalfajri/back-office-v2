@@ -32,7 +32,7 @@
     </div>
     <!-- Overlay For Sidebars -->
 
-    <div id="main_content" >
+    <div id="main_content">
         <div id="header_top" class="header_top">
             <div class="container">
                 <div class="hleft">
