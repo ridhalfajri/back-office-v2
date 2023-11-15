@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Pegawai;
+use App\Models\PegawaiRiwayatJabatan;
 use App\Models\User;
 use Exception;
 use Illuminate\Database\QueryException;
@@ -35,8 +36,47 @@ class LdapController extends Controller
         //     'ldappass' => $ldappass,
         //     'ldaptree' => $ldaptree,
         // ]);
+        // $ldapconn = ldap_connect($ldapserver);
+        // ldap_set_option($ldapconn, LDAP_OPT_REFERRALS, 0);
+        // ldap_set_option($ldapconn, LDAP_OPT_PROTOCOL_VERSION, 3);
+        // ldap_bind($ldapconn, $ldapuser, $ldappass);
+        // $filter = "(sAMAccountName=$uid)";
+        // $attr = array("cn", "mail", "l", "userPrincipalName");
+        // $result = ldap_search($ldapconn, $ldaptree, $filter, $attr) or die("Error in search query: " . ldap_error($ldapconn));
+        // $data = ldap_get_entries($ldapconn, $result);
+        // ldap_close($ldapconn);
+        // if ($data['count'] > 0) {
+        //     // cek username di backoffice
+        //     $user = User::where('username', $uid)
+        //         ->where('is_active', 1)
+        //         ->first();
 
-        // dd($ldapconn = ldap_connect($ldapserver));
+        //     if ($user != NULL) {
+        //         Auth::login($user);
+        //         $jabatan_definitif = PegawaiRiwayatJabatan::select('jabatan_unit_kerja_id', 'tx_tipe_jabatan_id')->where('is_now', 1)->where('is_plt', 0)->where('pegawai_id', $user->pegawai_id)->first();
+        //         $jabatan_plt = PegawaiRiwayatJabatan::select('jabatan_unit_kerja_id', 'tx_tipe_jabatan_id')->where('is_now', 1)->where('is_plt', 1)->where('pegawai_id', $user->pegawai_id)->first();
+        //         $request->session()->put('jabatan_definitif', $jabatan_definitif);
+        //         $request->session()->put('jabatan_plt', $jabatan_plt);
+        //         $request->session()->regenerate();
+        //         return response()->json(['success' => ['url' => route('dashboard')]]);
+        //     } else {
+        //         try {
+        //             $pegawai = Pegawai::where('email_kantor', $request->username . "@bsn.go.id")->first();
+        //             if ($pegawai != NULL) {
+        //                 $user = new User();
+        //                 $user->username = $request->username;
+        //                 $user->pegawai_id = $pegawai->id;
+        //                 $user->is_active = 1;
+        //                 $user->save();
+        //             }
+        //             return response()->json(['success' => ['create' => 'akun anda diaktifkan, silahkan login']]);
+        //         } catch (QueryException $e) {
+        //             return response()->json(['errors' => 'terjadi kesalahan koneksi']);
+        //         }
+        //     }
+        // } else {
+        //     return response()->json(['errors' => trans('auth.failed')]);
+        // }
         try {
             $ldapconn = ldap_connect($ldapserver);
             ldap_set_option($ldapconn, LDAP_OPT_REFERRALS, 0);
@@ -50,16 +90,19 @@ class LdapController extends Controller
                 $data = ldap_get_entries($ldapconn, $result);
                 ldap_close($ldapconn);
                 if ($data['count'] > 0) {
-                    // cek username di sparta
+                    // cek username di backoffice
                     $user = User::where('username', $uid)
                         ->where('is_active', 1)
                         ->first();
 
                     if ($user != NULL) {
                         Auth::login($user);
+                        $jabatan_definitif = PegawaiRiwayatJabatan::select('jabatan_unit_kerja_id', 'tx_tipe_jabatan_id')->where('is_now', 1)->where('is_plt', 0)->where('pegawai_id', $user->pegawai_id)->first();
+                        $jabatan_plt = PegawaiRiwayatJabatan::select('jabatan_unit_kerja_id', 'tx_tipe_jabatan_id')->where('is_now', 1)->where('is_plt', 1)->where('pegawai_id', $user->pegawai_id)->first();
+                        $request->session()->put('jabatan_definitif', $jabatan_definitif);
+                        $request->session()->put('jabatan_plt', $jabatan_plt);
                         $request->session()->regenerate();
                         return response()->json(['success' => ['url' => route('dashboard')]]);
-                        // return redirect()->route('pegawai.index');
                     } else {
                         try {
                             $pegawai = Pegawai::where('email_kantor', $request->username . "@bsn.go.id")->first();
@@ -74,35 +117,15 @@ class LdapController extends Controller
                         } catch (QueryException $e) {
                             return response()->json(['errors' => 'terjadi kesalahan koneksi']);
                         }
-                        // return response()->json(['errors' => trans('auth.ldap_no_account')]);
-                        // return redirect()
-                        //     ->back()
-                        //     ->withInput($request->only('username', 'remember'))
-                        //     ->with('error', trans('auth.ldap_no_account'));
                     }
                 } else {
                     return response()->json(['errors' => trans('auth.failed')]);
-
-                    // return redirect()
-                    //     ->back()
-                    //     ->withInput($request->only('username', 'remember'))
-                    //     ->with('error', trans('auth.failed'));
                 }
             } catch (Exception $e) {
                 return response()->json(['errors' => trans('auth.failed')]);
-
-                // return redirect()
-                //     ->back()
-                //     ->withInput($request->only('username', 'remember'))
-                //     ->with('error', trans('auth.failed'));
             }
         } catch (Exception $e) {
             return response()->json(['errors' => trans('auth.ldap_server_fail')]);
-
-            // return redirect()
-            //     ->back()
-            //     ->withInput($request->only('username', 'remember'))
-            //     ->with('error', trans('auth.ldap_server_fail'));
         }
     }
     public function logout(Request $request)
