@@ -60,7 +60,7 @@ class LdapController extends Controller
                         // return redirect()->route('pegawai.index');
                     } else {
                         try {
-                            $pegawai = Pegawai::where('email_kantor', $data[0]['mail'][0])->first();
+                            $pegawai = Pegawai::where('email_kantor', $request->username . "@bsn.go.id")->first();
                             if ($pegawai != NULL) {
                                 $user = new User();
                                 $user->username = $request->username;
