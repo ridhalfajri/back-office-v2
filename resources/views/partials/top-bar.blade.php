@@ -2,7 +2,7 @@
     <div class="container-fluid">
         <div class="page-header">
             <div class="left">
-                <h1 class="page-title">{{ $title }}</h1>
+                <h1 class="page-title"><i class="fa fa-list-alt" aria-hidden="true"></i>  {{ $title }}</h1>
             </div>
             <div class="right">
                 <div class="notification d-flex">

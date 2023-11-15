@@ -12,41 +12,40 @@
 <link rel="stylesheet" href="{{ asset('assets/plugins/toastr/toastr.css') }}">
 @endpush
 
-@push('breadcrumb')   
-        <ol class="breadcrumb custom-background-color">
-            <li class="breadcrumb-item"><a href="{{ route('jabatan-unit-kerja.index') }}"><i class="fa fa-home"></i></a></li>
-            <!-- <li class="breadcrumb-item"><a href="#">Jabatan Unit Kerja</a></li>        -->
-            <li class="breadcrumb-item active" aria-current="page">{{ $title }}</li>
-        </ol>
+@push('breadcrumb')
+        <div class="btn-group btn-breadcrumb">
+            <a href="/" class="btn btn-primary"><i class="fa fa-home"></i></a>
+            <a href="{{ route('jabatan-unit-kerja.index') }}" class="btn btn-info"><i class="fa fa-list"></i> JabatanUnitKerja</a>
+            <a href="/jabatan-unit-kerja/create" class="btn btn-success"><i class="fa fa-plus"></i> JabatanUnitKerja Baru</a>
+            {{-- <a href="/" class="btn btn-outline-danger"><i class="fa fa-chevron-circle-left"></i> Kembali</a> --}}
+        </div>
 @endpush
 
 @section('content')
     <div class="section-body">
     <div class="card">
-        <div class="card-header">
-            <h4 class="card-title">
-                <button type="button" class="btn btn-xs btn-primary" id="btn-add" onclick="window.location.href = '{{ route("jabatan-unit-kerja.create") }}';"><i class="fa fa-plus"></i> Tambah</button>
-            </h4>
-            <!-- /.card-title -->
-        </div>
-        <div class="card-body">            
+        <div class="card-body">
             <!-- /.dropdown js__dropdown -->
             <table id="tbl-data" class="table table-striped table-bordered display" style="width:100%">
                 <thead>
                     <tr>
                         <th>No.</th>
-						<th>hirarki_unit_kerja_id</th>
-						<th>jabatan_tukin_id</th>
-                         <th style="width: 40px">aksi</th>
+						<th>jenis jabatan</th>
+						<th>nama jabatan</th>
+                        <th>nama unit kerja</th>
+                        {{-- <th>nama parent unit kerja</th> --}}
+                        <th style="width: 40px">aksi</th>
                     </tr>
                 </thead>
                 <tbody></tbody>
                 <tfoot>
                     <tr>
                         <th>No.</th>
-						<th>hirarki_unit_kerja_id</th>
-						<th>jabatan_tukin_id</th>
-                         <th style="width: 40px">aksi</th>
+						<th>jenis jabatan</th>
+						<th>nama jabatan</th>
+                        <th>nama unit kerja</th>
+                        {{-- <th>nama parent unit kerja</th> --}}
+                        <th style="width: 40px">aksi</th>
                     </tr>
                 </tfoot>
             </table>
@@ -91,7 +90,8 @@
         @if(session('success'))
             toastr['success']('{{ session("success") }}');
         @endif
-
+        // 'z.jenis_jabatan', 'z.nama_jabatan','z.grade', 'z.nominal',
+        // 'y.nama_unit_kerja', 'y.nama_jenis_unit_kerja','y.nama_parent_unit_kerja')
         table = $('#tbl-data').DataTable({
             processing: true,
             serverSide: true,
@@ -117,15 +117,21 @@
                     class: 'text-center'
                 },
 				{
-                    data: 'hirarki_unit_kerja_id',
-                    name: 'Hirarki Unit Kerja Id',
-                    class: 'text-center'
+                    data: 'jenis_jabatan',
+                    name: 'z.jenis_jabatan'
                 },
 				{
-                    data: 'jabatan_tukin_id',
-                    name: 'Jabatan Tukin Id',
-                    class: 'text-center'
+                    data: 'nama_jabatan',
+                    name: 'z.nama_jabatan'
                 },
+                {
+                    data: 'nama_unit_kerja',
+                    name: 'y.nama_unit_kerja'
+                },
+                // {
+                //     data: 'nama_parent_unit_kerja',
+                //     name: 'y.nama_parent_unit_kerja'
+                // },
                 {
                     data: 'aksi',
                     name: 'aksi',
