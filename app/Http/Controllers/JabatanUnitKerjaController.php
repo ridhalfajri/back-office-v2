@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use Yajra\Datatables\Datatables;
 use Illuminate\Database\QueryException;
 use App\Models\JabatanUnitKerja;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class JabatanUnitKerjaController extends Controller
 {
@@ -15,18 +17,47 @@ class JabatanUnitKerjaController extends Controller
     * @return \Illuminate\Http\Response
     */
     public function index()
-    {            
+    {
         $title = 'Jabatan Unit Kerja';
 
         return view('jabatan-unit-kerja.index', compact('title'));
     }
-     
+
     public function datatable(JabatanUnitKerja $jabatanUnitKerja)
-    {        
-        $data = JabatanUnitKerja::all();
+    {
+        $data = DB::table('jabatan_unit_kerja AS x')
+                ->select('x.id', 'x.jabatan_tukin_id', 'z.jenis_jabatan', 'z.nama_jabatan','z.grade', 'z.nominal', 'y.nama_unit_kerja', 'x.hirarki_unit_kerja_id','y.nama_jenis_unit_kerja','y.nama_parent_unit_kerja')
+                ->joinSub(function ($query) {
+                    $query->select('a.id', 'a.child_unit_kerja_id', 'a.parent_unit_kerja_id', 'b.nama AS nama_unit_kerja', 'c.nama_jenis_unit_kerja', 'c.nama_parent_unit_kerja')
+                        ->from('hirarki_unit_kerja AS a')
+                        ->join('unit_kerja AS b', 'a.child_unit_kerja_id', '=', 'b.id')
+                        ->joinSub(function ($query) {
+                            $query->select('a.id', 'a.child_unit_kerja_id', 'a.parent_unit_kerja_id', 'c.nama AS nama_jenis_unit_kerja', 'b.nama AS nama_parent_unit_kerja')
+                                ->from('hirarki_unit_kerja AS a')
+                                ->join('unit_kerja AS b', 'a.parent_unit_kerja_id', '=', 'b.id')
+                                ->join('jenis_unit_kerja AS c', 'c.id', '=', 'b.jenis_unit_kerja_id');
+                        }, 'c', 'a.id', '=', 'c.id');
+                }, 'y', 'x.hirarki_unit_kerja_id', '=', 'y.id')
+                ->joinSub(function ($query) {
+                    $query->select('a.id', 'a.jabatan_id', 'a.jenis_jabatan_id', 'b.nama AS jenis_jabatan', 'c.grade', 'c.nominal')
+                        ->addSelect(DB::raw('
+                            CASE
+                                WHEN a.jenis_jabatan_id = 1 THEN d.nama
+                                WHEN a.jenis_jabatan_id = 2 THEN e.nama
+                                WHEN a.jenis_jabatan_id = 4 THEN f.nama
+                                ELSE NULL
+                            END AS nama_jabatan
+                        '))
+                        ->from('jabatan_tukin AS a')
+                        ->join('jenis_jabatan AS b', 'a.jenis_jabatan_id', '=', 'b.id')
+                        ->join('tukin AS c', 'a.tukin_id', '=', 'c.id')
+                        ->leftJoin('jabatan_struktural AS d', 'd.id', '=', 'a.jabatan_id')
+                        ->leftJoin('jabatan_fungsional AS e', 'e.id', '=', 'a.jabatan_id')
+                        ->leftJoin('jabatan_fungsional_umum AS f', 'f.id', '=', 'a.jabatan_id');
+                }, 'z', 'x.jabatan_tukin_id', '=', 'z.id');
 
         return Datatables::of($data)
-            ->addColumn('no', '')       
+            ->addColumn('no', '')
             ->addColumn('aksi', function ($row) {
 
                 $editButton = '<a href="'.route('jabatan-unit-kerja.edit',  $row->id).'" class="btn btn-sm btn-icon btn-warning on-default edit" title="Ubah"><i class="fa fa-pencil text-white"></i></a>';
@@ -45,12 +76,12 @@ class JabatanUnitKerjaController extends Controller
     * @return \Illuminate\Http\Response
     */
     public function create()
-    {            
+    {
         $title = 'Jabatan Unit Kerja';
 
         return view('jabatan-unit-kerja.create', compact('title'));
     }
-        
+
     /**
     * Store a newly created resource in storage.
     *
@@ -63,27 +94,26 @@ class JabatanUnitKerjaController extends Controller
             $this->validate($request, [
 				'hirarki_unit_kerja_id' => 'required',
 				'jabatan_tukin_id' => 'required',
-            ]);   
-            
+            ]);
+
             $input = [];
 			$input['hirarki_unit_kerja_id'] = $request->hirarki_unit_kerja_id;
 			$input['jabatan_tukin_id'] = $request->jabatan_tukin_id;
             JabatanUnitKerja::create($input);
 
             return redirect()->route('jabatan-unit-kerja.index')
-            ->with('success', 'Data Jabatan Unit Kerja berhasil disimpan');            
+            ->with('success', 'Data Jabatan Unit Kerja berhasil disimpan');
         }catch (QueryException $e) {
-            $msg = $e->getMessage();          
+            $msg = $e->getMessage();
             return redirect()->route('jabatan-unit-kerja.index')
             ->with('error', 'Simpan data Jabatan Unit Kerja gagal, Err: ' . $msg);
         }
-
     }
 
     /**
     * Display the specified resource.
     *
-    * @param  \App\Models\Models\BidangProfisiensi  $bidangProfisiensi
+    *
     * @return \Illuminate\Http\Response
     */
     public function show(JabatanUnitKerja $jabatanUnitKerja)
@@ -94,13 +124,12 @@ class JabatanUnitKerjaController extends Controller
     /**
     * Show the form for editing the specified resource.
     *
-    * @param  \App\Models\Models\BidangProfisiensi  $bidangProfisiensi
+    *
     * @return \Illuminate\Http\Response
     */
     public function edit(JabatanUnitKerja $jabatanUnitKerja)
-    {               
+    {
         $title = 'Edit Jabatan Unit Kerja';
-
         return view('jabatan-unit-kerja.edit', compact('title'),'jabatanUnitKerja');
     }
 
@@ -112,34 +141,34 @@ class JabatanUnitKerjaController extends Controller
     * @return \Illuminate\Http\Response
     */
     public function update(Request $request,JabatanUnitKerja $jabatanUnitKerja)
-    {  
+    {
         try {
             $this->validate($request, [
 				'hirarki_unit_kerja_id' => 'required',
 				'jabatan_tukin_id' => 'required',
             ]);
-    
+
 			$jabatanUnitKerja->hirarki_unit_kerja_id = $request->hirarki_unit_kerja_id;
 			$jabatanUnitKerja->jabatan_tukin_id = $request->jabatan_tukin_id;
             $jabatanUnitKerja->save();
 
             return redirect()->route('jabatan-unit-kerja.index')
-            ->with('success', 'Data Jabatan Unit Kerja berhasil diupdate');                
+            ->with('success', 'Data Jabatan Unit Kerja berhasil diupdate');
         } catch (QueryException $e) {
-            $msg = $e->getMessage();          
+            $msg = $e->getMessage();
             return redirect()->route('jabatan-unit-kerja.index')
             ->with('error', 'Ubah data Jabatan Unit Kerja gagal, Err: ' . $msg);
-        }        
+        }
     }
 
     /**
     * Remove the specified resource from storage.
     *
-    * @param 
+    * @param
     * @return \Illuminate\Http\Response
-    */        
+    */
     public function destroy(JabatanUnitKerja $jabatanUnitKerja)
-    {         
+    {
         $blnValue = false;
         $msg = "";
         try {

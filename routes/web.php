@@ -50,9 +50,11 @@ Route::post('/gaji/get-gaji', [GajiController::class, 'get_gaji'])->name('gaji.g
 Route::resource('/gaji', GajiController::class);
 
 Route::post('/jabatan-tukin/datatable', [JabatanTukinController::class, 'datatable'])->name('jabatan-tukin.datatable');
+Route::post('/jabatan-tukin/getjabatan', [JabatanTukinController::class, 'getjabatan'])->name('jabatan-tukin.getjabatan');
+Route::post('/jabatan-tukin/gettukin', [JabatanTukinController::class, 'gettukin'])->name('jabatan-tukin.gettukin');
 Route::resource('/jabatan-tukin', JabatanTukinController::class);
 
-Route::get('/jabatan-unit-kerja/datatable', [JabatanUnitKerjaController::class, 'datatable'])->name('jabatan-unit-kerja.datatable');
+Route::post('/jabatan-unit-kerja/datatable', [JabatanUnitKerjaController::class, 'datatable'])->name('jabatan-unit-kerja.datatable');
 Route::resource('/jabatan-unit-kerja', JabatanUnitKerjaController::class);
 
 
