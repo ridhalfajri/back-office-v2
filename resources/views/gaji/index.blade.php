@@ -13,26 +13,30 @@
 @endpush
 
 @push('breadcrumb')
-        <div class="btn-group btn-breadcrumb">
-            <a href="/" class="btn btn-primary"><i class="fa fa-home"></i></a>
-            <a href="{{ route('gaji.index') }}" class="btn btn-info"><i class="fa fa-list"></i> Gaji</a>
-            <a href="/gaji/create" class="btn btn-success"><i class="fa fa-plus"></i> Gaji Baru</a>
-            {{-- <a href="/" class="btn btn-outline-danger"><i class="fa fa-chevron-circle-left"></i> Kembali</a> --}}
-        </div>
+    <div class="btn-group btn-breadcrumb">
+        <a href="/" class="btn btn-primary"><i class="fa fa-home"></i></a>
+        <a href="/gaji" class="btn btn-info"><i class="fa fa-list"></i> Gaji</a>
+        <a href="/gaji/create" class="btn btn-success"><i class="fa fa-plus"></i> Gaji Baru</a>
+        {{-- <a href="/gaji" class="btn btn-outline-danger"><i class="fa fa-chevron-circle-left"></i> Kembali</a> --}}
+    </div>
 @endpush
 
 @section('content')
     <div class="section-body">
     <div class="card">
-
+        {{-- <div class="card-header">
+            <h4 class="card-title">
+                <button type="button" class="btn btn-xs btn-primary" id="btn-add" onclick="window.location.href = '{{ route("gaji.create") }}';"><i class="fa fa-plus"></i> Tambah</button>
+            </h4>
+            <!-- /.card-title -->
+        </div> --}}
         <div class="card-body">
             <!-- /.dropdown js__dropdown -->
             <table id="tbl-data" class="table table-striped table-bordered display" style="width:100%">
                 <thead>
                     <tr>
                         <th>No.</th>
-						<th>golongan</th>
-                        <th>nama pangkat</th>
+						<th>golongan_id</th>
 						<th>masa_kerja</th>
 						<th>nominal</th>
                          <th style="width: 40px">aksi</th>
@@ -43,7 +47,6 @@
                     <tr>
                         <th>No.</th>
 						<th>golongan</th>
-                        <th>nama pangkat</th>
 						<th>masa_kerja</th>
 						<th>nominal</th>
                          <th style="width: 40px">aksi</th>
@@ -118,21 +121,17 @@
                 },
 				{
                     data: 'nama',
-                    name: 'golongan.nama',
-                    class: 'text-center'
-                },{
-                    data: 'nama_pangkat',
-                    name: 'golongan.nama_pangkat',
+                    name: 'nama',
                     class: 'text-center'
                 },
 				{
                     data: 'masa_kerja',
-                    name: 'masa_kerja',
+                    name: 'Masa Kerja',
                     class: 'text-center'
                 },
 				{
                     data: 'nominal',
-                    name: 'nominal',
+                    name: 'Nominal',
                     class: 'text-center'
                 },
                 {
@@ -166,7 +165,7 @@
             e.preventDefault();
 
             var that = $(this);
-            console.log(that.data('id'));
+
             swal({
                 title: 'Konfirmasi!',
                 text: 'Apakah anda yakin ingin menghapus data ini?',
