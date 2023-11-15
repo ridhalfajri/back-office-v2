@@ -33,6 +33,8 @@ class LdapController extends Controller
         //     'ldappass' => $ldappass,
         //     'ldaptree' => $ldaptree,
         // ]);
+
+        // dd($ldapconn = ldap_connect($ldapserver));
         try {
             $ldapconn = ldap_connect($ldapserver);
             ldap_set_option($ldapconn, LDAP_OPT_REFERRALS, 0);
