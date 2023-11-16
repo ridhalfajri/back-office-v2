@@ -6,8 +6,8 @@
 
 @push('breadcrumb')
         <div class="btn-group btn-breadcrumb">
-            <a href="/" class="btn btn-primary"><i class="fa fa-home"></i></a>
-            <a href="{{ route('jabatan-tukin.index') }}" class="btn btn-info"><i class="fa fa-list"></i> Tunjangan Kinerja Jabatan</a>
+            <a href="/" class="btn btn-light"><i class="fa fa-home"></i></a>
+            <a href="{{ route('jabatan-tukin.index') }}" class="btn btn-light"><i class="fa fa-list"></i> Tunjangan Kinerja Jabatan</a>
             <a href="#" class="btn"><i class="fa fa-pencil-square" aria-hidden="true"></i> Ubah JabatanTukin Baru</a>
             {{-- <a href="/" class="btn btn-outline-danger"><i class="fa fa-chevron-circle-left"></i> Kembali</a> --}}
         </div>

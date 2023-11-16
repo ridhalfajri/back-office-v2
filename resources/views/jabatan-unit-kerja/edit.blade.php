@@ -6,9 +6,9 @@
 
 @push('breadcrumb')
         <div class="btn-group btn-breadcrumb">
-            <a href="/" class="btn btn-primary"><i class="fa fa-home"></i></a>
-            <a href="/jabatan-unit-kerja" class="btn btn-info"><i class="fa fa-list"></i> JabatanUnitKerja</a>
-            <a href="#" class="btn btn-warning"><i class="fa fa-pensil"></i> Ubah Data JabatanUnitKerja</a>
+            <a href="/" class="btn btn-light"><i class="fa fa-home"></i></a>
+            <a href="/jabatan-unit-kerja" class="btn btn-light"><i class="fa fa-list"></i> JabatanUnitKerja</a>
+            <a href="#" class="btn btn-light"><i class="fa fa-pensil"></i> Ubah Data JabatanUnitKerja</a>
             {{-- <a href="/" class="btn btn-outline-danger"><i class="fa fa-chevron-circle-left"></i> Kembali</a> --}}
         </div>
 @endpush

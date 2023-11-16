@@ -13,9 +13,9 @@
 
 @push('breadcrumb')
         <div class="btn-group btn-breadcrumb">
-            <a href="/" class="btn btn-primary"><i class="fa fa-home"></i></a>
-            <a href="{{ route('jabatan-tukin.index') }}" class="btn btn-info"><i class="fa fa-list"></i> Tunjangan Kinerja Jabatan</a>
-            <a href="/jabatan-tukin/create" class="btn btn-success"><i class="fa fa-plus"></i> Tunjangan Kinerja Baru</a>
+            <a href="/" class="btn btn-light"><i class="fa fa-home"></i></a>
+            <a href="{{ route('jabatan-tukin.index') }}" class="btn btn-light"><i class="fa fa-list"></i> Tunjangan Kinerja Jabatan</a>
+            <a href="/jabatan-tukin/create" class="btn btn-light"><i class="fa fa-plus"></i> Tunjangan Kinerja Baru</a>
             {{-- <a href="/" class="btn btn-outline-danger"><i class="fa fa-chevron-circle-left"></i> Kembali</a> --}}
         </div>
 @endpush

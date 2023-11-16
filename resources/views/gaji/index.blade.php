@@ -13,9 +13,9 @@
 
 @push('breadcrumb')
     <div class="btn-group btn-breadcrumb">
-        <a href="/" class="btn btn-primary"><i class="fa fa-home"></i></a>
-        <a href="/gaji" class="btn btn-info"><i class="fa fa-list"></i> Gaji</a>
-        <a href="/gaji/create" class="btn btn-success"><i class="fa fa-plus"></i> Gaji Baru</a>
+        <a href="/" class="btn btn-light"><i class="fa fa-home"></i></a>
+        <a href="/gaji" class="btn btn-light"><i class="fa fa-list"></i> Gaji</a>
+        <a href="/gaji/create" class="btn btn-light"><i class="fa fa-plus"></i> Gaji Baru</a>
         {{-- <a href="/gaji" class="btn btn-outline-danger"><i class="fa fa-chevron-circle-left"></i> Kembali</a> --}}
     </div>
 @endpush
