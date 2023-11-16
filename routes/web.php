@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\CutiController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DesaController;
 use App\Http\Controllers\KecamatanController;
 use App\Http\Controllers\KotaController;
@@ -32,14 +34,13 @@ use Illuminate\Support\Facades\Route;
 Route::get('/welcome', function () {
     return view('welcome');
 });
-Route::get('/dashboard', function () {
-    $title = 'Halaman Dashboard';
-    return view('try', compact('title'));
-})->name('dashboard');
 
-Route::get('/logout', [LdapController::class, 'logout'])->name('logout.ldap');
 
 Route::middleware('auth')->group(function () {
+    Route::get('/logout', [LdapController::class, 'logout'])->name('logout.ldap');
+
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
     // Gaji Pegawai
     Route::get('/gaji/get-golongan', [GajiController::class, 'getGolongan'])->name('gaji.get-golongan');
     Route::post('/gaji/datatable', [GajiController::class, 'datatable'])->name('gaji.datatable');
@@ -116,6 +117,19 @@ Route::middleware('auth')->group(function () {
         Route::post('kota', [KotaController::class, 'getKota'])->name('kota.data');
         Route::post('kecamatan', [KecamatanController::class, 'getKecamatan'])->name('kecamatan.data');
         Route::post('desa', [DesaController::class, 'getDesa'])->name('desa.data');
+    });
+
+    Route::prefix('cuti')->group(function () {
+        Route::get('/pengajuan_cuti', [CutiController::class, 'pengajuan_cuti'])->name('cuti.pengajuan-cuti');
+        Route::get('/pengajuan_cuti/{id}/edit', [CutiController::class, 'pengajuan_cuti_edit'])->name('cuti.pengajuan-cuti-edit');
+        Route::get('/pengajuan_cuti/{id}', [CutiController::class, 'show'])->name('cuti.show-cuti');
+        Route::put('/pengajuan_cuti/{id}', [CutiController::class, 'update_cuti'])->name('cuti.update-cuti');
+        Route::post('/pengajuan_cuti', [CutiController::class, 'store_cuti'])->name('cuti.store-cuti');
+        Route::delete('/pengajuan_cuti/{id}', [CutiController::class, 'destroy'])->name('cuti.destroy-cuti');
+        Route::get('/saldo_cuti', [CutiController::class, 'saldo_cuti'])->name('cuti.saldo-cuti');
+        Route::post('/cek_hari_libur', [CutiController::class, 'cek_hari_libur'])->name('cuti.cek_hari_libur');
+        Route::get('/riwayat_cuti', [CutiController::class, 'riwayat_cuti'])->name('cuti.riwayat-cuti');
+        Route::post('/datatable_riwayat_cuti', [CutiController::class, 'datatable_riwayat_cuti'])->name('cuti.datatable-riwayat-cuti');
     });
 });
 

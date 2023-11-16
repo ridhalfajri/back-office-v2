@@ -7,14 +7,15 @@
         <li><a href="{{ route('jabatan-tukin.index') }}"><i class="fa fa-money"></i><span>Tunjangan Kinerja</span></a></li>
         <li><a href="{{ route('jabatan-unit-kerja.index') }}"><i class="fa fa-snowflake-o"></i><span>Jabatan Unit Kerja</span></a></li>
 
-        <li>
-            <a href="javascript:void(0)" class="has-arrow"><i class="icon-lock"></i><span>Authentication</span></a>
-            <ul>
-                <li><a href="#">Login</a></li>
-                <li><a href="#">Register</a></li>
-                <li><a href="#">Forgot password</a></li>
-                <li><a href="#">404 error</a></li>
-                <li><a href="#">500 error</a></li>
+        <li class="{{ request()->segment(1) == 'cuti' ? 'active' : '' }}">
+            <a href="javascript:void(0)" class="has-arrow"><i class="icon-doc"></i><span>Cuti</span></a>
+            <ul class="{{ request()->segment(1) == 'cuti' ? 'active' : '' }}">
+                {{-- <li class="{{ request()->segment(2) == 'pengajuan_cuti' ? 'active' : '' }}"><a
+                        href="{{ route('cuti.pengajuan-cuti') }}">Pengajuan Cuti</a></li> --}}
+                <li class="{{ request()->segment(2) == 'riwayat_cuti' ? 'active' : '' }}"><a
+                        href="{{ route('cuti.riwayat-cuti') }}">Riwayat Cuti</a></li>
+                <li class="{{ request()->segment(2) == 'saldo_cuti' ? 'active' : '' }}"><a
+                        href="{{ route('cuti.saldo-cuti') }}">Saldo Cuti</a></li>
             </ul>
         </li>
     </ul>
