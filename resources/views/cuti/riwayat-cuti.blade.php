@@ -51,6 +51,89 @@
         </div>
     </div>
 @endsection
+@push('modal')
+    {{-- Modal Detail Cuti --}}
+    <div class="modal fade" id="modal-detail-cuti" tabindex="-1" role="dialog" aria-labelledby="modalDetailCutiLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Detail Cuti</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="col-md-12 col-lg-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label class="form-label">Jenis Cuti</label>
+                                    <input type="text" id="c_jenis_cuti" disabled=""
+                                        class="form-control mt-3 state-valid" value="">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Tanggal Awal</label>
+                                    <input type="text" id="c_tanggal_awal_cuti" disabled=""
+                                        class="form-control mt-3 state-valid" value="">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Tanggal Akhir</label>
+                                    <input type="text" id="c_tanggal_akhir_cuti" disabled=""
+                                        class="form-control mt-3 state-valid" value="">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Lama Cuti</label>
+                                    <input type="text" id="c_lama_cuti" disabled=""
+                                        class="form-control mt-3 state-valid" value="">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Alasan</label>
+                                    <input type="text" id="c_alasan" disabled=""
+                                        class="form-control mt-3 state-valid" value="">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Alamat Cuti</label>
+                                    <input type="text" id="c_alamat_cuti" disabled=""
+                                        class="form-control mt-3 state-valid" value="">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">No Telp Cuti</label>
+                                    <input type="text" id="c_no_telepon_cuti" disabled=""
+                                        class="form-control mt-3 state-valid" value="">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Acc Atasan Langsung</label>
+                                    <input type="text" id="c_tanggal_approve_al" disabled=""
+                                        class="form-control mt-3 state-valid" value="">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Acc Kabiro SDMOH</label>
+                                    <input type="text" id="c_tanggal_approve_akb" disabled=""
+                                        class="form-control mt-3 state-valid" value="">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Penolakan Cuti</label>
+                                    <input type="text" id="c_tanggal_penolakan_cuti" disabled=""
+                                        class="form-control mt-3 state-valid" value="">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Keterangan</label>
+                                    <input type="text" id="c_keterangan" disabled=""
+                                        class="form-control mt-3 state-valid" value="">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Lampiran Pengajuan Cuti</label>
+                                    <a href="#" id="c_media_pengajuan_cuti" class="btn btn-primary">Download</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+@endpush
 @push('script')
     <script src="{{ asset('assets/plugins/sweetalert2/sweetalert2.all.min.js') }}"></script>
     <script src="{{ asset('assets/bundles/dataTables.bundle.js') }}"></script>
@@ -175,5 +258,43 @@
                 }
             });
         };
+        const show_cuti = (id) => {
+            $.ajax({
+                url: "/cuti/pengajuan_cuti/" + id,
+                type: "GET",
+                success: function(response) {
+                    console.log(response);
+                    if (response.errors) {
+                        if (response.errors) {
+                            Swal.fire({
+                                title: "Gagal!",
+                                text: response.errors.connection,
+                                icon: "error",
+                                confirmButtonText: "Tutup",
+                            });
+                        }
+                    } else if (response.result) {
+                        res = response.result
+                        $('#c_jenis_cuti').val(res.jenis)
+                        $('#c_tanggal_awal_cuti').val(res.tanggal_awal_cuti)
+                        $('#c_tanggal_akhir_cuti').val(res.tanggal_akhir_cuti)
+                        $('#c_lama_cuti').val(res.lama_cuti)
+                        $('#c_alasan').val(res.alasan)
+                        $('#c_alamat_cuti').val(res.alamat_cuti)
+                        $('#c_no_telepon_cuti').val(res.no_telepon_cuti)
+                        $('#c_tanggal_approve_al').val(res.tanggal_approve_al)
+                        $('#c_tanggal_approve_akb').val(res.tanggal_approve_akb)
+                        $('#c_tanggal_penolakan_cuti').val(res.tanggal_penolakan_cuti)
+                        $('#c_keterangan').val(res.keterangan)
+                        if (res.media_pengajuan_cuti) {
+                            $("#c_media_pengajuan_cuti").attr(
+                                "href",
+                                "//" + response.result.media_pengajuan_cuti
+                            );
+                        }
+                    }
+                },
+            });
+        }
     </script>
 @endpush

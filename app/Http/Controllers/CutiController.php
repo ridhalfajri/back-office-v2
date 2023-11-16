@@ -289,6 +289,36 @@ class CutiController extends Controller
         $title = 'Riwayat Cuti';
         return view('cuti.riwayat-cuti', compact('title'));
     }
+    public function show($id)
+    {
+        try {
+            $cuti = PegawaiCuti::select('pegawai_cuti.id', 'jenis_cuti.jenis', 'tanggal_awal_cuti', 'tanggal_akhir_cuti', 'lama_cuti', 'alasan', 'alamat_cuti', 'no_telepon_cuti', 'tanggal_approve_al', 'tanggal_approve_akb', 'tanggal_penolakan_cuti', 'pegawai_cuti.keterangan')
+                ->join('jenis_cuti', 'jenis_cuti.id', '=', 'pegawai_cuti.jenis_cuti_id')
+                ->where('pegawai_cuti.id', $id)
+                ->first();
+            $cuti->tanggal_awal_cuti = Carbon::parse($cuti->tanggal_awal_cuti)->translatedFormat('d-m-Y');
+            $cuti->tanggal_akhir_cuti = Carbon::parse($cuti->tanggal_akhir_cuti)->translatedFormat('d-m-Y');
+            if ($cuti->tanggal_approve_al != null) {
+                $cuti->tanggal_approve_al = Carbon::parse($cuti->tanggal_approve_al)->translatedFormat('d-m-Y');
+            }
+            if ($cuti->tanggal_approve_akb != null) {
+                $cuti->tanggal_approve_akb = Carbon::parse($cuti->tanggal_approve_akb)->translatedFormat('d-m-Y');
+            }
+            if ($cuti->tanggal_penolakan_cuti != null) {
+                $cuti->tanggal_penolakan_cuti = Carbon::parse($cuti->tanggal_penolakan_cuti)->translatedFormat('d-m-Y');
+            }
+            if ($cuti == null) {
+                return response()->json(['errors' => ['data' => 'Data tidak ditemukan']]);
+            }
+            $cek_media = $cuti->getMedia("media_pengajuan_cuti")->count();
+            if ($cek_media) {
+                $cuti->media_pengajuan_cuti = $cuti->getMedia("media_pengajuan_cuti")[0]->getUrl();
+            }
+            return response()->json(['result' => $cuti]);
+        } catch (QueryException $e) {
+            return response()->json(['errors' => ['connection' => 'Terjadi kesalahan koneksi']]);
+        }
+    }
     public function destroy($id)
     {
         $restore_saldo = null;

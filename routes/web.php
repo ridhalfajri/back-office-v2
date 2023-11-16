@@ -122,6 +122,7 @@ Route::middleware('auth')->group(function () {
     Route::prefix('cuti')->group(function () {
         Route::get('/pengajuan_cuti', [CutiController::class, 'pengajuan_cuti'])->name('cuti.pengajuan-cuti');
         Route::get('/pengajuan_cuti/{id}/edit', [CutiController::class, 'pengajuan_cuti_edit'])->name('cuti.pengajuan-cuti-edit');
+        Route::get('/pengajuan_cuti/{id}', [CutiController::class, 'show'])->name('cuti.show-cuti');
         Route::put('/pengajuan_cuti/{id}', [CutiController::class, 'update_cuti'])->name('cuti.update-cuti');
         Route::post('/pengajuan_cuti', [CutiController::class, 'store_cuti'])->name('cuti.store-cuti');
         Route::delete('/pengajuan_cuti/{id}', [CutiController::class, 'destroy'])->name('cuti.destroy-cuti');

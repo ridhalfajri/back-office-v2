@@ -16,4 +16,9 @@ class PegawaiCuti extends Model implements HasMedia
     protected $primaryKey = 'id';
     protected $keyType = 'int';
     public $incrementing = true;
+
+    public function jenis_cuti()
+    {
+        return $this->belongsTo(JenisCuti::class);
+    }
 }
