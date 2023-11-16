@@ -1,4 +1,4 @@
-@extends('layout')
+@extends('template')
 @push('style')
     <link rel="stylesheet" href="{{ asset('assets/plugins/sweetalert/sweetalert.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/plugins/select2-4.0.13/dist/css/select2.min.css') }}">

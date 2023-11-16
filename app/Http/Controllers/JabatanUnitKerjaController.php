@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\JabatanTukin;
 use Illuminate\Http\Request;
 use Yajra\Datatables\Datatables;
 use Illuminate\Database\QueryException;
@@ -78,7 +79,7 @@ class JabatanUnitKerjaController extends Controller
     public function create()
     {
         $title = 'Jabatan Unit Kerja';
-
+        // $jabatanTukin = JabatanTukin::
         return view('jabatan-unit-kerja.create', compact('title'));
     }
 

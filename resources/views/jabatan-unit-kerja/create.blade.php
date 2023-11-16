@@ -1,4 +1,4 @@
-@extends('layout')
+@extends('template')
 @push('style')
     <link rel="stylesheet" href="{{ asset('assets/plugins/sweetalert/sweetalert.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/plugins/select2-4.0.13/dist/css/select2.min.css') }}">
@@ -11,17 +11,17 @@
             <a href="#" class="btn btn-warning"><i class="fa fa-pensil"></i> Input JabatanUnitKerja Baru</a>
             {{-- <a href="/gaji" class="btn btn-outline-danger"><i class="fa fa-chevron-circle-left"></i> Kembali</a> --}}
 
-        </div>   
+        </div>
 @endpush
 
 @section('content')
     <div class="section-body">
         <div class="card">
             <div class="card-body">
-                <div class="card-content">                    
+                <div class="card-content">
                     <form class="needs-validation" id="jabatanUnitKerjaForm" method="post"  action="{{ route('jabatan-unit-kerja.store') }}"  accept-charset="utf-8" novalidate>
                         @csrf
-                        
+
                         <div class="row clearfix">
                             <div class="col-12 col-lg-12 col-md-12">
                                 <div class="form-group @error('jabatan_tukin_id') has-error @enderror">
@@ -36,7 +36,7 @@
                                         Silakan pilih JabatanTukin.
                                     </div>
                                     @error('jabatan_tukin_id')
-                                        <small class="text-danger">{{ $message }}</small>                                    
+                                        <small class="text-danger">{{ $message }}</small>
                                     @enderror
                                 </div>
                             </div>
@@ -55,7 +55,7 @@
                                         Silakan pilih HirarkiUnitKerja.
                                     </div>
                                     @error('hirarki_unit_kerja_id')
-                                        <small class="text-danger">{{ $message }}</small>                                    
+                                        <small class="text-danger">{{ $message }}</small>
                                     @enderror
                                 </div>
                             </div>
@@ -75,7 +75,7 @@
     <script>
         (function () {
           'use strict'
-          
+
           var forms = document.querySelectorAll('.needs-validation')
 
           Array.prototype.slice.call(forms)

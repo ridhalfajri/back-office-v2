@@ -1,4 +1,4 @@
-@extends('layout')
+@extends('template')
 @push('style')
     <link rel="stylesheet" href="{{ asset('assets/plugins/sweetalert/sweetalert.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/plugins/select2-4.0.13/dist/css/select2.min.css') }}">
@@ -9,19 +9,19 @@
             <a href="/" class="btn btn-primary"><i class="fa fa-home"></i></a>
             <a href="/jabatan-unit-kerja" class="btn btn-info"><i class="fa fa-list"></i> JabatanUnitKerja</a>
             <a href="#" class="btn btn-warning"><i class="fa fa-pensil"></i> Ubah Data JabatanUnitKerja</a>
-            {{-- <a href="/" class="btn btn-outline-danger"><i class="fa fa-chevron-circle-left"></i> Kembali</a> --}}   
-        </div>   
+            {{-- <a href="/" class="btn btn-outline-danger"><i class="fa fa-chevron-circle-left"></i> Kembali</a> --}}
+        </div>
 @endpush
 
 @section('content')
     <div class="section-body">
         <div class="card">
             <div class="card-body">
-                <div class="card-content">                    
+                <div class="card-content">
                     <form class="needs-validation" id="jabatanUnitKerjaForm" method="post"  action="{{ route('jabatan-unit-kerja.update',$jabatanUnitKerja->id) }}"  accept-charset="utf-8" novalidate>
                         @csrf
                         @method('PUT')
-                        
+
                         <div class="row clearfix">
                             <div class="col-12 col-lg-12 col-md-12">
                                 <div class="form-group @error('jabatan_tukin_id') has-error @enderror">
@@ -36,7 +36,7 @@
                                         Silakan pilih JabatanTukin.
                                     </div>
                                     @error('jabatan_tukin_id')
-                                        <small class="text-danger">{{ $message }}</small>                                    
+                                        <small class="text-danger">{{ $message }}</small>
                                     @enderror
                                 </div>
                             </div>
@@ -56,7 +56,7 @@
                                         Silakan pilih HirarkiUnitKerja.
                                     </div>
                                     @error('hirarki_unit_kerja_id')
-                                        <small class="text-danger">{{ $message }}</small>                                    
+                                        <small class="text-danger">{{ $message }}</small>
                                     @enderror
                                 </div>
                             </div>
@@ -65,7 +65,7 @@
                         <button type="submit" class="btn btn-primary btn-sm waves-effect waves-light"><i class="fa fa-check-square" aria-hidden="true"></i> Simpan Perubahan</button>
                     </form>
                 </div>
-              
+
             </div>
         </div>
     </div>
@@ -76,7 +76,7 @@
     <script>
         (function () {
           'use strict'
-          
+
           var forms = document.querySelectorAll('.needs-validation')
 
           Array.prototype.slice.call(forms)
