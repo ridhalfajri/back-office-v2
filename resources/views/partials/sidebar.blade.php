@@ -16,6 +16,12 @@
                         href="{{ route('cuti.riwayat-cuti') }}">Riwayat Cuti</a></li>
                 <li class="{{ request()->segment(2) == 'saldo_cuti' ? 'active' : '' }}"><a
                         href="{{ route('cuti.saldo-cuti') }}">Saldo Cuti</a></li>
+                <li class="{{ request()->segment(2) == 'pengajuan_masuk' ? 'active' : '' }}"><a
+                        href="{{ route('cuti.pengajuan-masuk') }}">Pengajuan Masuk</a></li>
+                @if (auth()->user()->pegawai->jabatan_sekarang->tx_tipe_jabatan_id == 5)
+                    <li class="{{ request()->segment(2) == 'pengajuan_masuk_sdmoh' ? 'active' : '' }}"><a
+                            href="{{ route('cuti.pengajuan-masuk-sdmoh') }}">Pengajuan SDMOH</a></li>
+                @endif
             </ul>
         </li>
     </ul>

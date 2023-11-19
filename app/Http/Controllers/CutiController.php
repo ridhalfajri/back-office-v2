@@ -3,9 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Models\HariLibur;
+use App\Models\HirarkiUnitKerja;
 use App\Models\JenisCuti;
+use App\Models\Pegawai;
 use App\Models\PegawaiCuti;
+use App\Models\PegawaiRiwayatJabatan;
 use App\Models\PegawaiSaldoCuti;
+use App\Models\StatusCuti;
+use App\Models\TxHirarkiPegawai;
+use App\Models\UnitKerja;
 use Carbon\Carbon;
 use DateTime;
 use Illuminate\Database\QueryException;
@@ -29,8 +35,9 @@ class CutiController extends Controller
     }
     public function saldo_cuti()
     {
-        $title = 'Saldo Cuti';
         $saldo_cuti = PegawaiSaldoCuti::where('pegawai_id', auth()->user()->pegawai_id)->first();
+        $this->authorize('view', $saldo_cuti);
+        $title = 'Saldo Cuti';
 
         return view('cuti.saldo-cuti', compact('title', 'saldo_cuti'));
     }
@@ -99,6 +106,7 @@ class CutiController extends Controller
         if ($validate->fails()) {
             return response()->json(['errors' => $validate->errors()]);
         } else {
+            $saldo = null;
             $split_tanggal = explode(" - ", $request->tanggal_cuti);
             $tanggal_mulai = $split_tanggal[0];
             $tanggal_akhir = $split_tanggal[1];
@@ -117,7 +125,9 @@ class CutiController extends Controller
             $cuti->status_pengajuan_cuti_id = 1;
             try {
                 DB::transaction(function () use ($cuti, $saldo, $request) {
-                    $saldo->save();
+                    if ($saldo != null) {
+                        $saldo->save();
+                    }
                     $cuti->save();
                     if ($request->media_pengajuan_cuti) {
                         $cuti->addMediaFromRequest('media_pengajuan_cuti')->toMediaCollection('media_pengajuan_cuti');
@@ -132,6 +142,7 @@ class CutiController extends Controller
     public function pengajuan_cuti_edit($id)
     {
         $cuti = PegawaiCuti::where('id', $id)->first();
+        $this->authorize('view', $cuti);
         $cek_media = $cuti->getMedia("media_pengajuan_cuti")->count();
         if ($cek_media) {
             $cuti->media_pengajuan_cuti = $cuti->getMedia("media_pengajuan_cuti")[0]->getUrl();
@@ -323,7 +334,7 @@ class CutiController extends Controller
     {
         $restore_saldo = null;
         $cuti = PegawaiCuti::where('id', $id)->first();
-
+        $this->authorize('delete', $cuti);
         if ($cuti == null) {
             return response()->json(['errors' => ['connection' => 'Tidak menemukan data yang dihapus']]);
         }
@@ -372,5 +383,226 @@ class CutiController extends Controller
             })
             ->rawColumns(['aksi'])
             ->make(true);
+    }
+
+    public function pengajuan_masuk()
+    {
+
+        $riwayat_jabatan = PegawaiRiwayatJabatan::where('pegawai_id', auth()->user()->pegawai_id)->where('is_now', 1)->get();
+        if ($riwayat_jabatan[0]->tx_tipe_jabatan_id == 1) {
+            $unit_kerja = HirarkiUnitKerja::select('*')->join('unit_kerja', 'unit_kerja.id', '=', 'hirarki_unit_kerja.child_unit_kerja_id')->where('parent_unit_kerja_id', 2)->get();
+        } else {
+            foreach ($riwayat_jabatan as $key) {
+                $unit_kerja[] = [
+                    'id' => $key->jabatan_unit_kerja->hirarki_unit_kerja->child->id,
+                    'nama' => $key->jabatan_unit_kerja->hirarki_unit_kerja->child->nama,
+
+                ];
+            }
+        }
+
+        $status_cuti = StatusCuti::select('id', 'status')->get();
+        $title = "Acc Atasan Langsung";
+        return view('cuti.pengajuan-masuk', compact('title', 'unit_kerja', 'status_cuti'));
+    }
+
+    public function datatable_pengajuan_masuk(Request $request)
+    {
+        $id_pimpinan = auth()->user()->pegawai_id;
+        $pegawai = TxHirarkiPegawai::where('pegawai_pimpinan_id', $id_pimpinan)
+            ->select('pegawai_id')
+            ->get();
+        $cuti = PegawaiCuti::select('pegawai_cuti.id', 'pegawai_cuti.pegawai_id', DB::raw('CONCAT(nama_depan," " ,nama_belakang) AS nama_lengkap'), 'pegawai_cuti.created_at AS tanggal_pengajuan', 'tanggal_awal_cuti', 'juk.hirarki_unit_kerja_id', 'uk.nama AS nama_unit_kerja', 'pegawai.nama_depan', 'pegawai.nama_belakang', 'jenis_cuti.jenis', 'status_cuti.status')
+            ->join('pegawai_riwayat_jabatan AS prj', 'prj.pegawai_id', '=', 'pegawai_cuti.pegawai_id')
+            ->join('jenis_cuti', 'jenis_cuti.id', '=', 'pegawai_cuti.jenis_cuti_id')
+            ->join('pegawai', 'pegawai.id', '=', 'pegawai_cuti.pegawai_id')
+            ->join('jabatan_unit_kerja AS juk', 'juk.id', '=', 'prj.jabatan_unit_kerja_id')
+            ->join('hirarki_unit_kerja AS huk', 'huk.id', '=', 'juk.hirarki_unit_kerja_id')
+            ->join('unit_kerja AS uk', 'uk.id', '=', 'huk.child_unit_kerja_id')
+            ->join('status_cuti', 'status_cuti.id', '=', 'pegawai_cuti.status_pengajuan_cuti_id')
+            ->whereIn('pegawai_cuti.pegawai_id', $pegawai)->where('prj.is_now', 1);
+        if ($request->unit_kerja != null) {
+            $cuti->where('huk.child_unit_kerja_id', $request->unit_kerja);
+        }
+        if ($request->status != null) {
+            $cuti->where('status_pengajuan_cuti_id', $request->status);
+        }
+        return DataTables::of($cuti)
+            ->addColumn('no', '')
+            ->addColumn('aksi', 'cuti.aksi-pengajuan-masuk')
+            ->editColumn('tanggal_pengajuan', function ($cuti) {
+                return $cuti->tanggal_pengajuan ? with(new Carbon($cuti->tanggal_pengajuan))->format('d/m/Y') : '';
+            })
+            ->filterColumn('tanggal_pengajuan', function ($query, $keyword) {
+                $query->whereRaw("DATE_FORMAT(tanggal_pengajuan, '%d/%m/%Y') like ?", ["%$keyword%"]);
+            })
+
+            ->filterColumn('nama_lengkap', function ($query, $keyword) {
+                $query->whereRaw("CONCAT(nama_depan,' ',nama_belakang) like ?", ["%$keyword%"]);
+            })
+            ->rawColumns(['aksi'])
+            ->make(true);
+    }
+    public function detail_pengajuan_masuk($id)
+    {
+        $cuti = PegawaiCuti::where('id', $id)->first();
+        $cuti->tanggal_awal_cuti = Carbon::parse($cuti->tanggal_awal_cuti)->translatedFormat('d-m-Y');
+        $cuti->tanggal_akhir_cuti = Carbon::parse($cuti->tanggal_akhir_cuti)->translatedFormat('d-m-Y');
+        if ($cuti->tanggal_approve_al != null) {
+            $cuti->tanggal_approve_al = Carbon::parse($cuti->tanggal_approve_al)->translatedFormat('d-m-Y');
+        }
+        if ($cuti->tanggal_approve_akb != null) {
+            $cuti->tanggal_approve_akb = Carbon::parse($cuti->tanggal_approve_akb)->translatedFormat('d-m-Y');
+        }
+        if ($cuti->tanggal_penolakan_cuti != null) {
+            $cuti->tanggal_penolakan_cuti = Carbon::parse($cuti->tanggal_penolakan_cuti)->translatedFormat('d-m-Y');
+        }
+        $cek_media = $cuti->getMedia("media_pengajuan_cuti")->count();
+        if ($cek_media) {
+            $cuti->media_pengajuan_cuti = $cuti->getMedia("media_pengajuan_cuti")[0]->getUrl();
+        }
+        $saldo_cuti = PegawaiSaldoCuti::where('pegawai_id', $cuti->pegawai_id)->first();
+        $title = 'Detail Pengajuan Cuti';
+        return view('cuti.detail-pengajuan-masuk', compact('title', 'cuti', 'saldo_cuti'));
+    }
+
+    public function acc_atasan_langsung(Request $request)
+    {
+        $validate = Validator::make(
+            $request->all(),
+            [
+                'id' => ['required', 'exists:pegawai_cuti,id'],
+                'kode' => ['required'],
+
+            ],
+            [
+                'id.required' => 'cuti tidak boleh kosong',
+                'id.exists' => 'cuti tidak valid',
+                'kode.required' => 'kode tidak boleh kosong',
+            ]
+        );
+        if ($validate->fails()) {
+            return response()->json(['errors' => ['data' => 'terjadi kesalahan harap lakukan refresh halaman']]);
+        }
+        $cuti = PegawaiCuti::where('id', $request->id)->first();
+        if ($cuti == null) {
+            return response()->json(['errors' => ['data' => 'terjadi kesalahan harap lakukan refresh halaman']]);
+        }
+        $atasan_pegawai = TxHirarkiPegawai::select('pegawai_pimpinan_id')->where('pegawai_id', $cuti->pegawai_id)->first();
+        if (auth()->user()->pegawai_id != $atasan_pegawai->pegawai_pimpinan_id) {
+            return response()->json(['errors' => ['data' => 'Anda tidak memiliki akses']]);
+        }
+        switch ($request->kode) {
+            case 'Terima':
+                $cuti->atasan_langsung_id = auth()->user()->pegawai_id;
+                $cuti->tanggal_approve_al = Carbon::now()->format('Y-m-d');
+                $cuti->keterangan = $request->keterangan;
+                $cuti->status_pengajuan_cuti_id = 2;
+                break;
+            case 'Tolak':
+                $cuti->atasan_langsung_id = auth()->user()->pegawai_id;
+                $cuti->tanggal_penolakan_cuti = Carbon::now()->format('Y-m-d');
+                $cuti->keterangan = $request->keterangan;
+                $cuti->status_pengajuan_cuti_id = 4;
+                break;
+        }
+        try {
+            $cuti->save();
+            return response()->json(['success' => 'cuti berhasil di terima/tolak']);
+        } catch (QueryException $qe) {
+            return response()->json(['errors' => ['connection' => 'terjadi kesalahan koneksi']]);
+        }
+    }
+    public function pengajuan_masuk_sdmoh()
+    {
+        $unit_kerja = UnitKerja::select('id', 'nama')->get();
+        $status_cuti = StatusCuti::select('id', 'status')->get();
+        $title = "Acc Atasan Langsung";
+        return view('cuti.pengajuan-masuk-sdmoh', compact('title', 'unit_kerja', 'status_cuti'));
+    }
+    public function datatable_pengajuan_masuk_sdmoh(Request $request)
+    {
+        $cuti = PegawaiCuti::select('pegawai_cuti.id', 'pegawai_cuti.pegawai_id', DB::raw('CONCAT(nama_depan," " ,nama_belakang) AS nama_lengkap'), 'pegawai_cuti.created_at AS tanggal_pengajuan', 'tanggal_awal_cuti', 'juk.hirarki_unit_kerja_id', 'uk.nama AS nama_unit_kerja', 'pegawai.nama_depan', 'pegawai.nama_belakang', 'jenis_cuti.jenis', 'status_cuti.status')
+            ->join('pegawai_riwayat_jabatan AS prj', 'prj.pegawai_id', '=', 'pegawai_cuti.pegawai_id')
+            ->join('jenis_cuti', 'jenis_cuti.id', '=', 'pegawai_cuti.jenis_cuti_id')
+            ->join('pegawai', 'pegawai.id', '=', 'pegawai_cuti.pegawai_id')
+            ->join('jabatan_unit_kerja AS juk', 'juk.id', '=', 'prj.jabatan_unit_kerja_id')
+            ->join('hirarki_unit_kerja AS huk', 'huk.id', '=', 'juk.hirarki_unit_kerja_id')
+            ->join('unit_kerja AS uk', 'uk.id', '=', 'huk.child_unit_kerja_id')
+            ->join('status_cuti', 'status_cuti.id', '=', 'pegawai_cuti.status_pengajuan_cuti_id')
+            ->where('prj.is_now', 1);
+        if ($request->unit_kerja != null) {
+            $cuti->where('huk.child_unit_kerja_id', $request->unit_kerja);
+        }
+        if ($request->status != null) {
+            $cuti->where('status_pengajuan_cuti_id', $request->status);
+        }
+        return DataTables::of($cuti)
+            ->addColumn('no', '')
+            ->addColumn('aksi', 'cuti.aksi-pengajuan-masuk-sdmoh')
+            ->editColumn('tanggal_pengajuan', function ($cuti) {
+                return $cuti->tanggal_pengajuan ? with(new Carbon($cuti->tanggal_pengajuan))->format('d/m/Y') : '';
+            })
+            ->filterColumn('tanggal_pengajuan', function ($query, $keyword) {
+                $query->whereRaw("DATE_FORMAT(tanggal_pengajuan, '%d/%m/%Y') like ?", ["%$keyword%"]);
+            })
+
+            ->filterColumn('nama_lengkap', function ($query, $keyword) {
+                $query->whereRaw("CONCAT(nama_depan,' ',nama_belakang) like ?", ["%$keyword%"]);
+            })
+            ->rawColumns(['aksi'])
+            ->make(true);
+    }
+    public function detail_pengajuan_masuk_sdmoh($id)
+    {
+        $cuti = PegawaiCuti::where('id', $id)->first();
+        $cuti->tanggal_awal_cuti = Carbon::parse($cuti->tanggal_awal_cuti)->translatedFormat('d-m-Y');
+        $cuti->tanggal_akhir_cuti = Carbon::parse($cuti->tanggal_akhir_cuti)->translatedFormat('d-m-Y');
+        if ($cuti->tanggal_approve_al != null) {
+            $cuti->tanggal_approve_al = Carbon::parse($cuti->tanggal_approve_al)->translatedFormat('d-m-Y');
+        }
+        if ($cuti->tanggal_approve_akb != null) {
+            $cuti->tanggal_approve_akb = Carbon::parse($cuti->tanggal_approve_akb)->translatedFormat('d-m-Y');
+        }
+        if ($cuti->tanggal_penolakan_cuti != null) {
+            $cuti->tanggal_penolakan_cuti = Carbon::parse($cuti->tanggal_penolakan_cuti)->translatedFormat('d-m-Y');
+        }
+        $cek_media = $cuti->getMedia("media_pengajuan_cuti")->count();
+        if ($cek_media) {
+            $cuti->media_pengajuan_cuti = $cuti->getMedia("media_pengajuan_cuti")[0]->getUrl();
+        }
+        $saldo_cuti = PegawaiSaldoCuti::where('pegawai_id', $cuti->pegawai_id)->first();
+        $title = 'Detail Pengajuan Cuti';
+        return view('cuti.detail-pengajuan-masuk-sdmoh', compact('title', 'cuti', 'saldo_cuti'));
+    }
+    public function acc_kabiro_sdmoh(Request $request)
+    {
+        $validate = Validator::make(
+            $request->all(),
+            [
+                'id' => ['required', 'exists:pegawai_cuti,id'],
+
+            ],
+            [
+                'id.required' => 'cuti tidak boleh kosong',
+                'id.exists' => 'cuti tidak valid',
+            ]
+        );
+        if ($validate->fails()) {
+            return response()->json(['errors' => ['data' => 'terjadi kesalahan harap lakukan refresh halaman']]);
+        }
+        $cuti = PegawaiCuti::where('id', $request->id)->first();
+        if ($cuti == null) {
+            return response()->json(['errors' => ['data' => 'terjadi kesalahan harap lakukan refresh halaman']]);
+        }
+        $cuti->kabiro_sdmoh_id = auth()->user()->pegawai_id;
+        $cuti->tanggal_approve_akb = Carbon::now()->format('Y-m-d');
+        $cuti->status_pengajuan_cuti_id = 3;
+        try {
+            $cuti->save();
+            return response()->json(['success' => 'cuti berhasil di terima']);
+        } catch (QueryException $qe) {
+            return response()->json(['errors' => ['connection' => 'terjadi kesalahan koneksi']]);
+        }
     }
 }

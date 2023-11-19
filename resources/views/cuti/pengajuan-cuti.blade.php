@@ -217,6 +217,7 @@
                             confirmButtonText: 'Tutup'
                         })
                         resetForm();
+                        window.location.href = '{{ route('cuti.riwayat-cuti') }}'
                     }
                 }
             });
