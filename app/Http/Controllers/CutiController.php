@@ -627,6 +627,8 @@ class CutiController extends Controller
 
     public function saldo_cuti_pegawai()
     {
+        $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->first();
+        $this->authorize('kabiro', $kabiro);
         $title = 'Saldo Cuti Pegawai';
         $unit_kerja = UnitKerja::select('id', 'nama')->get();
         return view('cuti.saldo-cuti-pegawai', compact('title', 'unit_kerja'));
