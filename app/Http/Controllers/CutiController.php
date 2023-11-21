@@ -343,7 +343,9 @@ class CutiController extends Controller
         }
         try {
             DB::transaction(function () use ($cuti, $restore_saldo) {
-                $restore_saldo->save();
+                if ($restore_saldo != null) {
+                    $restore_saldo->save();
+                }
                 if ($cuti->hasMedia("media_pengajuan_cuti")) {
                     $cuti->getMedia("media_pengajuan_cuti")[0]->delete();
                 }
@@ -387,7 +389,8 @@ class CutiController extends Controller
 
     public function pengajuan_masuk()
     {
-
+        $atasan_langsung = PegawaiRiwayatJabatan::select('pegawai_id')->whereIn('tx_tipe_jabatan_id', [2, 5])->where('pegawai_id', auth()->user()->pegawai_id)->first();
+        $this->authorize('atasan_langsung', $atasan_langsung);
         $riwayat_jabatan = PegawaiRiwayatJabatan::where('pegawai_id', auth()->user()->pegawai_id)->where('is_now', 1)->get();
         if ($riwayat_jabatan[0]->tx_tipe_jabatan_id == 1) {
             $unit_kerja = HirarkiUnitKerja::select('*')->join('unit_kerja', 'unit_kerja.id', '=', 'hirarki_unit_kerja.child_unit_kerja_id')->where('parent_unit_kerja_id', 2)->get();
@@ -445,6 +448,8 @@ class CutiController extends Controller
     }
     public function detail_pengajuan_masuk($id)
     {
+        $atasan_langsung = PegawaiRiwayatJabatan::select('pegawai_id')->whereIn('tx_tipe_jabatan_id', [2, 5])->where('pegawai_id', auth()->user()->pegawai_id)->first();
+        $this->authorize('atasan_langsung', $atasan_langsung);
         $cuti = PegawaiCuti::where('id', $id)->first();
         $cuti->tanggal_awal_cuti = Carbon::parse($cuti->tanggal_awal_cuti)->translatedFormat('d-m-Y');
         $cuti->tanggal_akhir_cuti = Carbon::parse($cuti->tanggal_akhir_cuti)->translatedFormat('d-m-Y');
@@ -492,6 +497,11 @@ class CutiController extends Controller
         if (auth()->user()->pegawai_id != $atasan_pegawai->pegawai_pimpinan_id) {
             return response()->json(['errors' => ['data' => 'Anda tidak memiliki akses']]);
         }
+        $restore_saldo = null;
+
+        if ($cuti->jenis_cuti_id == 1) {
+            $restore_saldo = $this->restore_saldo_cuti($cuti->pegawai_id, $cuti->lama_cuti);
+        }
         switch ($request->kode) {
             case 'Terima':
                 $cuti->atasan_langsung_id = auth()->user()->pegawai_id;
@@ -507,6 +517,9 @@ class CutiController extends Controller
                 break;
         }
         try {
+            if ($restore_saldo != null) {
+                $restore_saldo->save();
+            }
             $cuti->save();
             return response()->json(['success' => 'cuti berhasil di terima/tolak']);
         } catch (QueryException $qe) {
@@ -515,6 +528,8 @@ class CutiController extends Controller
     }
     public function pengajuan_masuk_sdmoh()
     {
+        $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->first();
+        $this->authorize('kabiro', $kabiro);
         $unit_kerja = UnitKerja::select('id', 'nama')->get();
         $status_cuti = StatusCuti::select('id', 'status')->get();
         $title = "Acc Atasan Langsung";
@@ -555,6 +570,9 @@ class CutiController extends Controller
     }
     public function detail_pengajuan_masuk_sdmoh($id)
     {
+        $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->first();
+        $this->authorize('kabiro', $kabiro);
+
         $cuti = PegawaiCuti::where('id', $id)->first();
         $cuti->tanggal_awal_cuti = Carbon::parse($cuti->tanggal_awal_cuti)->translatedFormat('d-m-Y');
         $cuti->tanggal_akhir_cuti = Carbon::parse($cuti->tanggal_akhir_cuti)->translatedFormat('d-m-Y');
@@ -595,6 +613,7 @@ class CutiController extends Controller
         if ($cuti == null) {
             return response()->json(['errors' => ['data' => 'terjadi kesalahan harap lakukan refresh halaman']]);
         }
+
         $cuti->kabiro_sdmoh_id = auth()->user()->pegawai_id;
         $cuti->tanggal_approve_akb = Carbon::now()->format('Y-m-d');
         $cuti->status_pengajuan_cuti_id = 3;
@@ -604,5 +623,50 @@ class CutiController extends Controller
         } catch (QueryException $qe) {
             return response()->json(['errors' => ['connection' => 'terjadi kesalahan koneksi']]);
         }
+    }
+
+    public function saldo_cuti_pegawai()
+    {
+        $title = 'Saldo Cuti Pegawai';
+        $unit_kerja = UnitKerja::select('id', 'nama')->get();
+        return view('cuti.saldo-cuti-pegawai', compact('title', 'unit_kerja'));
+    }
+    public function datatable_saldo_cuti(Request $request)
+    {
+        $saldo = PegawaiSaldoCuti::select('pegawai_saldo_cuti.*', DB::raw('CONCAT(nama_depan," " ,nama_belakang) AS nama_lengkap'), 'nama_depan', 'nama_belakang')->join('pegawai', 'pegawai_saldo_cuti.pegawai_id', '=', 'pegawai.id')->orderBy('pegawai_saldo_cuti.id', 'ASC');
+        return DataTables::of($saldo)
+            ->addColumn('no', '')
+            ->filterColumn('nama_lengkap', function ($query, $keyword) {
+                $query->whereRaw("CONCAT(nama_depan,' ',nama_belakang) like ?", ["%$keyword%"]);
+            })
+            ->make(true);
+    }
+    public function  update_all_saldo_cuti(Request $request)
+    {
+        DB::transaction(function () {
+            $pegawai_saldo = PegawaiSaldoCuti::all();
+            foreach ($pegawai_saldo as $saldo) {
+                $N = Carbon::now()->format('Y');
+                $N_1 = $N - 1;
+                $N_2 = $N - 2;
+                $cuti_n_1 = PegawaiCuti::where('pegawai_id', $saldo->pegawai_id)->whereYear('tanggal_awal_cuti', $N_1)->count();
+                $cuti_n_2 = PegawaiCuti::where('pegawai_id', $saldo->pegawai_id)->whereYear('tanggal_awal_cuti', $N_2)->count();
+                if (($saldo->saldo_n_1 == 6) && ($cuti_n_1 == 0) && ($cuti_n_2 == 0)) {
+                    $saldo_n_2 = 6;
+                } else {
+                    $saldo_n_2 = 0;
+                }
+                if ($saldo->saldo_n >= 6) {
+                    $saldo_n_1 = 6;
+                } else {
+                    $saldo_n_1 = $saldo->saldo_n;
+                }
+                $saldo->saldo_n = 12;
+                $saldo->saldo_n_1 = $saldo_n_1;
+                $saldo->saldo_n_2 = $saldo_n_2;
+                $saldo->save();
+            }
+        });
+        return response()->json(['success' => 'saldo berhasil di update']);
     }
 }

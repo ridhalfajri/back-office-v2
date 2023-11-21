@@ -15,6 +15,7 @@ class AuthServiceProvider extends ServiceProvider
     protected $policies = [
         'App\Models\PegawaiCuti' => 'App\Policies\PegawaiCutiPolicy',
         'App\Models\PegawaiSaldoCuti' => 'App\Policies\PegawaiSaldoCutiPolicy',
+        'App\Models\PegawaiRiwayatJabatan' => 'App\Policies\PegawaiRiwayatJabatanPolicy',
     ];
 
     /**
