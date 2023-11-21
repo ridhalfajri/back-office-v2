@@ -69,18 +69,18 @@
                     <div class="form-group">
                         <label class="form-label">No. Telepon yang Bisa Dihubungi Selama Cuti</label>
                         <input type="number" id="no_telepon_cuti" name="no_telepon_cuti" class="form-control"
-                            placeholder="No Telp" value="23232">
+                            placeholder="No Telp" value="">
                         <small class="text-danger" id="error_no_telepon_cuti"></small>
 
                     </div>
                     <div class="form-group">
                         <label class="form-label">Alasan Lengkap Cuti</label>
-                        <textarea class="form-control" id="alasan" name="alasan" placeholder="Alasan Cuti">adfasf</textarea>
+                        <textarea class="form-control" id="alasan" name="alasan" placeholder="Alasan Cuti"></textarea>
                         <small class="text-danger" id="error_alasan"></small>
                     </div>
                     <div class="form-group">
                         <label class="form-label">Alamat / Lokasi Selama Menjalankan Cuti</label>
-                        <textarea class="form-control" id="alamat_cuti" name="alamat_cuti" placeholder="Alamat Cuti">adfasfs</textarea>
+                        <textarea class="form-control" id="alamat_cuti" name="alamat_cuti" placeholder="Alamat Cuti"></textarea>
                         <small class="text-danger" id="error_alamat_cuti"></small>
                     </div>
                     <div class="form-group col-lg-6 col-md-6 col-sm-12">
@@ -217,6 +217,7 @@
                             confirmButtonText: 'Tutup'
                         })
                         resetForm();
+                        window.location.href = '{{ route('cuti.riwayat-cuti') }}'
                     }
                 }
             });

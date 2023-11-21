@@ -10,12 +10,22 @@
         <li class="{{ request()->segment(1) == 'cuti' ? 'active' : '' }}">
             <a href="javascript:void(0)" class="has-arrow"><i class="icon-doc"></i><span>Cuti</span></a>
             <ul class="{{ request()->segment(1) == 'cuti' ? 'active' : '' }}">
-                {{-- <li class="{{ request()->segment(2) == 'pengajuan_cuti' ? 'active' : '' }}"><a
-                        href="{{ route('cuti.pengajuan-cuti') }}">Pengajuan Cuti</a></li> --}}
                 <li class="{{ request()->segment(2) == 'riwayat_cuti' ? 'active' : '' }}"><a
                         href="{{ route('cuti.riwayat-cuti') }}">Riwayat Cuti</a></li>
                 <li class="{{ request()->segment(2) == 'saldo_cuti' ? 'active' : '' }}"><a
                         href="{{ route('cuti.saldo-cuti') }}">Saldo Cuti</a></li>
+
+                @if (auth()->user()->pegawai->jabatan_sekarang->tx_tipe_jabatan_id == 2 ||
+                        auth()->user()->pegawai->jabatan_sekarang->tx_tipe_jabatan_id == 5)
+                    <li class="{{ request()->segment(2) == 'pengajuan_masuk' ? 'active' : '' }}"><a
+                            href="{{ route('cuti.pengajuan-masuk') }}">Pengajuan Masuk</a></li>
+                @endif
+                @if (auth()->user()->pegawai->jabatan_sekarang->tx_tipe_jabatan_id == 5)
+                    <li class="{{ request()->segment(2) == 'pengajuan_masuk_sdmoh' ? 'active' : '' }}"><a
+                            href="{{ route('cuti.pengajuan-masuk-sdmoh') }}">Pengajuan SDMOH</a></li>
+                    <li class="{{ request()->segment(2) == 'saldo_cuti_pegawai' ? 'active' : '' }}"><a
+                            href="{{ route('cuti.saldo-cuti-pegawai') }}">Saldo Cuti Pegawai</a></li>
+                @endif
             </ul>
         </li>
     </ul>

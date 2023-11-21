@@ -39,12 +39,12 @@
                         <div class="form-group">
                             <label class="form-label">Username</label>
                             <input type="text" class="form-control" id="username" aria-describedby="username"
-                                placeholder="Username" name="username" value="kadhafi" required>
+                                placeholder="Username" name="username" value="" required>
                         </div>
                         <div class="form-group">
                             <label class="form-label">Password</label>
                             <input type="password" class="form-control" id="password" placeholder="Password"
-                                name="password" value="a1b2c3d4!" required>
+                                name="password" value="" required>
                         </div>
                         <div class="form-footer">
                             <button type="submit" class="btn btn-primary btn-block" title="">Masuk</button>

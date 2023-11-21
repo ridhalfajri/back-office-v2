@@ -3,13 +3,15 @@
 @endpush
 @section('content')
     <div class="section-body">
-        <div class="section-title mt-0 mb-4">Saldo Cuti Saya</div>
         <div class="row">
-            <div class="col-12">
-                <div class="card card-primary">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Saldo Cuti Saya</h3>
+                    </div>
                     <div class="card-body">
-                        <div class="row mb-4 text-muted">
-                            <div class="col-12">
+                        <div class="row mb-4">
+                            <div class="col-md-12">
                                 <table border="1" class="table text-center text-dark">
                                     <tr style="background-color: #E9ECEF;" class="font-weight-bold">
                                         <th class="text-dark font-weight-bold">No</th>
@@ -76,6 +78,7 @@
                 </div>
             </div>
         </div>
-    @endsection
-    @push('script')
-    @endpush
+    </div>
+@endsection
+@push('script')
+@endpush

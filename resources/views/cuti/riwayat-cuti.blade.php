@@ -186,6 +186,26 @@
                     {
                         data: 'status',
                         name: 'status_cuti.status',
+                        render: function(data, type, row) {
+                            switch (data) {
+                                case "Pengajuan":
+                                    return '<span class="badge badge-pill badge-warning">' + data +
+                                        '</span>';
+                                    break;
+                                case "Acc Atasan Langsung":
+                                    return '<span class="badge badge-pill badge-primary">' + data +
+                                        '</span>';
+                                    break;
+                                case "Acc Kabiro SDMOH":
+                                    return '<span class="badge badge-pill badge-success">' + data +
+                                        '</span>';
+                                    break;
+                                case "Cuti Ditolak":
+                                    return '<span class="badge badge-pill badge-danger">' + data +
+                                        '</span>';
+                                    break;
+                            }
+                        }
                     },
                     {
                         data: 'aksi',
@@ -218,7 +238,7 @@
     <script>
         const delete_cuti = (id) => {
             Swal.fire({
-                title: "Apakah anda yakin hapus pendidikan ini?",
+                title: "Apakah anda yakin hapus pengajuan cuti ini?",
                 icon: "warning",
                 showCancelButton: true,
                 confirmButtonText: "Hapus",
@@ -254,6 +274,14 @@
                                 $("#tbl-riwayat-cuti").DataTable().ajax.reload();
                             }
                         },
+                        error: function(response) {
+                            Swal.fire({
+                                title: "Gagal!",
+                                text: 'Terjadi Kesalahan',
+                                icon: "error",
+                                confirmButtonText: "Tutup",
+                            });
+                        }
                     });
                 }
             });
@@ -274,7 +302,7 @@
                             });
                         }
                     } else if (response.result) {
-                        res = response.result
+                        const res = response.result
                         $('#c_jenis_cuti').val(res.jenis)
                         $('#c_tanggal_awal_cuti').val(res.tanggal_awal_cuti)
                         $('#c_tanggal_akhir_cuti').val(res.tanggal_akhir_cuti)

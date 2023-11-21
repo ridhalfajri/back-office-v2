@@ -21,4 +21,12 @@ class PegawaiCuti extends Model implements HasMedia
     {
         return $this->belongsTo(JenisCuti::class);
     }
+    public function pegawai()
+    {
+        return $this->belongsTo(Pegawai::class);
+    }
+    public function atasan_langsung()
+    {
+        return $this->belongsTo(Pegawai::class, 'atasan_langsung_id');
+    }
 }

@@ -22,4 +22,8 @@ class PegawaiRiwayatJabatan extends Model
     {
         return $this->belongsTo(JabatanUnitKerja::class);
     }
+    public function tipe_jabatan()
+    {
+        return $this->belongsTo(TxTipeJabatan::class, 'tx_tipe_jabatan_id');
+    }
 }

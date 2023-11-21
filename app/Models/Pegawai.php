@@ -123,4 +123,8 @@ class Pegawai extends Model implements HasMedia
             ->whereNull('tanggal_berhenti')->get();
         return $pegawai;
     }
+    public function jabatan_sekarang()
+    {
+        return $this->hasOne(PegawaiRiwayatJabatan::class)->where('is_now', 1);
+    }
 }

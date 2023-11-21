@@ -130,6 +130,18 @@ Route::middleware('auth')->group(function () {
         Route::post('/cek_hari_libur', [CutiController::class, 'cek_hari_libur'])->name('cuti.cek_hari_libur');
         Route::get('/riwayat_cuti', [CutiController::class, 'riwayat_cuti'])->name('cuti.riwayat-cuti');
         Route::post('/datatable_riwayat_cuti', [CutiController::class, 'datatable_riwayat_cuti'])->name('cuti.datatable-riwayat-cuti');
+
+        Route::get('/saldo_cuti_pegawai', [CutiController::class, 'saldo_cuti_pegawai'])->name('cuti.saldo-cuti-pegawai');
+        Route::post('/datatable_saldo_cuti', [CutiController::class, 'datatable_saldo_cuti'])->name('cuti.datatable-saldo-cuti-pegawai');
+        Route::post('/update_all_saldo_cuti', [CutiController::class, 'update_all_saldo_cuti'])->name('cuti.update-all-saldo-cuti');
+        Route::get('/pengajuan_masuk', [CutiController::class, 'pengajuan_masuk'])->name('cuti.pengajuan-masuk');
+        Route::get('/pengajuan_masuk/{id}', [CutiController::class, 'detail_pengajuan_masuk'])->name('cuti.detail-pengajuan-masuk');
+        Route::get('/pengajuan_masuk_sdmoh', [CutiController::class, 'pengajuan_masuk_sdmoh'])->name('cuti.pengajuan-masuk-sdmoh');
+        Route::post('/datatable_pengajuan_masuk', [CutiController::class, 'datatable_pengajuan_masuk'])->name('cuti.datatable-pengajuan-masuk');
+        Route::get('/pengajuan_masuk_sdmoh/{id}', [CutiController::class, 'detail_pengajuan_masuk_sdmoh'])->name('cuti.detail-pengajuan-masuk-sdmoh');
+        Route::post('/datatable_pengajuan_masuk_sdmoh', [CutiController::class, 'datatable_pengajuan_masuk_sdmoh'])->name('cuti.datatable-pengajuan-masuk-sdmoh');
+        Route::post('/acc_atasan_langsung', [CutiController::class, 'acc_atasan_langsung'])->name('cuti.acc-atasan-langsung');
+        Route::post('/acc_kabiro_sdmoh', [CutiController::class, 'acc_kabiro_sdmoh'])->name('cuti.acc-kabiro-sdmoh');
     });
 });
 
