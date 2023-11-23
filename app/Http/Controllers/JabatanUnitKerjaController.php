@@ -7,8 +7,12 @@ use Illuminate\Http\Request;
 use Yajra\Datatables\Datatables;
 use Illuminate\Database\QueryException;
 use App\Models\JabatanUnitKerja;
+use App\Models\VhirarkiUnitKerja;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Database\Query\Expression;
+use App\Helpers\PresensiHelper;
+use Illuminate\Support\Carbon;
 
 class JabatanUnitKerjaController extends Controller
 {
@@ -20,6 +24,8 @@ class JabatanUnitKerjaController extends Controller
     public function index()
     {
         $title = 'Jabatan Unit Kerja';
+
+
 
         return view('jabatan-unit-kerja.index', compact('title'));
     }
@@ -79,8 +85,39 @@ class JabatanUnitKerjaController extends Controller
     public function create()
     {
         $title = 'Jabatan Unit Kerja';
-        // $jabatanTukin = JabatanTukin::
-        return view('jabatan-unit-kerja.create', compact('title'));
+        $jabatanTukin = DB::table('jabatan_tukin as a')
+                ->select('a.id', 'a.jabatan_id', 'a.jenis_jabatan_id', 'b.nama as jenis_jabatan', 'c.grade', 'c.nominal')
+                ->addSelect(DB::raw('
+                    CASE
+                        WHEN a.jenis_jabatan_id = 1 THEN d.nama
+                        WHEN a.jenis_jabatan_id = 2 THEN e.nama
+                        WHEN a.jenis_jabatan_id = 4 THEN f.nama
+                        ELSE NULL
+                    END AS nama_jabatan
+                '))
+                ->join('jenis_jabatan as b', 'a.jenis_jabatan_id', '=', 'b.id')
+                ->join('tukin as c', 'a.tukin_id', '=', 'c.id')
+                ->leftJoin('jabatan_struktural as d', 'd.id', '=', 'a.jabatan_id')
+                ->leftJoin('jabatan_fungsional as e', 'e.id', '=', 'a.jabatan_id')
+                ->leftJoin('jabatan_fungsional_umum as f', 'f.id', '=', 'a.jabatan_id')
+                ->orderBy('nama_jabatan')
+                ->get();
+
+                $hirarkiUnitKerja = DB::table('db_backoffice.hirarki_unit_kerja as a')
+                ->select('a.id', 'a.child_unit_kerja_id', 'a.parent_unit_kerja_id', 'b.nama as nama_unit_kerja', 'c.nama_jenis_unit_kerja', 'c.nama_parent_unit_kerja')
+                ->join('unit_kerja as b', 'a.child_unit_kerja_id', '=', 'b.id')
+                ->join(DB::raw('(SELECT a.id, a.child_unit_kerja_id, a.parent_unit_kerja_id, c.nama as nama_jenis_unit_kerja, b.nama as nama_parent_unit_kerja
+                        FROM db_backoffice.hirarki_unit_kerja a
+                        INNER JOIN unit_kerja b ON a.parent_unit_kerja_id = b.id
+                        INNER JOIN jenis_unit_kerja c ON c.id = b.jenis_unit_kerja_id) c'), 'a.id', '=', 'c.id')
+                ->orderBy('b.nama', 'asc')
+                ->get();
+
+            //Get Data Hierarki Unit Kerja
+            // $hirarkiUnitKerja = VhirarkiUnitKerja::all();
+
+
+        return view('jabatan-unit-kerja.create', compact('title','jabatanTukin','hirarkiUnitKerja'));
     }
 
     /**
@@ -92,10 +129,16 @@ class JabatanUnitKerjaController extends Controller
     public function store(Request $request)
     {
         try {
+
             $this->validate($request, [
-				'hirarki_unit_kerja_id' => 'required',
-				'jabatan_tukin_id' => 'required',
+                'jabatan_tukin_id' => 'required|unique:jabatan_unit_kerja,jabatan_tukin_id,NULL,id,hirarki_unit_kerja_id,'.$request->hirarki_unit_kerja_id,
+                'hirarki_unit_kerja_id' => 'required',
+            ], [
+                'jabatan_tukin_id.required' => 'Jabatan harus diisi.',
+                'jabatan_tukin_id.unique' => 'Jenis Jabatan dan Hirarki Unit Kerja sudah ada.',
+                'hirarki_unit_kerja_id.required' => 'Hirarki Unit Kerja harus diisi.',
             ]);
+
 
             $input = [];
 			$input['hirarki_unit_kerja_id'] = $request->hirarki_unit_kerja_id;
@@ -131,7 +174,37 @@ class JabatanUnitKerjaController extends Controller
     public function edit(JabatanUnitKerja $jabatanUnitKerja)
     {
         $title = 'Edit Jabatan Unit Kerja';
-        return view('jabatan-unit-kerja.edit', compact('title'),'jabatanUnitKerja');
+
+        $jabatanTukin = DB::table('jabatan_tukin as a')
+        ->select('a.id', 'a.jabatan_id', 'a.jenis_jabatan_id', 'b.nama as jenis_jabatan', 'c.grade', 'c.nominal')
+        ->addSelect(DB::raw('
+            CASE
+                WHEN a.jenis_jabatan_id = 1 THEN d.nama
+                WHEN a.jenis_jabatan_id = 2 THEN e.nama
+                WHEN a.jenis_jabatan_id = 4 THEN f.nama
+                ELSE NULL
+            END AS nama_jabatan
+        '))
+        ->join('jenis_jabatan as b', 'a.jenis_jabatan_id', '=', 'b.id')
+        ->join('tukin as c', 'a.tukin_id', '=', 'c.id')
+        ->leftJoin('jabatan_struktural as d', 'd.id', '=', 'a.jabatan_id')
+        ->leftJoin('jabatan_fungsional as e', 'e.id', '=', 'a.jabatan_id')
+        ->leftJoin('jabatan_fungsional_umum as f', 'f.id', '=', 'a.jabatan_id')
+        ->orderBy('nama_jabatan')
+        ->get();
+
+        $hirarkiUnitKerja = DB::table('db_backoffice.hirarki_unit_kerja as a')
+                ->select('a.id', 'a.child_unit_kerja_id', 'a.parent_unit_kerja_id', 'b.nama as nama_unit_kerja', 'c.nama_jenis_unit_kerja', 'c.nama_parent_unit_kerja')
+                ->join('unit_kerja as b', 'a.child_unit_kerja_id', '=', 'b.id')
+                ->join(DB::raw('(SELECT a.id, a.child_unit_kerja_id, a.parent_unit_kerja_id, c.nama as nama_jenis_unit_kerja, b.nama as nama_parent_unit_kerja
+                        FROM db_backoffice.hirarki_unit_kerja a
+                        INNER JOIN unit_kerja b ON a.parent_unit_kerja_id = b.id
+                        INNER JOIN jenis_unit_kerja c ON c.id = b.jenis_unit_kerja_id) c'), 'a.id', '=', 'c.id')
+                ->orderBy('b.nama', 'asc')
+                ->get();
+
+
+        return view('jabatan-unit-kerja.edit', compact('title','jabatanUnitKerja','jabatanTukin','hirarkiUnitKerja'));
     }
 
     /**
@@ -145,8 +218,8 @@ class JabatanUnitKerjaController extends Controller
     {
         try {
             $this->validate($request, [
+                'jabatan_tukin_id' => 'required|unique:jabatan_unit_kerja,jabatan_tukin_id,'.$request->jabatan_tukin_id.',id,hirarki_unit_kerja_id,'.$request->hirarki_unit_kerja_id,
 				'hirarki_unit_kerja_id' => 'required',
-				'jabatan_tukin_id' => 'required',
             ]);
 
 			$jabatanUnitKerja->hirarki_unit_kerja_id = $request->hirarki_unit_kerja_id;

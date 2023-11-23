@@ -107,7 +107,8 @@
                             `<div class="alert alert-success" role="alert">${response.success.create}</div>`
                         )
                     } else if (response.success.url) {
-                        window.location.href = response.success.url
+                        window.location.href = response.success.url;
+
                     }
                 }
             });

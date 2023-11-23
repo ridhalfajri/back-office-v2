@@ -29,7 +29,7 @@
                                     <select class="form-control" id="jabatan_tukin_id" name="jabatan_tukin_id" required>
                                         <option value="" selected disabled>Pilih JabatanTukin</option>
                                         @foreach ($jabatanTukin as $data)
-                                            <option value="{{ $data->id }}" {{ (old('jabatan_tukin_id') ?? $jabatanUnitKerja->jabatan_tukin_id)  == $data->id ? 'selected' : '' }}>{{ $data->nama }}</option>
+                                            <option value="{{ $data->id }}" {{ (old('jabatan_tukin_id') ?? $jabatanUnitKerja->jabatan_tukin_id)  == $data->id ? 'selected' : '' }}>{{ $data->nama_jabatan }}</option>
                                         @endforeach
                                     </select>
                                     <div class="invalid-feedback">
@@ -49,7 +49,7 @@
                                     <select class="form-control" id="hirarki_unit_kerja_id" name="hirarki_unit_kerja_id" required>
                                         <option value="" selected disabled>Pilih HirarkiUnitKerja</option>
                                         @foreach ($hirarkiUnitKerja as $data)
-                                            <option value="{{ $data->id }}" {{ (old('hirarki_unit_kerja_id') ?? $jabatanUnitKerja->hirarki_unit_kerja_id)  == $data->id ? 'selected' : '' }}>{{ $data->nama }}</option>
+                                            <option value="{{ $data->id }}" {{ (old('hirarki_unit_kerja_id') ?? $jabatanUnitKerja->hirarki_unit_kerja_id)  == $data->id ? 'selected' : '' }}>{{ $data->nama_unit_kerja }}</option>
                                         @endforeach
                                     </select>
                                     <div class="invalid-feedback">
@@ -113,7 +113,8 @@
         })();
 
         $(document).ready(function() {
-            $('#select2').select2();
+            $('#jabatan_tukin_id').select2();
+            $('#hirarki_unit_kerja_id').select2();
         });
     </script>
 @endpush
