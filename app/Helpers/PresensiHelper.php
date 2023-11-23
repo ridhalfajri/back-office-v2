@@ -120,15 +120,15 @@ class PresensiHelper {
                                 $JamPulangKerja = $jam;
                             }
 
-                            if ($jampresensiMasuk<=$MasterJamMasuk){
-                                $JamMasukNormal = $jamKerja->jam_masuk
-                            }elseif ($jampresensi=$jamMasterMasuk)
-                            {
-                                $presensi->keterangan = 'Datang tepat waktu';
-                            } else
-                            {
-                                $presensi->keterangan = 'Datang lebih awal';
-                            }
+                            // if ($jampresensiMasuk<=$MasterJamMasuk){
+                            //     $JamMasukNormal = $jamKerja->jam_masuk
+                            // }elseif ($jampresensi=$jamMasterMasuk)
+                            // {
+                            //     $presensi->keterangan = 'Datang tepat waktu';
+                            // } else
+                            // {
+                            //     $presensi->keterangan = 'Datang lebih awal';
+                            // }
 
 
                             $presensi->jam_pulang = $jam;
