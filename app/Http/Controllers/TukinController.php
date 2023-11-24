@@ -8,11 +8,11 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Yajra\Datatables\Datatables;
 use Intervention\Image\Facades\Image;
-use App\Models\UangMakan;
+use App\Models\Tukin;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
-class UangMakanController extends Controller
+class TukinController extends Controller
 {
     /**
     * Display a listing of the resource.
@@ -21,22 +21,20 @@ class UangMakanController extends Controller
     */
     public function index()
     {            
-        $title = 'Uang Makan';
+        $title = 'Tunjangan Kinerja';
 
-        return view('uang-makan.index', compact('title'));
+        return view('tukin.index', compact('title'));
     }
      
-    public function datatable(UangMakan $uangMakan)
+    public function datatable(Tukin $tukin)
     {        
-        $data = UangMakan::select('uang_makan.*', 'golongan.nama as nama_golongan')
-        ->join('golongan','golongan.id','=','uang_makan.golongan_id')
-        ->orderBy('golongan.nama','asc');
+        $data = Tukin::all();
 
         //dd($data);
 
         return Datatables::of($data)
             ->addColumn('no', '')
-            ->addColumn('aksi', 'uang-makan.aksi')
+            ->addColumn('aksi', 'tukin.aksi')
             ->rawColumns(['aksi'])
             ->make(true);
     }
@@ -49,13 +47,9 @@ class UangMakanController extends Controller
     */
     public function create()
     {            
-        $title = 'Buat Uang Makan';
+        $title = 'Buat Tunjangan Kinerja';
 
-        $golongan = DB::table('golongan')
-        ->select('golongan.*')
-        ->get();
-
-        return view('uang-makan.create', compact('title', 'golongan'));
+        return view('tukin.create', compact('title'));
     }
         
     /**
@@ -69,40 +63,42 @@ class UangMakanController extends Controller
         DB::beginTransaction();
 
         $this->validate($request, [
-            'golongan_id' => ['required', 'integer', 'min:1', 'max:999'],
-            'nominal' => ['required', 'integer', 'min:1', 'max:999999999999999']
+            'grade' => ['required', 'integer', 'max:9999'],
+            'nominal' => ['required', 'integer', 'max:9999999999'],
+            'keterangan' => ['max:255'],
         ],
         [
-            'golongan_id.required'=>'data golongan harus diisi!',
-            'golongan_id.integer'=>'data golongan harus bilangan bulat positif!',
+            'grade.required'=>'data grade harus diisi!',
+            'grade.integer'=>'data grade harus bilangan bulat positif!',
             'nominal.required'=>'data nominal harus diisi!',
             'nominal.integer'=>'data nominal harus bilangan bulat positif!',
         ]);
 
         try {
-            //validasi golongan
-            $cekDataExist = UangMakan::where('golongan_id',$request->golongan_id)
+            //validasi nama
+            $cekDataExist = Tukin::where('grade',$request->grade)
             ->get();
 
             if($cekDataExist->isNotEmpty()){
-                session()->flash('message', 'Data golongan sudah ada!');
+                session()->flash('message', 'Data grade tukin sudah ada!');
 
                 return redirect()->back();
             } else {
-                $request['golongan_id'] = $request->golongan_id;
+                $request['grade'] = $request->grade;
                 $request['nominal'] = $request->nominal;
+                $request['keterangan'] = $request->keterangan;
     
-                UangMakan::create($request->all());
+                Tukin::create($request->all());
                 DB::commit();
-                Log::info('Data berhasil di-insert di method store pada UangMakanController!');
+                Log::info('Data berhasil di-insert di method store pada TukinController!');
 
-                return redirect()->route('uang-makan.index')
-                    ->with('success', 'Data Uang Makan berhasil disimpan');
+                return redirect()->route('tukin.index')
+                    ->with('success', 'Data Tunjangan Kinerja berhasil disimpan');
             }    
         } catch (\Exception $e) {
             //throw $th;
             DB::rollback();
-            Log::error($e->getMessage(), ['Data gagal di-insert di method store pada UangMakanController!']);
+            Log::error($e->getMessage(), ['Data gagal di-insert di method store pada TukinController!']);
 
             session()->flash('message', 'Error saat proses data!');
 
@@ -118,7 +114,7 @@ class UangMakanController extends Controller
     * @param  \App\Models\Models\BidangProfisiensi  $bidangProfisiensi
     * @return \Illuminate\Http\Response
     */
-    public function show(UangMakan $uangMakan)
+    public function show(Tukin $tukin)
     {
         //
     }
@@ -129,17 +125,13 @@ class UangMakanController extends Controller
     * @param  \App\Models\Models\BidangProfisiensi  $bidangProfisiensi
     * @return \Illuminate\Http\Response
     */
-    public function edit(UangMakan $uangMakan)
+    public function edit(Tukin $tukin)
     {               
-        $title = 'Ubah Uang Makan';
+        $title = 'Ubah Tunjangan Kinerja';
 
-        $umak = $uangMakan;
+        $tukin = $tukin;
 
-        $golongan = DB::table('golongan')
-        ->select('golongan.*')
-        ->get();
-
-        return view('uang-makan.edit', compact('title','umak', 'golongan'));
+        return view('tukin.edit', compact('title','tukin'));
     }
 
     /**
@@ -149,46 +141,48 @@ class UangMakanController extends Controller
     * @param  \App\Models\Models\BidangProfisiensi  $bidangProfisiensi
     * @return \Illuminate\Http\Response
     */
-    public function update(Request $request, UangMakan $uangMakan)
+    public function update(Request $request, Tukin $tukin)
     {  
         DB::beginTransaction();
 
         $this->validate($request, [
-            'golongan_id' => ['required', 'integer', 'min:1', 'max:999'],
-            'nominal' => ['required', 'integer', 'min:1', 'max:999999999999999']
+            'grade' => ['required', 'integer', 'max:9999'],
+            'nominal' => ['required', 'integer', 'max:9999999999'],
+            'keterangan' => ['max:255'],
         ],
         [
-            'golongan_id.required'=>'data golongan harus diisi!',
-            'golongan_id.integer'=>'data golongan harus bilangan bulat positif!',
+            'grade.required'=>'data grade harus diisi!',
+            'grade.integer'=>'data grade harus bilangan bulat positif!',
             'nominal.required'=>'data nominal harus diisi!',
             'nominal.integer'=>'data nominal harus bilangan bulat positif!',
         ]);
 
         try {
-            //validasi golongan
-            $cekDataExist = UangMakan::where('golongan_id',$request->golongan_id)
-                ->where('id','!=',$uangMakan->id)
+            //validasi nama
+            $cekDataExist = Tukin::where('grade',$request->grade)
+                ->where('id','!=',$tukin->id)
                 ->get();
 
             if($cekDataExist->isNotEmpty()){
-                session()->flash('message', 'Data golongan sudah ada!');
+                session()->flash('message', 'Data Tunjangan Kinerja sudah ada!');
 
                 return redirect()->back();
             } else {
-                $uangMakan->golongan_id = $request->golongan_id;
-                $uangMakan->nominal = $request->nominal;
+                $tukin->grade = $request->grade;
+                $tukin->nominal = $request->nominal;
+                $tukin->keterangan = $request->keterangan;
                 
-                $uangMakan->update();
+                $tukin->update();
                 DB::commit();
-                Log::info('Data berhasil di-update di method update pada UangMakanController!');
+                Log::info('Data berhasil di-update di method update pada TukinController!');
 
-                return redirect()->route('uang-makan.index')
-                    ->with('success', 'Data Uang Makan berhasil diupdate');
+                return redirect()->route('tukin.index')
+                    ->with('success', 'Data Tunjangan Kinerja berhasil diupdate');
             }    
         } catch (\Exception $e) {
             //throw $th;
             DB::rollback();
-            Log::error($e->getMessage(), ['Data gagal di-update di method update pada UangMakanController!']);
+            Log::error($e->getMessage(), ['Data gagal di-update di method update pada TukinController!']);
 
             session()->flash('message', 'Error saat proses data!');
 
@@ -203,33 +197,33 @@ class UangMakanController extends Controller
     * @param  \App\Models\Models\BidangProfisiensi  $bidangProfisiensi
     * @return \Illuminate\Http\Response
     */        
-    public function destroy(UangMakan $uangMakan)
+    public function destroy(Tukin $tukin)
     {           
         DB::beginTransaction();
         try {
             //$profisiensiMSampelUp->deleted_by = Auth::user()->username;;
-            $uangMakan->delete();
+            $tukin->delete();
 
             $response['status'] = [
                 'code' => 200,
-                'message' => 'Data Uang Makan berhasil di hapus!',
+                'message' => 'Data Status Pegawai berhasil di hapus!',
                 'error' => false,
                 'error_message' => ''
             ];
 
             DB::commit();
-            Log::info('Data berhasil di-delete di method destroy pada UangMakanController!');
+            Log::info('Data berhasil di-delete di method destroy pada TukinController!');
 
             return response()->json($response, 200);
         } catch (\Exception $e) {
             $response['status'] = [
                 'code' => 200,
-                'message' => 'Data Uang Makan gagal dibatalkan!',
+                'message' => 'Data Tunjangan Kinerja gagal dibatalkan!',
                 'error' => true,
-                'error_message' => 'Data Uang Makan gagal dibatalkan!'
+                'error_message' => 'Data Tunjangan Kinerja gagal dibatalkan!'
             ];
 
-            Log::error($e->getMessage(), ['Data gagal di-hapus di method destroy pada UangMakanController!']);
+            Log::error($e->getMessage(), ['Data gagal di-hapus di method destroy pada TukinController!']);
             DB::rollback();
 
             return response()->json($response, 200);

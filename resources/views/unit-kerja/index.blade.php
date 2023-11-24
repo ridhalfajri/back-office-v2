@@ -17,7 +17,7 @@
 
 @push('breadcrumb')
         <ol class="breadcrumb custom-background-color">
-            <li class="breadcrumb-item"><a href="{{ route('uang-makan.index') }}"><i class="fa fa-home"></i></a></li>
+            <li class="breadcrumb-item"><a href="{{ route('unit-kerja.index') }}"><i class="fa fa-home"></i></a></li>
             <!-- <li class="breadcrumb-item"><a href="#">Gaji</a></li>        -->
             <li class="breadcrumb-item active" aria-current="page">{{ $title }}</li>
         </ol>
@@ -31,7 +31,7 @@
                 <div class="card-header">
                     <h4 class="card-title">
                         <button type="button" class="btn btn-xs btn-primary" id="btn-add"
-                        onclick="window.location.href = '{{ route('uang-makan.create') }}';">
+                        onclick="window.location.href = '{{ route('unit-kerja.create') }}';">
                         <i class="fa fa-plus"></i> Tambah</button>
                     </h4>
                 </div>
@@ -41,16 +41,20 @@
                     <thead>
                         <tr>
                             <th style="width: 5%">No</th>
-                            <th>Golongan</th>
-                            <th>Nominal</th>
+                            <th>Unit Kerja</th>
+                            <th>Jenis Unit Kerja</th>
+                            <th>Singkatan</th>
+                            <th>Keterangan</th>
                             <th>Aksi</th>
                         </tr>
                     </thead>
                     <tfoot>
                         <tr>
                             <th>No</th>
-                            <th>Golongan</th>
-                            <th>Nominal</th>
+                            <th>Unit Kerja</th>
+                            <th>Jenis Unit Kerja</th>
+                            <th>Singkatan</th>
+                            <th>Keterangan</th>
                             <th>Aksi</th>
                         </tr>
                     </tfoot>
@@ -90,7 +94,7 @@
                 info: true,
                 autoWidth: false,
                 ajax: {
-                    url: '{{ route('uang-makan.datatable') }}',
+                    url: '{{ route('unit-kerja.datatable') }}',
                     type: 'POST',
                     headers: {
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
@@ -102,13 +106,23 @@
                         class: 'text-center'
                     },
                     {
-                        data: 'nama_golongan',
-                        name: 'golongan.nama',
+                        data: 'nama',
+                        name: 'unit_kerja.nama',
                         class: 'text-center'
                     },
                     {
-                        data: 'nominal',
-                        name: 'nominal',
+                        data: 'nama_jenis_unit',
+                        name: 'jenis_unit_kerja.nama',
+                        class: 'text-center'
+                    },
+                    {
+                        data: 'singkatan',
+                        name: 'unit_kerja.singkatan',
+                        class: 'text-center'
+                    },
+                    {
+                        data: 'keterangan',
+                        name: 'unit_kerja.keterangan',
                         class: 'text-center'
                     },
                     {
@@ -157,7 +171,7 @@
                     if (isConfirm) {
                         delete_data(that.data('id')).then(function(hasil) {
                             if (hasil.status.error == true) {
-                                toastr['error']('Data Uang Makan gagal di hapus!');
+                                toastr['error']('Data Unit Kerja gagal di hapus!');
                             } else {
                                 table.ajax.reload();
                                 toastr['success'](hasil.status.message);
@@ -177,7 +191,7 @@
     function delete_data(id) {
             return new Promise(function(resolve, reject) {
                 $.ajax({
-                    url: "{{ url('uang-makan') }}/" + id,
+                    url: "{{ url('unit-kerja') }}/" + id,
                     method: 'POST',
                     headers: {
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
@@ -189,7 +203,7 @@
                 }).done(function(hasil) {
                     resolve(hasil);
                 }).fail(function() {
-                    reject('Gagal menghapus data Uang Makan!');
+                    reject('Gagal menghapus data Unit Kerja!');
                 })
             })
         }

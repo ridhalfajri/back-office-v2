@@ -21,6 +21,12 @@ use App\Http\Controllers\PresensiController;
 use App\Http\Controllers\PropinsiController;
 use Illuminate\Support\Facades\Route;
 
+//indrawan
+use App\Http\Controllers\UangMakanController;
+use App\Http\Controllers\StatusPegawaiController;
+use App\Http\Controllers\UnitKerjaController;
+use App\Http\Controllers\TukinController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -61,7 +67,18 @@ Route::middleware('auth')->group(function () {
     Route::post('/presensi/datatable', [PresensiController::class, 'datatable'])->name('presensi.datatable');
     Route::post('/presensi/getdatapresensi', [PresensiController::class, 'getdatapresensi'])->name('presensi.getdatapresensi');
 
+    //indrawan
+    Route::post('/uang-makan/datatable', [UangMakanController::class, 'datatable'])->name('uang-makan.datatable');
+    Route::resource('/uang-makan', UangMakanController::class);
 
+    Route::post('/unit-kerja/datatable', [UnitKerjaController::class, 'datatable'])->name('unit-kerja.datatable');
+    Route::resource('/unit-kerja', UnitKerjaController::class);
+
+    Route::post('/status-pegawai/datatable', [StatusPegawaiController::class, 'datatable'])->name('status-pegawai.datatable');
+    Route::resource('/status-pegawai', StatusPegawaiController::class);
+
+    Route::post('/tukin/datatable', [TukinController::class, 'datatable'])->name('tukin.datatable');
+    Route::resource('/tukin', TukinController::class);
 
     Route::prefix('pegawai')->group(function () {
 

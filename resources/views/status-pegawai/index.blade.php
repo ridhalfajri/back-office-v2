@@ -13,11 +13,12 @@
 <link rel="stylesheet" href="{{ asset('assets/plugins/sweetalert/sweetalert.css') }}">
 <!-- Toastr -->
 <link rel="stylesheet" href="{{ asset('assets/plugins/toastr/toastr.css') }}">
+
 @endpush
 
 @push('breadcrumb')
         <ol class="breadcrumb custom-background-color">
-            <li class="breadcrumb-item"><a href="{{ route('uang-makan.index') }}"><i class="fa fa-home"></i></a></li>
+            <li class="breadcrumb-item"><a href="{{ route('status-pegawai.index') }}"><i class="fa fa-home"></i></a></li>
             <!-- <li class="breadcrumb-item"><a href="#">Gaji</a></li>        -->
             <li class="breadcrumb-item active" aria-current="page">{{ $title }}</li>
         </ol>
@@ -31,7 +32,7 @@
                 <div class="card-header">
                     <h4 class="card-title">
                         <button type="button" class="btn btn-xs btn-primary" id="btn-add"
-                        onclick="window.location.href = '{{ route('uang-makan.create') }}';">
+                        onclick="window.location.href = '{{ route('status-pegawai.create') }}';">
                         <i class="fa fa-plus"></i> Tambah</button>
                     </h4>
                 </div>
@@ -41,16 +42,14 @@
                     <thead>
                         <tr>
                             <th style="width: 5%">No</th>
-                            <th>Golongan</th>
-                            <th>Nominal</th>
+                            <th>Status Pegawai</th>
                             <th>Aksi</th>
                         </tr>
                     </thead>
                     <tfoot>
                         <tr>
                             <th>No</th>
-                            <th>Golongan</th>
-                            <th>Nominal</th>
+                            <th>Status Pegawai</th>
                             <th>Aksi</th>
                         </tr>
                     </tfoot>
@@ -66,13 +65,12 @@
 
 @push('script')
 <!-- Data Tables -->
-    
     <script src="{{ asset('assets/bundles/dataTables.bundle.js') }}"></script>
     <script src="{{ asset('assets/js/table/datatable.js') }}"></script>
     <script src="{{ asset('assets/plugins/sweetalert/sweetalert.min.js') }}"></script>
     <script src="{{ asset('assets/plugins/toastr/toastr.min.js') }}"></script>
-   
-    <script type="text/javascript">
+
+<script type="text/javascript">
         "use strict"
         let table;
 
@@ -90,7 +88,7 @@
                 info: true,
                 autoWidth: false,
                 ajax: {
-                    url: '{{ route('uang-makan.datatable') }}',
+                    url: '{{ route('status-pegawai.datatable') }}',
                     type: 'POST',
                     headers: {
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
@@ -102,13 +100,8 @@
                         class: 'text-center'
                     },
                     {
-                        data: 'nama_golongan',
-                        name: 'golongan.nama',
-                        class: 'text-center'
-                    },
-                    {
-                        data: 'nominal',
-                        name: 'nominal',
+                        data: 'nama',
+                        name: 'nama',
                         class: 'text-center'
                     },
                     {
@@ -157,7 +150,7 @@
                     if (isConfirm) {
                         delete_data(that.data('id')).then(function(hasil) {
                             if (hasil.status.error == true) {
-                                toastr['error']('Data Uang Makan gagal di hapus!');
+                                toastr['error']('Data Status Pegawai gagal di hapus!');
                             } else {
                                 table.ajax.reload();
                                 toastr['success'](hasil.status.message);
@@ -177,7 +170,7 @@
     function delete_data(id) {
             return new Promise(function(resolve, reject) {
                 $.ajax({
-                    url: "{{ url('uang-makan') }}/" + id,
+                    url: "{{ url('status-pegawai') }}/" + id,
                     method: 'POST',
                     headers: {
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
@@ -189,7 +182,7 @@
                 }).done(function(hasil) {
                     resolve(hasil);
                 }).fail(function() {
-                    reject('Gagal menghapus data Uang Makan!');
+                    reject('Gagal menghapus data Status Pegawai!');
                 })
             })
         }

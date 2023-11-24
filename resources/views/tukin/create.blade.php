@@ -3,14 +3,13 @@
 @push('style')
     <!-- Select2 -->
     <link rel="stylesheet" href="{{ asset('assets/plugins/select2/css/select2.min.css') }}">
-    
 @endpush
 
 @push('breadcrumb')
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{{ route('uang-makan.index') }}"><i class="fa fa-home"></i></a></li>
-            <li class="breadcrumb-item"><a href="{{ route('uang-makan.index') }}">Uang Makan</a></li>
+            <li class="breadcrumb-item"><a href="{{ route('tukin.index') }}"><i class="fa fa-home"></i></a></li>
+            <li class="breadcrumb-item"><a href="{{ route('tukin.index') }}">Tunjangan Kinerja</a></li>
             <li class="breadcrumb-item active" aria-current="page">{{ $title }}</li>
         </ol>
     </nav>
@@ -35,28 +34,28 @@
                         </div>
                     @endif
 
-                    <form method="post"  action="{{ route('uang-makan.store') }}"  accept-charset="utf-8">
+                    <form method="post"  action="{{ route('tukin.store') }}"  accept-charset="utf-8">
                         @csrf
                         <div class="row clearfix">
                             <div class="col-12 col-lg-12 col-md-12">
-                                <div class="form-group @error('golongan_id')has-error @enderror">
-                                    <label>Golongan <span class="text-danger"><sup>*</sup></span></label>
-                                    <select id="golongan_id" name="golongan_id" class="form-control">
-                                        <option value="">--Pilih--</option>
-                                        @foreach ($golongan as $item)
-                                            @if (old('golongan_id') && old('golongan_id') == $item->id)
-                                                <option value="{{ $item->id }}" selected>{{ $item->nama }}</option>
-                                            @else
-                                                <option value="{{ $item->id }}">{{ $item->nama }}</option>
-                                            @endif
-                                        @endforeach
-                                    </select>
+                                <div class="form-group @error('grade')has-error @enderror">
+                                    <label>Grade <span class="text-danger"><sup>*</sup></span></label>
+                                    <input type="number" name="grade" id="grade" value="{{ old('grade') }}"
+                                        class="form-control" required="" maxlength="9999" placeholder="Grade Tunjangan Kinerja"
+                                        autocomplete="off">
                                 </div>
 
                                 <div class="form-group @error('nominal')has-error @enderror">
                                     <label>Nominal <span class="text-danger"><sup>*</sup></span></label>
                                     <input type="number" name="nominal" id="nominal" value="{{ old('nominal') }}"
-                                        class="form-control" required="" maxlength="999999999999999" placeholder="Nominal Uang Makan"
+                                        class="form-control" required="" maxlength="9999999999" placeholder="Nominal Tunjangan Kinerja"
+                                        autocomplete="off">
+                                </div>
+
+                                <div class="form-group @error('keterangan')has-error @enderror">
+                                    <label>Keterangan </label>
+                                    <input type="text" name="keterangan" id="keterangan" value="{{ old('keterangan') }}"
+                                        class="form-control" maxlength="255" placeholder="Keterangan"
                                         autocomplete="off">
                                 </div>
                             </div>
@@ -72,13 +71,14 @@
 
 @push('script')
     <!-- Select2 -->
-    <script src="{{ asset('assets/plugins/select2/js/select2.min.js') }}"></script>
+    <script src="{{ asset('assets/plugins/select2/js/select2.min.js') }}" type="text/javascript"></script>
 
     <script type="text/javascript">
+        "use strict"
 
-        $('#golongan_id').select2({
-            width: 'resolve'
-        });
+        // $('#golongan_id').select2({
+        //         width: 'resolve'
+        // });
 
     </script>
 @endpush
