@@ -107,6 +107,7 @@
                             `<div class="alert alert-success" role="alert">${response.success.create}</div>`
                         )
                     } else if (response.success.url) {
+                        console.log('Login success');
                         window.location.href = response.success.url;
 
                     }

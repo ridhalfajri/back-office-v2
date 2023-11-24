@@ -25,8 +25,6 @@ class JabatanUnitKerjaController extends Controller
     {
         $title = 'Jabatan Unit Kerja';
 
-        dd(PresensiHelper::get_DataPresensi());
-
         return view('jabatan-unit-kerja.index', compact('title'));
     }
 

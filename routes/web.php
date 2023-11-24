@@ -17,6 +17,7 @@ use App\Http\Controllers\Pegawai\PegawaiTmtGajiController;
 use App\Http\Controllers\Pegawai\PenghargaanController;
 use App\Http\Controllers\Pegawai\RiwayatPendidikanController;
 use App\Http\Controllers\Pegawai\SuamiIstriController;
+use App\Http\Controllers\PresensiController;
 use App\Http\Controllers\PropinsiController;
 use Illuminate\Support\Facades\Route;
 
@@ -54,6 +55,12 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/jabatan-unit-kerja/datatable', [JabatanUnitKerjaController::class, 'datatable'])->name('jabatan-unit-kerja.datatable');
     Route::resource('/jabatan-unit-kerja', JabatanUnitKerjaController::class);
+
+    //Presensi
+    Route::resource('/presensi', PresensiController::class);
+    Route::post('/presensi/datatable', [PresensiController::class, 'datatable'])->name('presensi.datatable');
+    Route::post('/presensi/getdatapresensi', [PresensiController::class, 'getdatapresensi'])->name('presensi.getdatapresensi');
+
 
 
     Route::prefix('pegawai')->group(function () {

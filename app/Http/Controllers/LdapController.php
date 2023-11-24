@@ -89,15 +89,12 @@ class LdapController extends Controller
                 $result = ldap_search($ldapconn, $ldaptree, $filter, $attr) or die("Error in search query: " . ldap_error($ldapconn));
                 $data = ldap_get_entries($ldapconn, $result);
                 ldap_close($ldapconn);
-                var_dump($data['count'] > 0);
-                var_dump($uid);
+
                 if ($data['count'] > 0) {
                     // cek username di backoffice
                     $user = User::where('username', $uid)
                         ->where('is_active', 1)
                         ->first();
-
-                        var_dump($user);
 
                     if ($user != NULL) {
                         Auth::login($user);
