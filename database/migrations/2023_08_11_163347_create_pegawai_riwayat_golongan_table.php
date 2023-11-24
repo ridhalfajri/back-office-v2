@@ -9,19 +9,21 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
+    //indrawan
     public function up(): void
     {
-        Schema::create('pegawai_tmt_gaji', function (Blueprint $table) {
+        Schema::create('pegawai_riwayat_golongan', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('pegawai_id');
-            $table->unsignedInteger('gaji_id');
-            $table->date('tmt_gaji');
-            //indrawan
-            $table->boolean('is_active')->nullable(true)->comment('0 = untuk gaji yang tidak aktif, 1 = gaji yang aktif');
+            $table->unsignedTinyInteger('golongan_id');
+            $table->date('tmt_golongan')->nullable();
+            $table->string('no_sk', 50)->nullable();
+            $table->date('tanggal_sk')->nullable();
+            $table->boolean('is_active')->nullable();
+            
             $table->timestamps();
             $table->foreign('pegawai_id')->references('id')->on('pegawai')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreign('gaji_id')->references('id')->on('gaji')->onUpdate('cascade')->onDelete('cascade');
-
+            $table->foreign('golongan_id')->references('id')->on('golongan')->onUpdate('cascade')->onDelete('cascade');
         });
     }
 
@@ -30,6 +32,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('pegawai_tmt_gaji');
+        Schema::dropIfExists('pegawai_riwayat_golongan');
     }
 };

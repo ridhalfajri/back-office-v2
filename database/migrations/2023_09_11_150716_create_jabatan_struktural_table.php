@@ -17,6 +17,8 @@ return new class extends Migration
             $table->string('cepat_kode', 10);
             $table->string('bkn_id', 100)->nullable(true);
             $table->boolean('status')->default(1);
+            //indrawan
+            $table->bigInteger('nominal_tunjangan');
             $table->timestamps();
         });
     }

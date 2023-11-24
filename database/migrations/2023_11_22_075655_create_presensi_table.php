@@ -30,6 +30,8 @@ class CreatePresensiTable extends Migration
 			 $table->enum('is_tubel',['Y', 'N'])->nullable(false); // Y: ijin tugas belajar
              $table->unique(['no_enroll', 'tanggal_presensi']);
              $table->string('keterangan')->nullable(true);
+             //indrawan
+             $table->bigInteger('nominal_potongan');
              $table->timestamps();
         });
     }
