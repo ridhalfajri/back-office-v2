@@ -23,27 +23,56 @@
                                 <div class="card-body">
                                     <div class="row">
                                         <div class="form-group multiselect_div col-lg-6 col-md-6 col-sm-12">
-                                            <label class="form-label">Unit Kerja</label>
-                                            <select id="unit_kerja" name="unit_kerja"
+                                            <label class="form-label">Bulan</label>
+                                            <select id="bulan" name="bulan"
                                                 class="select-filter multiselect multiselect-custom">
-                                                <option value="">Semua</option>
-                                                @foreach ($unit_kerja as $item)
-                                                    <option value="{{ $item['id'] }}">{{ $item['nama'] }}</option>
-                                                @endforeach
+                                                <option value="01"@if (Carbon\Carbon::now()->format('m') == '01') selected @endif>
+                                                    Januari</option>
+                                                <option value="02"@if (Carbon\Carbon::now()->format('m') == '02') selected @endif>
+                                                    Februari
+                                                </option>
+                                                <option value="03"@if (Carbon\Carbon::now()->format('m') == '03') selected @endif>
+                                                    Maret
+                                                </option>
+                                                <option value="04"@if (Carbon\Carbon::now()->format('m') == '04') selected @endif>
+                                                    April
+                                                </option>
+                                                <option value="05"@if (Carbon\Carbon::now()->format('m') == '05') selected @endif>Mei
+                                                </option>
+                                                <option value="06"@if (Carbon\Carbon::now()->format('m') == '06') selected @endif>Juni
+                                                </option>
+                                                <option value="07"@if (Carbon\Carbon::now()->format('m') == '07') selected @endif>Juli
+                                                </option>
+                                                <option value="08"@if (Carbon\Carbon::now()->format('m') == '08') selected @endif>
+                                                    Agustus
+                                                </option>
+                                                <option value="09"@if (Carbon\Carbon::now()->format('m') == '09') selected @endif>
+                                                    September
+                                                </option>
+                                                <option value="10"@if (Carbon\Carbon::now()->format('m') == '10') selected @endif>
+                                                    Oktober
+                                                </option>
+                                                <option value="11"@if (Carbon\Carbon::now()->format('m') == '11') selected @endif>
+                                                    November
+                                                </option>
+                                                <option value="12"@if (Carbon\Carbon::now()->format('m') == '12') selected @endif>
+                                                    Desember
+                                                </option>
                                             </select>
                                         </div>
                                         <div class="form-group multiselect_div col-lg-6 col-md-6 col-sm-12">
-                                            <label class="form-label">Status</label>
-                                            <select id="status" name="status"
+                                            <label class="form-label">Tahun</label>
+                                            <select id="tahun" name="tahun"
                                                 class="select-filter multiselect multiselect-custom">
-                                                @foreach ($status_cuti as $item)
-                                                    @if ($item->id == 2)
-                                                        <option value="{{ $item->id }}" selected>{{ $item->status }}
+                                                @for ($a = Carbon\Carbon::now()->format('Y'); $a >= 2005; $a--)
+                                                    @if ($a == Carbon\Carbon::now()->format('Y'))
+                                                        <option value="{{ $a }}" selected>{{ $a }}
                                                         </option>
                                                     @else
-                                                        <option value="{{ $item->id }}">{{ $item->status }}</option>
+                                                        <option value="{{ $a }}">{{ $a }}
+                                                        </option>
                                                     @endif
-                                                @endforeach
+                                                @endfor
                                             </select>
                                         </div>
                                     </div>
@@ -51,29 +80,26 @@
                             </div>
                         </div>
                         <div class="col-lg-12">
-
                             <div class="table-responsive mb-4">
-                                <table id="tbl-pengajuan-masuk"
+                                <table id="tbl-penghasilan-show"
                                     class="table table-hover js-basic-example dataTable table_custom spacing5">
                                     <thead>
                                         <tr>
                                             <th style="width: 5%" class="font-weight-bold text-dark">No</th>
-                                            <th class="font-weight-bold text-dark">Nama</th>
-                                            <th class="font-weight-bold text-dark">Unit Kerja</th>
-                                            <th class="font-weight-bold text-dark">Pengajuan</th>
-                                            <th class="font-weight-bold text-dark">Status</th>
-                                            <th class="font-weight-bold text-dark">Jenis Cuti</th>
+                                            <th class="font-weight-bold text-dark">Periode</th>
+                                            <th class="font-weight-bold text-dark">Gaji</th>
+                                            <th class="font-weight-bold text-dark">Tukin</th>
+                                            <th class="font-weight-bold text-dark">Uang Makan</th>
                                             <th class="font-weight-bold text-dark">Aksi</th>
                                         </tr>
                                     </thead>
                                     <tfoot>
                                         <tr>
                                             <th style="width: 5%" class="font-weight-bold text-dark">No</th>
-                                            <th class="font-weight-bold text-dark">Nama</th>
-                                            <th class="font-weight-bold text-dark">Unit Kerja</th>
-                                            <th class="font-weight-bold text-dark">Pengajuan</th>
-                                            <th class="font-weight-bold text-dark">Status</th>
-                                            <th class="font-weight-bold text-dark">Jenis Cuti</th>
+                                            <th class="font-weight-bold text-dark">Periode</th>
+                                            <th class="font-weight-bold text-dark">Gaji</th>
+                                            <th class="font-weight-bold text-dark">Tukin</th>
+                                            <th class="font-weight-bold text-dark">Uang Makan</th>
                                             <th class="font-weight-bold text-dark">Aksi</th>
                                         </tr>
                                     </tfoot>
@@ -88,8 +114,6 @@
         </div>
     </div>
 @endsection
-@push('modal')
-@endpush
 @push('script')
     {{-- Multiselect --}}
     <script src="{{ asset('assets/plugins/bootstrap-multiselect/bootstrap-multiselect.js') }}"></script>
@@ -100,25 +124,24 @@
     <script>
         "use strict"
         let table;
-
         $('.select-filter').multiselect({
             enableFiltering: true,
             enableCaseInsensitiveFiltering: true,
             maxHeight: 200
         });
-        $('#unit_kerja').on('change', () => {
-            datatable_pengajuan_masuk();
-
-        })
-        $('#status').on('change', () => {
-            datatable_pengajuan_masuk();
-        })
         $(function() {
-            datatable_pengajuan_masuk();
+            pengahsilan_show();
         })
+        $('#bulan').on('change', () => {
+            pengahsilan_show();
 
-        const datatable_pengajuan_masuk = (unit_kerja = null) => {
-            table = $('#tbl-pengajuan-masuk').DataTable({
+        })
+        $('#tahun').on('change', () => {
+            pengahsilan_show();
+
+        })
+        const pengahsilan_show = () => {
+            table = $('#tbl-penghasilan-show').DataTable({
                 processing: true,
                 destroy: true,
                 serverSide: true,
@@ -132,14 +155,15 @@
                 info: true,
                 autoWidth: false,
                 ajax: {
-                    url: '{{ route('cuti.datatable-pengajuan-masuk-sdmoh') }}',
+                    url: '{{ route('penghasilan.datatable_show') }}',
                     type: 'POST',
                     headers: {
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
                     },
                     data: {
-                        unit_kerja: $('#unit_kerja').val(),
-                        status: $('#status').val()
+                        pegawai_id: '{{ $pegawai->id }}',
+                        bulan: $('#bulan').val(),
+                        tahun: $('#tahun').val(),
                     }
                 },
                 columns: [{
@@ -148,44 +172,25 @@
                         class: 'text-center'
                     },
                     {
-                        data: 'nama_lengkap',
-                        name: 'nama_lengkap',
+                        data: 'periode',
+                        name: 'periode',
                     },
                     {
-                        data: 'nama_unit_kerja',
-                        name: 'uk.nama',
+                        data: 'gaji',
+                        name: 'gaji',
+                        render: $.fn.dataTable.render.number(',', '.', 3, 'Rp')
                     },
                     {
-                        data: 'tanggal_pengajuan',
-                        name: 'pegawai_cuti.created_at',
+                        data: 'tukin',
+                        name: 'tukin',
+                        render: $.fn.dataTable.render.number(',', '.', 3, 'Rp')
+
                     },
                     {
-                        data: 'status',
-                        name: 'status_cuti.status',
-                        render: function(data, type, row) {
-                            switch (data) {
-                                case "Pengajuan":
-                                    return '<span class="badge badge-pill badge-warning">' + data +
-                                        '</span>';
-                                    break;
-                                case "Acc Atasan Langsung":
-                                    return '<span class="badge badge-pill badge-primary">' + data +
-                                        '</span>';
-                                    break;
-                                case "Acc Kabiro SDMOH":
-                                    return '<span class="badge badge-pill badge-success">' + data +
-                                        '</span>';
-                                    break;
-                                case "Cuti Ditolak":
-                                    return '<span class="badge badge-pill badge-danger">' + data +
-                                        '</span>';
-                                    break;
-                            }
-                        }
-                    },
-                    {
-                        data: 'jenis',
-                        name: 'jenis_cuti.jenis',
+                        data: 'total',
+                        name: 'total',
+                        render: $.fn.dataTable.render.number(',', '.', 3, 'Rp')
+
                     },
                     {
                         data: 'aksi',

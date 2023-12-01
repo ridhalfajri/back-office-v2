@@ -13,6 +13,7 @@ use App\Http\Controllers\JabatanUnitKerjaController;
 use App\Http\Controllers\LdapController;
 use App\Http\Controllers\Pegawai\AnakController;
 use App\Http\Controllers\Pegawai\PegawaiDiklatController;
+use App\Http\Controllers\Pegawai\PegawaiRiwayatThpController;
 use App\Http\Controllers\Pegawai\PegawaiTmtGajiController;
 use App\Http\Controllers\Pegawai\PenghargaanController;
 use App\Http\Controllers\Pegawai\RiwayatPendidikanController;
@@ -24,6 +25,7 @@ use Illuminate\Support\Facades\Route;
 //indrawan
 use App\Http\Controllers\UangMakanController;
 use App\Http\Controllers\StatusPegawaiController;
+use App\Http\Controllers\ThpController;
 use App\Http\Controllers\UnitKerjaController;
 use App\Http\Controllers\TukinController;
 
@@ -166,6 +168,18 @@ Route::middleware('auth')->group(function () {
         Route::post('/datatable_pengajuan_masuk_sdmoh', [CutiController::class, 'datatable_pengajuan_masuk_sdmoh'])->name('cuti.datatable-pengajuan-masuk-sdmoh');
         Route::post('/acc_atasan_langsung', [CutiController::class, 'acc_atasan_langsung'])->name('cuti.acc-atasan-langsung');
         Route::post('/acc_kabiro_sdmoh', [CutiController::class, 'acc_kabiro_sdmoh'])->name('cuti.acc-kabiro-sdmoh');
+    });
+    Route::prefix('thp')->group(function () {
+        Route::get('/semua_thp', [ThpController::class, 'index'])->name('thp.semua-thp');
+        Route::post('/datatable', [ThpController::class, 'datatable'])->name('thp.datatable');
+    });
+    Route::prefix('penghasilan')->group(function () {
+        Route::get('/', [PegawaiRiwayatThpController::class, 'index'])->name('penghasilan.index');
+        Route::get('/show/gaji/{id}', [PegawaiRiwayatThpController::class, 'gaji_detail'])->name('penghasilan.gaji-detail');
+        Route::get('/show/tukin/{id}', [PegawaiRiwayatThpController::class, 'tukin_detail'])->name('penghasilan.tukin-detail');
+        Route::get('/show/{id}', [PegawaiRiwayatThpController::class, 'show'])->name('penghasilan.show');
+        Route::post('/datatable', [PegawaiRiwayatThpController::class, 'datatable'])->name('penghasilan.datatable');
+        Route::post('/datatable_show', [PegawaiRiwayatThpController::class, 'datatable_show'])->name('penghasilan.datatable_show');
     });
 });
 

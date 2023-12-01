@@ -4,8 +4,10 @@
         <li><a href="#"><i class="icon-home"></i><span>Dashboard</span></a></li>
         <li><a href="{{ route('pegawai.index') }}"><i class="icon-users"></i><span>Pegawai</span></a></li>
         <li><a href="{{ route('gaji.index') }}"><i class="fa fa-money"></i><span>Gaji Pegawai</span></a></li>
-        <li><a href="{{ route('jabatan-tukin.index') }}"><i class="fa fa-money"></i><span>Tunjangan Kinerja</span></a></li>
-        <li><a href="{{ route('jabatan-unit-kerja.index') }}"><i class="fa fa-snowflake-o"></i><span>Jabatan Unit Kerja</span></a></li>
+        <li><a href="{{ route('jabatan-tukin.index') }}"><i class="fa fa-money"></i><span>Tunjangan Kinerja</span></a>
+        </li>
+        <li><a href="{{ route('jabatan-unit-kerja.index') }}"><i class="fa fa-snowflake-o"></i><span>Jabatan Unit
+                    Kerja</span></a></li>
         <li><a href="{{ route('presensi.index') }}"><i class="fa fa-clock-o"></i><span>Presensi</span></a></li>
 
         <li class="{{ request()->segment(1) == 'cuti' ? 'active' : '' }}">
@@ -29,5 +31,12 @@
                 @endif
             </ul>
         </li>
+        @if (auth()->user()->pegawai->jabatan_sekarang->tx_tipe_jabatan_id == 5)
+            <li class="{{ request()->segment(1) == 'penghasilan' ? 'active' : '' }}"><a
+                    href="{{ route('penghasilan.index') }}"><i
+                        class="fa fa-credit-card"></i><span>Penghasilan</span></a>
+            </li>
+        @endif
+
     </ul>
 </nav>

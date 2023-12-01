@@ -66,7 +66,6 @@ class PegawaiController extends Controller
                 'status_dinas',
                 'tanggal_berhenti',
                 'tanggal_wafat',
-                'no_kartu_pegawai',
                 'no_bpjs',
                 'no_taspen',
                 'no_enroll',
