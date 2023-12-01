@@ -1,4 +1,4 @@
-@extends('layout')
+@extends('template')
 
 @push('style')
 <!-- Plugins css -->
