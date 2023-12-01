@@ -32,20 +32,6 @@
                                                 @endforeach
                                             </select>
                                         </div>
-                                        <div class="form-group multiselect_div col-lg-6 col-md-6 col-sm-12">
-                                            <label class="form-label">Status</label>
-                                            <select id="status" name="status"
-                                                class="select-filter multiselect multiselect-custom">
-                                                @foreach ($status_cuti as $item)
-                                                    @if ($item->id == 2)
-                                                        <option value="{{ $item->id }}" selected>{{ $item->status }}
-                                                        </option>
-                                                    @else
-                                                        <option value="{{ $item->id }}">{{ $item->status }}</option>
-                                                    @endif
-                                                @endforeach
-                                            </select>
-                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -53,27 +39,31 @@
                         <div class="col-lg-12">
 
                             <div class="table-responsive mb-4">
-                                <table id="tbl-pengajuan-masuk"
+                                <table id="tbl-riwayat-thp"
                                     class="table table-hover js-basic-example dataTable table_custom spacing5">
                                     <thead>
                                         <tr>
                                             <th style="width: 5%" class="font-weight-bold text-dark">No</th>
-                                            <th class="font-weight-bold text-dark">Nama</th>
-                                            <th class="font-weight-bold text-dark">Unit Kerja</th>
-                                            <th class="font-weight-bold text-dark">Pengajuan</th>
-                                            <th class="font-weight-bold text-dark">Status</th>
-                                            <th class="font-weight-bold text-dark">Jenis Cuti</th>
+                                            <th class="font-weight-bold text-dark">Pegawai</th>
+                                            <th class="font-weight-bold text-dark">Gaji Pokok</th>
+                                            <th class="font-weight-bold text-dark">Tunjangan</th>
+                                            <th class="font-weight-bold text-dark">Potongan</th>
+                                            <th class="font-weight-bold text-dark">Total THP</th>
+                                            <th class="font-weight-bold text-dark">Bulan</th>
+                                            <th class="font-weight-bold text-dark">Tahun</th>
                                             <th class="font-weight-bold text-dark">Aksi</th>
                                         </tr>
                                     </thead>
                                     <tfoot>
                                         <tr>
                                             <th style="width: 5%" class="font-weight-bold text-dark">No</th>
-                                            <th class="font-weight-bold text-dark">Nama</th>
-                                            <th class="font-weight-bold text-dark">Unit Kerja</th>
-                                            <th class="font-weight-bold text-dark">Pengajuan</th>
-                                            <th class="font-weight-bold text-dark">Status</th>
-                                            <th class="font-weight-bold text-dark">Jenis Cuti</th>
+                                            <th class="font-weight-bold text-dark">Pegawai</th>
+                                            <th class="font-weight-bold text-dark">Gaji Pokok</th>
+                                            <th class="font-weight-bold text-dark">Tunjangan</th>
+                                            <th class="font-weight-bold text-dark">Potongan</th>
+                                            <th class="font-weight-bold text-dark">Total THP</th>
+                                            <th class="font-weight-bold text-dark">Bulan</th>
+                                            <th class="font-weight-bold text-dark">Tahun</th>
                                             <th class="font-weight-bold text-dark">Aksi</th>
                                         </tr>
                                     </tfoot>
@@ -88,8 +78,6 @@
         </div>
     </div>
 @endsection
-@push('modal')
-@endpush
 @push('script')
     {{-- Multiselect --}}
     <script src="{{ asset('assets/plugins/bootstrap-multiselect/bootstrap-multiselect.js') }}"></script>
@@ -100,25 +88,20 @@
     <script>
         "use strict"
         let table;
-
         $('.select-filter').multiselect({
             enableFiltering: true,
             enableCaseInsensitiveFiltering: true,
             maxHeight: 200
         });
         $('#unit_kerja').on('change', () => {
-            datatable_pengajuan_masuk();
+            riwayat_thp();
 
-        })
-        $('#status').on('change', () => {
-            datatable_pengajuan_masuk();
         })
         $(function() {
-            datatable_pengajuan_masuk();
+            riwayat_thp();
         })
-
-        const datatable_pengajuan_masuk = (unit_kerja = null) => {
-            table = $('#tbl-pengajuan-masuk').DataTable({
+        const riwayat_thp = () => {
+            table = $('#tbl-riwayat-thp').DataTable({
                 processing: true,
                 destroy: true,
                 serverSide: true,
@@ -132,14 +115,13 @@
                 info: true,
                 autoWidth: false,
                 ajax: {
-                    url: '{{ route('cuti.datatable-pengajuan-masuk-sdmoh') }}',
+                    url: '{{ route('thp.datatable') }}',
                     type: 'POST',
                     headers: {
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
                     },
                     data: {
                         unit_kerja: $('#unit_kerja').val(),
-                        status: $('#status').val()
                     }
                 },
                 columns: [{
@@ -152,40 +134,28 @@
                         name: 'nama_lengkap',
                     },
                     {
-                        data: 'nama_unit_kerja',
-                        name: 'uk.nama',
+                        data: 'nominal_gaji_pokok',
+                        name: 'nominal_gaji_pokok',
                     },
                     {
-                        data: 'tanggal_pengajuan',
-                        name: 'pegawai_cuti.created_at',
+                        data: 'tunjangan_kinerja',
+                        name: 'tunjangan_kinerja',
                     },
                     {
-                        data: 'status',
-                        name: 'status_cuti.status',
-                        render: function(data, type, row) {
-                            switch (data) {
-                                case "Pengajuan":
-                                    return '<span class="badge badge-pill badge-warning">' + data +
-                                        '</span>';
-                                    break;
-                                case "Acc Atasan Langsung":
-                                    return '<span class="badge badge-pill badge-primary">' + data +
-                                        '</span>';
-                                    break;
-                                case "Acc Kabiro SDMOH":
-                                    return '<span class="badge badge-pill badge-success">' + data +
-                                        '</span>';
-                                    break;
-                                case "Cuti Ditolak":
-                                    return '<span class="badge badge-pill badge-danger">' + data +
-                                        '</span>';
-                                    break;
-                            }
-                        }
+                        data: 'potongan_bpjs',
+                        name: 'potongan_bpjs',
                     },
                     {
-                        data: 'jenis',
-                        name: 'jenis_cuti.jenis',
+                        data: 'total_thp',
+                        name: 'total_thp',
+                    },
+                    {
+                        data: 'bulan',
+                        name: 'bulan',
+                    },
+                    {
+                        data: 'tahun',
+                        name: 'tahun',
                     },
                     {
                         data: 'aksi',

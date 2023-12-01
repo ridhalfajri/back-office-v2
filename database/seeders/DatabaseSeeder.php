@@ -54,6 +54,8 @@ class DatabaseSeeder extends Seeder
         $this->call(HirarkiUnitKerjaSeeder::class);
         $this->call(BankSeeder::class);
         $this->call(StatusCutiSeeder::class);
+        // $this->call(TxPegawaiHirarkiSeeder::class);
+        // $this->call(TxTipePegawaiSeeder::class);
 
         // Pegawai::factory(100)->create([
         //     'status_pegawai_id' => 1,
