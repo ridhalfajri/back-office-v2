@@ -17,7 +17,7 @@
 
 @push('breadcrumb')
         <ol class="breadcrumb custom-background-color">
-            <li class="breadcrumb-item"><a href="{{ route('uang-makan.index') }}"><i class="fa fa-home"></i></a></li>
+            <li class="breadcrumb-item"><a href="{{ route('dashboard') }}"><i class="fa fa-home"></i></a></li>
             <!-- <li class="breadcrumb-item"><a href="#">Gaji</a></li>        -->
             <li class="breadcrumb-item active" aria-current="page">{{ $title }}</li>
         </ol>
@@ -177,7 +177,7 @@
     function delete_data(id) {
             return new Promise(function(resolve, reject) {
                 $.ajax({
-                    url: "{{ url('uang-makan') }}/" + id,
+                    url: "{{ url('master/uang-makan') }}/" + id,
                     method: 'POST',
                     headers: {
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'

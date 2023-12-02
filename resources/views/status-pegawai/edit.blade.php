@@ -8,7 +8,7 @@
 @push('breadcrumb')
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{{ route('status-pegawai.index') }}"><i class="fa fa-home"></i></a></li>
+            <li class="breadcrumb-item"><a href="{{ route('dashboard') }}"><i class="fa fa-home"></i></a></li>
             <li class="breadcrumb-item"><a href="{{ route('status-pegawai.index') }}">Status Pegawai</a></li>
             <li class="breadcrumb-item active" aria-current="page">{{ $title }}</li>
         </ol>
@@ -48,6 +48,11 @@
                             </div>
                         </div>
 
+                        <a href="{{ route('status-pegawai.index') }}">
+                            <button type="button" class="btn btn-sm btn-danger waves-effect waves-light">
+                                Kembali
+                            </button>
+                        </a>
                         <button type="submit" class="btn btn-primary btn-sm waves-effect waves-light">Ubah</button>
                     </form>
                 </div>

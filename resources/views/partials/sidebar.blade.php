@@ -2,6 +2,19 @@
     <ul class="metismenu">
         <li class="g_heading">Directories</li>
         <li><a href="#"><i class="icon-home"></i><span>Dashboard</span></a></li>
+
+        <li class="{{ Request::is('master*') ? 'active' : '' }}">
+            <a href="javascript:void(0)" class="has-arrow"><i class="icon-doc"></i><span>Master</span></a>
+            <ul class="sub-menu js__content">
+                <li class="{{ Request::is('master/tukin*') ? 'active':'' }}"><a href="{{ route('tukin.index') }}">Tukin</a></li>
+                <li class="{{ Request::is('master/uang-makan*') ? 'active':'' }}"><a href="{{ route('uang-makan.index') }}">Uang Makan</a></li>
+                <li class="{{ Request::is('master/unit-kerja*') ? 'active':'' }}"><a href="{{ route('unit-kerja.index') }}">Unit Kerja</a></li>
+                <li class="{{ Request::is('master/status-pegawai*') ? 'active':'' }}"><a href="{{ route('status-pegawai.index') }}">Status Pegawai</a></li>
+                
+                
+            </ul>
+        </li>
+
         <li><a href="{{ route('pegawai.index') }}"><i class="icon-users"></i><span>Pegawai</span></a></li>
         <li><a href="{{ route('gaji.index') }}"><i class="fa fa-money"></i><span>Gaji Pegawai</span></a></li>
         <li><a href="{{ route('jabatan-tukin.index') }}"><i class="fa fa-money"></i><span>Tunjangan Kinerja</span></a>

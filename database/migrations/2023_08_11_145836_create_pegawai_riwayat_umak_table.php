@@ -15,7 +15,8 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('pegawai_id');
             $table->unsignedBigInteger('uang_makan_id');
-            $table->unsignedBigInteger('potongan');
+            //$table->unsignedBigInteger('potongan'); indrawan
+            $table->unsignedTinyInteger('jumlah_hari_masuk');
             $table->unsignedBigInteger('total');
             $table->enum('bulan',['01','02','03','04','05','06','07','08','09','10','11','12']);
             $table->year('tahun');
