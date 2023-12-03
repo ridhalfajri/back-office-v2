@@ -2,6 +2,10 @@
 @push('style')
     {{-- Multiselect --}}
     <link rel="stylesheet" href="{{ asset('assets/plugins/multi-select/css/multi-select.css') }}">
+
+    {{-- DateRange --}}
+    <link rel="stylesheet" href="{{ asset('assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker3.min.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/plugins/daterangepicker/daterangepicker.css') }}" />
     <!-- Plugins css -->
     <link rel="stylesheet" href="{{ asset('assets/plugins/datatable/dataTables.bootstrap4.min.css') }}">
     <link rel="stylesheet"
@@ -31,6 +35,18 @@
                                                     <option value="{{ $item['id'] }}">{{ $item['nama'] }}</option>
                                                 @endforeach
                                             </select>
+                                        </div>
+
+                                    </div>
+                                    <div class="row">
+                                        <div class="form-group multiselect_div col-lg-3 col-md-3 col-sm-6">
+                                            <label>Range Generate Tukin</label>
+                                            <input class="form-control input-daterange-datepicker" type="text"
+                                                name="tanggal" id="tanggal" value="">
+                                        </div>
+                                        <div class="form-group multiselect_div col-lg-3 col-md-3 col-sm-6">
+                                            <label class="form-label">Generate</label>
+                                            <button class="btn btn-sm btn-primary" id="generate_tukin">Action</button>
                                         </div>
                                     </div>
                                 </div>
@@ -80,8 +96,22 @@
     <script src="{{ asset('assets/plugins/sweetalert2/sweetalert2.all.min.js') }}"></script>
     <script src="{{ asset('assets/bundles/dataTables.bundle.js') }}"></script>
     <script src="{{ asset('assets/js/table/datatable.js') }}"></script>
+
+    {{-- DateRange --}}
+    <script src="{{ asset('assets/plugins/daterangepicker/moment.js') }}"></script>
+    <script src="{{ asset('assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
+    <script src="{{ asset('assets/plugins/daterangepicker/daterangepicker.js') }}"></script>
     <script>
         "use strict"
+        $('.input-daterange-datepicker').daterangepicker({
+            buttonClasses: ['btn', 'btn-sm'],
+            applyClass: 'btn-primary',
+            cancelClass: 'btn-secondary',
+            locale: {
+                format: 'DD-MM-YYYY'
+            },
+            autoApply: true
+        });
         let table;
         $('.select-filter').multiselect({
             enableFiltering: true,
@@ -167,5 +197,19 @@
                 });
             });
         }
+        $('#generate_tukin').on('click', () => {
+            $.ajax({
+                url: '{{ route('penghasilan.generate-tukin') }}',
+                type: "POST",
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                data: {
+                    tanggal: $('#tanggal').val()
+                },
+                success: function(response) {},
+            });
+
+        })
     </script>
 @endpush
