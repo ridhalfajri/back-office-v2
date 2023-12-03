@@ -28,6 +28,8 @@ class CreatePresensiTable extends Migration
                                                 ->default(DB::raw('CURRENT_TIMESTAMP'))
                                                 ->onUpdate(DB::raw('CURRENT_TIMESTAMP'));
 			 $table->enum('is_tubel',['Y', 'N'])->nullable(false); // Y: ijin tugas belajar
+             $table->enum('is_cuti',['Y', 'N'])->nullable(false);
+             $table->enum('is_dinas_luar',['Y', 'N'])->nullable(false);
              $table->unique(['no_enroll', 'tanggal_presensi']);
              $table->string('keterangan')->nullable(true);
              //indrawan

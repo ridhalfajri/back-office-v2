@@ -28,6 +28,7 @@ use App\Http\Controllers\StatusPegawaiController;
 use App\Http\Controllers\ThpController;
 use App\Http\Controllers\UnitKerjaController;
 use App\Http\Controllers\TukinController;
+use App\Http\Controllers\PegawaiRiwayatUmakController;
 
 /*
 |--------------------------------------------------------------------------
@@ -68,6 +69,14 @@ Route::middleware('auth')->group(function () {
     Route::resource('/presensi', PresensiController::class);
     Route::post('/presensi/datatable', [PresensiController::class, 'datatable'])->name('presensi.datatable');
     Route::post('/presensi/getdatapresensi', [PresensiController::class, 'getdatapresensi'])->name('presensi.getdatapresensi');
+
+    //uang makan
+    Route::prefix('kalkulasi')->group(function () {
+        //indrawan
+        Route::post('/pegawai-riwayat-umak/datatable', [PegawaiRiwayatUmakController::class, 'datatable'])->name('pegawai-riwayat-umak.datatable');
+        Route::post('/pegawai-riwayat-umak/kalkulasi-umak', [PegawaiRiwayatUmakController::class, 'kalkulasiUmak'])->name('pegawai-riwayat-umak.kalkulasi-umak');
+        Route::resource('/pegawai-riwayat-umak', PegawaiRiwayatUmakController::class)->only(['index']);
+    });
 
     //master data
     Route::prefix('master')->group(function () {

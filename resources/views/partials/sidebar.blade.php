@@ -15,6 +15,19 @@
             </ul>
         </li>
 
+        <li class="{{ Request::is('kalkulasi*') ? 'active' : '' }}">
+            <a href="javascript:void(0)" class="has-arrow"><i class="fa fa-money"></i><span>Kalkulasi</span></a>
+            <ul class="sub-menu js__content">
+                <li class="{{ Request::is('kalkulasi/pegawai-riwayat-umak*') ? 'active':'' }}">
+                    <a href="{{ route('pegawai-riwayat-umak.index') }}">Kalkulasi Uang Makan</a>
+                </li>
+            </ul>
+        </li>
+
+        {{-- <li><a href="{{ route('pegawai-riwayat-umak.index') }}"><i class="fa fa-money">
+            </i><span>Kalkulasi Uang Makan</span></a>
+        </li> --}}
+
         <li><a href="{{ route('pegawai.index') }}"><i class="icon-users"></i><span>Pegawai</span></a></li>
         <li><a href="{{ route('gaji.index') }}"><i class="fa fa-money"></i><span>Gaji Pegawai</span></a></li>
         <li><a href="{{ route('jabatan-tukin.index') }}"><i class="fa fa-money"></i><span>Tunjangan Kinerja</span></a>

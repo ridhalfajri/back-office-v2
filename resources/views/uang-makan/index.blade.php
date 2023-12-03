@@ -109,7 +109,8 @@
                     {
                         data: 'nominal',
                         name: 'nominal',
-                        class: 'text-center'
+                        class: 'text-center',
+                        render: $.fn.dataTable.render.number('.', ',', 2, 'Rp')
                     },
                     {
                         data: 'aksi',
