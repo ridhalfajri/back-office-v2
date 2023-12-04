@@ -12,6 +12,7 @@ use App\Models\PegawaiRiwayatJabatan;
 use App\Models\PegawaiRiwayatThp;
 use App\Models\PegawaiSuamiIstri;
 use App\Models\PegawaiTmtGaji;
+use App\Models\PrePotonganTukin;
 use App\Models\Presensi;
 use App\Models\UnitKerja;
 use Carbon\Carbon;
@@ -21,9 +22,9 @@ use Yajra\DataTables\Facades\DataTables;
 
 class PegawaiRiwayatThpController extends Controller
 {
+
     public function index()
     {
-
         $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
         $this->authorize('kabiro', $kabiro);
         $title = 'Pegawai';
