@@ -19,6 +19,29 @@
             <div class="section-body  py-4">
                 <div class="container-fluid">
                     <div class="row clearfix">
+                        <div class="col-lg-12 col-md-12 col-sm-12">
+                            <div class="card card-collapsed">
+                                <div class="card-status bg-blue"></div>
+                                <div class="card-header">
+                                    <h3 class="card-title">Generate Tukin</h3>
+                                    <div class="card-options">
+                                        <a href="#" class="card-options-collapse" data-toggle="card-collapse"><i
+                                                class="fe fe-chevron-up"></i></a>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="form-group   col-lg-3 col-md-3 col-sm-6">
+                                            <label>Range Generate Tukin</label>
+                                            <input class="form-control input-daterange-datepicker" type="text"
+                                                name="tanggal" id="tanggal" value="">
+                                            <button class="btn btn-sm btn-primary mt-2"
+                                                id="generate_tukin">Generate</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <div class="col-md-12 col-lg-12">
                             <div class="card">
                                 <div class="card-header">
@@ -38,17 +61,7 @@
                                         </div>
 
                                     </div>
-                                    <div class="row">
-                                        <div class="form-group multiselect_div col-lg-3 col-md-3 col-sm-6">
-                                            <label>Range Generate Tukin</label>
-                                            <input class="form-control input-daterange-datepicker" type="text"
-                                                name="tanggal" id="tanggal" value="">
-                                        </div>
-                                        <div class="form-group multiselect_div col-lg-3 col-md-3 col-sm-6">
-                                            <label class="form-label">Generate</label>
-                                            <button class="btn btn-sm btn-primary" id="generate_tukin">Action</button>
-                                        </div>
-                                    </div>
+
                                 </div>
                             </div>
                         </div>
@@ -207,7 +220,23 @@
                 data: {
                     tanggal: $('#tanggal').val()
                 },
-                success: function(response) {},
+                success: function(response) {
+                    if (response.errors) {
+                        Swal.fire({
+                            title: 'Error!',
+                            text: response.errors.connection,
+                            icon: 'error',
+                            confirmButtonText: 'Tutup'
+                        })
+                    } else {
+                        Swal.fire({
+                            title: 'Berhasil!',
+                            text: response.success,
+                            icon: 'success',
+                            confirmButtonText: 'Tutup'
+                        })
+                    }
+                },
             });
 
         })

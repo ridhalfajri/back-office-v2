@@ -28,7 +28,7 @@ class PegawaiRiwayatThpController extends Controller
         $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
         $this->authorize('kabiro', $kabiro);
         $title = 'Pegawai';
-        $unit_kerja = UnitKerja::select('id', 'nama')->get();
+        $unit_kerja = UnitKerja::select('id', 'nama')->limit(22)->get();
         return view('penghasilan.index', compact('title', 'unit_kerja'));
     }
     public function datatable(Request $request)
@@ -56,8 +56,8 @@ class PegawaiRiwayatThpController extends Controller
     }
     public function  show($id)
     {
-        $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
-        $this->authorize('kabiro', $kabiro);
+        $cek_pegawai = Pegawai::where('id', $id)->first();
+        $this->authorize('personal', $cek_pegawai);
 
         $pegawai = Pegawai::where('id', $id)->first();
         $title = 'Detail THP Pegawai';
@@ -65,11 +65,11 @@ class PegawaiRiwayatThpController extends Controller
     }
     public function datatable_show(Request $request)
     {
-        $pegawai = PegawaiRiwayatThp::select('pegawai_riwayat_thp.*', 'pegawai_riwayat_thp.id AS id_thp', 'pegawai_riwayat_umak.total', 'pegawai_riwayat_umak.potongan', 'pegawai_riwayat_umak.id AS id_umak')
+        $pegawai = PegawaiRiwayatThp::select('pegawai_riwayat_thp.*', 'pegawai_riwayat_thp.id AS id_thp', 'pegawai_riwayat_umak.total', 'pegawai_riwayat_umak.id AS id_umak')
             ->leftJoin('pegawai_riwayat_umak', function ($join) {
-                $join->on('pegawai_riwayat_umak.bulan', '=', 'pegawai_riwayat_thp.bulan');
-                $join->on('pegawai_riwayat_umak.tahun', '=', 'pegawai_riwayat_thp.tahun');
-                $join->on('pegawai_riwayat_umak.pegawai_id', '=', 'pegawai_riwayat_thp.pegawai_id');
+                $join->on(DB::raw('pegawai_riwayat_umak.bulan COLLATE utf8mb4_unicode_ci'), '=', DB::raw('pegawai_riwayat_thp.bulan COLLATE utf8mb4_unicode_ci'))
+                    ->where(DB::raw('pegawai_riwayat_umak.tahun COLLATE utf8mb4_unicode_ci'), '=', DB::raw('pegawai_riwayat_thp.tahun COLLATE utf8mb4_unicode_ci'))
+                    ->where(DB::raw('pegawai_riwayat_umak.pegawai_id COLLATE utf8mb4_unicode_ci'), '=', DB::raw('pegawai_riwayat_thp.pegawai_id COLLATE utf8mb4_unicode_ci'));
             })->where('pegawai_riwayat_thp.pegawai_id', $request->pegawai_id)
             ->where('pegawai_riwayat_thp.bulan', $request->bulan)
             ->where('pegawai_riwayat_thp.tahun', $request->tahun)->get();
