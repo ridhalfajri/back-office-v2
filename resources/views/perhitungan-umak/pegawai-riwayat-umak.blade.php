@@ -113,7 +113,7 @@
                                 </div>
                             </div>
 
-                            @if (Carbon\Carbon::now()->format('d') == '04' and Carbon\Carbon::now()->format('m') != '01')
+                            @if (Carbon\Carbon::now()->format('d') == '07' and Carbon\Carbon::now()->format('m') != '01')
                                 <button type="submit" class="btn btn-primary btn-sm waves-effect waves-light">Kalkulasi Seluruh Pegawai</button>
                             @endif
                         </form>
