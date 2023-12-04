@@ -23,6 +23,9 @@ class PegawaiRiwayatThpController extends Controller
 {
     public function index()
     {
+
+        $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
+        $this->authorize('kabiro', $kabiro);
         $title = 'Pegawai';
         $unit_kerja = UnitKerja::select('id', 'nama')->get();
         return view('penghasilan.index', compact('title', 'unit_kerja'));
@@ -52,6 +55,9 @@ class PegawaiRiwayatThpController extends Controller
     }
     public function  show($id)
     {
+        $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
+        $this->authorize('kabiro', $kabiro);
+
         $pegawai = Pegawai::where('id', $id)->first();
         $title = 'Detail THP Pegawai';
         return view('penghasilan.show', compact('title', 'pegawai'));
@@ -135,6 +141,8 @@ class PegawaiRiwayatThpController extends Controller
 
     public function gaji_detail($id)
     {
+        $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
+        $this->authorize('kabiro', $kabiro);
         $title = 'Gaji';
         $gaji = PegawaiRiwayatThp::where('pegawai_riwayat_thp.id', $id)
             ->select(
@@ -158,44 +166,8 @@ class PegawaiRiwayatThpController extends Controller
                 'pegawai.email_kantor'
             )->join('pegawai', 'pegawai.id', 'pegawai_riwayat_thp.pegawai_id')
             ->first();
-        switch ($gaji->bulan) {
-            case '01':
-                $gaji->periode =  'Januari - ' . $gaji->tahun;
-                break;
-            case '02':
-                $gaji->periode =  'Februari - ' . $gaji->tahun;
-                break;
-            case '03':
-                $gaji->periode =  'Maret - ' . $gaji->tahun;
-                break;
-            case '04':
-                $gaji->periode =  'April - ' . $gaji->tahun;
-                break;
-            case '05':
-                $gaji->periode =  'Mei - ' . $gaji->tahun;
-                break;
-            case '06':
-                $gaji->periode =  'Juni - ' . $gaji->tahun;
-                break;
-            case '07':
-                $gaji->periode =  'Juli - ' . $gaji->tahun;
-                break;
-            case '08':
-                $gaji->periode =  'Agustus - ' . $gaji->tahun;
-                break;
-            case '09':
-                $gaji->periode =  'September - ' . $gaji->tahun;
-                break;
-            case '10':
-                $gaji->periode =  'Oktober - ' . $gaji->tahun;
-                break;
-            case '11':
-                $gaji->periode =  'November - ' . $gaji->tahun;
-                break;
-            case '12':
-                $gaji->periode =  'Desember - ' . $gaji->tahun;
-                break;
-        }
+        $monthName = date("F", strtotime("$gaji->tahun-$gaji->bulan-01"));
+        $gaji->periode = Carbon::parse($monthName)->translatedFormat('F') . ' - ' . $gaji->tahun;
         $gaji->total_tunjangan = $gaji->nominal_gaji_pokok + $gaji->tunjangan_beras + $gaji->tunjangan_jabatan + $gaji->tunjangan_pasangan + $gaji->tunjangan_anak + $gaji->tunjangan_pajak;
         $gaji->total_potongan = $gaji->potongan_simpanan_wajib + $gaji->potongan_iwp + $gaji->potongan_bpjs + $gaji->potongan_bpjs_lainnya + $gaji->potongan_pajak + $gaji->potongan_tapera;
         $gaji->total_pendapatan = $gaji->total_tunjangan - $gaji->total_potongan;
@@ -203,59 +175,25 @@ class PegawaiRiwayatThpController extends Controller
     }
     public function tukin_detail($id)
     {
+        $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
+        $this->authorize('kabiro', $kabiro);
+
         $title = "Tukin Detail";
-        $tukin = PegawaiRiwayatThp::where('pegawai_riwayat_thp.id', $id)->select('tunjangan_kinerja', 'potongan_tukin', 'bulan', 'tahun', 'p.no_enroll')
+        $tukin = PegawaiRiwayatThp::where('pegawai_riwayat_thp.id', $id)->select('tunjangan_kinerja', 'potongan_tukin', 'bulan', 'tahun', 'p.nama_depan', 'p.nama_belakang', 'p.nip', 'p.email_kantor')
             ->join('pegawai AS p', 'p.id', '=', 'pegawai_riwayat_thp.pegawai_id')
             ->first();
-        switch ($tukin->bulan) {
-            case '01':
-                $bln_mulai = '12';
-                break;
-            case '02':
-                $bln_mulai = '01';
-                break;
-            case '03':
-                $bln_mulai = '02';
-                break;
-            case '04':
-                $bln_mulai = '03';
-                break;
-            case '05':
-                $bln_mulai = '04';
-                break;
-            case '06':
-                $bln_mulai = '05';
-                break;
-            case '07':
-                $bln_mulai = '06';
-                break;
-            case '08':
-                $bln_mulai = '07';
-                break;
-            case '09':
-                $bln_mulai = '08';
-                break;
-            case '10':
-                $bln_mulai = '09';
-                break;
-            case '11':
-                $bln_mulai = '10';
-                break;
-            case '12':
-                $bln_mulai = '11';
-                break;
-        }
-        $tgl_mulai = $tukin->tahun . '-' . $bln_mulai . '-21';
-        $tgl_akhir = $tukin->tahun . '-' . $tukin->bulan . '-20';
-        $presensi = Presensi::whereBetween('tanggal_presensi', [$tgl_mulai, $tgl_akhir])->where('no_enroll', $tukin->no_enroll)->select('tanggal_presensi', 'nominal_potongan')->where('nominal_potongan', '<>', 0)->get();
+        $monthName = date("F", strtotime("$tukin->tahun-$tukin->bulan-01"));
+        $tukin->periode = Carbon::parse($monthName)->translatedFormat('F') . ' - ' . $tukin->tahun;
         //TODO: ambil semua data presensi lalu tampilkan pada detail
         //? jika data nominal perhitungan 0 bagaimana? tampilkan atau tidak?
         //?
 
-        return view('penghasilan.tukin-detail', compact('title'));
+        return view('penghasilan.tukin-detail', compact('title', 'tukin'));
     }
     public function generate_tukin(Request $request)
     {
+        $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
+        $this->authorize('kabiro', $kabiro);
         try {
 
             //!DATA DUMMY
@@ -372,8 +310,10 @@ class PegawaiRiwayatThpController extends Controller
                 $riwayat_thp->save();
             }
             DB::commit();
+            return response()->json(['success' => 'Sukses Generate Tukin']);
         } catch (\Throwable $th) {
             DB::rollBack();
+            return response()->json(['errors' => ['connection' => 'Generate Tukin Gagal Harap Ulangi']]);
         }
         // $all_pegawai = Pegawai::where('status_dinas', 1)->get();
 
