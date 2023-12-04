@@ -2,7 +2,8 @@
     <ul class="metismenu">
         {{-- PERSONAL --}}
         <li class="g_heading">Personal</li>
-        <li><a href="{{ route('pegawai.show', auth()->user()->pegawai_id) }}"><i
+        <li class="{{ request()->segment(2) == auth()->user()->pegawai_id ? 'active' : '' }}"><a
+                href="{{ route('pegawai.show', auth()->user()->pegawai_id) }}"><i
                     class="icon-home"></i><span>Profile</span></a></li>
 
         <li

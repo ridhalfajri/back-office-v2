@@ -37,7 +37,8 @@
         <div id="header_top" class="header_top">
             <div class="container">
                 <div class="hleft">
-                    <a class="header-brand" href="index.html"><i class="fa fa-dashboard brand-logo"></i></a>
+                    <a class="header-brand" href="{{ route('pegawai.show', auth()->user()->pegawai_id) }}"><i
+                            class="fa fa-dashboard brand-logo"></i></a>
                 </div>
                 <div class="hright">
                     <div class="dropdown">
