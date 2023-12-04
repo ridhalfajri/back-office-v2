@@ -15,6 +15,8 @@
             </ul>
         </li>
 
+        {{-- 5 == kabiro sdmoh --}}
+        @if (auth()->user()->pegawai->jabatan_sekarang->tx_tipe_jabatan_id == 5)
         <li class="{{ Request::is('kalkulasi*') ? 'active' : '' }}">
             <a href="javascript:void(0)" class="has-arrow"><i class="fa fa-money"></i><span>Kalkulasi</span></a>
             <ul class="sub-menu js__content">
@@ -23,6 +25,7 @@
                 </li>
             </ul>
         </li>
+        @endif
 
         {{-- <li><a href="{{ route('pegawai-riwayat-umak.index') }}"><i class="fa fa-money">
             </i><span>Kalkulasi Uang Makan</span></a>
