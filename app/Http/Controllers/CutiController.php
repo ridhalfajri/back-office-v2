@@ -9,6 +9,8 @@ use App\Models\Pegawai;
 use App\Models\PegawaiCuti;
 use App\Models\PegawaiRiwayatJabatan;
 use App\Models\PegawaiSaldoCuti;
+use App\Models\PreJamKerja;
+use App\Models\Presensi;
 use App\Models\StatusCuti;
 use App\Models\TxHirarkiPegawai;
 use App\Models\UnitKerja;
@@ -610,6 +612,7 @@ class CutiController extends Controller
             return response()->json(['errors' => ['data' => 'terjadi kesalahan harap lakukan refresh halaman']]);
         }
         $cuti = PegawaiCuti::where('id', $request->id)->first();
+        $tanggal_cuti = $this->get_all_weekdays($cuti->tanggal_awal_cuti, $cuti->tanggal_akhir_cuti);
         if ($cuti == null) {
             return response()->json(['errors' => ['data' => 'terjadi kesalahan harap lakukan refresh halaman']]);
         }
@@ -618,9 +621,39 @@ class CutiController extends Controller
         $cuti->tanggal_approve_akb = Carbon::now()->format('Y-m-d');
         $cuti->status_pengajuan_cuti_id = 3;
         try {
+            //* INSERT DATA PRESENSI
+            $jam_kerja = PreJamKerja::where('is_active', true)->first();
+            $JAM = '00:00:00';
+            DB::beginTransaction();
             $cuti->save();
+            foreach ($tanggal_cuti as $hari) {
+                $presensi = Presensi::where('tanggal_presensi', $hari)->where('no_enroll', $cuti->pegawai->id)->first();
+                if ($presensi != null) {
+                    $presensi->status_kehadiran = 'CUTI';
+                    $presensi->keterangan = $cuti->jenis_cuti->jenis;
+                    $presensi->tanggal_update = date('Y-m-d H:i:s');
+                } else {
+                    $presensi = new Presensi();
+                    $presensi->no_enroll = $cuti->pegawai->no_enroll;
+                    $presensi->jam_kerja_id = $jam_kerja->id;
+                    $presensi->tanggal_presensi = $hari;
+                    $presensi->jam_masuk = $JAM;
+                    $presensi->jam_pulang = $JAM;
+                    $presensi->kekurangan_jam = $JAM;
+                    $presensi->is_ijin = 0;
+                    $presensi->is_jk_normal = 'Y';
+                    $presensi->status_kehadiran = 'CUTI';
+                    $presensi->tanggal_update = date('Y-m-d H:i:s');
+                    $presensi->keterangan = $cuti->jenis_cuti->jenis;
+                    $presensi->nominal_potongan = 0;
+                }
+                $presensi->save();
+            }
+            DB::commit();
             return response()->json(['success' => 'cuti berhasil di terima']);
         } catch (QueryException $qe) {
+            DB::rollBack();
+
             return response()->json(['errors' => ['connection' => 'terjadi kesalahan koneksi']]);
         }
     }

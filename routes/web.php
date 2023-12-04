@@ -185,6 +185,9 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::middleware('guest')->group(function () {
+    Route::get('/', function () {
+        return redirect()->route('login');
+    });
     Route::get('/login', [LdapController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [LdapController::class, 'login'])->name('login.check');
 });
