@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Pegawai;
 use App\Http\Controllers\Controller;
 use App\Models\Pegawai;
 use App\Models\PegawaiAlamat;
+use App\Models\PegawaiRiwayatJabatan;
 use App\Models\Propinsi;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -18,6 +19,8 @@ class PegawaiController extends Controller
      */
     public function index()
     {
+        $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->first();
+        $this->authorize('kabiro', $kabiro);
         $title = "Pegawai";
         return view('pegawai.index', compact('title'));
     }
@@ -43,6 +46,8 @@ class PegawaiController extends Controller
      */
     public function show(string $id)
     {
+        $cek_pegawai = Pegawai::where('id', $id)->first();
+        $this->authorize('personal', $cek_pegawai);
         $title = 'Pegawai';
         try {
             $propinsi = Propinsi::select('id', 'nama')->get();
