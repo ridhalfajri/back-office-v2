@@ -7,7 +7,7 @@
                     class="icon-home"></i><span>Profile</span></a></li>
         <li class="{{ request()->segment(3) == auth()->user()->pegawai_id ? 'active' : '' }}"><a
                 href="{{ route('penghasilan.show', auth()->user()->pegawai_id) }}"><i
-                    class="icon-home"></i><span>Penghasilan</span></a></li>
+                    class="icon-bar-chart"></i><span>Penghasilan</span></a></li>
         <li
             class="{{ request()->segment(2) == 'riwayat_cuti' || request()->segment(2) == 'saldo_cuti' ? 'active' : '' }}">
             <a href="javascript:void(0)" class="has-arrow"><i class="icon-doc"></i><span>Cuti</span></a>
