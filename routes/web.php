@@ -189,6 +189,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/datatable', [ThpController::class, 'datatable'])->name('thp.datatable');
     });
     Route::prefix('penghasilan')->group(function () {
+        Route::post('/tukin/generate', [PegawaiRiwayatThpController::class, 'generate_tukin'])->name('penghasilan.generate-tukin');
         Route::get('/', [PegawaiRiwayatThpController::class, 'index'])->name('penghasilan.index');
         Route::get('/show/gaji/{id}', [PegawaiRiwayatThpController::class, 'gaji_detail'])->name('penghasilan.gaji-detail');
         Route::get('/show/tukin/{id}', [PegawaiRiwayatThpController::class, 'tukin_detail'])->name('penghasilan.tukin-detail');
@@ -199,6 +200,9 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::middleware('guest')->group(function () {
+    Route::get('/', function () {
+        return redirect()->route('login');
+    });
     Route::get('/login', [LdapController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [LdapController::class, 'login'])->name('login.check');
 });
