@@ -24,12 +24,13 @@ class CreatePresensiTable extends Migration
 			 $table->integer('is_ijin')->nullable(false); //0= tidak ijin, 1=ijin datang_terlambat, 2=ijin pulang awal, 3=ijin datang terlambat dan pulang awal, 4 = tidak tercatat jam masuk, 5 = tidak tercatat jam pulang
 			 $table->time('kekurangan_jam')->nullable(true);
 			 $table->enum('is_jk_normal',['Y', 'N'])->nullable(false);//untuk handling jam kerja pada saat bulan ramadhan
-			 $table->datetime('tanggal_update')->nullable(false)
+			 $table->enum('status_kehadiran',['HADIR','ALPHA','CUTI','DINAS LUAR','TUGAS BELAJAR'])->nullable(false);
+             $table->datetime('tanggal_update')->nullable(false)
                                                 ->default(DB::raw('CURRENT_TIMESTAMP'))
                                                 ->onUpdate(DB::raw('CURRENT_TIMESTAMP'));
-			 $table->enum('is_tubel',['Y', 'N'])->nullable(false); // Y: ijin tugas belajar
-             $table->enum('is_cuti',['Y', 'N'])->nullable(false);
-             $table->enum('is_dinas_luar',['Y', 'N'])->nullable(false);
+			//  $table->enum('is_tubel',['Y', 'N'])->nullable(false);
+            //  $table->enum('is_cuti',['Y', 'N'])->nullable(false);
+            //  $table->enum('is_dinas_luar',['Y', 'N'])->nullable(false);
              $table->unique(['no_enroll', 'tanggal_presensi']);
              $table->string('keterangan')->nullable(true);
              //indrawan

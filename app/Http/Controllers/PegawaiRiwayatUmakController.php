@@ -241,9 +241,7 @@ class PegawaiRiwayatUmakController extends Controller
                     ->select('tanggal_presensi')
                     ->whereRaw("DATE_FORMAT(tanggal_presensi, '%Y-%m') = ?", [$periodePerhitungan])
                     ->where('no_enroll','=',$dataPegawai->no_enroll)
-                    ->where('is_tubel','=','N')
-                    ->where('is_cuti','=','N')
-                    ->where('is_dinas_luar','=','N')
+                    ->where('status_kehadiran','=','HADIR')
                     ->where(function($query) {
                         $query->whereRaw('jam_masuk != null')
                             ->orWhereRaw('jam_pulang != null')
