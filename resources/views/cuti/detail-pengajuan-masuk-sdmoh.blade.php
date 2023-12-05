@@ -85,12 +85,14 @@
                         <a href="//{{ $cuti->media_pengajuan_cuti }}" class="btn btn-success">Download</a>
                     </div>
                 @endif
-                <div class="form-group">
-                    <label class="form-label">Acc Atasan Langsung</label>
-                    <input type="text" class="form-control" placeholder="Atasan Langsung"
-                        value="{{ $cuti->atasan_langsung->nama }}" disabled>
-                    <small class="text-danger" id="error_alamat_cuti"></small>
-                </div>
+                @if ($cuti->status_pengajuan_cuti_id != 1)
+                    <div class="form-group">
+                        <label class="form-label">Acc Atasan Langsung</label>
+                        <input type="text" class="form-control" placeholder="Atasan Langsung"
+                            value="{{ $cuti->atasan_langsung->nama }}" disabled>
+                        <small class="text-danger" id="error_alamat_cuti"></small>
+                    </div>
+                @endif
             </div>
             <div class="card-header">
                 <h3 class="card-title">Saldo Cuti</h3>
