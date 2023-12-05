@@ -179,7 +179,7 @@
                                     </div>
                                 </div>
                                 <div class="card-header d-flex justify-content-end" id="btn">
-                                    <button type="submit" id="btn-aksi"></button>
+                                    <button type="submit" class="btn" id="btn-aksi"></button>
                                 </div>
                             </form>
                         </div>
@@ -204,12 +204,14 @@
                 $('#judul_keterangan').text(`${TOLAK} Cuti`)
                 $('#kode').val(TOLAK)
                 $('#btn-aksi').text(TOLAK)
-                $('#btn-aksi').addClass('btn btn-danger');
+                $('#btn-aksi').addClass('btn-danger');
+                $('#btn-aksi').removeClass('btn-primary');
             } else if (data == TERIMA) {
                 $('#judul_keterangan').text(`${TERIMA} Cuti`)
                 $('#kode').val(TERIMA)
                 $('#btn-aksi').text(TERIMA)
-                $('#btn-aksi').addClass('btn btn-primary');
+                $('#btn-aksi').addClass('btn-primary');
+                $('#btn-aksi').removeClass('btn-danger');
             }
         })
 
