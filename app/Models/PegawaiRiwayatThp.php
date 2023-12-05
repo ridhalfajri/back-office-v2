@@ -15,7 +15,7 @@ class PegawaiRiwayatThp extends Model
 
     public function pegawai()
     {
-        return $this->belongsTo(Pegawai::class);
+        return $this->belongsTo(Pegawai::class, 'pegawai_id');
     }
     public function jenis_kawin()
     {

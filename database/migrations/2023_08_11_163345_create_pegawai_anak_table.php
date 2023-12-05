@@ -20,9 +20,11 @@ return new class extends Migration
             $table->string('tempat_lahir',50);
             $table->date('tanggal_lahir');
             $table->enum('status_anak',['Kandung','Angkat']);
-            $table->boolean('status_tunjangan');
+            $table->boolean('status_tunjangan'); //??
             $table->unsignedBigInteger('pendidikan_id');
             $table->string('bidang_studi',50)->nullable(true);
+            //indrawan
+            $table->boolean('keterangan_anak')->nullable(true)->comment('0 = anak sudah meninggal, 1 = anak masih hidup, 2 = anak sudah menikah atau sudah tidak dapat tunjangan');
             $table->timestamps();
             $table->foreign('pegawai_id')->references('id')->on('pegawai')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('pendidikan_id')->references('id')->on('pendidikan')->onUpdate('cascade')->onDelete('cascade');

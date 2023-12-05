@@ -16,6 +16,8 @@ return new class extends Migration
             $table->unsignedTinyInteger('golongan_id');
             $table->integer('masa_kerja');
             $table->bigInteger('nominal');
+            //indrawan
+            $table->bigInteger('nominal_tunjangan_jabatan');
             $table->timestamps();
             $table->foreign('golongan_id')->references('id')->on('golongan')->onUpdate('cascade')->onDelete('cascade');
         });

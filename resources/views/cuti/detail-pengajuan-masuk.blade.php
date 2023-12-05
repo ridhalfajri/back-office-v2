@@ -49,6 +49,20 @@
                             disabled>
                     </div>
                 </div>
+                @if ($cuti->jenis_cuti_id == 5)
+                    <div class="row">
+                        <div class="form-group col-md-6 col-lg-6">
+                            <label class="form-label">Alasan</label>
+                            <input type="text" class="form-control bg-warning font-weight-bold"
+                                placeholder="Tanggal Cuti" value="{{ $cuti->keterangan_cuti_p }}" disabled>
+                        </div>
+                        <div class="form-group col-md-6 col-lg-6">
+                            <label class="form-label">Yang Bersangkutan</label>
+                            <input type="text" class="form-control bg-warning font-weight-bold" placeholder="Lama Cuti"
+                                value="{{ $cuti->detail_keterangan_cuti_p }}" disabled>
+                        </div>
+                    </div>
+                @endif
                 <div class="form-group">
                     <label class="form-label">No. Telepon yang Bisa Dihubungi Selama Cuti</label>
                     <input type="number" class="form-control" placeholder="No Telp" value="{{ $cuti->no_telepon_cuti }}"
@@ -179,7 +193,7 @@
                                     </div>
                                 </div>
                                 <div class="card-header d-flex justify-content-end" id="btn">
-                                    <button type="submit" id="btn-aksi"></button>
+                                    <button type="submit" class="btn" id="btn-aksi"></button>
                                 </div>
                             </form>
                         </div>
@@ -204,12 +218,14 @@
                 $('#judul_keterangan').text(`${TOLAK} Cuti`)
                 $('#kode').val(TOLAK)
                 $('#btn-aksi').text(TOLAK)
-                $('#btn-aksi').addClass('btn btn-danger');
+                $('#btn-aksi').addClass('btn-danger');
+                $('#btn-aksi').removeClass('btn-primary');
             } else if (data == TERIMA) {
                 $('#judul_keterangan').text(`${TERIMA} Cuti`)
                 $('#kode').val(TERIMA)
                 $('#btn-aksi').text(TERIMA)
-                $('#btn-aksi').addClass('btn btn-primary');
+                $('#btn-aksi').addClass('btn-primary');
+                $('#btn-aksi').removeClass('btn-danger');
             }
         })
 

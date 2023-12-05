@@ -34,6 +34,46 @@
                         <small class="text-danger" id="error_jenis_cuti_id"></small>
 
                     </div>
+                    <div class="row" id="alasan">
+                        <div class="form-group col-md-6">
+                            <label class="form-label">Alasan</label>
+                            <select class="form-control custom-select" name="keterangan_cuti_p" id="keterangan_cuti_p">
+                                <option value="">--Alasan--</option>
+                                <option value="Keluarga Sakit Keras" @if ($cuti->keterangan_cuti_p == 'Keluarga Sakit Keras') selected @endif>
+                                    Keluarga Sakit Keras</option>
+                                <option value="Keluarga Meninggal Dunia" @if ($cuti->keterangan_cuti_p == 'Keluarga Meninggal Dunia') selected @endif>
+                                    Keluarga Meninggal Dunia</option>
+                                <option value="Melangsungkan Pernikahan" @if ($cuti->keterangan_cuti_p == 'Melangsungkan Pernikahan') selected @endif>
+                                    Melangsungkan Pernikahan</option>
+                                <option value="Isteri Melahirkan" @if ($cuti->keterangan_cuti_p == 'Isteri Melahirkan') selected @endif>Isteri
+                                    Melahirkan</option>
+                                <option value="Kebakaran Rumah/ Bencana Alam"
+                                    @if ($cuti->keterangan_cuti_p == 'Kebakaran Rumah/ Bencana Alam') selected @endif>Kebakaran Rumah/ Bencana Alam</option>
+                                <option value="Ditempatkan di Kantor perwakilan RI yang rawan/berbahaya"
+                                    @if ($cuti->keterangan_cuti_p == 'Ditempatkan di Kantor perwakilan RI yang rawan/berbahaya') selected @endif>Ditempatkan di
+                                    Kantor perwakilan RI yang rawan/berbahaya</option>
+                            </select>
+                            <small class="text-danger" id="error_keterangan_cuti_p"></small>
+
+                        </div>
+                        <div class="form-group col-md-6" id="detail_alasan">
+                            <label class="form-label">Yang Bersangkutan</label>
+                            <select class="form-control custom-select" name="detail_keterangan_cuti_p"
+                                id="detail_keterangan_cuti_p">
+                                <option value="">--Keluarga Bersangkutan--</option>
+                                <option value="Ayah" @if ($cuti->detail_keterangan_cuti_p == 'Ayah') selected @endif>Ayah</option>
+                                <option value="Ibu" @if ($cuti->detail_keterangan_cuti_p == 'Ibu') selected @endif>Ibu</option>
+                                <option value="Suami/Istri" @if ($cuti->detail_keterangan_cuti_p == 'Suami/Istri') selected @endif>Suami/Istri
+                                </option>
+                                <option value="Anak" @if ($cuti->detail_keterangan_cuti_p == 'Anak') selected @endif>Anak</option>
+                                <option value="Adik" @if ($cuti->detail_keterangan_cuti_p == 'Adik') selected @endif>Adik</option>
+                                <option value="Kakak" @if ($cuti->detail_keterangan_cuti_p == 'Kakak') selected @endif>Kakak</option>
+                                <option value="Mertua" @if ($cuti->detail_keterangan_cuti_p == 'Mertua') selected @endif>Mertua</option>
+                                <option value="Menantu" @if ($cuti->detail_keterangan_cuti_p == 'Menantu') selected @endif>Menantu</option>
+                            </select>
+                            <small class="text-danger" id="error_detail_keterangan_cuti_p"></small>
+                        </div>
+                    </div>
                     <div class="row" id="saldo_cuti">
                         <div class="form-group col-md-3">
                             <label class="form-label">Sisa Cuti {{ Carbon\Carbon::now()->format('Y') }}</label>
@@ -104,7 +144,8 @@
                             <label class="custom-control custom-checkbox">
                                 <input type="checkbox" class="custom-control-input" name="example-checkbox1"
                                     value="" required>
-                                <small class="custom-control-label">Apakah anda yakin data yang diisikan benar dan
+                                <small class="custom-control-label">Apakah anda yakin data yang diisikan
+                                    benar dan
                                     valid?</small>
                             </label>
                         </div>
@@ -143,6 +184,23 @@
                 $('#saldo_cuti').hide()
             } else {
                 $('#saldo_cuti').show()
+            }
+            if (jenis_cuti != 5) {
+                $('#alasan').hide()
+            } else {
+                $('#alasan').show()
+                $("#media_pengajuan_cuti").prop('required', true);
+
+            }
+        })
+        $('#keterangan_cuti_p').on('change', () => {
+            const detail_alasan = $('#keterangan_cuti_p').find(":selected").val()
+            console.log(detail_alasan)
+            if (detail_alasan == 'Keluarga Sakit Keras' || detail_alasan == 'Keluarga Meninggal Dunia') {
+                $('#detail_alasan').show()
+            } else {
+                $('#detail_alasan').hide()
+
             }
         })
         //CHECK HARI LIBUR
@@ -217,6 +275,12 @@
                         if (err.media_pengajuan_cuti) {
                             $('#error_media_pengajuan_cuti').text(err.media_pengajuan_cuti)
                         }
+                        if (err.keterangan_cuti_p) {
+                            $('#error_keterangan_cuti_p').text(err.keterangan_cuti_p)
+                        }
+                        if (err.detail_keterangan_cuti_p) {
+                            $('#error_detail_keterangan_cuti_p').text(err.detail_keterangan_cuti_p)
+                        }
                     } else {
                         Swal.fire({
                             title: 'Tersimpan!',
@@ -237,6 +301,8 @@
             $('#error_alasan').text('')
             $('#error_alamat_cuti').text('')
             $('#error_media_pengajuan_cuti').text('')
+            $('#error_keterangan_cuti_p').text('')
+            $('#error_detail_keterangan_cuti_p').text('')
         }
     </script>
     <script>

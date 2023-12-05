@@ -1,101 +1,85 @@
 @extends('template')
 
-@push('styles')
-    <!-- Data Tables -->
-    <link rel="stylesheet" href="{{ asset('assets/plugin/datatables/dataTables.bootstrap4.min.css') }}">
-    <link rel="stylesheet"
-        href="{{ asset('assets/plugin/datatables/extensions/Responsive/css/responsive.bootstrap.min.css') }}">
-    <!-- Toastr -->
-    <link rel="stylesheet" href="{{ asset('assets/plugin/toastr/toastr.css') }}">
+@push('style')
+<!-- Plugins css -->
+<link rel="stylesheet" href="{{ asset('assets/plugins/datatable/dataTables.bootstrap4.min.css') }}">
+<link rel="stylesheet"
+    href="{{ asset('assets/plugins/datatable/fixedeader/dataTables.fixedcolumns.bootstrap4.min.css') }}">
+<link rel="stylesheet"
+    href="{{ asset('assets/plugins/datatable/fixedeader/dataTables.fixedheader.bootstrap4.min.css') }}">
+
+    {{-- custom css datatable --}}
+{{-- <link rel="stylesheet" href="{{ asset('assets/plugins/datatable/custom.css') }}"> --}}
+<link rel="stylesheet" href="{{ asset('assets/plugins/sweetalert/sweetalert.css') }}">
+<!-- Toastr -->
+<link rel="stylesheet" href="{{ asset('assets/plugins/toastr/toastr.css') }}">
 @endpush
 
 @push('breadcrumb')
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{{ route('uang-makan.index') }}"><i class="fa fa-home"></i></a></li>
-            <!-- <li class="breadcrumb-item"><a href="#">Uang Makan</a></li>        -->
+        <ol class="breadcrumb custom-background-color">
+            <li class="breadcrumb-item"><a href="{{ route('dashboard') }}"><i class="fa fa-home"></i></a></li>
+            <!-- <li class="breadcrumb-item"><a href="#">Gaji</a></li>        -->
             <li class="breadcrumb-item active" aria-current="page">{{ $title }}</li>
         </ol>
-    </nav>
 @endpush
 
 @section('content')
-    <div class="section-body">
-        <div class="card">
-            <div class="card-header">
-                <h4 class="card-title">
-                    <button type="button" class="btn btn-xs btn-primary" id="btn-add"
-                        onclick="window.location.href = '{{ route('uang-makan.create') }}';"><i class="fa fa-plus"></i>
-                        Tambah</button>
-                </h4>
-                <!-- /.card-title -->
-            </div>
-            <div class="card-body">
-                <!-- /.dropdown js__dropdown -->
-                <table id="tbl-data" class="table table-striped table-bordered display" style="width:100%">
+<div class="container-fluid">
+    <div class="row clearfix">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">
+                        <button type="button" class="btn btn-xs btn-primary" id="btn-add"
+                        onclick="window.location.href = '{{ route('uang-makan.create') }}';">
+                        <i class="fa fa-plus"></i> Tambah</button>
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <table id="tbl-data"
+                    class="table table-hover js-basic-example dataTable table_custom spacing5">
                     <thead>
                         <tr>
-                            <th>No.</th>
-                            <th>golongan_id</th>
-                            <th>nominal</th>
+                            <th class="font-weight-bold text-dark" style="width: 5%">No</th>
+                            <th class="font-weight-bold text-dark">Golongan</th>
+                            <th class="font-weight-bold text-dark">Nominal</th>
+                            <th class="font-weight-bold text-dark">Aksi</th>
                         </tr>
                     </thead>
-                    <tbody></tbody>
                     <tfoot>
                         <tr>
-                            <th>No.</th>
-                            <th>golongan_id</th>
-                            <th>nominal</th>
+                            <th class="font-weight-bold text-dark">No</th>
+                            <th class="font-weight-bold text-dark">Golongan</th>
+                            <th class="font-weight-bold text-dark">Nominal</th>
+                            <th class="font-weight-bold text-dark">Aksi</th>
                         </tr>
                     </tfoot>
+                    <tbody>
+                    </tbody>
                 </table>
+                </div>
             </div>
-            <!-- /.box-content -->
         </div>
-        <!-- /.col-12 -->
     </div>
+</div>
 @endsection
 
-@push('scripts')
-    <!-- Data Tables -->
-    <script src="{{ asset('assets/plugin/datatables/jquery.dataTables.min.js') }}" type="text/javascript"></script>
-    <script src="{{ asset('assets/plugin/datatables/dataTables.bootstrap4.min.js') }}" type="text/javascript"></script>
-    <script src="{{ asset('assets/plugin/datatables/extensions/Responsive/js/dataTables.responsive.min.js') }}"
-        type="text/javascript"></script>
-    <script src="{{ asset('assets/plugin/datatables/extensions/Responsive/js/responsive.bootstrap.min.js') }}"
-        type="text/javascript"></script>
-    <script src="{{ asset('assets/plugin/toastr/toastr.min.js') }}" type="text/javascript"></script>
+@push('script')
+<!-- Data Tables -->
+    
+    <script src="{{ asset('assets/bundles/dataTables.bundle.js') }}"></script>
+    <script src="{{ asset('assets/js/table/datatable.js') }}"></script>
+    <script src="{{ asset('assets/plugins/sweetalert/sweetalert.min.js') }}"></script>
+    <script src="{{ asset('assets/plugins/toastr/toastr.min.js') }}"></script>
+   
     <script type="text/javascript">
         "use strict"
-
         let table;
 
         $(function() {
-            toastr.options = {
-                "closeButton": false,
-                "debug": false,
-                "newestOnTop": false,
-                "progressBar": true,
-                "rtl": false,
-                "positionClass": "toast-top-right",
-                "preventDuplicates": false,
-                "onclick": null,
-                "showDuration": 300,
-                "hideDuration": 1000,
-                "timeOut": 5000,
-                "extendedTimeOut": 1000,
-                "showEasing": "swing",
-                "hideEasing": "linear",
-                "showMethod": "fadeIn",
-                "hideMethod": "fadeOut"
-            };
-
-            @if (session('success'))
-                toastr['success']('{{ session('success') }}');
-            @endif
-
             table = $('#tbl-data').DataTable({
                 processing: true,
+                destroy: true,
                 serverSide: true,
                 deferRender: true,
                 responsive: true,
@@ -118,19 +102,15 @@
                         class: 'text-center'
                     },
                     {
-                        data: 'no',
-                        name: 'no',
-                        class: 'text-center'
-                    },
-                    {
-                        data: 'golongan_id',
-                        name: 'Golongan Id',
+                        data: 'nama_golongan',
+                        name: 'golongan.nama',
                         class: 'text-center'
                     },
                     {
                         data: 'nominal',
-                        name: 'Nominal',
-                        class: 'text-center'
+                        name: 'nominal',
+                        class: 'text-center',
+                        render: $.fn.dataTable.render.number('.', ',', 2, 'Rp')
                     },
                     {
                         data: 'aksi',
@@ -190,14 +170,15 @@
                     } else {
                         swal('Informasi', 'Hapus data dibatalkan', 'error');
                     }
-                })
+                });
             });
-        });
+        
+    })
 
-        function delete_data(id) {
+    function delete_data(id) {
             return new Promise(function(resolve, reject) {
                 $.ajax({
-                    url: "{{ url('uang-makan') }}/" + id,
+                    url: "{{ url('master/uang-makan') }}/" + id,
                     method: 'POST',
                     headers: {
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
@@ -213,5 +194,6 @@
                 })
             })
         }
-    </script>
+</script>
 @endpush
+

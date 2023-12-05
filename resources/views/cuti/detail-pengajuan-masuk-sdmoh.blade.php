@@ -50,6 +50,20 @@
                             disabled>
                     </div>
                 </div>
+                @if ($cuti->jenis_cuti_id == 5)
+                    <div class="row">
+                        <div class="form-group col-md-6 col-lg-6">
+                            <label class="form-label">Alasan</label>
+                            <input type="text" class="form-control bg-warning font-weight-bold"
+                                placeholder="Tanggal Cuti" value="{{ $cuti->keterangan_cuti_p }}" disabled>
+                        </div>
+                        <div class="form-group col-md-6 col-lg-6">
+                            <label class="form-label">Yang Bersangkutan</label>
+                            <input type="text" class="form-control bg-warning font-weight-bold" placeholder="Lama Cuti"
+                                value="{{ $cuti->detail_keterangan_cuti_p }}" disabled>
+                        </div>
+                    </div>
+                @endif
                 <div class="form-group">
                     <label class="form-label">No. Telepon yang Bisa Dihubungi Selama Cuti</label>
                     <input type="number" class="form-control" placeholder="No Telp" value="{{ $cuti->no_telepon_cuti }}"
@@ -71,12 +85,14 @@
                         <a href="//{{ $cuti->media_pengajuan_cuti }}" class="btn btn-success">Download</a>
                     </div>
                 @endif
-                <div class="form-group">
-                    <label class="form-label">Acc Atasan Langsung</label>
-                    <input type="text" class="form-control" placeholder="Atasan Langsung"
-                        value="{{ $cuti->atasan_langsung->nama }}" disabled>
-                    <small class="text-danger" id="error_alamat_cuti"></small>
-                </div>
+                @if ($cuti->status_pengajuan_cuti_id != 1)
+                    <div class="form-group">
+                        <label class="form-label">Acc Atasan Langsung</label>
+                        <input type="text" class="form-control" placeholder="Atasan Langsung"
+                            value="{{ $cuti->atasan_langsung->nama }}" disabled>
+                        <small class="text-danger" id="error_alamat_cuti"></small>
+                    </div>
+                @endif
             </div>
             <div class="card-header">
                 <h3 class="card-title">Saldo Cuti</h3>
@@ -148,76 +164,183 @@
                 </div>
             </div>
             <div class="card-footer d-flex justify-content-end">
-                @if ($cuti->status_pengajuan_cuti_id == 2)
-                    <button type="button" class="btn btn-danger px-5 mx-4">Tolak</button>
-                    <button type="button" onclick="acc_kabiro_sdmoh()" class="btn btn-primary px-5">Terima</button>
+                @if ($cuti->status_pengajuan_cuti_id == 2 || $cuti->status_pengajuan_cuti_id == 3)
+                    <button type="button" class="btn btn-danger px-5 mx-4" data-keterangan="Tolak" data-toggle="modal"
+                        data-target="#modal-response">Tolak</button>
                 @endif
+                @if ($cuti->status_pengajuan_cuti_id == 2)
+                    <button type="button" class="btn btn-primary px-5" data-keterangan="Terima" data-toggle="modal"
+                        data-target="#modal-response">Terima</button>
+                @endif
+
             </div>
         </div>
     </div>
 @endsection
+@push('modal')
+    {{-- Modal Detail Cuti --}}
+    <div class="modal fade" id="modal-response" tabindex="-1" role="dialog" aria-labelledby="modalDetailCutiLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="judul_keterangan"></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="col-md-12 col-lg-12">
+                        <div class="card">
+                            <form action="{{ route('cuti.acc-kabiro-sdmoh') }}" id="form-ket" method="POST"
+                                autocomplete="off">
+                                @csrf
+                                <div class="card-body">
+                                    <div class="form-group">
+                                        <label class="form-label">Keterangan</label>
+                                        <textarea class="form-control" id="keterangan" name="keterangan" placeholder="Keterangan" rows="4"></textarea>
+                                        <input type="hidden" name="kode" id="kode">
+                                        <input type="hidden" name="id" id="id"
+                                            value="{{ $cuti->id }}">
+                                    </div>
+                                </div>
+                                <div class="card-header d-flex justify-content-end" id="btn">
+                                    <button type="submit" class="btn" id="btn-aksi"></button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+@endpush
 @push('script')
     {{-- SweetAlert --}}
     <script src="{{ asset('assets/plugins/sweetalert2/sweetalert2.all.min.js') }}"></script>
     <script>
         "use strict"
-        const acc_kabiro_sdmoh = () => {
-            const id = $('#cuti_id').val()
-            Swal.fire({
-                title: "Apakah anda yakin terima cuti ini?",
-                showCancelButton: true,
-                icon: 'question',
-                confirmButtonText: "Terima",
-                cancelButtonText: "Batal",
-                cancelButtonColor: "#DC3444",
-                confirmButtonColor: "#017BFE",
-            }).then((result) => {
-                /* Read more about isConfirmed, isDenied below */
-                if (result.isConfirmed) {
-                    $.ajax({
-                        type: "POST",
-                        url: '{{ route('cuti.acc-kabiro-sdmoh') }}',
-                        data: {
-                            id: id
-                        },
-                        headers: {
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                        },
-                        success: function(response) {
-                            if (response.errors) {
-                                if (response.errors.data) {
-                                    Swal.fire({
-                                        title: 'Error!',
-                                        text: response.errors.data,
-                                        icon: 'error',
-                                        confirmButtonText: 'Tutup'
-                                    })
-                                }
-                                if (response.errors.connection) {
-                                    Swal.fire({
-                                        title: 'Error!',
-                                        text: response.errors.connection,
-                                        icon: 'error',
-                                        confirmButtonText: 'Tutup'
-                                    })
-                                }
-                            } else {
-                                Swal.fire({
-                                    title: 'Tersimpan!',
-                                    text: response.success,
-                                    icon: 'success',
-                                    confirmButtonText: 'Tutup'
-                                })
-                            }
-                            setTimeout(function() {
-                                window.location.href =
-                                    '{{ route('cuti.pengajuan-masuk-sdmoh') }}'
-                            }, 1000);
+        $('#modal-response').on('show.bs.modal', function(e) {
+            const response = $(e.relatedTarget);
+            const data = response.data('keterangan');
+            const TOLAK = "Tolak"
+            const TERIMA = "Terima"
+            if (data == TOLAK) {
+                $('#judul_keterangan').text(`${TOLAK} Cuti`)
+                $('#kode').val(TOLAK)
+                $('#btn-aksi').text(TOLAK)
+                $('#btn-aksi').addClass('btn-danger');
+                $('#btn-aksi').removeClass('btn-primary');
+            } else if (data == TERIMA) {
+                $('#judul_keterangan').text(`${TERIMA} Cuti`)
+                $('#kode').val(TERIMA)
+                $('#btn-aksi').text(TERIMA)
+                $('#btn-aksi').addClass('btn-primary');
+                $('#btn-aksi').removeClass('btn-danger');
+            }
+        })
+        $('#form-ket').submit(function(e) {
+            e.preventDefault();
+            const form = $(this);
+            const actionUrl = form.attr('action');
+            $.ajax({
+                type: "POST",
+                url: actionUrl,
+                data: new FormData(this),
+                contentType: false,
+                cache: false,
+                processData: false,
+                success: function(response) {
+                    if (response.errors) {
+                        if (response.errors.data) {
+                            Swal.fire({
+                                title: 'Error!',
+                                text: response.errors.data,
+                                icon: 'error',
+                                confirmButtonText: 'Tutup'
+                            })
                         }
-                    });
+                        if (response.errors.connection) {
+                            Swal.fire({
+                                title: 'Error!',
+                                text: response.errors.connection,
+                                icon: 'error',
+                                confirmButtonText: 'Tutup'
+                            })
+                        }
+                    } else {
+                        Swal.fire({
+                            title: 'Tersimpan!',
+                            text: response.success,
+                            icon: 'success',
+                            confirmButtonText: 'Tutup'
+                        })
+                    }
+                    setTimeout(function() {
+                        window.location.href =
+                            '{{ route('cuti.pengajuan-masuk-sdmoh') }}'
+                    }, 1000);
                 }
             });
+        });
+        // const acc_kabiro_sdmoh = () => {
+        //     const id = $('#cuti_id').val()
+        //     Swal.fire({
+        //         title: "Apakah anda yakin terima cuti ini?",
+        //         showCancelButton: true,
+        //         icon: 'question',
+        //         confirmButtonText: "Terima",
+        //         cancelButtonText: "Batal",
+        //         cancelButtonColor: "#DC3444",
+        //         confirmButtonColor: "#017BFE",
+        //     }).then((result) => {
+        //         /* Read more about isConfirmed, isDenied below */
+        //         if (result.isConfirmed) {
+        //             $.ajax({
+        //                 type: "POST",
+        //                 url: '{{ route('cuti.acc-kabiro-sdmoh') }}',
+        //                 data: {
+        //                     id: id
+        //                 },
+        //                 headers: {
+        //                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        //                 },
+        //                 success: function(response) {
+        //                     if (response.errors) {
+        //                         if (response.errors.data) {
+        //                             Swal.fire({
+        //                                 title: 'Error!',
+        //                                 text: response.errors.data,
+        //                                 icon: 'error',
+        //                                 confirmButtonText: 'Tutup'
+        //                             })
+        //                         }
+        //                         if (response.errors.connection) {
+        //                             Swal.fire({
+        //                                 title: 'Error!',
+        //                                 text: response.errors.connection,
+        //                                 icon: 'error',
+        //                                 confirmButtonText: 'Tutup'
+        //                             })
+        //                         }
+        //                     } else {
+        //                         Swal.fire({
+        //                             title: 'Tersimpan!',
+        //                             text: response.success,
+        //                             icon: 'success',
+        //                             confirmButtonText: 'Tutup'
+        //                         })
+        //                     }
+        //                     setTimeout(function() {
+        //                         window.location.href =
+        //                             '{{ route('cuti.pengajuan-masuk-sdmoh') }}'
+        //                     }, 1000);
+        //                 }
+        //             });
+        //         }
+        //     });
 
-        }
+        // }
     </script>
 @endpush

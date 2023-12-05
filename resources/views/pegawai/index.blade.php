@@ -1,5 +1,7 @@
 @extends('template')
 @push('style')
+    {{-- Multiselect --}}
+    <link rel="stylesheet" href="{{ asset('assets/plugins/multi-select/css/multi-select.css') }}">
     <!-- Plugins css -->
     <link rel="stylesheet" href="{{ asset('assets/plugins/datatable/dataTables.bootstrap4.min.css') }}">
     <link rel="stylesheet"
@@ -15,6 +17,27 @@
             <div class="section-body  py-4">
                 <div class="container-fluid">
                     <div class="row clearfix">
+                        <div class="col-md-12 col-lg-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3 class="card-title">FILTER</h3>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="form-group multiselect_div col-lg-6 col-md-6 col-sm-12">
+                                            <label class="form-label">Unit Kerja</label>
+                                            <select id="unit_kerja" name="unit_kerja"
+                                                class="select-filter multiselect multiselect-custom">
+                                                <option value="">Semua</option>
+                                                @foreach ($unit_kerja as $item)
+                                                    <option value="{{ $item['id'] }}">{{ $item['nama'] }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <div class="col-lg-12">
                             <div class="table-responsive mb-4">
                                 <table id="tbl-pegawai"
@@ -26,6 +49,7 @@
                                             <th>NIP</th>
                                             <th>No Telepon</th>
                                             <th>Email Kantor</th>
+                                            <th>Unit Kerja</th>
                                             <th>Aksi</th>
                                         </tr>
                                     </thead>
@@ -36,6 +60,7 @@
                                             <th>NIP</th>
                                             <th>No Telepon</th>
                                             <th>Email Kantor</th>
+                                            <th>Unit Kerja</th>
                                             <th>Aksi</th>
                                         </tr>
                                     </tfoot>
@@ -51,14 +76,25 @@
     </div>
 @endsection
 @push('script')
+    {{-- Multiselect --}}
+    <script src="{{ asset('assets/plugins/bootstrap-multiselect/bootstrap-multiselect.js') }}"></script>
+    <script src="{{ asset('assets/plugins/multi-select/js/jquery.multi-select.js') }}"></script>
     <script src="{{ asset('assets/plugins/sweetalert2/sweetalert2.all.min.js') }}"></script>
     <script src="{{ asset('assets/bundles/dataTables.bundle.js') }}"></script>
     <script src="{{ asset('assets/js/table/datatable.js') }}"></script>
     <script>
         "use strict"
+        $('.select-filter').multiselect({
+            enableFiltering: true,
+            enableCaseInsensitiveFiltering: true,
+            maxHeight: 200
+        });
+        $('#unit_kerja').on('change', () => {
+            data_pegawai();
+        })
         let table;
 
-        $(function() {
+        const data_pegawai = () => {
             table = $('#tbl-pegawai').DataTable({
                 processing: true,
                 destroy: true,
@@ -76,6 +112,9 @@
                     type: 'POST',
                     headers: {
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    data: {
+                        unit_kerja: $('#unit_kerja').val()
                     }
                 },
                 columns: [{
@@ -84,8 +123,8 @@
                         class: 'text-center'
                     },
                     {
-                        data: 'nama',
-                        name: 'nama',
+                        data: 'nama_lengkap',
+                        name: 'nama_lengkap',
                     },
                     {
                         data: 'nip',
@@ -98,6 +137,10 @@
                     {
                         data: 'email_kantor',
                         name: 'email_kantor',
+                    },
+                    {
+                        data: 'nama_unit_kerja',
+                        name: 'uk.nama',
                     },
                     {
                         data: 'aksi',
@@ -125,11 +168,15 @@
                     cell.innerHTML = i + 1 + info.start;
                 });
             });
+        }
+        $(function() {
+            data_pegawai()
         })
     </script>
     @if (session()->has('error'))
         <script>
-            const msg = <?php echo json_encode(Session::get('error')); ?>;
+            const msg = <?php echo json_encode(Session::get('error')); ?>
+
             $(function() {
                 Swal.fire({
                     icon: 'error',

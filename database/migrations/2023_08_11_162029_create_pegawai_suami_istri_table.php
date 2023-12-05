@@ -20,10 +20,12 @@ return new class extends Migration
             $table->date('tanggal_lahir');
             $table->date('tanggal_kawin');
             $table->string('no_kartu', 50);
-            $table->boolean('is_pns');
+            //$table->boolean('is_pns');
+            //indrawan
+            $table->boolean('status_pns')->nullable(true)->comment('0 = bukan pns, 1 = pns');
             $table->unsignedBigInteger('pendidikan_id');
             $table->string('pekerjaan', 50);
-            $table->boolean('status_tunjangan');
+            $table->boolean('status_tunjangan')->nullable(true)->comment('0 = tidak dapat tunjangan, 1 = dapat tunjangan');
             $table->string('no_sk_cerai', 50)->nullable(true);
             $table->date('tmt_sk_cerai')->nullable(true);
             $table->unsignedTinyInteger('jenis_kawin_id');

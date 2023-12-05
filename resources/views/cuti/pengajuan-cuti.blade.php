@@ -29,6 +29,39 @@
                         <small class="text-danger" id="error_jenis_cuti_id"></small>
 
                     </div>
+                    <div class="row" id="alasan">
+                        <div class="form-group col-md-6">
+                            <label class="form-label">Alasan</label>
+                            <select class="form-control custom-select" name="keterangan_cuti_p" id="keterangan_cuti_p">
+                                <option value="">--Alasan--</option>
+                                <option value="Keluarga Sakit Keras">Keluarga Sakit Keras</option>
+                                <option value="Keluarga Meninggal Dunia">Keluarga Meninggal Dunia</option>
+                                <option value="Melangsungkan Pernikahan">Melangsungkan Pernikahan</option>
+                                <option value="Isteri Melahirkan">Isteri Melahirkan</option>
+                                <option value="Kebakaran Rumah/ Bencana Alam">Kebakaran Rumah/ Bencana Alam</option>
+                                <option value="Ditempatkan di Kantor perwakilan RI yang rawan/berbahaya">Ditempatkan di
+                                    Kantor perwakilan RI yang rawan/berbahaya</option>
+                            </select>
+                            <small class="text-danger" id="error_keterangan_cuti_p"></small>
+
+                        </div>
+                        <div class="form-group col-md-6" id="detail_alasan">
+                            <label class="form-label">Yang Bersangkutan</label>
+                            <select class="form-control custom-select" name="detail_keterangan_cuti_p"
+                                id="detail_keterangan_cuti_p">
+                                <option value="">--Keluarga Bersangkutan--</option>
+                                <option value="Ayah">Ayah</option>
+                                <option value="Ibu">Ibu</option>
+                                <option value="Suami/Istri">Suami/Istri</option>
+                                <option value="Anak">Anak</option>
+                                <option value="Adik">Adik</option>
+                                <option value="Kakak">Kakak</option>
+                                <option value="Mertua">Mertua</option>
+                                <option value="Menantu">Menantu</option>
+                            </select>
+                            <small class="text-danger" id="error_detail_keterangan_cuti_p"></small>
+                        </div>
+                    </div>
                     <div class="row" id="saldo_cuti">
                         <div class="form-group col-md-3">
                             <label class="form-label">Sisa Cuti {{ Carbon\Carbon::now()->format('Y') }}</label>
@@ -125,6 +158,9 @@
     <script src="{{ asset('assets/plugins/sweetalert2/sweetalert2.all.min.js') }}"></script>
 
     <script>
+        $(() => {
+            $('#alasan').hide()
+        })
         //HIDE SALDO CUTI
         $('#jenis_cuti_id').on('change', () => {
             const jenis_cuti = $('#jenis_cuti_id').find(":selected").val();
@@ -135,6 +171,24 @@
                 $('#saldo_cuti').hide()
             } else {
                 $('#saldo_cuti').show()
+            }
+            if (jenis_cuti != 5) {
+                $('#alasan').hide()
+            } else {
+                $('#alasan').show()
+                $("#media_pengajuan_cuti").prop('required', true);
+
+            }
+        })
+
+        $('#keterangan_cuti_p').on('change', () => {
+            const detail_alasan = $('#keterangan_cuti_p').find(":selected").val()
+            console.log(detail_alasan)
+            if (detail_alasan == 'Keluarga Sakit Keras' || detail_alasan == 'Keluarga Meninggal Dunia') {
+                $('#detail_alasan').show()
+            } else {
+                $('#detail_alasan').hide()
+
             }
         })
         //CHECK HARI LIBUR
@@ -209,6 +263,12 @@
                         if (err.media_pengajuan_cuti) {
                             $('#error_media_pengajuan_cuti').text(err.media_pengajuan_cuti)
                         }
+                        if (err.keterangan_cuti_p) {
+                            $('#error_keterangan_cuti_p').text(err.keterangan_cuti_p)
+                        }
+                        if (err.detail_keterangan_cuti_p) {
+                            $('#error_detail_keterangan_cuti_p').text(err.detail_keterangan_cuti_p)
+                        }
                     } else {
                         Swal.fire({
                             title: 'Tersimpan!',
@@ -230,6 +290,8 @@
             $('#error_alasan').text('')
             $('#error_alamat_cuti').text('')
             $('#error_media_pengajuan_cuti').text('')
+            $('#error_keterangan_cuti_p').text('')
+            $('#error_detail_keterangan_cuti_p').text('')
         }
     </script>
     <script>

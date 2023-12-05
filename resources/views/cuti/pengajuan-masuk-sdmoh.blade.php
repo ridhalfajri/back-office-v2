@@ -108,8 +108,7 @@
         });
         $('#unit_kerja').on('change', () => {
             datatable_pengajuan_masuk();
-            // const unit_kerja = $('#unit_kerja').val();
-            // datatable_pengajuan_masuk(unit_kerja);
+
         })
         $('#status').on('change', () => {
             datatable_pengajuan_masuk();
@@ -117,15 +116,7 @@
         $(function() {
             datatable_pengajuan_masuk();
         })
-        // const search = $.fn.dataTable.util.throttle(
-        //     function(val) {
-        //         table.search(val).draw();
-        //     },
-        //     5000
-        // );
-        // $('#mySearchBox').on('keyup', function() {
-        //     search(this.value);
-        // });
+
         const datatable_pengajuan_masuk = (unit_kerja = null) => {
             table = $('#tbl-pengajuan-masuk').DataTable({
                 processing: true,

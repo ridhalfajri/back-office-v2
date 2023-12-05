@@ -16,6 +16,8 @@ return new class extends Migration
             $table->unsignedBigInteger('pegawai_id');
             $table->unsignedInteger('gaji_id');
             $table->date('tmt_gaji');
+            //indrawan
+            $table->boolean('is_active')->nullable(true)->comment('0 = untuk gaji yang tidak aktif, 1 = gaji yang aktif');
             $table->timestamps();
             $table->foreign('pegawai_id')->references('id')->on('pegawai')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('gaji_id')->references('id')->on('gaji')->onUpdate('cascade')->onDelete('cascade');

@@ -23,6 +23,8 @@ return new class extends Migration
                 O: untuk jabatan yang tidak digunakan');
             $table->string('cepat_kode',6)->nullable(true);
             $table->string('bkn_id',32)->nullable(true);
+            //indrawan
+            $table->bigInteger('nominal_tunjangan');
             $table->timestamps();
             $table->foreign('kel_jabatan_id')->references('id')->on('kel_jabatan')->onUpdate('cascade')->onDelete('cascade');
 

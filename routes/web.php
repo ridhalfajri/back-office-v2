@@ -13,8 +13,10 @@ use App\Http\Controllers\JabatanUnitKerjaController;
 use App\Http\Controllers\LdapController;
 use App\Http\Controllers\Pegawai\AnakController;
 use App\Http\Controllers\Pegawai\PegawaiDiklatController;
+use App\Http\Controllers\Pegawai\PegawaiRiwayatThpController;
 use App\Http\Controllers\Pegawai\PegawaiTmtGajiController;
 use App\Http\Controllers\Pegawai\PenghargaanController;
+use App\Http\Controllers\Pegawai\RiwayatJabatanController;
 use App\Http\Controllers\Pegawai\RiwayatPendidikanController;
 use App\Http\Controllers\Pegawai\SuamiIstriController;
 use App\Http\Controllers\Presensi\PreDinasLuarController;
@@ -25,6 +27,14 @@ use App\Http\Controllers\Presensi\PreTakTercatatController;
 use App\Http\Controllers\Presensi\PreTubelController;
 use App\Http\Controllers\PropinsiController;
 use Illuminate\Support\Facades\Route;
+
+//indrawan
+use App\Http\Controllers\UangMakanController;
+use App\Http\Controllers\StatusPegawaiController;
+use App\Http\Controllers\ThpController;
+use App\Http\Controllers\UnitKerjaController;
+use App\Http\Controllers\TukinController;
+use App\Http\Controllers\PegawaiRiwayatUmakController;
 
 /*
 |--------------------------------------------------------------------------
@@ -86,6 +96,13 @@ Route::middleware('auth')->group(function () {
         Route::resource('/pre-tubel',PreTubelController::class);
         Route::post('/pre-tubel/datatable', [PreTubelController::class, 'datatable'])->name('pre-tubel.datatable');
 
+    //uang makan
+    Route::prefix('kalkulasi')->group(function () {
+        //indrawan
+        Route::post('/pegawai-riwayat-umak/datatable', [PegawaiRiwayatUmakController::class, 'datatable'])->name('pegawai-riwayat-umak.datatable');
+        Route::post('/pegawai-riwayat-umak/kalkulasi-umak', [PegawaiRiwayatUmakController::class, 'kalkulasiUmak'])->name('pegawai-riwayat-umak.kalkulasi-umak');
+        Route::resource('/pegawai-riwayat-umak', PegawaiRiwayatUmakController::class)->only(['index']);
+    });
 
         Route::resource('/pre-ijin',PreIjinController::class);
         Route::post('/pre-ijin/datatable', [PreIjinController::class, 'datatable'])->name('pre-ijin.datatable');
@@ -143,6 +160,11 @@ Route::middleware('auth')->group(function () {
         Route::post('/tmt-gaji/datatable', [PegawaiTmtGajiController::class, 'datatable'])->name('tmt-gaji.datatable');
         Route::resource('/tmt-gaji', PegawaiTmtGajiController::class)->only(['store', 'destroy']);
 
+        // Riwayat Jabatan
+        Route::get('/riwayat-jabatan', [RiwayatJabatanController::class, 'index'])->name('riwayat-jabatan.index');
+        Route::post('/riwayat-jabatan/datatable', [RiwayatJabatanController::class, 'datatable'])->name('riwayat-jabatan.datatable');
+        Route::get('/riwayat-jabatan/show/{id}', [RiwayatJabatanController::class, 'show'])->name('riwayat-jabatan.show');
+
         // Pegawai
         Route::post('/datatable', [PegawaiController::class, 'datatable'])->name('pegawai.datatable');
         Route::resource('/', PegawaiController::class, [
@@ -156,6 +178,8 @@ Route::middleware('auth')->group(function () {
             ]
         ])->parameters(['' => 'id'])->only(['index', 'show']);
     });
+    Route::get('/esselon2/pegawai', [PegawaiController::class, 'index_esselon'])->name('pegawai.index-esselon');
+
     Route::prefix('data')->group(function () {
         Route::post('/penghargaan/get-penghargaan', [PenghargaanController::class, 'get_penghargaan'])->name('gaji.get-penghargaan');
         Route::post('propinsi', [PropinsiController::class, 'getPropinsi'])->name('propinsi.data');
@@ -188,9 +212,25 @@ Route::middleware('auth')->group(function () {
         Route::post('/acc_atasan_langsung', [CutiController::class, 'acc_atasan_langsung'])->name('cuti.acc-atasan-langsung');
         Route::post('/acc_kabiro_sdmoh', [CutiController::class, 'acc_kabiro_sdmoh'])->name('cuti.acc-kabiro-sdmoh');
     });
+    Route::prefix('thp')->group(function () {
+        Route::get('/semua_thp', [ThpController::class, 'index'])->name('thp.semua-thp');
+        Route::post('/datatable', [ThpController::class, 'datatable'])->name('thp.datatable');
+    });
+    Route::prefix('penghasilan')->group(function () {
+        Route::post('/tukin/generate', [PegawaiRiwayatThpController::class, 'generate_tukin'])->name('penghasilan.generate-tukin');
+        Route::get('/', [PegawaiRiwayatThpController::class, 'index'])->name('penghasilan.index');
+        Route::get('/show/gaji/{id}', [PegawaiRiwayatThpController::class, 'gaji_detail'])->name('penghasilan.gaji-detail');
+        Route::get('/show/tukin/{id}', [PegawaiRiwayatThpController::class, 'tukin_detail'])->name('penghasilan.tukin-detail');
+        Route::get('/show/{id}', [PegawaiRiwayatThpController::class, 'show'])->name('penghasilan.show');
+        Route::post('/datatable', [PegawaiRiwayatThpController::class, 'datatable'])->name('penghasilan.datatable');
+        Route::post('/datatable_show', [PegawaiRiwayatThpController::class, 'datatable_show'])->name('penghasilan.datatable_show');
+    });
 });
 
 Route::middleware('guest')->group(function () {
+    Route::get('/', function () {
+        return redirect()->route('login');
+    });
     Route::get('/login', [LdapController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [LdapController::class, 'login'])->name('login.check');
 });

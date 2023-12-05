@@ -64,6 +64,10 @@
                             <a class="nav-link" id="pills-penghargaan-tab" data-toggle="pill" href="#pills-penghargaan"
                                 role="tab" aria-controls="pills-penghargaan" aria-selected="true">Penghargaan</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="pills-thp-tab" data-toggle="pill" href="#pills-thp" role="tab"
+                                aria-controls="pills-thp" aria-selected="true">THP</a>
+                        </li>
                     </ul>
                 </div>
                 <div class="col-lg-8 col-md-12">
@@ -74,8 +78,8 @@
                                 <div class="card-header">
                                     <h3 class="card-title">Profile</h3>
                                     <div class="card-options">
-                                        <a href="#" class="card-options-fullscreen" data-toggle="card-fullscreen"><i
-                                                class="fe fe-maximize"></i></a>
+                                        <a href="#" class="card-options-fullscreen"
+                                            data-toggle="card-fullscreen"><i class="fe fe-maximize"></i></a>
                                         <div class="item-action dropdown ml-2">
                                             <a href="javascript:void(0)" data-toggle="dropdown"><i
                                                     class="fe fe-more-vertical"></i></a>
@@ -275,6 +279,9 @@
                         <div class="tab-pane fade" id="pills-penghargaan" role="tabpanel"
                             aria-labelledby="pills-penghargaan-tab">
                             @include('pegawai.penghargaan.pegawai-penghargaan')
+                        </div>
+                        <div class="tab-pane fade" id="pills-thp" role="tabpanel" aria-labelledby="pills-thp-tab">
+                            @include('pegawai.thp.index')
                         </div>
                     </div>
                 </div>
@@ -977,6 +984,7 @@
     <script src="{{ asset('assets/js/custom/pendidikan.js') }}"></script>
     <script src="{{ asset('assets/js/custom/keluarga.js') }}"></script>
     <script src="{{ asset('assets/js/custom/penghargaan.js') }}"></script>
+    <script src="{{ asset('assets/js/custom/thp.js') }}"></script>
 
 
     <script>
@@ -1162,6 +1170,10 @@
                 url = "{{ route('penghargaan.datatable') }}"
                 pegawai_id = "{{ $pegawai->id }}"
                 get_table_penghargaan(url, pegawai_id)
+            } else if (tab_id == 'pills-thp-tab') {
+                url = "{{ route('thp.datatable') }}"
+                pegawai_id = "{{ $pegawai->id }}"
+                get_table_thp(url, pegawai_id)
             }
         })
     </script>
