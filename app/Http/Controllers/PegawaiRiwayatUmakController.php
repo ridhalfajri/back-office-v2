@@ -201,7 +201,7 @@ class PegawaiRiwayatUmakController extends Controller
                     ;
             })
             //untuk test, data pegawai_riwayat_golongan harus ada!
-            ->where('p.id','=',498)
+            //->where('p.id','=',498)
             ->get();
 
             //cek list ada atau tidak
