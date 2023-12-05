@@ -461,7 +461,9 @@ class PresensiHelper {
                         if ( $presensi->status_kehadiran = 'HADIR' &&  $presensi->is_ijin == 0 ){
                             $presensi->keterangan = $keterangan;
                         }
-                        var_dump('OK');
+                        $pegawai = Pegawai::select('id')->where('no_enroll','=',$presensi->no_enroll)->first();
+                        $presensi->nominal_potongan = self::_hitung_potongan($pegawai, $presensi->kekurangan_jam);
+
                     }
 
                     $presensi->save();
@@ -474,6 +476,8 @@ class PresensiHelper {
                 {
                     //Jika Pegawai hanya melakukan presensi cuma satu saja masuk/pulang maka keterlambatan di set sebagai keterlmbatan maksimal yaitu 7,5 jam
                     $presensi->kekurangan_jam ="07:30:00";
+                    $pegawai = Pegawai::select('id')->where('no_enroll','=',$presensi->no_enroll)->first();
+                    $presensi->nominal_potongan = self::_hitung_potongan($pegawai, $presensi->kekurangan_jam);
                     $presensi->save();
                 }
 

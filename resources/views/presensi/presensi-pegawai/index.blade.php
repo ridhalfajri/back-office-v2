@@ -11,6 +11,8 @@
 <link rel="stylesheet" href="{{ asset('assets/plugins/toastr/toastr.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/css/ijin.css') }}">
 
+<link rel="stylesheet" href="{{ asset('assets/css/cust_dt.css') }}">
+<link rel="stylesheet" href="{{ asset('assets/css/cust_dt.css') }}">
 
 @endpush
 
@@ -241,6 +243,10 @@
 
         $('#btnShowData').on('click', function() {
             table.destroy();
+
+            // Redraw the DataTable to reapply styles
+            // table.DataTable().draw();
+
             var dateAwal = document.getElementById('date_awal').value;
             var dateAkhir = document.getElementById('date_akhir').value;
 

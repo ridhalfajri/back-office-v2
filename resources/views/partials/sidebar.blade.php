@@ -1,12 +1,29 @@
 <nav id="left-sidebar-nav" class="sidebar-nav">
     <ul class="metismenu">
-        <li class="g_heading">Directories</li>
-        <li><a href="#"><i class="icon-home"></i><span>Dashboard</span></a></li>
-        <li><a href="{{ route('pegawai.index') }}"><i class="icon-users"></i><span>Pegawai</span></a></li>
-        <li><a href="{{ route('gaji.index') }}"><i class="fa fa-money"></i><span>Gaji Pegawai</span></a></li>
-        <li><a href="{{ route('jabatan-tukin.index') }}"><i class="fa fa-money"></i><span>Tunjangan Kinerja</span></a></li>
-        <li><a href="{{ route('jabatan-unit-kerja.index') }}"><i class="fa fa-snowflake-o"></i><span>Jabatan Unit Kerja</span></a></li>
+        {{-- PERSONAL --}}
+        <li class="g_heading">Personal</li>
+        <li class="{{ request()->segment(2) == auth()->user()->pegawai_id ? 'active' : '' }}"><a
+                href="{{ route('pegawai.show', auth()->user()->pegawai_id) }}"><i
+                    class="icon-home"></i><span>Profile</span></a></li>
+        <li class="{{ request()->segment(3) == auth()->user()->pegawai_id ? 'active' : '' }}"><a
+                href="{{ route('penghasilan.show', auth()->user()->pegawai_id) }}"><i
+                    class="icon-bar-chart"></i><span>Penghasilan</span></a></li>
+        <li
+            class="{{ request()->segment(2) == 'riwayat-jabatan' && request()->segment(1) == auth()->user()->pegawai_id ? 'active' : '' }}">
+            <a href="{{ route('riwayat-jabatan.index') }}"><i class="icon-list"></i><span>Riwayat Jabatan</span></a>
+        </li>
+        <li
+            class="{{ request()->segment(2) == 'riwayat_cuti' || request()->segment(2) == 'saldo_cuti' ? 'active' : '' }}">
+            <a href="javascript:void(0)" class="has-arrow"><i class="icon-doc"></i><span>Cuti</span></a>
+            <ul
+                class="{{ request()->segment(2) == 'riwayat_cuti' || request()->segment(2) == 'saldo_cuti' ? 'active' : '' }}">
+                <li class="{{ request()->segment(2) == 'riwayat_cuti' ? 'active' : '' }}"><a
+                        href="{{ route('cuti.riwayat-cuti') }}">Riwayat Cuti</a></li>
+                <li class="{{ request()->segment(2) == 'saldo_cuti' ? 'active' : '' }}"><a
+                        href="{{ route('cuti.saldo-cuti') }}">Saldo Cuti</a></li>
 
+            </ul>
+        </li>
 
         <li class="{{ request()->segment(1) == 'presensi' ? 'active' : '' }}">
             <a href="javascript:void(0)" class="has-arrow"><i class="fa fa-clock-o"></i><span>Presensi</span></a>
@@ -27,29 +44,6 @@
                     <a href="{{ route('pre-dinas-luar.index') }}">Dinas Luar</span></a>
                 </li>
 
-                {{-- @if (auth()->user()->pegawai->jabatan_sekarang->tx_tipe_jabatan_id == 5) --}}
-                    <li class="{{ request()->segment(2) == 'pre-tubel' ? 'active' : '' }}">
-                        <a href="{{ route('pre-tubel.index') }}">Tugas belajar</span></a>
-                    </li>
-
-                    <li class="{{ request()->segment(2) == 'pre-jam-kerja' ? 'active' : '' }}">
-                        <a href="{{ route('pre-jam-kerja.index') }}">Pengaturan Jam Kerja</span></a>
-                    </li>
-
-                {{-- @endif --}}
-
-            </ul>
-        </li>
-
-        <li class="{{ request()->segment(1) == 'cuti' ? 'active' : '' }}">
-            <a href="javascript:void(0)" class="has-arrow"><i class="icon-doc"></i><span>Cuti</span></a>
-            <ul
-                class="{{ request()->segment(2) == 'riwayat_cuti' || request()->segment(2) == 'saldo_cuti' ? 'active' : '' }}">
-                <li class="{{ request()->segment(2) == 'riwayat_cuti' ? 'active' : '' }}"><a
-                        href="{{ route('cuti.riwayat-cuti') }}">Riwayat Cuti</a></li>
-                <li class="{{ request()->segment(2) == 'saldo_cuti' ? 'active' : '' }}"><a
-                        href="{{ route('cuti.saldo-cuti') }}">Saldo Cuti</a></li>
-
             </ul>
         </li>
 
@@ -69,7 +63,7 @@
             <li class="{{ request()->segment(1) == 'pegawai' ? 'active' : '' }}">
                 <a href="{{ route('pegawai.index') }}"><i class="icon-users"></i><span>Pegawai</span></a>
             </li>
-            <li><a href="{{ route('presensi.index') }}"><i class="fa fa-clock-o"></i><span>Presensi</span></a></li>
+            <li><a href="{{ route('presensi-pegawai.index') }}"><i class="fa fa-clock-o"></i><span>Presensi</span></a></li>
             <li
                 class="{{ request()->segment(2) == 'pengajuan_masuk_sdmoh' || request()->segment(2) == 'saldo_cuti_pegawai' ? 'active' : '' }}">
                 <a href="javascript:void(0)" class="has-arrow"><i class="icon-doc"></i><span>Cuti Pegawai</span></a>
@@ -102,6 +96,13 @@
             <li><a href="{{ route('jabatan-tukin.index') }}"><i class="fa fa-money"></i><span>Tunjangan
                         Kinerja</span></a>
             </li>
+            <li class="{{ request()->segment(2) == 'pre-tubel' ? 'active' : '' }}">
+                <a href="{{ route('pre-tubel.index') }}"><i class="fa fa-graduation-cap"></i>Tugas belajar</span></a>
+            </li>
+
+            <li class="{{ request()->segment(2) == 'pre-jam-kerja' ? 'active' : '' }}">
+                <a href="{{ route('pre-jam-kerja.index') }}"><i class="fa fa-cogs"></i>Pengaturan Jam Kerja</span></a>
+            </li>
             <li><a href="{{ route('jabatan-unit-kerja.index') }}"><i class="fa fa-snowflake-o"></i><span>Jabatan Unit
                         Kerja</span></a></li>
             <li class="{{ Request::is('master*') ? 'active' : '' }}">
@@ -121,3 +122,4 @@
 
     </ul>
 </nav>
+

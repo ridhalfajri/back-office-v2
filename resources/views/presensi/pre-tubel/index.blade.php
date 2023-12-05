@@ -9,6 +9,7 @@
 <link rel="stylesheet" href="{{ asset('assets/plugins/sweetalert/sweetalert.css') }}">
 <!-- Toastr -->
 <link rel="stylesheet" href="{{ asset('assets/plugins/toastr/toastr.css') }}">
+<link rel="stylesheet" href="{{ asset('assets/css/cust_dt.css') }}">
 @endpush
 
 @push('breadcrumb')
