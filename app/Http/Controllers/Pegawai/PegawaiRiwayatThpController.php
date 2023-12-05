@@ -195,6 +195,15 @@ class PegawaiRiwayatThpController extends Controller
     {
         $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
         $this->authorize('kabiro', $kabiro);
+
+        $split_tanggal = explode(" - ", $request->tanggal);
+        $tanggal_mulai = $split_tanggal[0];
+        $tanggal_akhir = $split_tanggal[1];
+        $waktu = date('Y-m-d', strtotime($tanggal_akhir . ' +1 month'));
+        $cek_tukin = PegawaiRiwayatThp::where('bulan', Carbon::parse($waktu)->translatedFormat('m'))->where('tahun', Carbon::parse($waktu)->translatedFormat('Y'))->count();
+        if ($cek_tukin != 0) {
+            return response()->json(['errors' => ['exists' => 'Tukin pada bulan ' . Carbon::parse($waktu)->translatedFormat('F') . ' sudah ada']]);
+        }
         try {
 
             //!DATA DUMMY
@@ -258,11 +267,9 @@ class PegawaiRiwayatThpController extends Controller
                 $POTONGAN_IWP = 0.1 * $NOMINAL_GAJI_POKOK;
                 //* POTONGAN TUKIN
                 //TODO: LOGIC POTONGAN TUKIN
-                $split_tanggal = explode(" - ", $request->tanggal);
-                $tanggal_mulai = $split_tanggal[0];
-                $tanggal_akhir = $split_tanggal[1];
-                $tanggal_mulai = '2023-11-21';
-                $tanggal_akhir = '2023-12-21';
+
+                // $tanggal_mulai = '2023-11-21';
+                // $tanggal_akhir = '2023-12-21';
                 $presensi = Presensi::whereBetween('tanggal_presensi', [$tanggal_mulai, $tanggal_akhir])->where('no_enroll', $pegawai->no_enroll)->select('nominal_potongan')->where('nominal_potongan', '<>', 0)->get();
                 $POTONGAN_TUKIN = $presensi->sum('nominal_potongan');
 
@@ -286,8 +293,9 @@ class PegawaiRiwayatThpController extends Controller
                 $SUM_POTONGAN = $POTONGAN_BPJS_LAINNYA + $POTONGAN_BPJS + $POTONGAN_IWP + $POTONGAN_PAJAK + $POTONGAN_TAPERA + $POTONGAN_TUKIN;
 
                 $TOTAL_THP = $SUM_THP - $SUM_POTONGAN;
-                $BULAN = Carbon::parse($tanggal_akhir)->translatedFormat('n');
-                $TAHUN = Carbon::parse($tanggal_akhir)->translatedFormat('Y');
+                $waktu = date('Y-m-d', strtotime($tanggal_akhir . ' +1 month'));
+                $BULAN = Carbon::parse($waktu)->translatedFormat('m');
+                $TAHUN = Carbon::parse($waktu)->translatedFormat('Y');
 
                 $riwayat_thp = new PegawaiRiwayatThp();
                 $riwayat_thp->pegawai_id = $pegawai->id;

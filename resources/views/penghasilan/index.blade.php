@@ -211,33 +211,57 @@
             });
         }
         $('#generate_tukin').on('click', () => {
-            $.ajax({
-                url: '{{ route('penghasilan.generate-tukin') }}',
-                type: "POST",
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                data: {
-                    tanggal: $('#tanggal').val()
-                },
-                success: function(response) {
-                    if (response.errors) {
-                        Swal.fire({
-                            title: 'Error!',
-                            text: response.errors.connection,
-                            icon: 'error',
-                            confirmButtonText: 'Tutup'
-                        })
-                    } else {
-                        Swal.fire({
-                            title: 'Berhasil!',
-                            text: response.success,
-                            icon: 'success',
-                            confirmButtonText: 'Tutup'
-                        })
-                    }
-                },
+            Swal.fire({
+                title: "Apakah anda yakin?",
+                text: "Generate Tukin Periode " + $('#tanggal').val(),
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '{{ route('penghasilan.generate-tukin') }}',
+                        type: "POST",
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        data: {
+                            tanggal: $('#tanggal').val()
+                        },
+                        success: function(response) {
+                            if (response.errors) {
+                                if (response.errors.connection) {
+
+                                    Swal.fire({
+                                        title: 'Error!',
+                                        text: response.errors.connection,
+                                        icon: 'error',
+                                        confirmButtonText: 'Tutup'
+                                    })
+                                }
+                                if (response.errors.exists) {
+                                    Swal.fire({
+                                        title: 'Error!',
+                                        text: response.errors.exists,
+                                        icon: 'error',
+                                        confirmButtonText: 'Tutup'
+                                    })
+                                }
+                            } else {
+                                Swal.fire({
+                                    title: 'Berhasil!',
+                                    text: response.success,
+                                    icon: 'success',
+                                    confirmButtonText: 'Tutup'
+                                })
+                            }
+                        },
+                    });
+                }
             });
+
 
         })
     </script>
