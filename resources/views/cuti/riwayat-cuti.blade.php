@@ -89,6 +89,16 @@
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Alasan</label>
+                                    <input type="text" id="c_keterangan_cuti_p" disabled=""
+                                        class="form-control mt-3 state-valid" value="">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Yang Bersangkutan</label>
+                                    <input type="text" id="c_detail_keterangan_cuti_p" disabled=""
+                                        class="form-control mt-3 state-valid" value="">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Alasan Lengkap</label>
                                     <input type="text" id="c_alasan" disabled=""
                                         class="form-control mt-3 state-valid" value="">
                                 </div>
@@ -122,6 +132,7 @@
                                     <input type="text" id="c_keterangan" disabled=""
                                         class="form-control mt-3 state-valid" value="">
                                 </div>
+
                                 <div class="form-group">
                                     <label class="form-label">Lampiran Pengajuan Cuti</label>
                                     <a href="#" id="c_media_pengajuan_cuti" class="btn btn-primary">Download</a>
@@ -313,6 +324,8 @@
                         $('#c_tanggal_approve_al').val(res.tanggal_approve_al)
                         $('#c_tanggal_approve_akb').val(res.tanggal_approve_akb)
                         $('#c_tanggal_penolakan_cuti').val(res.tanggal_penolakan_cuti)
+                        $('#c_keterangan_cuti_p').val(res.keterangan_cuti_p)
+                        $('#c_detail_keterangan_cuti_p').val(res.detail_keterangan_cuti_p)
                         $('#c_keterangan').val(res.keterangan)
                         if (res.media_pengajuan_cuti) {
                             $("#c_media_pengajuan_cuti").attr(
