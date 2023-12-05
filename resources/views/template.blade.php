@@ -37,8 +37,8 @@
         <div id="header_top" class="header_top">
             <div class="container">
                 <div class="hleft">
-                    <a class="header-brand" href="{{ route('pegawai.show', auth()->user()->pegawai_id) }}"><i
-                            class="fa fa-dashboard brand-logo"></i></a>
+                    <a class="header-brand" href="{{ route('pegawai.show', auth()->user()->pegawai_id) }}"><img
+                            src="{{ asset('rino.png') }}" alt=""></a>
                 </div>
                 <div class="hright">
                     <div class="dropdown">
@@ -49,7 +49,7 @@
             </div>
         </div>
         <div id="left-sidebar" class="sidebar ">
-            <h5 class="brand-name">BSN</h5>
+            <h5 class="brand-name">BackOffice</h5>
             @include('partials.sidebar')
         </div>
         <div class="page">

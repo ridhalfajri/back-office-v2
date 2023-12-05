@@ -532,7 +532,7 @@ class CutiController extends Controller
     {
         $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->first();
         $this->authorize('kabiro', $kabiro);
-        $unit_kerja = UnitKerja::select('id', 'nama')->get();
+        $unit_kerja = UnitKerja::select('id', 'nama')->limit(22)->get();
         $status_cuti = StatusCuti::select('id', 'status')->get();
         $title = "Acc Atasan Langsung";
         return view('cuti.pengajuan-masuk-sdmoh', compact('title', 'unit_kerja', 'status_cuti'));
@@ -663,7 +663,7 @@ class CutiController extends Controller
         $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->first();
         $this->authorize('kabiro', $kabiro);
         $title = 'Saldo Cuti Pegawai';
-        $unit_kerja = UnitKerja::select('id', 'nama')->get();
+        $unit_kerja = UnitKerja::select('id', 'nama')->limit(22)->get();
         return view('cuti.saldo-cuti-pegawai', compact('title', 'unit_kerja'));
     }
     public function datatable_saldo_cuti(Request $request)

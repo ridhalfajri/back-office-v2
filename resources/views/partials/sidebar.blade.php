@@ -28,6 +28,9 @@
             <li class="{{ request()->segment(2) == 'pengajuan_masuk' ? 'active' : '' }}"><a
                     href="{{ route('cuti.pengajuan-masuk') }}"><i class="icon-call-end"></i><span>Pengajuan
                         Cuti</span></a></li>
+            <li class="{{ request()->segment(1) == 'esselon2' ? 'active' : '' }}">
+                <a href="{{ route('pegawai.index-esselon') }}"><i class="icon-users"></i><span>Staff</span></a>
+            </li>
         @endif
         @if (auth()->user()->pegawai->jabatan_sekarang->tx_tipe_jabatan_id == 5)
             <li class="g_heading">Kabiro</li>
