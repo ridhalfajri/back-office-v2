@@ -17,7 +17,12 @@ use App\Http\Controllers\Pegawai\PegawaiTmtGajiController;
 use App\Http\Controllers\Pegawai\PenghargaanController;
 use App\Http\Controllers\Pegawai\RiwayatPendidikanController;
 use App\Http\Controllers\Pegawai\SuamiIstriController;
-use App\Http\Controllers\PresensiController;
+use App\Http\Controllers\Presensi\PreDinasLuarController;
+use App\Http\Controllers\Presensi\PreIjinController;
+use App\Http\Controllers\Presensi\PresensiPegawaiController;
+use App\Http\Controllers\Presensi\PreJamKerjaController;
+use App\Http\Controllers\Presensi\PreTakTercatatController;
+use App\Http\Controllers\Presensi\PreTubelController;
 use App\Http\Controllers\PropinsiController;
 use Illuminate\Support\Facades\Route;
 
@@ -56,12 +61,45 @@ Route::middleware('auth')->group(function () {
     Route::post('/jabatan-unit-kerja/datatable', [JabatanUnitKerjaController::class, 'datatable'])->name('jabatan-unit-kerja.datatable');
     Route::resource('/jabatan-unit-kerja', JabatanUnitKerjaController::class);
 
-    //Presensi
-    Route::resource('/presensi', PresensiController::class);
-    Route::post('/presensi/datatable', [PresensiController::class, 'datatable'])->name('presensi.datatable');
-    Route::post('/presensi/getdatapresensi', [PresensiController::class, 'getdatapresensi'])->name('presensi.getdatapresensi');
+    Route::post('/presensi/pre-ijin/konfirmasi', [PreIjinController::class, 'konfirmasi'])->name('pre-ijin.konfirmasi');
+    Route::get('/presensi/pre-ijin/persetujuan', [PreIjinController::class, 'persetujuan'])->name('pre-ijin.persetujuan');
+
+    Route::post('/presensi/pre-tak-tercatat/konfirmasi', [PreTakTercatatController::class, 'konfirmasi'])->name('pre-tak-tercatat.konfirmasi');
+    Route::get('/presensi/pre-tak-tercatat/persetujuan', [PreTakTercatatController::class, 'persetujuan'])->name('pre-tak-tercatat.persetujuan');
+
+    Route::post('/presensi/pre-dinas-luar/konfirmasi', [PreDinasLuarController::class, 'konfirmasi'])->name('pre-dinas-luar.konfirmasi');
+    Route::get('/presensi/pre-dinas-luar/persetujuan', [PreDinasLuarController::class, 'persetujuan'])->name('pre-dinas-luar.persetujuan');
+
+    Route::prefix('presensi')->group(function () {
+
+        Route::resource('/pre-tubel',PreTubelController::class);
+        Route::post('/pre-tubel/datatable', [PreTubelController::class, 'datatable'])->name('pre-tubel.datatable');
+
+        Route::resource('/pre-dinas-luar', PreDinasLuarController::class);
+        Route::post('/pre-dinas-luar/datatable', [PreDinasLuarController::class, 'datatable'])->name('pre-dinas-luar.datatable');
+        Route::post('/pre-dinas-luar/datatablepersetujuan', [PreDinasLuarController::class, 'datatablepersetujuan'])->name('pre-dinas-luar.datatablepersetujuan');
+
+        Route::resource('/pre-tak-tercatat', PreTakTercatatController::class);
+        Route::post('/pre-tak-tercatat/datatable', [PreTakTercatatController::class, 'datatable'])->name('pre-tak-tercatat.datatable');
+        Route::post('/pre-tak-tercatat/datatablepersetujuan', [PreTakTercatatController::class, 'datatablepersetujuan'])->name('pre-tak-tercatat.datatablepersetujuan');
+
+        Route::resource('/pre-tubel',PreTubelController::class);
+        Route::post('/pre-tubel/datatable', [PreTubelController::class, 'datatable'])->name('pre-tubel.datatable');
 
 
+        Route::resource('/pre-ijin',PreIjinController::class);
+        Route::post('/pre-ijin/datatable', [PreIjinController::class, 'datatable'])->name('pre-ijin.datatable');
+        Route::post('/pre-ijin/datatablepersetujuan', [PreIjinController::class, 'datatablepersetujuan'])->name('pre-ijin.datatablepersetujuan');
+
+        Route::resource('/pre-jam-kerja', PreJamKerjaController::class);
+        Route::post('/pre-jam-kerja/datatable', [PreJamKerjaController::class, 'datatable'])->name('pre-jam-kerja.datatable');
+
+        //Presensi
+        Route::resource('/presensi-pegawai', PresensiPegawaiController::class);
+        Route::post('/presensi-pegawai/datatable', [PresensiPegawaiController::class, 'datatable'])->name('presensi-pegawai.datatable');
+        Route::post('/presensi-pegawai/getdatapresensi', [PresensiPegawaiController::class, 'getdatapresensi'])->name('presensi-pegawai.getdatapresensi');
+
+    });
 
     Route::prefix('pegawai')->group(function () {
 

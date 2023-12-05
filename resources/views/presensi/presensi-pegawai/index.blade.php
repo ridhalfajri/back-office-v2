@@ -9,12 +9,15 @@
 <link rel="stylesheet" href="{{ asset('assets/plugins/sweetalert/sweetalert.css') }}">
 <!-- Toastr -->
 <link rel="stylesheet" href="{{ asset('assets/plugins/toastr/toastr.css') }}">
+<link rel="stylesheet" href="{{ asset('assets/css/ijin.css') }}">
+
+
 @endpush
 
 @push('breadcrumb')
         <div class="btn-group btn-breadcrumb">
-            <a href="/" class="btn btn-outer"><i class="fa fa-home"></i></a>
-            <a href="{{ route('presensi.index') }}" class="btn btn-outer"><i class="fa fa-list"></i> Presensi</a>
+            <a href="/" class="btn btn-light"><i class="fa fa-home"></i></a>
+            <a href="{{ route('presensi-pegawai.index') }}" class="btn btn-light"><i class="fa fa-list"></i> Presensi</a>
 
         </div>
 @endpush
@@ -22,8 +25,126 @@
 @section('content')
     <div class="section-body">
     <div class="card">
+
         <div class="card-body">
-            <div class="row">
+            <div class="student-info">
+
+                @php
+                    $jabatan = '';
+                    $unitkerja = '';
+                @endphp
+
+                @foreach ($pegawai as $data)
+                    @if($data->is_plt == 1)
+                        @if($jabatan == '')
+                            @php
+                                $jabatan = $data->nama_jabatan;
+                            @endphp
+                        @else
+                            @php
+                                $jabatan = $jabatan . ' / '. $data->nama_jabatan;
+                            @endphp
+                        @endif
+                    @else
+                        @if($jabatan == '')
+                            @php
+                                $jabatan = $data->nama_jabatan ;
+                            @endphp
+                        @else
+                            @php
+                                $jabatan = $jabatan .' / '. $data->nama_jabatan;
+                            @endphp
+                        @endif
+                    @endif
+
+                    @if($unitkerja == '')
+                            @php
+                                $unitkerja = $data->nama_unit_kerja;
+                            @endphp
+                        @else
+                            @php
+                                $unitkerja = $unitkerja . ' / ' . $data->nama_unit_kerja;
+                            @endphp
+                        @endif
+
+
+                @endforeach
+
+                @foreach ($pegawai as $data)
+
+                    <div class="row rowdata">
+                        <div class="col-sm-2">
+                            <strong>NIP</strong>
+                        </div>
+                        <div class="col-sm-4">
+                            : {{ $data->nip }}
+                        </div>
+
+                        <div class="col-sm-2">
+                            <strong>Pangkat</strong>
+                        </div>
+                        <div class="col-sm-4">
+                            : {{ $data->nama_pangkat }}
+                        </div>
+                    </div>
+
+                    <div class="row rowdata">
+                        <div class="col-sm-2">
+                            <strong>Nama Pegawai</strong>
+                        </div>
+                        <div class="col-sm-4">
+                            : {{ $data->nama_depan . ' ' . $data->nama_belakang }}
+                        </div>
+
+                        <div class="col-sm-2">
+                            <strong>Nama Golongan</strong>
+                        </div>
+                        <div class="col-sm-4">
+                            : {{ $data->nama_golongan }}
+                        </div>
+                    </div>
+
+                    <div class="row rowdata">
+                        <div class="col-sm-2">
+                            <strong>Tempat & Tanggal Lahir</strong>
+                        </div>
+                        <div class="col-sm-4">
+                            : {{ $data->tempat_lahir }}, {{ \Carbon\Carbon::parse($data->tanggal_lahir)->format('d/m/Y') }}
+                        </div>
+
+                        <div class="col-sm-2">
+                            <strong>Jenis Jabatan</strong>
+                        </div>
+                        <div class="col-sm-4">
+                            : {{ $data->jenis_jabatan }}
+                        </div>
+
+                    </div>
+
+                    <div class="row rowdata">
+                        <div class="col-sm-2">
+                            <strong>Unit Kerja</strong>
+                        </div>
+                        <div class="col-sm-4">
+                            : {{ $unitkerja  }}
+                        </div>
+
+                        <div class="col-sm-2">
+                            <strong>Nama Jabatan</strong>
+                        </div>
+                        <div class="col-sm-4">
+                            : {{ $jabatan }}
+                        </div>
+                    </div>
+
+                    @break
+                @endforeach
+            </div>
+        </div>
+
+        <div class="card-body">
+
+            <div class="row rowdata">
                 <div class="col-6">
                     <div class="form-group">
                         <label>Filter Dari Tanggal : </label>
@@ -38,11 +159,16 @@
 
                     </div>
                   </div>
+
                   <div class="col-6">
                     <button class="btn btn-primary" id="btnShowData"><i class="fa fa-search" aria-hidden="true"></i> Cari Data</button>
                   </div>
                   <div class="col-6">
-                    <button class="btn btn-primary" id="btnSyncData"><i class="fa fa-refresh" aria-hidden="true"></i> Syncronize Data Presensi</button>
+                    <form method="POST" action="{{ route('presensi-pegawai.getdatapresensi') }}">
+                        @csrf <!-- CSRF protection -->
+                        <button class="btn btn-primary" type="submit"><i class="fa fa-refresh" aria-hidden="true"></i> Syncronize Data Presensi</button>
+                    </form>
+
                   </div>
             </div>
         </div>
@@ -131,7 +257,7 @@
                 autoWidth: false,
                 scrollX: true,
                 ajax: {
-                    url: '{{ route("presensi.datatable") }}',
+                    url: '{{ route("presensi-pegawai.datatable") }}',
                     type: 'POST',
                     headers: {
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
@@ -194,7 +320,7 @@
 
             $.ajax({
                 type: "POST",
-                url: "{{ route('presensi.getdatapresensi') }}",
+                url: "{{ route('presensi-pegawai.getdatapresensi') }}",
                 headers: {
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
                 },

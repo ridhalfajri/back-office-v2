@@ -9,14 +9,20 @@
 <link rel="stylesheet" href="{{ asset('assets/plugins/sweetalert/sweetalert.css') }}">
 <!-- Toastr -->
 <link rel="stylesheet" href="{{ asset('assets/plugins/toastr/toastr.css') }}">
+<style>
+    .table tr th {
+        text-align: center;
+        vertical-align: middle;
+    }
+</style>
 @endpush
 
 @push('breadcrumb')
         <div class="btn-group btn-breadcrumb">
             <a href="/" class="btn btn-light"><i class="fa fa-home"></i></a>
-            <a href="{{ route('jabatan-tukin.index') }}" class="btn btn-light"><i class="fa fa-list"></i> Tunjangan Kinerja Jabatan</a>
-            <a href="/jabatan-tukin/create" class="btn btn-light"><i class="fa fa-plus"></i> Tunjangan Kinerja Baru</a>
-            {{-- <a href="/" class="btn btn-outline-danger"><i class="fa fa-chevron-circle-left"></i> Kembali</a> --}}
+            <a href="{{ route('pre-jam-kerja.index') }}" class="btn btn-light"><i class="fa fa-list"></i> Pengaturan Jam Kerja</a>
+            <a href="/presensi/pre-jam-kerja/create" class="btn btn-light"><i class="fa fa-plus"></i> Jam Kerja Baru</a>
+
         </div>
 @endpush
 
@@ -28,24 +34,35 @@
             <table id="tbl-data" class="table table-striped table-bordered display" style="width:100%">
                 <thead>
                     <tr>
-                        <th>No.</th>
-						<th>Jenis Jabatan</th>
-						<th>Nama Jabatan</th>
-                        <th>Grade</th>
-                        <th>Nominal</th>
-                         <th style="width: 40px">aksi</th>
+                        <th rowspan="2">No.</th>
+						<th colspan="2" class="text-center">Hari Senin-Kamis</th>
+						<th colspan="2" class="text-center">Hari Jum'at</th>
+						<th rowspan="2">waktu_floating</th>
+						<th rowspan="2">is_active</th>
+						<th rowspan="2">keterangan</th>
+                         <th rowspan="2" style="width: 40px">aksi</th>
+                    </tr>
+                    <tr>
+                        <th>Jam Masuk</th>
+                        <th>Jam Pulang</th>
+                        <th>Jam Masuk</th>
+                        <th>Jam Pulang</th>
                     </tr>
                 </thead>
                 <tbody></tbody>
                 <tfoot>
                     <tr>
                         <th>No.</th>
-						<th>Jenis Jabatan</th>
-						<th>Nama Jabatan</th>
-                        <th>Grade</th>
-                        <th>Nominal</th>
-                        <th style="width: 40px">aksi</th>
+						<th>Jam Masuk</th>
+                        <th>Jam Pulang</th>
+                        <th>Jam Masuk</th>
+                        <th>Jam Pulang</th>
+						<th>waktu_floating</th>
+						<th>is_active</th>
+						<th>keterangan</th>
+                         <th style="width: 40px">aksi</th>
                     </tr>
+
                 </tfoot>
             </table>
         </div>
@@ -95,14 +112,14 @@
             serverSide: true,
             deferRender: true,
             responsive: true,
-            pageLength: 100,
+            pageLength: 10,
             paging: true,
             searching: true,
             ordering: true,
             info: true,
             autoWidth: false,
             ajax: {
-                url: '{{ route("jabatan-tukin.datatable") }}',
+                url: '{{ route("pre-jam-kerja.datatable") }}',
                 type: 'POST',
                 headers: {
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
@@ -115,24 +132,39 @@
                     class: 'text-center'
                 },
 				{
-                    data: 'jenis_jabatan',
-                    name: 'jenis_jabatan',
+                    data: 'jam_masuk',
+                    name: 'Jam Masuk',
                     class: 'text-center'
                 },
 				{
-                    data: 'nama_jabatan',
-                    name: 'nama_jabatan',
+                    data: 'jam_pulang',
+                    name: 'Jam Pulang',
                     class: 'text-center'
                 },
 				{
-                    data: 'grade',
-                    name: 'grade',
+                    data: 'jam_masuk_khusus',
+                    name: 'Jam Masuk Khusus',
                     class: 'text-center'
                 },
-                {
-                    data: 'nominal',
-                    name: 'nominal',
+				{
+                    data: 'jam_pulang_khusus',
+                    name: 'Jam Pulang Khusus',
                     class: 'text-center'
+                },
+				{
+                    data: 'waktu_floating',
+                    name: 'Waktu Floating',
+                    class: 'text-center'
+                },
+				{
+                    data: 'is_active',
+                    name: 'Is Active',
+                    class: 'text-center'
+                },
+				{
+                    data: 'keterangan',
+                    name: 'Keterangan',
+
                 },
                 {
                     data: 'aksi',
@@ -180,7 +212,7 @@
                 if (isConfirm) {
                     delete_data(that.data('id')).then(function(hasil) {
                         if (hasil.status.error == true) {
-                            toastr['error']('Data Jabatan Tukin gagal di hapus!');
+                            toastr['error']('Data Pre Jam Kerja gagal di hapus!');
                         } else {
                             table.ajax.reload();
                             toastr['success'](hasil.status.message);
@@ -199,7 +231,7 @@
     function delete_data(id) {
         return new Promise(function(resolve, reject) {
             $.ajax({
-                url: "{{ url('jabatan-tukin') }}/" + id,
+                url: "{{ url('presensi/pre-jam-kerja') }}/" + id,
                 method: 'POST',
                 headers: {
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
@@ -211,7 +243,7 @@
             }).done(function(hasil) {
                 resolve(hasil);
             }).fail(function() {
-                reject('Gagal menghapus data Jabatan Tukin!');
+                reject('Gagal menghapus data Pre Jam Kerja!');
             })
         })
     }

@@ -19,7 +19,7 @@ class CreatePreIjinTable extends Migration
 			 $table->integer('jenis_ijin')->nullable(false);
 			 $table->date('tanggal')->nullable(false);
 			 $table->text('keterangan')->nullable(false);
-			 $table->bigInteger('status')->nullable(false);
+			 $table->bigInteger('status')->nullable(false); //1=pengajuan pegawai, 2=Approved, 3=Ditolak
 
             $table->timestamps();
         });

@@ -13,15 +13,15 @@ class CreatePreTakTercatatTable extends Migration
     */
     public function up()
     {
-        Schema::create('pre_tak_tercatat', function(Blueprint $table) {
+        Schema::create('pre_dinas_luar', function(Blueprint $table) {
              $table->id();
 			 $table->integer('no_enroll')->nullable(false);
-			 $table->date('tanggal_pengajuan')->nullable(false);
-			 $table->date('tanggal_approved')->nullable(false);
-			 $table->integer('jenis')->nullable(false); //1: Jam Masuk 2: Jam Pualng
-			 $table->datetime('jam_perubahan')->nullable(false);
-			 $table->bigInteger('atasan_approval_id')->nullable(false);
-			 $table->integer('status')->nullable(false);//1=pengajuan pegawai, 2=Approved, 3=Ditolak
+			 $table->date('tanggal_dinas_awal')->nullable(false);
+			 $table->date('tanggal_dinas_akhir')->nullable(false);
+			 $table->string('nama_kegiatan')->nullable(false);
+             $table->string('lokasi')->nullable(false);
+			 $table->integer('status_approve')->nullable(false); //1:pengajuan 2:Disetujui 3: ditolak
+			 $table->enum('is_active',['Y', 'N'])->nullable(false)->default('N');
 
             $table->timestamps();
         });

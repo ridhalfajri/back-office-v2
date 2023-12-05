@@ -20,7 +20,8 @@ class CreatePreJamKerjaTable extends Migration
              $table->time('jam_masuk_khusus')->nullable(false);
 			 $table->time('jam_pulang_khusus')->nullable(false);
 			 $table->time('waktu_floating')->nullable(false);
-			 $table->enum('is_active',['Y', 'N'])->nullable(false);
+			 $table->enum('is_active',['Y', 'N'])->nullable(false)->default('N');
+             $table->enum('is_jk_normal',['Y', 'N'])->nullable(false)->default('Y');
 			 $table->text('keterangan')->nullable(false);
 
             $table->timestamps();

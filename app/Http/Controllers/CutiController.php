@@ -80,6 +80,7 @@ class CutiController extends Controller
     }
     public function store_cuti(Request $request)
     {
+
         $validate = Validator::make(
             $request->all(),
             [
@@ -106,6 +107,10 @@ class CutiController extends Controller
         if ($validate->fails()) {
             return response()->json(['errors' => $validate->errors()]);
         } else {
+
+            dd($request->media_pengajuan_cuti);
+
+
             $saldo = null;
             $split_tanggal = explode(" - ", $request->tanggal_cuti);
             $tanggal_mulai = $split_tanggal[0];

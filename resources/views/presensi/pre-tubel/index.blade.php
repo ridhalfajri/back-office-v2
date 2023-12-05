@@ -14,8 +14,8 @@
 @push('breadcrumb')
         <div class="btn-group btn-breadcrumb">
             <a href="/" class="btn btn-light"><i class="fa fa-home"></i></a>
-            <a href="{{ route('jabatan-tukin.index') }}" class="btn btn-light"><i class="fa fa-list"></i> Tunjangan Kinerja Jabatan</a>
-            <a href="/jabatan-tukin/create" class="btn btn-light"><i class="fa fa-plus"></i> Tunjangan Kinerja Baru</a>
+            <a href="{{ route('pre-tubel.index') }}" class="btn btn-light"><i class="fa fa-list"></i> Tugas Belajar</a>
+            <a href="/presensi/pre-tubel/create" class="btn btn-light"><i class="fa fa-plus"></i> Tugas Belajar Baru</a>
             {{-- <a href="/" class="btn btn-outline-danger"><i class="fa fa-chevron-circle-left"></i> Kembali</a> --}}
         </div>
 @endpush
@@ -29,21 +29,27 @@
                 <thead>
                     <tr>
                         <th>No.</th>
-						<th>Jenis Jabatan</th>
-						<th>Nama Jabatan</th>
-                        <th>Grade</th>
-                        <th>Nominal</th>
-                         <th style="width: 40px">aksi</th>
+						<th>nip</th>
+						<th>nama</th>
+						<th>tanggal mulai</th>
+                        <th>tanggal berakhir</th>
+                        <th>nama jabatan</th>
+                        <th>nama unit kerja</th>
+                        <th>is active</th>
+                        <th style="width: 40px">aksi</th>
                     </tr>
                 </thead>
                 <tbody></tbody>
                 <tfoot>
                     <tr>
                         <th>No.</th>
-						<th>Jenis Jabatan</th>
-						<th>Nama Jabatan</th>
-                        <th>Grade</th>
-                        <th>Nominal</th>
+						<th>nip</th>
+						<th>nama</th>
+						<th>tanggal mulai</th>
+                        <th>tanggal berakhir</th>
+                        <th>nama jabatan</th>
+                        <th>nama unit kerja</th>
+                        <th>is active</th>
                         <th style="width: 40px">aksi</th>
                     </tr>
                 </tfoot>
@@ -95,14 +101,14 @@
             serverSide: true,
             deferRender: true,
             responsive: true,
-            pageLength: 100,
+            pageLength: 10,
             paging: true,
             searching: true,
             ordering: true,
             info: true,
             autoWidth: false,
             ajax: {
-                url: '{{ route("jabatan-tukin.datatable") }}',
+                url: '{{ route("pre-tubel.datatable") }}',
                 type: 'POST',
                 headers: {
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
@@ -115,23 +121,34 @@
                     class: 'text-center'
                 },
 				{
-                    data: 'jenis_jabatan',
-                    name: 'jenis_jabatan',
+                    data: 'nip',
+                    name: 'Nip'
+                },
+                {
+                    data: 'nama',
+                    name: 'Nama'
+                },
+				{
+                    data: 'tanggal_awal',
+                    name: 'Tanggal Awal',
                     class: 'text-center'
                 },
 				{
-                    data: 'nama_jabatan',
-                    name: 'nama_jabatan',
-                    class: 'text-center'
-                },
-				{
-                    data: 'grade',
-                    name: 'grade',
+                    data: 'tanggal_akhir',
+                    name: 'Tanggal Akhir',
                     class: 'text-center'
                 },
                 {
-                    data: 'nominal',
-                    name: 'nominal',
+                    data: 'nama_jabatan',
+                    name: 'Nama Jabatan'
+                },
+                {
+                    data: 'nama_unit_kerja',
+                    name: 'Nama Unit Kerja'
+                },
+                {
+                    data: 'is_active',
+                    name: 'Is Active',
                     class: 'text-center'
                 },
                 {
@@ -180,7 +197,7 @@
                 if (isConfirm) {
                     delete_data(that.data('id')).then(function(hasil) {
                         if (hasil.status.error == true) {
-                            toastr['error']('Data Jabatan Tukin gagal di hapus!');
+                            toastr['error']('Data Pre Tubel gagal di hapus!');
                         } else {
                             table.ajax.reload();
                             toastr['success'](hasil.status.message);
@@ -199,7 +216,7 @@
     function delete_data(id) {
         return new Promise(function(resolve, reject) {
             $.ajax({
-                url: "{{ url('jabatan-tukin') }}/" + id,
+                url: "{{ url('pre-tubel') }}/" + id,
                 method: 'POST',
                 headers: {
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
@@ -211,7 +228,7 @@
             }).done(function(hasil) {
                 resolve(hasil);
             }).fail(function() {
-                reject('Gagal menghapus data Jabatan Tukin!');
+                reject('Gagal menghapus data Pre Tubel!');
             })
         })
     }

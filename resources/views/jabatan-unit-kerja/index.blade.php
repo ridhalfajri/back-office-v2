@@ -96,7 +96,7 @@
             serverSide: true,
             deferRender: true,
             responsive: true,
-            pageLength: 10,
+            pageLength: 100,
             paging: true,
             searching: true,
             ordering: true,

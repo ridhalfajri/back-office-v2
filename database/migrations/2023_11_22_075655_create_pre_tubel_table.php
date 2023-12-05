@@ -18,7 +18,7 @@ class CreatePreTubelTable extends Migration
 			 $table->integer('no_enroll')->nullable(false);
 			 $table->date('tanggal_awal')->nullable(false);
 			 $table->date('tanggal_akhir')->nullable(false);
-
+             $table->enum('is_active',['Y', 'N'])->nullable(false)->default('N');
             $table->timestamps();
         });
     }
