@@ -16,6 +16,7 @@ use App\Http\Controllers\Pegawai\PegawaiDiklatController;
 use App\Http\Controllers\Pegawai\PegawaiRiwayatThpController;
 use App\Http\Controllers\Pegawai\PegawaiTmtGajiController;
 use App\Http\Controllers\Pegawai\PenghargaanController;
+use App\Http\Controllers\Pegawai\RiwayatJabatanController;
 use App\Http\Controllers\Pegawai\RiwayatPendidikanController;
 use App\Http\Controllers\Pegawai\SuamiIstriController;
 use App\Http\Controllers\PresensiController;
@@ -138,6 +139,11 @@ Route::middleware('auth')->group(function () {
         Route::post('/tmt-gaji/tmt-gaji-by-id', [PegawaiTmtGajiController::class, 'getTmtGajiById'])->name('tmt-gaji.get-tmt-gaji-by-id');
         Route::post('/tmt-gaji/datatable', [PegawaiTmtGajiController::class, 'datatable'])->name('tmt-gaji.datatable');
         Route::resource('/tmt-gaji', PegawaiTmtGajiController::class)->only(['store', 'destroy']);
+
+        // Riwayat Jabatan
+        Route::get('/riwayat-jabatan', [RiwayatJabatanController::class, 'index'])->name('riwayat-jabatan.index');
+        Route::post('/riwayat-jabatan/datatable', [RiwayatJabatanController::class, 'datatable'])->name('riwayat-jabatan.datatable');
+        Route::get('/riwayat-jabatan/show/{id}', [RiwayatJabatanController::class, 'show'])->name('riwayat-jabatan.show');
 
         // Pegawai
         Route::post('/datatable', [PegawaiController::class, 'datatable'])->name('pegawai.datatable');

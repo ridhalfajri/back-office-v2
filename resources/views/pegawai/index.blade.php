@@ -123,8 +123,8 @@
                         class: 'text-center'
                     },
                     {
-                        data: 'nama',
-                        name: 'nama',
+                        data: 'nama_lengkap',
+                        name: 'nama_lengkap',
                     },
                     {
                         data: 'nip',

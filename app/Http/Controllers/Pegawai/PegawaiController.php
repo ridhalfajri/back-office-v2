@@ -11,6 +11,7 @@ use App\Models\Propinsi;
 use App\Models\UnitKerja;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Yajra\Datatables\Datatables;
 
@@ -167,7 +168,7 @@ class PegawaiController extends Controller
      */
     public function datatable(Request $request)
     {
-        $pegawai = Pegawai::select('pegawai.id', 'nip', 'nama_depan', 'nama_belakang', 'no_telp', 'email_kantor', 'uk.nama AS nama_unit_kerja')->orderBy('nama_unit_kerja', 'DESC')
+        $pegawai = Pegawai::select('pegawai.id', 'nip', 'nama_depan', 'nama_belakang', DB::raw('CONCAT(nama_depan," " ,nama_belakang) AS nama_lengkap'), 'no_telp', 'email_kantor', 'uk.nama AS nama_unit_kerja')->orderBy('nama_unit_kerja', 'DESC')
             ->join('pegawai_riwayat_jabatan AS prj', 'prj.pegawai_id', '=', 'pegawai.id')
             ->join('jabatan_unit_kerja AS juk', 'juk.id', '=', 'prj.jabatan_unit_kerja_id')
             ->join('hirarki_unit_kerja AS huk', 'huk.id', '=', 'juk.hirarki_unit_kerja_id')
@@ -180,6 +181,9 @@ class PegawaiController extends Controller
         return DataTables::of($pegawai)
             ->addColumn('no', '')
             ->addColumn('aksi', 'pegawai.aksi')
+            ->filterColumn('nama_lengkap', function ($query, $keyword) {
+                $query->whereRaw("CONCAT(nama_depan,' ',nama_belakang) like ?", ["%$keyword%"]);
+            })
             ->rawColumns(['aksi'])
             ->make(true);
     }
