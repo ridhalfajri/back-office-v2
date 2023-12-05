@@ -152,6 +152,8 @@ Route::middleware('auth')->group(function () {
             ]
         ])->parameters(['' => 'id'])->only(['index', 'show']);
     });
+    Route::get('/esselon2/pegawai', [PegawaiController::class, 'index_esselon'])->name('pegawai.index-esselon');
+
     Route::prefix('data')->group(function () {
         Route::post('/penghargaan/get-penghargaan', [PenghargaanController::class, 'get_penghargaan'])->name('gaji.get-penghargaan');
         Route::post('propinsi', [PropinsiController::class, 'getPropinsi'])->name('propinsi.data');
