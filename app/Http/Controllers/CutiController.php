@@ -334,7 +334,7 @@ class CutiController extends Controller
     public function show($id)
     {
         try {
-            $cuti = PegawaiCuti::select('pegawai_cuti.id', 'jenis_cuti.jenis', 'tanggal_awal_cuti', 'tanggal_akhir_cuti', 'lama_cuti', 'alasan', 'alamat_cuti', 'no_telepon_cuti', 'tanggal_approve_al', 'tanggal_approve_akb', 'tanggal_penolakan_cuti', 'pegawai_cuti.keterangan')
+            $cuti = PegawaiCuti::select('pegawai_cuti.id', 'jenis_cuti.jenis', 'keterangan_cuti_p', 'detail_keterangan_cuti_p', 'tanggal_awal_cuti', 'tanggal_akhir_cuti', 'lama_cuti', 'alasan', 'alamat_cuti', 'no_telepon_cuti', 'tanggal_approve_al', 'tanggal_approve_akb', 'tanggal_penolakan_cuti', 'pegawai_cuti.keterangan')
                 ->join('jenis_cuti', 'jenis_cuti.id', '=', 'pegawai_cuti.jenis_cuti_id')
                 ->where('pegawai_cuti.id', $id)
                 ->first();

@@ -50,6 +50,20 @@
                             disabled>
                     </div>
                 </div>
+                @if ($cuti->jenis_cuti_id == 5)
+                    <div class="row">
+                        <div class="form-group col-md-6 col-lg-6">
+                            <label class="form-label">Alasan</label>
+                            <input type="text" class="form-control bg-warning font-weight-bold"
+                                placeholder="Tanggal Cuti" value="{{ $cuti->keterangan_cuti_p }}" disabled>
+                        </div>
+                        <div class="form-group col-md-6 col-lg-6">
+                            <label class="form-label">Yang Bersangkutan</label>
+                            <input type="text" class="form-control bg-warning font-weight-bold" placeholder="Lama Cuti"
+                                value="{{ $cuti->detail_keterangan_cuti_p }}" disabled>
+                        </div>
+                    </div>
+                @endif
                 <div class="form-group">
                     <label class="form-label">No. Telepon yang Bisa Dihubungi Selama Cuti</label>
                     <input type="number" class="form-control" placeholder="No Telp" value="{{ $cuti->no_telepon_cuti }}"
@@ -71,12 +85,14 @@
                         <a href="//{{ $cuti->media_pengajuan_cuti }}" class="btn btn-success">Download</a>
                     </div>
                 @endif
-                <div class="form-group">
-                    <label class="form-label">Acc Atasan Langsung</label>
-                    <input type="text" class="form-control" placeholder="Atasan Langsung"
-                        value="{{ $cuti->atasan_langsung->nama }}" disabled>
-                    <small class="text-danger" id="error_alamat_cuti"></small>
-                </div>
+                @if ($cuti->status_pengajuan_cuti_id != 1)
+                    <div class="form-group">
+                        <label class="form-label">Acc Atasan Langsung</label>
+                        <input type="text" class="form-control" placeholder="Atasan Langsung"
+                            value="{{ $cuti->atasan_langsung->nama }}" disabled>
+                        <small class="text-danger" id="error_alamat_cuti"></small>
+                    </div>
+                @endif
             </div>
             <div class="card-header">
                 <h3 class="card-title">Saldo Cuti</h3>
