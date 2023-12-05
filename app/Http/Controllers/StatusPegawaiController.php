@@ -28,7 +28,8 @@ class StatusPegawaiController extends Controller
      
     public function datatable(StatusPegawai $statusPegawai)
     {        
-        $data = StatusPegawai::all();
+        $data = StatusPegawai::select('*')
+        ->orderBy('id','asc');
 
         //dd($data);
 

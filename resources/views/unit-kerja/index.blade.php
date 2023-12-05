@@ -9,7 +9,7 @@
     href="{{ asset('assets/plugins/datatable/fixedeader/dataTables.fixedheader.bootstrap4.min.css') }}">
 
     {{-- custom css datatable --}}
-<link rel="stylesheet" href="{{ asset('assets/plugins/datatable/custom.css') }}">
+{{-- <link rel="stylesheet" href="{{ asset('assets/plugins/datatable/custom.css') }}"> --}}
 <link rel="stylesheet" href="{{ asset('assets/plugins/sweetalert/sweetalert.css') }}">
 <!-- Toastr -->
 <link rel="stylesheet" href="{{ asset('assets/plugins/toastr/toastr.css') }}">
@@ -40,22 +40,22 @@
                     class="table table-hover js-basic-example dataTable table_custom spacing5">
                     <thead>
                         <tr>
-                            <th style="width: 5%">No</th>
-                            <th>Unit Kerja</th>
-                            <th>Jenis Unit Kerja</th>
-                            <th>Singkatan</th>
-                            <th>Keterangan</th>
-                            <th>Aksi</th>
+                            <th class="font-weight-bold text-dark" style="width: 5%">No</th>
+                            <th class="font-weight-bold text-dark">Unit Kerja</th>
+                            <th class="font-weight-bold text-dark">Jenis<br>Unit Kerja</th>
+                            <th class="font-weight-bold text-dark">Singkatan</th>
+                            <th class="font-weight-bold text-dark">Keterangan</th>
+                            <th class="font-weight-bold text-dark">Aksi</th>
                         </tr>
                     </thead>
                     <tfoot>
                         <tr>
-                            <th>No</th>
-                            <th>Unit Kerja</th>
-                            <th>Jenis Unit Kerja</th>
-                            <th>Singkatan</th>
-                            <th>Keterangan</th>
-                            <th>Aksi</th>
+                            <th class="font-weight-bold text-dark" style="width: 5%">No</th>
+                            <th class="font-weight-bold text-dark">Unit Kerja</th>
+                            <th class="font-weight-bold text-dark">Jenis<br>Unit Kerja</th>
+                            <th class="font-weight-bold text-dark">Singkatan</th>
+                            <th class="font-weight-bold text-dark">Keterangan</th>
+                            <th class="font-weight-bold text-dark">Aksi</th>
                         </tr>
                     </tfoot>
                     <tbody>

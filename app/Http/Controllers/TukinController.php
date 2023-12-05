@@ -28,7 +28,8 @@ class TukinController extends Controller
      
     public function datatable(Tukin $tukin)
     {        
-        $data = Tukin::all();
+        $data = Tukin::select('*')
+        ->orderBy('grade','asc');
 
         //dd($data);
 

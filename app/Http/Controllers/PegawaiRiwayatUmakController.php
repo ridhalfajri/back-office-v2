@@ -39,45 +39,39 @@ class PegawaiRiwayatUmakController extends Controller
         if('' != $bulan && '' != $tahun){ 
             $data = PegawaiRiwayatUmak::select('p.nama_depan', 'p.nama_belakang', 'p.nip', 'um.nominal',
             'pegawai_riwayat_umak.jumlah_hari_masuk', 'pegawai_riwayat_umak.total',
-            'pegawai_riwayat_umak.bulan', 'pegawai_riwayat_umak.tahun')
+            'pegawai_riwayat_umak.bulan', 'pegawai_riwayat_umak.tahun', 'uk.nama as unit_kerja')
             ->join('pegawai as p','p.id','=','pegawai_riwayat_umak.pegawai_id')
-            // ->leftJoin('status_pegawai as sp', function ($join) {
-            //     $join->on('sp.id','=','p.status_pegawai_id')
-            //         ->whereIn('sp.nama', array('PNS', 'CPNS', 'PPPK'))
-            //         ;
-            // })
+            ->join('pegawai_riwayat_jabatan as prj', 'prj.pegawai_id', '=', 'pegawai_riwayat_umak.pegawai_id')
+            ->join('jabatan_unit_kerja as juk', 'juk.id', '=', 'prj.jabatan_unit_kerja_id')
+            ->join('hirarki_unit_kerja as huk', 'huk.id', '=', 'juk.hirarki_unit_kerja_id')
+            ->leftJoin('unit_kerja as uk', 'uk.id', '=', 'huk.child_unit_kerja_id')
             ->join('pegawai_riwayat_golongan as prg', function ($join) {
                 $join->on('prg.pegawai_id','=','p.id')
                     ->where('prg.is_active','=',1)
                     ;
             })
             ->leftJoin('uang_makan as um','um.golongan_id','=','prg.golongan_id')
+            //
             ->where('pegawai_riwayat_umak.bulan', '=', $bulan)
             ->where('pegawai_riwayat_umak.tahun', '=', $tahun)
-            ->orderBy('um.nominal','desc');
-        } else {
-            $data = PegawaiRiwayatUmak::select('p.nama_depan', 'p.nama_belakang', 'p.nip', 'um.nominal',
-            'pegawai_riwayat_umak.jumlah_hari_masuk', 'pegawai_riwayat_umak.total',
-            'pegawai_riwayat_umak.bulan', 'pegawai_riwayat_umak.tahun')
-            ->join('pegawai as p','p.id','=','pegawai_riwayat_umak.pegawai_id')
-            // ->leftJoin('status_pegawai as sp', function ($join) {
-            //     $join->on('sp.id','=','p.status_pegawai_id')
-            //         ->whereIn('sp.nama', array('PNS', 'CPNS', 'PPPK'))
-            //         ;
-            // })
-            ->join('pegawai_riwayat_golongan as prg', function ($join) {
-                $join->on('prg.pegawai_id','=','p.id')
-                    ->where('prg.is_active','=',1)
-                    ;
-            })
-            ->leftJoin('uang_makan as um','um.golongan_id','=','prg.golongan_id')
-            ->where('pegawai_riwayat_umak.bulan', '=', Carbon::now()->format('m'))
-            ->where('pegawai_riwayat_umak.tahun', '=', Carbon::now()->format('Y'))
-            ->orderBy('um.nominal','desc');
+            ->orderBy('uk.id','asc');
+
+            // if($bulan == '12'){
+            //     $data->where(function($query) use ($bulan) {
+            //         $query->where('pegawai_riwayat_umak.bulan', '=', $bulan)
+            //                 ->orWhere('pegawai_riwayat_umak.bulan', '=', '13')
+            //             ;
+            //     });
+            // }else {
+            //     $data->where('pegawai_riwayat_umak.bulan', '=', $bulan);
+            // }
         }
 
         return Datatables::of($data)
             ->addColumn('no', '')
+            ->addColumn('jumlah_hari', function ($data) {
+                return $data->jumlah_hari_masuk.' hari';
+            })
             ->addColumn('nama_pegawai', function ($data) {
                 return $data->nama_depan.' '.$data->nama_belakang;
             })
@@ -119,29 +113,15 @@ class PegawaiRiwayatUmakController extends Controller
                     case '12':
                         return 'Des - ' . $data->tahun;
                         break;
+                    // case '13':
+                    //     return 'Des (2) - ' . $data->tahun;
+                    //     break;
                 }
             })
 
             ->make(true);
     }
 
-
-    /**
-    * Show the form for creating a new resource.
-    *
-    * @return \Illuminate\Http\Response
-    */
-    // public function create()
-    // {            
-    //     $title = 'Buat Uang Makan';
-
-    //     $golongan = DB::table('golongan')
-    //     ->select('golongan.*')
-    //     ->get();
-
-    //     return view('uang-makan.create', compact('title', 'golongan'));
-    // }
-        
     /**
     * Store a newly created resource in storage.
     *
@@ -221,7 +201,7 @@ class PegawaiRiwayatUmakController extends Controller
                     ;
             })
             //untuk test, data pegawai_riwayat_golongan harus ada!
-            //->where('p.id','=',498)
+            ->where('p.id','=',498)
             ->get();
 
             //cek list ada atau tidak
@@ -278,7 +258,7 @@ class PegawaiRiwayatUmakController extends Controller
                     $cekDataPru = DB::table('pegawai_riwayat_umak')
                     ->select('*')
                     ->where('pegawai_id','=',$pegawaiId)
-                    ->where('bulan','=',$bulanCalc)
+                    ->where('bulan','=',$bulan)
                     ->where('tahun','=',$tahun)
                     ->get();
 
@@ -286,7 +266,7 @@ class PegawaiRiwayatUmakController extends Controller
                         //update
                         DB::table('pegawai_riwayat_umak')
                         ->where('pegawai_id', $pegawaiId)
-                        ->where('bulan', $bulanCalc)
+                        ->where('bulan', $bulan)
                         ->where('tahun', $tahun)
                         ->update([
                             'uang_makan_id' => $uangMakanId,
@@ -301,11 +281,107 @@ class PegawaiRiwayatUmakController extends Controller
                             'uang_makan_id' => $uangMakanId,
                             'jumlah_hari_masuk' => $jumlahHariMasuk,
                             'total' => $totalUangMakan,
-                            'bulan' => $bulanCalc,
+                            'bulan' => $bulan,
                             'tahun' => $tahun,
                             'created_at' => now(),
                         ]);
                     }
+
+                    //jika bulan desember uang makan ke-2
+                    // if($bulan == '12'){
+                    //     //hitung jumlah hari kerja di bulan desember
+                    //     // Tentukan bulan dan tahun yang ingin dihitung
+                    //     $month = $bulan; // Ganti dengan bulan yang diinginkan
+                    //     $year = $tahun; // Ganti dengan tahun yang diinginkan
+
+                    //     // Buat objek Carbon untuk tanggal awal dan akhir bulan
+                    //     $startDate = Carbon::createFromDate($year, $month, 1);
+                    //     $endDate = Carbon::createFromDate($year, $month, $startDate->daysInMonth);
+
+                    //     // Inisialisasi jumlah hari kerja
+                    //     $workingDays = 0;
+
+                    //     // Loop melalui setiap tanggal dalam rentang tanggal
+                    //     while ($startDate <= $endDate) {
+                    //         // Periksa apakah hari ini hari kerja (Senin - Jumat)
+                    //         if ($startDate->isWeekday()) {
+                    //             //cek hari libur nasional/cuti bersama atau tidak
+                    //             //query
+                    //             $cekLibur = DB::table('hari_libur')
+                    //             ->select('*')
+                    //             ->where('tanggal','=',$startDate->format('Y-m-d'))
+                    //             ->where('is_libur','=',1)
+                    //             ->get();
+                                
+                    //             if($cekLibur->isEmpty()){
+                    //                 $workingDays++;
+                    //             }
+                    //         }
+
+                    //         // Tambahkan 1 hari ke tanggal
+                    //         $startDate->addDay();
+                    //     }
+                    //     //
+                    //     $jumlahHariKerja = $workingDays;
+                    //     //
+                    //     $pegawaiId = $dataPegawai->id;
+
+                    //     $umakPegawai = DB::table('uang_makan as um')
+                    //     ->select('um.id', 'um.nominal')
+                    //     ->join('pegawai_riwayat_golongan as prg', function ($join) use ($pegawaiId) {
+                    //         $join->on('prg.golongan_id','=','um.golongan_id')
+                    //             ->where('prg.is_active','=',1)
+                    //             ->where('prg.pegawai_id','=',$pegawaiId)
+                    //             ;
+                    //     })
+                    //     ->first();
+
+                    //     if(null != $umakPegawai){
+                    //         //
+                    //         $uangMakanId = $umakPegawai->id;
+                    //         $nominalUangMakan = $umakPegawai->nominal;
+
+                    //         //
+                    //         $totalUangMakan = $nominalUangMakan*$jumlahHariKerja;
+                    //     } else {
+                    //         session()->flash('message', 'Ada pegawai yang datanya belum ada di tabel pegawai_riwayat_golongan!');
+
+                    //         return redirect()->back();
+                    //     }
+
+                    //     //cek ke tabel pegawai_riwayat_umak ada data tidak
+                    //     $cekDataPru = DB::table('pegawai_riwayat_umak')
+                    //     ->select('*')
+                    //     ->where('pegawai_id','=',$pegawaiId)
+                    //     ->where('bulan','=','13')
+                    //     ->where('tahun','=',$tahun)
+                    //     ->get();
+
+                    //     if($cekDataPru->isNotEmpty()){
+                    //         //update
+                    //         DB::table('pegawai_riwayat_umak')
+                    //         ->where('pegawai_id', $pegawaiId)
+                    //         ->where('bulan', '13')
+                    //         ->where('tahun', $tahun)
+                    //         ->update([
+                    //             'uang_makan_id' => $uangMakanId,
+                    //             'jumlah_hari_masuk' => $jumlahHariKerja,
+                    //             'total' => $totalUangMakan,
+                    //             'updated_at' => now(),
+                    //         ]);
+                    //     } else {
+                    //         //insert
+                    //         DB::table('pegawai_riwayat_umak')->insert([
+                    //             'pegawai_id' => $pegawaiId,
+                    //             'uang_makan_id' => $uangMakanId,
+                    //             'jumlah_hari_masuk' => $jumlahHariKerja,
+                    //             'total' => $totalUangMakan,
+                    //             'bulan' => '13',
+                    //             'tahun' => $tahun,
+                    //             'created_at' => now(),
+                    //         ]);
+                    //     }
+                    // }
                 }
             } else {
                 session()->flash('message', 'Data pegawai tidak ada untuk memproses kalkulasi uang makan!');
@@ -335,127 +411,4 @@ class PegawaiRiwayatUmakController extends Controller
         
     }
 
-    /**
-    * Display the specified resource.
-    *
-    * @param  \App\Models\Models\BidangProfisiensi  $bidangProfisiensi
-    * @return \Illuminate\Http\Response
-    */
-    // public function show(UangMakan $uangMakan)
-    // {
-    //     //
-    // }
-
-    /**
-    * Show the form for editing the specified resource.
-    *
-    * @param  \App\Models\Models\BidangProfisiensi  $bidangProfisiensi
-    * @return \Illuminate\Http\Response
-    */
-    // public function edit(UangMakan $uangMakan)
-    // {               
-    //     $title = 'Ubah Uang Makan';
-
-    //     $umak = $uangMakan;
-
-    //     $golongan = DB::table('golongan')
-    //     ->select('golongan.*')
-    //     ->get();
-
-    //     return view('uang-makan.edit', compact('title','umak', 'golongan'));
-    // }
-
-    /**
-    * Update the specified resource in storage.
-    *
-    * @param  \Illuminate\Http\Request  $request
-    * @param  \App\Models\Models\BidangProfisiensi  $bidangProfisiensi
-    * @return \Illuminate\Http\Response
-    */
-    // public function update(Request $request, UangMakan $uangMakan)
-    // {  
-    //     DB::beginTransaction();
-
-    //     $this->validate($request, [
-    //         'golongan_id' => ['required', 'integer', 'min:1', 'max:999'],
-    //         'nominal' => ['required', 'integer', 'min:1', 'max:999999999999999']
-    //     ],
-    //     [
-    //         'golongan_id.required'=>'data golongan harus diisi!',
-    //         'golongan_id.integer'=>'data golongan harus bilangan bulat positif!',
-    //         'nominal.required'=>'data nominal harus diisi!',
-    //         'nominal.integer'=>'data nominal harus bilangan bulat positif!',
-    //     ]);
-
-    //     try {
-    //         //validasi golongan
-    //         $cekDataExist = UangMakan::where('golongan_id',$request->golongan_id)
-    //             ->where('id','!=',$uangMakan->id)
-    //             ->get();
-
-    //         if($cekDataExist->isNotEmpty()){
-    //             session()->flash('message', 'Data golongan sudah ada!');
-
-    //             return redirect()->back();
-    //         } else {
-    //             $uangMakan->golongan_id = $request->golongan_id;
-    //             $uangMakan->nominal = $request->nominal;
-                
-    //             $uangMakan->update();
-    //             DB::commit();
-    //             Log::info('Data berhasil di-update di method update pada UangMakanController!');
-
-    //             return redirect()->route('uang-makan.index')
-    //                 ->with('success', 'Data Uang Makan berhasil diupdate');
-    //         }    
-    //     } catch (\Exception $e) {
-    //         //throw $th;
-    //         DB::rollback();
-    //         Log::error($e->getMessage(), ['Data gagal di-update di method update pada UangMakanController!']);
-
-    //         session()->flash('message', 'Error saat proses data!');
-
-    //         // return redirect()->route('uang-makan.create');
-    //         return redirect()->back();
-    //     }  
-    // }
-
-    /**
-    * Remove the specified resource from storage.
-    *
-    * @param  \App\Models\Models\BidangProfisiensi  $bidangProfisiensi
-    * @return \Illuminate\Http\Response
-    */        
-    // public function destroy(UangMakan $uangMakan)
-    // {           
-    //     DB::beginTransaction();
-    //     try {
-    //         //$profisiensiMSampelUp->deleted_by = Auth::user()->username;;
-    //         $uangMakan->delete();
-
-    //         $response['status'] = [
-    //             'code' => 200,
-    //             'message' => 'Data Uang Makan berhasil di hapus!',
-    //             'error' => false,
-    //             'error_message' => ''
-    //         ];
-
-    //         DB::commit();
-    //         Log::info('Data berhasil di-delete di method destroy pada UangMakanController!');
-
-    //         return response()->json($response, 200);
-    //     } catch (\Exception $e) {
-    //         $response['status'] = [
-    //             'code' => 200,
-    //             'message' => 'Data Uang Makan gagal dibatalkan!',
-    //             'error' => true,
-    //             'error_message' => 'Data Uang Makan gagal dibatalkan!'
-    //         ];
-
-    //         Log::error($e->getMessage(), ['Data gagal di-hapus di method destroy pada UangMakanController!']);
-    //         DB::rollback();
-
-    //         return response()->json($response, 200);
-    //     }
-    // }
 }

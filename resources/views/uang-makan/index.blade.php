@@ -9,7 +9,7 @@
     href="{{ asset('assets/plugins/datatable/fixedeader/dataTables.fixedheader.bootstrap4.min.css') }}">
 
     {{-- custom css datatable --}}
-<link rel="stylesheet" href="{{ asset('assets/plugins/datatable/custom.css') }}">
+{{-- <link rel="stylesheet" href="{{ asset('assets/plugins/datatable/custom.css') }}"> --}}
 <link rel="stylesheet" href="{{ asset('assets/plugins/sweetalert/sweetalert.css') }}">
 <!-- Toastr -->
 <link rel="stylesheet" href="{{ asset('assets/plugins/toastr/toastr.css') }}">
@@ -40,18 +40,18 @@
                     class="table table-hover js-basic-example dataTable table_custom spacing5">
                     <thead>
                         <tr>
-                            <th style="width: 5%">No</th>
-                            <th>Golongan</th>
-                            <th>Nominal</th>
-                            <th>Aksi</th>
+                            <th class="font-weight-bold text-dark" style="width: 5%">No</th>
+                            <th class="font-weight-bold text-dark">Golongan</th>
+                            <th class="font-weight-bold text-dark">Nominal</th>
+                            <th class="font-weight-bold text-dark">Aksi</th>
                         </tr>
                     </thead>
                     <tfoot>
                         <tr>
-                            <th>No</th>
-                            <th>Golongan</th>
-                            <th>Nominal</th>
-                            <th>Aksi</th>
+                            <th class="font-weight-bold text-dark">No</th>
+                            <th class="font-weight-bold text-dark">Golongan</th>
+                            <th class="font-weight-bold text-dark">Nominal</th>
+                            <th class="font-weight-bold text-dark">Aksi</th>
                         </tr>
                     </tfoot>
                     <tbody>

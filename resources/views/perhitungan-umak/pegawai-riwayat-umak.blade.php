@@ -9,7 +9,7 @@
     href="{{ asset('assets/plugins/datatable/fixedeader/dataTables.fixedheader.bootstrap4.min.css') }}">
 
     {{-- custom css datatable --}}
-<link rel="stylesheet" href="{{ asset('assets/plugins/datatable/custom.css') }}">
+{{-- <link rel="stylesheet" href="{{ asset('assets/plugins/datatable/custom.css') }}"> --}}
 <link rel="stylesheet" href="{{ asset('assets/plugins/sweetalert/sweetalert.css') }}">
 <!-- Toastr -->
 <link rel="stylesheet" href="{{ asset('assets/plugins/toastr/toastr.css') }}">
@@ -32,13 +32,13 @@
         <div class="col-lg-12">
             <div class="card">
                 <div class="card-header">
-                    <h4 class="card-title">
+                    <div class="card-body">
                         @if ($errors->any())
-                        <div class="alert alert-danger" role="alert">
-                            @foreach ($errors->all() as $error)
-                                <p>{{ $error }}</p>
-                            @endforeach
-                        </div>
+                            <div class="alert alert-danger" role="alert">
+                                @foreach ($errors->all() as $error)
+                                    <p>{{ $error }}</p>
+                                @endforeach
+                            </div>
                         @endif
 
                         @if (session('message'))
@@ -53,10 +53,11 @@
                             </div>
                         @endif
 
-                        <form method="post" action="{{ route('pegawai-riwayat-umak.kalkulasi-umak') }}"  accept-charset="utf-8">
+                        <form method="post" action="{{ route('pegawai-riwayat-umak.kalkulasi-umak') }}"
+                            enctype="multipart/form-data" accept-charset="utf-8">
                             @csrf
                             <div class="row clearfix">
-                                <div class="col-lg-6 col-md-6 col-sm-12">
+                                <div class="col-12 col-lg-6 col-md-6">
                                     <div class="form-group @error('bulan')has-error @enderror">
                                         <label class="form-label">Bulan</label>
                                         <select id="bulan" name="bulan" class="form-control">
@@ -95,7 +96,7 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-lg-6 col-md-6 col-sm-12">
+                                <div class="col-12 col-lg-6 col-md-6">
                                     <div class="form-group @error('tahun')has-error @enderror">
                                         <label class="form-label">Tahun</label>
                                         <select id="tahun" name="tahun" class="form-control">
@@ -113,35 +114,37 @@
                                 </div>
                             </div>
 
-                            @if (Carbon\Carbon::now()->format('d') == '07' and Carbon\Carbon::now()->format('m') != '01')
+                            @if (Carbon\Carbon::now()->format('d') == '07')
                                 <button type="submit" class="btn btn-primary btn-sm waves-effect waves-light">Kalkulasi Seluruh Pegawai</button>
                             @endif
                         </form>
-                    </h4>
+                    </div>
                 </div>
                 <div class="card-body">
                     <table id="tbl-data"
                     class="table table-hover js-basic-example dataTable table_custom spacing5">
                     <thead>
                         <tr>
-                            <th style="width: 5%">No</th>
-                            <th>Nama</th>
-                            <th>NIP</th>
-                            <th>Uang Makan Harian</th>
-                            <th>Jumlah Hari Masuk</th>
-                            <th>Total</th>
-                            <th>Periode</th>
+                            <th class="font-weight-bold text-dark" style="width: 5%">No</th>
+                            <th class="font-weight-bold text-dark">Nama Pegawai</th>
+                            <th class="font-weight-bold text-dark">NIP</th>
+                            <th class="font-weight-bold text-dark">Unit Kerja</th>
+                            <th class="font-weight-bold text-dark">Uang Makan<br>Harian</th>
+                            <th class="font-weight-bold text-dark">Jumlah Hari<br>Masuk</th>
+                            <th class="font-weight-bold text-dark">Total</th>
+                            <th class="font-weight-bold text-dark">Periode</th>
                         </tr>
                     </thead>
                     <tfoot>
                         <tr>
-                            <th style="width: 5%">No</th>
-                            <th>Nama</th>
-                            <th>NIP</th>
-                            <th>Uang Makan Harian</th>
-                            <th>Jumlah Hari Masuk</th>
-                            <th>Total</th>
-                            <th>Periode</th>
+                            <th class="font-weight-bold text-dark" style="width: 5%">No</th>
+                            <th class="font-weight-bold text-dark">Nama Pegawai</th>
+                            <th class="font-weight-bold text-dark">NIP</th>
+                            <th class="font-weight-bold text-dark">Unit Kerja</th>
+                            <th class="font-weight-bold text-dark">Uang Makan<br>Harian</th>
+                            <th class="font-weight-bold text-dark">Jumlah Hari<br>Masuk</th>
+                            <th class="font-weight-bold text-dark">Total</th>
+                            <th class="font-weight-bold text-dark">Periode</th>
                         </tr>
                     </tfoot>
                     <tbody>
@@ -217,19 +220,24 @@
                         class: 'text-center'
                     },
                     {
+                        data: 'unit_kerja',
+                        name: 'uk.nama',
+                        class: 'text-center'
+                    },
+                    {
                         data: 'nominal',
                         name: 'um.nominal',
                         class: 'text-center',
                         render: $.fn.dataTable.render.number('.', ',', 2, 'Rp')
                     },
                     {
-                        data: 'jumlah_hari_masuk',
-                        name: 'pru.jumlah_hari_masuk',
+                        data: 'jumlah_hari',
+                        name: 'jumlah_hari',
                         class: 'text-center'
                     },
                     {
                         data: 'total',
-                        name: 'pru.total',
+                        name: 'total',
                         class: 'text-center',
                         render: $.fn.dataTable.render.number('.', ',', 2, 'Rp')
                     },
