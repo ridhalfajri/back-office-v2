@@ -108,6 +108,15 @@ class CutiController extends Controller
         if ($validate->fails()) {
             return response()->json(['errors' => $validate->errors()]);
         } else {
+            if ($request->jenis_cuti_id == 5) {
+                if ($request->keterangan_cuti_p == null) {
+                    return response()->json(['errors' => ['keterangan_cuti_p' => 'alasan tidak boleh kosong']]);
+                } else {
+                    if (($request->keterangan_cuti_p == 'Keluarga Sakit Keras' || $request->keterangan_cuti_p == 'Keluarga Meninggal Dunia') && $request->detail_keterangan_cuti_p == null) {
+                        return response()->json(['errors' => ['detail_keterangan_cuti_p' => 'alasan tidak boleh kosong']]);
+                    }
+                }
+            }
             $saldo = null;
             $split_tanggal = explode(" - ", $request->tanggal_cuti);
             $tanggal_mulai = $split_tanggal[0];
@@ -125,6 +134,10 @@ class CutiController extends Controller
             $cuti->alasan = $request->alasan;
             $cuti->alamat_cuti = $request->alamat_cuti;
             $cuti->status_pengajuan_cuti_id = 1;
+            if ($request->jenis_cuti_id == 5) {
+                $cuti->keterangan_cuti_p = $request->keterangan_cuti_p;
+                $cuti->detail_keterangan_cuti_p = $request->detail_keterangan_cuti_p;
+            }
             try {
                 DB::transaction(function () use ($cuti, $saldo, $request) {
                     if ($saldo != null) {
@@ -187,6 +200,15 @@ class CutiController extends Controller
         if ($validate->fails()) {
             return response()->json(['errors' => $validate->errors()]);
         } else {
+            if ($request->jenis_cuti_id == 5) {
+                if ($request->keterangan_cuti_p == null) {
+                    return response()->json(['errors' => ['keterangan_cuti_p' => 'alasan tidak boleh kosong']]);
+                } else {
+                    if (($request->keterangan_cuti_p == 'Keluarga Sakit Keras' || $request->keterangan_cuti_p == 'Keluarga Meninggal Dunia') && $request->detail_keterangan_cuti_p == null) {
+                        return response()->json(['errors' => ['detail_keterangan_cuti_p' => 'alasan tidak boleh kosong']]);
+                    }
+                }
+            }
             $update_saldo  = null;
             $restore_saldo = null;
             $cuti = PegawaiCuti::where('id', $id)->first();
@@ -206,6 +228,13 @@ class CutiController extends Controller
             $cuti->alasan = $request->alasan;
             $cuti->alamat_cuti = $request->alamat_cuti;
             $cuti->status_pengajuan_cuti_id = 1;
+            if ($request->jenis_cuti_id == 5) {
+                $cuti->keterangan_cuti_p = $request->keterangan_cuti_p;
+                $cuti->detail_keterangan_cuti_p = $request->detail_keterangan_cuti_p;
+            } else {
+                $cuti->keterangan_cuti_p = null;
+                $cuti->detail_keterangan_cuti_p = null;
+            }
             try {
                 DB::transaction(function () use ($cuti, $request, $update_saldo, $restore_saldo) {
                     if ($restore_saldo != null) {
@@ -630,7 +659,7 @@ class CutiController extends Controller
                 break;
             case 'Tolak':
                 $cuti->kabiro_sdmoh_id = auth()->user()->pegawai_id;
-                $cuti->tanggal_approve_akb = Carbon::now()->format('Y-m-d');
+                $cuti->tanggal_penolakan_cuti = Carbon::now()->format('Y-m-d');
                 $cuti->status_pengajuan_cuti_id = 4;
                 break;
         }
