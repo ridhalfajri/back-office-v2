@@ -320,6 +320,10 @@
                 table.ajax.reload();
             });
         
+            $('#unitKerja').change(function(e) {
+                e.preventDefault();
+                table.ajax.reload();
+            });
     })
 
     

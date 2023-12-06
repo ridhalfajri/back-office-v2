@@ -60,8 +60,11 @@ class PegawaiRiwayatUmakController extends Controller
             //
             ->where('pegawai_riwayat_umak.bulan', '=', $bulan)
             ->where('pegawai_riwayat_umak.tahun', '=', $tahun)
-            ->where('uk.id', '=', $unitKerja)
             ->orderBy('uk.id','asc');
+
+            if(null != $unitKerja || '' != $unitKerja){
+                $data->where('uk.id', '=', $unitKerja);
+            }
 
             // if($bulan == '12'){
             //     $data->where(function($query) use ($bulan) {
