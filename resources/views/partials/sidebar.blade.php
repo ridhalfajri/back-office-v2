@@ -103,6 +103,11 @@
             <li class="{{ request()->segment(2) == 'pre-jam-kerja' ? 'active' : '' }}">
                 <a href="{{ route('pre-jam-kerja.index') }}"><i class="fa fa-cogs"></i>Pengaturan Jam Kerja</span></a>
             </li>
+
+            {{-- <li class="{{ request()->segment(2) == 'hari-libur' ? 'active' : '' }}">
+                <a href="{{ route('hari-libur.index') }}"><i class="fa fa-cogs"></i>Daftar Hari Libur</span></a>
+            </li> --}}
+
             <li><a href="{{ route('jabatan-unit-kerja.index') }}"><i class="fa fa-snowflake-o"></i><span>Jabatan Unit
                         Kerja</span></a></li>
             <li class="{{ Request::is('master*') ? 'active' : '' }}">

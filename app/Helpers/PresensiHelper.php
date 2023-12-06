@@ -216,7 +216,7 @@ class PresensiHelper {
                                     $presensi->save();
                                     self::UpdateAdms($row->id);
 
-                                  $result = self::fncCalculatePresensi($presensi);
+                                    self::fncCalculatePresensi($presensi);
 
                                 } catch (\Exception $e) {
                                     // Handle any exceptions that may occur during the update
@@ -475,7 +475,6 @@ class PresensiHelper {
                         $presensi->save();
                     }
 
-
                 }
 
                 return true;
@@ -485,6 +484,17 @@ class PresensiHelper {
             dd($th->getMessage());
             return false;
         }
+    }
+
+
+    //Jalankan per jam 11 malam atau manual
+    public static function fnc_AutoCalculateRoutine(){
+        //disini check pegawai aktif
+        // 1 auto calculate presensi yang tidak melakukan jam pulang / jam pulangnya kosong
+
+        // 2. masukkan ke presensi jika tidak melakukan presensi dengan jam masuk dan jam pulang 00:00:00 dan keterlambatan 7,30
+
+
     }
 
     //* KALKULASI POTONGAN TUNJANGAN KINERJA

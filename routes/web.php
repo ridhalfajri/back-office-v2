@@ -8,6 +8,7 @@ use App\Http\Controllers\KotaController;
 use App\Http\Controllers\Pegawai\PegawaiAlamatController;
 use App\Http\Controllers\Pegawai\PegawaiController;
 use App\Http\Controllers\GajiController;
+use App\Http\Controllers\HariLiburController;
 use App\Http\Controllers\JabatanTukinController;
 use App\Http\Controllers\JabatanUnitKerjaController;
 use App\Http\Controllers\LdapController;
@@ -109,8 +110,12 @@ Route::middleware('auth')->group(function () {
          Route::post('/pre-ijin/datatable', [PreIjinController::class, 'datatable'])->name('pre-ijin.datatable');
          Route::post('/pre-ijin/datatablepersetujuan', [PreIjinController::class, 'datatablepersetujuan'])->name('pre-ijin.datatablepersetujuan');
 
+         //Pengaturan jam kerja
          Route::resource('/pre-jam-kerja', PreJamKerjaController::class);
          Route::post('/pre-jam-kerja/datatable', [PreJamKerjaController::class, 'datatable'])->name('pre-jam-kerja.datatable');
+
+         Route::resource('/hari-libur', HariLiburController::class);
+         Route::post('/hari-libur/datatable', [HariLiburController::class, 'datatable'])->name('hari-libur.datatable');
 
          //Presensi
          Route::resource('/presensi-pegawai', PresensiPegawaiController::class);
