@@ -26,7 +26,8 @@ class PegawaiController extends Controller
         $this->authorize('kabiro', $kabiro);
         $unit_kerja = UnitKerja::select('id', 'nama')->limit(22)->get();
         $title = "Pegawai";
-        return view('pegawai.index', compact('title', 'unit_kerja'));
+        $esselon = false;
+        return view('pegawai.index', compact('title', 'unit_kerja', 'esselon'));
     }
     public function index_esselon()
     {
@@ -47,7 +48,9 @@ class PegawaiController extends Controller
             }
         }
         $title = "Pegawai";
-        return view('pegawai.index', compact('title', 'unit_kerja'));
+        $esselon = true;
+
+        return view('pegawai.index', compact('title', 'unit_kerja', 'esselon'));
     }
 
     /**

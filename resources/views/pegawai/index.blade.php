@@ -28,7 +28,9 @@
                                             <label class="form-label">Unit Kerja</label>
                                             <select id="unit_kerja" name="unit_kerja"
                                                 class="select-filter multiselect multiselect-custom">
-                                                <option value="">Semua</option>
+                                                @if (!$esselon)
+                                                    <option value="">Semua</option>
+                                                @endif
                                                 @foreach ($unit_kerja as $item)
                                                     <option value="{{ $item['id'] }}">{{ $item['nama'] }}</option>
                                                 @endforeach
