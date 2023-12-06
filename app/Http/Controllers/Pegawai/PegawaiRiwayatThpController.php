@@ -67,9 +67,12 @@ class PegawaiRiwayatThpController extends Controller
     {
         $pegawai = PegawaiRiwayatThp::select('pegawai_riwayat_thp.*', 'pegawai_riwayat_thp.id AS id_thp', 'pegawai_riwayat_umak.total', 'pegawai_riwayat_umak.id AS id_umak')
             ->leftJoin('pegawai_riwayat_umak', function ($join) {
-                $join->on(DB::raw('pegawai_riwayat_umak.bulan COLLATE utf8mb4_unicode_ci'), '=', DB::raw('pegawai_riwayat_thp.bulan COLLATE utf8mb4_unicode_ci'))
-                    ->where(DB::raw('pegawai_riwayat_umak.tahun COLLATE utf8mb4_unicode_ci'), '=', DB::raw('pegawai_riwayat_thp.tahun COLLATE utf8mb4_unicode_ci'))
-                    ->where(DB::raw('pegawai_riwayat_umak.pegawai_id COLLATE utf8mb4_unicode_ci'), '=', DB::raw('pegawai_riwayat_thp.pegawai_id COLLATE utf8mb4_unicode_ci'));
+                // $join->on(DB::raw('pegawai_riwayat_umak.bulan COLLATE utf8mb4_unicode_ci'), '=', DB::raw('pegawai_riwayat_thp.bulan COLLATE utf8mb4_unicode_ci'))
+                //     ->where(DB::raw('pegawai_riwayat_umak.tahun COLLATE utf8mb4_unicode_ci'), '=', DB::raw('pegawai_riwayat_thp.tahun COLLATE utf8mb4_unicode_ci'))
+                //     ->where(DB::raw('pegawai_riwayat_umak.pegawai_id COLLATE utf8mb4_unicode_ci'), '=', DB::raw('pegawai_riwayat_thp.pegawai_id COLLATE utf8mb4_unicode_ci'));
+                $join->on('pegawai_riwayat_umak.bulan', '=', 'pegawai_riwayat_thp.bulan');
+                $join->on('pegawai_riwayat_umak.tahun', '=', 'pegawai_riwayat_thp.tahun');
+                $join->on('pegawai_riwayat_umak.pegawai_id', '=', 'pegawai_riwayat_thp.pegawai_id');
             })->where('pegawai_riwayat_thp.pegawai_id', $request->pegawai_id)
             ->where('pegawai_riwayat_thp.bulan', $request->bulan)
             ->where('pegawai_riwayat_thp.tahun', $request->tahun)->get();

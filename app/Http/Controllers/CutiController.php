@@ -531,7 +531,7 @@ class CutiController extends Controller
         }
         $restore_saldo = null;
 
-        if ($cuti->jenis_cuti_id == 1) {
+        if ($cuti->jenis_cuti_id == 1 && $request->kode == 'Tolak') {
             $restore_saldo = $this->restore_saldo_cuti($cuti->pegawai_id, $cuti->lama_cuti);
         }
         switch ($request->kode) {
@@ -648,7 +648,7 @@ class CutiController extends Controller
             return response()->json(['errors' => ['data' => 'terjadi kesalahan harap lakukan refresh halaman']]);
         }
         $restore_saldo = null;
-        if ($cuti->jenis_cuti_id == 1) {
+        if ($cuti->jenis_cuti_id == 1 && $request->kode == 'Tolak') {
             $restore_saldo = $this->restore_saldo_cuti($cuti->pegawai_id, $cuti->lama_cuti);
         }
 
