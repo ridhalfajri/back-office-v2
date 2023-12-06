@@ -67,6 +67,7 @@ class PresensiPegawaiController extends Controller
             $data = Presensi::where('no_enroll',$pegawai->no_enroll)
                                 ->Where('tanggal_presensi','>=',$request->date_awal)
                                 ->Where('tanggal_presensi','<=',$request->date_akhir)
+                                ->orderBy('tanggal_presensi', 'asc')
                                 ->get();
 
 
