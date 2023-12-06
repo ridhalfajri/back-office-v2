@@ -98,14 +98,6 @@ Route::middleware('auth')->group(function () {
          Route::resource('/pre-tubel',PreTubelController::class);
          Route::post('/pre-tubel/datatable', [PreTubelController::class, 'datatable'])->name('pre-tubel.datatable');
 
-         //uang makan
-         Route::prefix('kalkulasi')->group(function () {
-             //indrawan
-             Route::post('/pegawai-riwayat-umak/datatable', [PegawaiRiwayatUmakController::class, 'datatable'])->name('pegawai-riwayat-umak.datatable');
-             Route::post('/pegawai-riwayat-umak/kalkulasi-umak', [PegawaiRiwayatUmakController::class, 'kalkulasiUmak'])->name('pegawai-riwayat-umak.kalkulasi-umak');
-             Route::resource('/pegawai-riwayat-umak', PegawaiRiwayatUmakController::class)->only(['index']);
-         });
-
          Route::resource('/pre-ijin',PreIjinController::class);
          Route::post('/pre-ijin/datatable', [PreIjinController::class, 'datatable'])->name('pre-ijin.datatable');
          Route::post('/pre-ijin/datatablepersetujuan', [PreIjinController::class, 'datatablepersetujuan'])->name('pre-ijin.datatablepersetujuan');
@@ -124,6 +116,14 @@ Route::middleware('auth')->group(function () {
 
      });
 
+     //uang makan
+     Route::prefix('kalkulasi')->group(function () {
+        //indrawan
+        Route::post('/pegawai-riwayat-umak/datatable', [PegawaiRiwayatUmakController::class, 'datatable'])->name('pegawai-riwayat-umak.datatable');
+        Route::post('/pegawai-riwayat-umak/kalkulasi-umak', [PegawaiRiwayatUmakController::class, 'kalkulasiUmak'])->name('pegawai-riwayat-umak.kalkulasi-umak');
+        Route::resource('/pegawai-riwayat-umak', PegawaiRiwayatUmakController::class)->only(['index']);
+    });
+
     //master data
     Route::prefix('master')->group(function () {
         //indrawan
@@ -139,8 +139,6 @@ Route::middleware('auth')->group(function () {
         Route::post('/tukin/datatable', [TukinController::class, 'datatable'])->name('tukin.datatable');
         Route::resource('/tukin', TukinController::class);
         //
-
-
     });
 
     Route::prefix('pegawai')->group(function () {
