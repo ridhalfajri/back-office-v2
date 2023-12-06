@@ -44,15 +44,15 @@
                         <div class="row clearfix">
                             <div class="col-12 col-lg-12 col-md-12">
                                 <div class="form-group @error('hirarki_unit_kerja_id') has-error @enderror">
-                                    <label>Hirarki Unit Kerja :<span class="text-danger"><sup>*</sup></span></label>
+                                    <label>Unit Kerja :<span class="text-danger"><sup>*</sup></span></label>
                                     <select class="form-control" id="hirarki_unit_kerja_id" name="hirarki_unit_kerja_id" required>
-                                        <option value="" selected disabled>Pilih Hirarki Unit Kerja</option>
+                                        <option value="" selected disabled>Pilih Unit Kerja</option>
                                         @foreach ($hirarkiUnitKerja as $data)
                                             <option value="{{ $data->id }}" {{ old('hirarki_unit_kerja_id') == $data->id ? 'selected' : '' }}>{{ $data->nama_unit_kerja }}</option>
                                         @endforeach
                                     </select>
                                     <div class="invalid-feedback">
-                                        Silakan pilih Hirarki Unit Kerja.
+                                        Silakan pilih Unit Kerja.
                                     </div>
                                     @error('hirarki_unit_kerja_id')
                                         <small class="text-danger">{{ $message }}</small>

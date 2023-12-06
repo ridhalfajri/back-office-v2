@@ -29,6 +29,7 @@ class PreIjinController extends Controller
 
         $totalKuota = PegawaiHelper::getKuotaIjin();
 
+
         return view('presensi.pre-ijin.index', compact('title','pegawai','totalKuota'));
     }
 

@@ -67,6 +67,8 @@ class PegawaiHelper {
                     ->orderBy('q.is_plt', 'asc')
                     ->get();
 
+
+
     }
 
 

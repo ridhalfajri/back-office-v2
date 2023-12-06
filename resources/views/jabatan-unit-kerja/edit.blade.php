@@ -25,15 +25,15 @@
                         <div class="row clearfix">
                             <div class="col-12 col-lg-12 col-md-12">
                                 <div class="form-group @error('jabatan_tukin_id') has-error @enderror">
-                                    <label>JabatanTukin :<span class="text-danger"><sup>*</sup></span></label>
+                                    <label>Jabatan Tukin :<span class="text-danger"><sup>*</sup></span></label>
                                     <select class="form-control" id="jabatan_tukin_id" name="jabatan_tukin_id" required>
-                                        <option value="" selected disabled>Pilih JabatanTukin</option>
+                                        <option value="" selected disabled>Pilih Jabatan Tukin</option>
                                         @foreach ($jabatanTukin as $data)
                                             <option value="{{ $data->id }}" {{ (old('jabatan_tukin_id') ?? $jabatanUnitKerja->jabatan_tukin_id)  == $data->id ? 'selected' : '' }}>{{ $data->nama_jabatan }}</option>
                                         @endforeach
                                     </select>
                                     <div class="invalid-feedback">
-                                        Silakan pilih JabatanTukin.
+                                        Silakan pilih Jabatan Tukin.
                                     </div>
                                     @error('jabatan_tukin_id')
                                         <small class="text-danger">{{ $message }}</small>
@@ -45,15 +45,15 @@
                         <div class="row clearfix">
                             <div class="col-12 col-lg-12 col-md-12">
                                 <div class="form-group @error('hirarki_unit_kerja_id') has-error @enderror">
-                                    <label>HirarkiUnitKerja :<span class="text-danger"><sup>*</sup></span></label>
+                                    <label>Unit Kerja :<span class="text-danger"><sup>*</sup></span></label>
                                     <select class="form-control" id="hirarki_unit_kerja_id" name="hirarki_unit_kerja_id" required>
-                                        <option value="" selected disabled>Pilih HirarkiUnitKerja</option>
+                                        <option value="" selected disabled>Pilih Unit Kerja</option>
                                         @foreach ($hirarkiUnitKerja as $data)
                                             <option value="{{ $data->id }}" {{ (old('hirarki_unit_kerja_id') ?? $jabatanUnitKerja->hirarki_unit_kerja_id)  == $data->id ? 'selected' : '' }}>{{ $data->nama_unit_kerja }}</option>
                                         @endforeach
                                     </select>
                                     <div class="invalid-feedback">
-                                        Silakan pilih HirarkiUnitKerja.
+                                        Silakan pilih Unit Kerja.
                                     </div>
                                     @error('hirarki_unit_kerja_id')
                                         <small class="text-danger">{{ $message }}</small>

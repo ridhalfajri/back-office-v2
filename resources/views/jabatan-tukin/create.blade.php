@@ -24,7 +24,7 @@
                         <div class="row clearfix">
                             <div class="col-12 col-lg-12 col-md-12">
                                 <div class="form-group @error('jenis_jabatan_id') has-error @enderror">
-                                    <label>JenisJabatan :<span class="text-danger"><sup>*</sup></span></label>
+                                    <label>Jenis Jabatan :<span class="text-danger"><sup>*</sup></span></label>
                                     <select class="form-control" id="jenis_jabatan_id" name="jenis_jabatan_id" required>
                                         <option value="" selected disabled>Pilih Jenis Jabatan</option>
                                         @foreach ($jenisJabatan as $data)
