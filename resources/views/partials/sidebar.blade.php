@@ -79,7 +79,7 @@
                 <a href="javascript:void(0)" class="has-arrow"><i class="fa fa-money"></i><span>Kalkulasi</span></a>
                 <ul class="sub-menu js__content">
                     <li class="{{ Request::is('kalkulasi/pegawai-riwayat-umak*') ? 'active' : '' }}">
-                        <a href="{{ route('pegawai-riwayat-umak.index') }}">Pegawai Riwayat Uang Makan</a>
+                        <a href="{{ route('pegawai-riwayat-umak.index') }}">Riwayat Uang Makan Pegawai</a>
                     </li>
                 </ul>
             </li>

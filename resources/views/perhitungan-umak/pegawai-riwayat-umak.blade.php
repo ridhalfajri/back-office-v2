@@ -15,6 +15,11 @@
 <link rel="stylesheet" href="{{ asset('assets/plugins/toastr/toastr.css') }}">
 <!-- Select2 -->
 <link rel="stylesheet" href="{{ asset('assets/plugins/select2/css/select2.min.css') }}">
+
+{{-- DateRange --}}
+<link rel="stylesheet" href="{{ asset('assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker3.min.css') }}" />
+<link rel="stylesheet" href="{{ asset('assets/plugins/daterangepicker/daterangepicker.css') }}" />
+
     
 @endpush
 
@@ -60,10 +65,8 @@
                             <div class="col-12 col-lg-6 col-md-6">
                                 <div class="form-group @error('periode')has-error @enderror">
                                     <label class="form-label">Periode</label>
-                                    <input type="text" name="periode" id="periode"
-                                        value="{{ Carbon\Carbon::now()->format('F') }} - {{ Carbon\Carbon::now()->format('Y') }}" class="form-control"
-                                        maxlength="255" readonly="true"
-                                        autocomplete="off">
+                                    <input class="form-control input-daterange-datepicker" type="text"
+                                        name="tanggal" id="tanggal" value="">
                                 </div>
                             </div>
 
@@ -71,14 +74,20 @@
                                 <div class="form-group @error('tahunCalc')has-error @enderror">
                                     <label class="form-label">Aksi</label>
                                     <button type="submit" class="btn btn-primary btn-sm waves-effect waves-light">Kalkulasi Seluruh Pegawai</button>
-                                    {{-- @if (Carbon\Carbon::now()->format('d') == '06')
+                                    {{-- @if (Carbon\Carbon::now()->format('d') == '07')
                                     <button type="submit" class="btn btn-primary btn-sm waves-effect waves-light">Kalkulasi Seluruh Pegawai</button>
                                     @else
                                     <button disabled class="btn btn-primary btn-sm waves-effect waves-light">Kalkulasi Seluruh Pegawai</button>
                                     @endif --}}
                                 </div>
                             </div>
+
+                            <div class="col-12 col-lg-6 col-md-6">
+                                <label class="form-label" style="color: orange;"><i>Note</i> :<br>
+                                    Harap teliti dalam meng-<i>input</i> tanggal <i>cut off</i> untuk uang makan di Desember ke-2 dan di Februari</label>
+                            </div>
                         </div>
+
                     </form>
                 </div>
 
@@ -158,6 +167,8 @@
                 </div>
 
                 <div class="card-body">
+                    <h5 class="box-title" style="text-align: center;"><b>List Riwayat Uang Makan Pegawai</b></h5>
+                
                     <table id="tbl-data"
                     class="table table-hover js-basic-example dataTable table_custom spacing5">
                     <thead>
@@ -204,9 +215,24 @@
     <!-- Select2 -->
     <script src="{{ asset('assets/plugins/select2/js/select2.min.js') }}"></script>
 
+    {{-- DateRange --}}
+    <script src="{{ asset('assets/plugins/daterangepicker/moment.js') }}"></script>
+    <script src="{{ asset('assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
+    <script src="{{ asset('assets/plugins/daterangepicker/daterangepicker.js') }}"></script>
+
     <script type="text/javascript">
         "use strict"
         let table;
+
+        $('.input-daterange-datepicker').daterangepicker({
+            buttonClasses: ['btn', 'btn-sm'],
+            applyClass: 'btn-primary',
+            cancelClass: 'btn-secondary',
+            locale: {
+                format: 'DD-MM-YYYY'
+            },
+            autoApply: true
+        });
 
         $('#bulan').select2({
             width: 'resolve'
@@ -310,6 +336,7 @@
                 });
             });
 
+            //untuk on change
             $('#bulan').change(function(e) {
                 e.preventDefault();
                 table.ajax.reload();
