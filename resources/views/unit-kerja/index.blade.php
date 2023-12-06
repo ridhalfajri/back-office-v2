@@ -32,7 +32,7 @@
                     <h4 class="card-title">
                         <button type="button" class="btn btn-xs btn-primary" id="btn-add"
                         onclick="window.location.href = '{{ route('unit-kerja.create') }}';">
-                        <i class="fa fa-plus"></i> Tambah</button>
+                        Tambah</button>
                     </h4>
                 </div>
                 <div class="card-body">

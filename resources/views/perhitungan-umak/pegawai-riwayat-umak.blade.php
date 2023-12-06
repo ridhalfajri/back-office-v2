@@ -31,95 +31,132 @@
     <div class="row clearfix">
         <div class="col-lg-12">
             <div class="card">
-                <div class="card-header">
-                    <div class="card-body">
-                        @if ($errors->any())
-                            <div class="alert alert-danger" role="alert">
-                                @foreach ($errors->all() as $error)
-                                    <p>{{ $error }}</p>
-                                @endforeach
-                            </div>
-                        @endif
+                {{-- card-header --}}
+                <div class="card-body">
+                    @if ($errors->any())
+                        <div class="alert alert-danger" role="alert">
+                            @foreach ($errors->all() as $error)
+                                <p>{{ $error }}</p>
+                            @endforeach
+                        </div>
+                    @endif
 
-                        @if (session('message'))
-                            <div class="alert alert-warning">
-                                {{ session('message') }}
-                            </div>
-                        @endif
+                    @if (session('message'))
+                        <div class="alert alert-warning">
+                            {{ session('message') }}
+                        </div>
+                    @endif
 
-                        @if (session('success'))
-                            <div class="alert alert-success">
-                                {{ session('success') }}
-                            </div>
-                        @endif
-
-                        <form method="post" action="{{ route('pegawai-riwayat-umak.kalkulasi-umak') }}"
-                            enctype="multipart/form-data" accept-charset="utf-8">
-                            @csrf
-                            <div class="row clearfix">
-                                <div class="col-12 col-lg-6 col-md-6">
-                                    <div class="form-group @error('bulan')has-error @enderror">
-                                        <label class="form-label">Bulan</label>
-                                        <select id="bulan" name="bulan" class="form-control">
-                                            <option value="01"@if (Carbon\Carbon::now()->format('m') == '01') selected @endif>
-                                                Januari</option>
-                                            <option value="02"@if (Carbon\Carbon::now()->format('m') == '02') selected @endif>
-                                                Februari
-                                            </option>
-                                            <option value="03"@if (Carbon\Carbon::now()->format('m') == '03') selected @endif>
-                                                Maret
-                                            </option>
-                                            <option value="04"@if (Carbon\Carbon::now()->format('m') == '04') selected @endif>
-                                                April
-                                            </option>
-                                            <option value="05"@if (Carbon\Carbon::now()->format('m') == '05') selected @endif>Mei
-                                            </option>
-                                            <option value="06"@if (Carbon\Carbon::now()->format('m') == '06') selected @endif>Juni
-                                            </option>
-                                            <option value="07"@if (Carbon\Carbon::now()->format('m') == '07') selected @endif>Juli
-                                            </option>
-                                            <option value="08"@if (Carbon\Carbon::now()->format('m') == '08') selected @endif>
-                                                Agustus
-                                            </option>
-                                            <option value="09"@if (Carbon\Carbon::now()->format('m') == '09') selected @endif>
-                                                September
-                                            </option>
-                                            <option value="10"@if (Carbon\Carbon::now()->format('m') == '10') selected @endif>
-                                                Oktober
-                                            </option>
-                                            <option value="11"@if (Carbon\Carbon::now()->format('m') == '11') selected @endif>
-                                                November
-                                            </option>
-                                            <option value="12"@if (Carbon\Carbon::now()->format('m') == '12') selected @endif>
-                                                Desember
-                                            </option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-12 col-lg-6 col-md-6">
-                                    <div class="form-group @error('tahun')has-error @enderror">
-                                        <label class="form-label">Tahun</label>
-                                        <select id="tahun" name="tahun" class="form-control">
-                                            @for ($a = Carbon\Carbon::now()->format('Y'); $a >= Carbon\Carbon::now()->format('Y')-4; $a--)
-                                                @if ($a == Carbon\Carbon::now()->format('Y'))
-                                                    <option value="{{ $a }}" selected>{{ $a }}
-                                                    </option>
-                                                @else
-                                                    <option value="{{ $a }}">{{ $a }}
-                                                    </option>
-                                                @endif
-                                            @endfor
-                                        </select>
-                                    </div>
+                    @if (session('success'))
+                        <div class="alert alert-success">
+                            {{ session('success') }}
+                        </div>
+                    @endif
+                    <label class="form-label"><i>Perhitungan Uang Makan</i></label>
+                    <form method="post" action="{{ route('pegawai-riwayat-umak.kalkulasi-umak') }}"
+                        enctype="multipart/form-data" accept-charset="utf-8">
+                        @csrf
+                        <div class="row clearfix">
+                            <div class="col-12 col-lg-6 col-md-6">
+                                <div class="form-group @error('periode')has-error @enderror">
+                                    <label class="form-label">Periode</label>
+                                    <input type="text" name="periode" id="periode"
+                                        value="{{ Carbon\Carbon::now()->format('F') }} - {{ Carbon\Carbon::now()->format('Y') }}" class="form-control"
+                                        maxlength="255" readonly="true"
+                                        autocomplete="off">
                                 </div>
                             </div>
 
-                            @if (Carbon\Carbon::now()->format('d') == '07')
-                                <button type="submit" class="btn btn-primary btn-sm waves-effect waves-light">Kalkulasi Seluruh Pegawai</button>
-                            @endif
-                        </form>
+                            <div class="col-12 col-lg-6 col-md-6">
+                                <div class="form-group @error('tahunCalc')has-error @enderror">
+                                    <label class="form-label">Aksi</label>
+                                    <button type="submit" class="btn btn-primary btn-sm waves-effect waves-light">Kalkulasi Seluruh Pegawai</button>
+                                    {{-- @if (Carbon\Carbon::now()->format('d') == '06')
+                                    <button type="submit" class="btn btn-primary btn-sm waves-effect waves-light">Kalkulasi Seluruh Pegawai</button>
+                                    @else
+                                    <button disabled class="btn btn-primary btn-sm waves-effect waves-light">Kalkulasi Seluruh Pegawai</button>
+                                    @endif --}}
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="card-body">
+                    <label class="form-label"><i>Filter Datatable</i></label>
+                    <div class="row clearfix">
+                        <div class="col-12 col-lg-6 col-md-6">
+                            <div class="form-group @error('bulan')has-error @enderror">
+                                <label class="form-label">Bulan</label>
+                                <select id="bulan" name="bulan" class="form-control">
+                                    <option value="01"@if (Carbon\Carbon::now()->format('m') == '01') selected @endif>
+                                        Januari</option>
+                                    <option value="02"@if (Carbon\Carbon::now()->format('m') == '02') selected @endif>
+                                        Februari
+                                    </option>
+                                    <option value="03"@if (Carbon\Carbon::now()->format('m') == '03') selected @endif>
+                                        Maret
+                                    </option>
+                                    <option value="04"@if (Carbon\Carbon::now()->format('m') == '04') selected @endif>
+                                        April
+                                    </option>
+                                    <option value="05"@if (Carbon\Carbon::now()->format('m') == '05') selected @endif>
+                                        Mei
+                                    </option>
+                                    <option value="06"@if (Carbon\Carbon::now()->format('m') == '06') selected @endif>
+                                        Juni
+                                    </option>
+                                    <option value="07"@if (Carbon\Carbon::now()->format('m') == '07') selected @endif>
+                                        Juli
+                                    </option>
+                                    <option value="08"@if (Carbon\Carbon::now()->format('m') == '08') selected @endif>
+                                        Agustus
+                                    </option>
+                                    <option value="09"@if (Carbon\Carbon::now()->format('m') == '09') selected @endif>
+                                        September
+                                    </option>
+                                    <option value="10"@if (Carbon\Carbon::now()->format('m') == '10') selected @endif>
+                                        Oktober
+                                    </option>
+                                    <option value="11"@if (Carbon\Carbon::now()->format('m') == '11') selected @endif>
+                                        November
+                                    </option>
+                                    <option value="12"@if (Carbon\Carbon::now()->format('m') == '12') selected @endif>
+                                        Desember
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-6 col-md-6">
+                            <div class="form-group @error('tahun')has-error @enderror">
+                                <label class="form-label">Tahun</label>
+                                <select id="tahun" name="tahun" class="form-control">
+                                    @for ($a = Carbon\Carbon::now()->format('Y'); $a >= Carbon\Carbon::now()->format('Y')-4; $a--)
+                                        @if ($a == Carbon\Carbon::now()->format('Y'))
+                                            <option value="{{ $a }}" selected>{{ $a }}
+                                            </option>
+                                        @else
+                                            <option value="{{ $a }}">{{ $a }}
+                                            </option>
+                                        @endif
+                                    @endfor
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-6 col-md-6">
+                            <div class="form-group @error('unitKerja')has-error @enderror">
+                                <label class="form-label">Unit Kerja</label>
+                                <select id="unitKerja" name="unitKerja" class="form-control">
+                                    <option value="">--Pilih--</option>
+                                    @foreach ($dataUnitKerja as $data)
+                                        <option value="{{ $data->id }}">{{ $data->nama }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
                     </div>
                 </div>
+
                 <div class="card-body">
                     <table id="tbl-data"
                     class="table table-hover js-basic-example dataTable table_custom spacing5">
@@ -179,6 +216,10 @@
             width: 'resolve'
         });
 
+        $('#unitKerja').select2({
+            width: 'resolve'
+        });
+
         $(function() {
             table = $('#tbl-data').DataTable({
                 processing: true,
@@ -202,6 +243,7 @@
                         //untuk on change berubah data tablenya
                         d.bulan = $('#bulan').val();
                         d.tahun = $('#tahun').val();
+                        d.unitKerja = $('#unitKerja').val();
                     }
                 },
                 columns: [{

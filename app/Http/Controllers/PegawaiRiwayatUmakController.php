@@ -24,14 +24,20 @@ class PegawaiRiwayatUmakController extends Controller
     public function index()
     {            
         $title = 'Pegawai Riwayat Uang Makan';
+        
+        $dataUnitKerja = DB::table('unit_kerja')
+        ->select('*')
+        ->whereIn('jenis_unit_kerja_id', array(1, 2, 3))
+        ->get();
 
-        return view('perhitungan-umak.pegawai-riwayat-umak', compact('title'));
+        return view('perhitungan-umak.pegawai-riwayat-umak', compact('title', 'dataUnitKerja'));
     }
     
     public function datatable(Request $request)
     {        
         $bulan = $request->bulan;
         $tahun = $request->tahun;
+        $unitKerja = $request->unitKerja;
 
         //dd($request);
 
@@ -54,6 +60,7 @@ class PegawaiRiwayatUmakController extends Controller
             //
             ->where('pegawai_riwayat_umak.bulan', '=', $bulan)
             ->where('pegawai_riwayat_umak.tahun', '=', $tahun)
+            ->where('uk.id', '=', $unitKerja)
             ->orderBy('uk.id','asc');
 
             // if($bulan == '12'){
@@ -133,20 +140,20 @@ class PegawaiRiwayatUmakController extends Controller
         //saat desember akhir dan januari bagaimana kondisinya
         //januari tidak akan muncul buttonnya dan muncul saat tgl 7 v
         //desember akhir bagaimana??
-        $bulan = $request->bulan;
-        $tahun = $request->tahun;
+        $bulan = Carbon::now()->format('m');
+        $tahun = Carbon::now()->format('Y');
 
         //validasi bulan dan tahun harus ke isi
-        $this->validate($request, [
-            'bulan' => ['required'],
-            'tahun' => ['required']
-        ],
-        [
-            'bulan.required'=>'bulan harus diisi saat kalkulasi!',
-            //'golongan_id.integer'=>'data golongan harus bilangan bulat positif!',
-            'tahun.required'=>'tahun harus diisi saat kalkulasi!',
-            //'nominal.integer'=>'data nominal harus bilangan bulat positif!',
-        ]);
+        // $this->validate($request, [
+        //     'bulan' => ['required'],
+        //     'tahun' => ['required']
+        // ],
+        // [
+        //     'bulan.required'=>'bulan harus diisi saat kalkulasi!',
+        //     //'golongan_id.integer'=>'data golongan harus bilangan bulat positif!',
+        //     'tahun.required'=>'tahun harus diisi saat kalkulasi!',
+        //     //'nominal.integer'=>'data nominal harus bilangan bulat positif!',
+        // ]);
 
         //kondisi bulan
         $bulanCalc = null;
@@ -186,8 +193,6 @@ class PegawaiRiwayatUmakController extends Controller
 
         //
         $periodePerhitungan = $tahun.'-'.$bulanCalc;
-
-        //dd($bulan);
 
         DB::beginTransaction();
 
