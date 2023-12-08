@@ -119,6 +119,8 @@ Route::middleware('auth')->group(function () {
      //uang makan
      Route::prefix('kalkulasi')->group(function () {
         //indrawan
+        Route::get('/export-to-excel/umak/{$bulan}/{$tahun}', [PegawaiRiwayatUmakController::class, 'exportToExcel'])->name('pegawai-riwayat-umak.export-excel-umak');
+        Route::get('/export-to-excel/umak/{$bulan}/{$tahun}/{$unitKerjaId}', [PegawaiRiwayatUmakController::class, 'exportToExcelDua'])->name('pegawai-riwayat-umak.export-excel-umak-dua');
         Route::post('/pegawai-riwayat-umak/datatable', [PegawaiRiwayatUmakController::class, 'datatable'])->name('pegawai-riwayat-umak.datatable');
         Route::post('/pegawai-riwayat-umak/kalkulasi-umak', [PegawaiRiwayatUmakController::class, 'kalkulasiUmak'])->name('pegawai-riwayat-umak.kalkulasi-umak');
         Route::resource('/pegawai-riwayat-umak', PegawaiRiwayatUmakController::class)->only(['index']);

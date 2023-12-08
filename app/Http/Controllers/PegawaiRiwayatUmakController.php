@@ -15,6 +15,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\DataExportPru;
+
 class PegawaiRiwayatUmakController extends Controller
 {
     /**
@@ -142,6 +145,7 @@ class PegawaiRiwayatUmakController extends Controller
 
         //dd($waktuPlusSatuBulan);
         $bulan = Carbon::parse($tanggalAkhirSplit)->translatedFormat('m');
+        
         $bulanKeDb = null;
         if($bulan == '01'){
             $bulanKeDb = '02';
@@ -259,6 +263,7 @@ class PegawaiRiwayatUmakController extends Controller
 
                     //cek ke tabel pegawai_riwayat_umak ada data tidak
                     $cekDataPru = null;
+                    
                     if($isDouble == 'Y'){
                         $cekDataPru = DB::table('pegawai_riwayat_umak')
                         ->select('*')
@@ -345,6 +350,50 @@ class PegawaiRiwayatUmakController extends Controller
             //         ->with('error', 'Error saat Proses Data Pegawai Riwayat Uang Makan!');
         }  
         
+    }
+
+    public function exportToExcel($bulan, $tahun)
+    {
+        try {
+            $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
+            $this->authorize('kabiro', $kabiro);
+            
+            // $bulan = $request->bulan;
+            // $tahun = $request->tahun;
+            // $unitKerja = $request->unitKerja;
+
+            $fileName = 'Riwayat_Uang_Makan_Pegawai'.'_'.$tahun.'_'.$bulan.'.xlsx';
+            
+            $unitKerja = null;
+            return Excel::download(new DataExportPru($bulan, $tahun, $unitKerja), $fileName);
+        } catch (\Exception $e) {
+            Log::error($e->getMessage(), ['Export data excel gagal di method exportToExcel pada PegawaiRiwayatUmakController!']);
+        }
+    }
+
+    public function exportToExcelDua($bulan, $tahun, $unitKerjaId)
+    {
+        try {
+            $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
+            $this->authorize('kabiro', $kabiro);
+            
+            // $bulan = $request->bulan;
+            // $tahun = $request->tahun;
+            // $unitKerja = $request->unitKerja;
+
+            $fileName = null;
+            if(null != $unitKerjaId || '' != $unitKerjaId){
+                $namaUker = DB::table('unit_kerja')
+                ->select('nama', 'singkatan')
+                ->where('id','=',$unitKerjaId)
+                ->first();
+                $fileName = 'Riwayat_Uang_Makan_Pegawai_'.$namaUker->singkatan.'_'.$tahun.'_'.$bulan.'.xlsx';
+            }
+
+            return Excel::download(new DataExportPru($bulan, $tahun, $unitKerjaId), $fileName);
+        } catch (\Exception $e) {
+            Log::error($e->getMessage(), ['Export data excel gagal di method exportToExcelDua pada PegawaiRiwayatUmakController!']);
+        }
     }
 
 }
