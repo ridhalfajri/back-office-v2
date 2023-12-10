@@ -37,6 +37,20 @@ const get_table_tmt_gaji = (url, pegawai_id) => {
                 name: "gaji.nominal",
             },
             {
+                data: "is_active",
+                name: "is_active",
+                render: function (data, type, row) {
+                    switch (data) {
+                        case 1:
+                            return '<span class="badge badge-pill badge-success">AKTIF</span>';
+                            break;
+                        case 0:
+                            return '<span class="badge badge-pill badge-dark">TIDAK AKTIF</span>';
+                            break;
+                    }
+                },
+            },
+            {
                 data: "aksi",
                 name: "aksi",
                 class: "text-center actions",
@@ -46,7 +60,7 @@ const get_table_tmt_gaji = (url, pegawai_id) => {
             {
                 sortable: false,
                 searchable: false,
-                targets: [0, -1],
+                targets: [0, -2],
             },
         ],
         order: [[1, "asc"]],
@@ -115,6 +129,12 @@ $("#form-tmt-gaji").submit(function (e) {
                 if (err.tmt_gaji) {
                     $("#error_tmt_gaji").text(err.tmt_gaji);
                 }
+                if (err.is_active) {
+                    $("#error_is_active").text(err.is_active);
+                }
+                if (err.media_tmt_gaji) {
+                    $("#error_media_tmt_gaji").text(err.media_tmt_gaji);
+                }
                 if (err.connection) {
                     Swal.fire({
                         title: "Gagal!",
@@ -139,6 +159,8 @@ $("#form-tmt-gaji").submit(function (e) {
 function resetFormTmtGaji(is_success = false) {
     $("#error_gaji_id").text("");
     $("#error_tmt_gaji").text("");
+    $("#error_is_active").text("");
+    $("#error_media_tmt_gaji").text("");
 }
 $(".datepicker_tmt").datepicker({
     format: "dd-mm-yyyy",
@@ -155,14 +177,22 @@ const edit_tmt_gaji = (id) => {
             id: id,
         },
         success: function (response) {
+            $("#download_media_tmt_gaji").show();
             get_data_gaji(response.result.gaji_id);
             $("#date_tmt_gaji").val(response.result.tmt_gaji);
             $("#tmt_gaji_id").val(response.result.id);
+            if (response.result.media_tmt_gaji) {
+                $("#download_media_tmt_gaji").attr(
+                    "href",
+                    "//" + response.result.media_tmt_gaji
+                );
+            }
         },
     });
 };
 const create_tmt_gaji = () => {
     get_data_gaji();
+    $("#download_media_tmt_gaji").hide();
     $("#date_tmt_gaji").val("");
     $("#tmt_gaji_id").val("");
 };
@@ -211,3 +241,26 @@ const delete_tmt_gaji = (id) => {
         }
     });
 };
+$(".dropify").dropify();
+
+const file = $("#media_tmt_gaji").dropify();
+file.on("dropify.beforeClear", function (event, element) {});
+
+file.on("dropify.afterClear", function (event, element) {
+    Swal.fire({
+        position: "center",
+        icon: "success",
+        title: "File berhasil dihapus!",
+        showConfirmButton: false,
+        timer: 1500,
+    });
+});
+
+$(".dropify-fr").dropify({
+    messages: {
+        default: "Glissez-déposez un fichier ici ou cliquez",
+        replace: "Glissez-déposez un fichier ou cliquez pour remplacer",
+        remove: "Supprimer",
+        error: "Désolé, le fichier trop volumineux",
+    },
+});
