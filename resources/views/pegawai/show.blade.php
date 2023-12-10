@@ -70,7 +70,7 @@
                         </li>
                     </ul>
                 </div>
-                <div class="col-lg-8 col-md-12">
+                <div class="col-lg-12 col-md-12">
                     <div class="tab-content" id="pills-tabContent">
                         <div class="tab-pane fade show active" id="pills-profile" role="tabpanel"
                             aria-labelledby="pills-profile-tab">
@@ -285,7 +285,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-4 col-md-12">
+                {{-- <div class="col-lg-4 col-md-12">
                     <div class="card">
                         <div class="card-body">
                             <div class="widgets1">
@@ -431,7 +431,7 @@
                             </ul>
                         </div>
                     </div>
-                </div>
+                </div> --}}
             </div>
         </div>
     </div>
@@ -595,7 +595,8 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <form id="form-tmt-gaji" action="{{ route('tmt-gaji.store') }}" action="POST" autocomplete="off">
+                <form id="form-tmt-gaji" action="{{ route('tmt-gaji.store') }}" action="POST" autocomplete="off"
+                    enctype="multipart/form-data">
                     @csrf
                     <div class="modal-body">
                         <div class="col-md-12 col-lg-12">
@@ -628,6 +629,30 @@
                                         </div>
                                         <small class="text-danger" id="error_gaji_id"></small>
 
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="form-label">Status</div>
+                                        <div class="custom-controls-stacked">
+                                            <label class="custom-control custom-radio custom-control-inline">
+                                                <input type="radio" class="custom-control-input" name="is_active"
+                                                    value="1">
+                                                <span class="custom-control-label">Aktif</span>
+                                            </label>
+                                            <label class="custom-control custom-radio custom-control-inline">
+                                                <input type="radio" class="custom-control-input" name="is_active"
+                                                    checked="" value="0">
+                                                <span class="custom-control-label">Tidak Aktif</span>
+                                            </label>
+                                        </div>
+                                        <small class="text-danger" id="error_is_active"></small>
+                                    </div>
+                                    <div class="form-group col-lg-12 col-md-6 col-sm-12">
+                                        <label class="form-label">SK TMT Gaji</label>
+                                        <div class="input-group">
+                                            <input type="file" id="media_tmt_gaji" name="media_tmt_gaji">
+                                            <a id="download_media_tmt_gaji" href="">Download</a>
+                                            <small class="text-danger" id="error_media_tmt_gaji"></small>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -703,6 +728,7 @@
                                     <input type="text" id="p_tanggal_ijazah" disabled=""
                                         class="form-control mt-3 state-valid" value="">
                                 </div>
+
                                 <div class="form-group">
                                     <label class="form-label">File Sertifikat</label>
                                     <a href="#" id="p_media_ijazah" class="btn btn-primary">Download</a>
@@ -925,8 +951,7 @@
                                     <div class="form-group">
                                         <label class="form-label">Nomor SK</label>
                                         <input type="text" id="no_sk" name="no_sk"
-                                            class="form-control mt-3 state-valid" value=""
-                                            placeholder="Nomor SK">
+                                            class="form-control mt-3 state-valid" value="" placeholder="Nomor SK">
                                         <small class="text-danger" id="error_no_sk"></small>
 
                                     </div>
@@ -949,8 +974,7 @@
                                     <div class="form-group">
                                         <label class="form-label">SK Penghargaan</label>
                                         <div class="input-group">
-                                            <input type="file" id="media_sk_penghargaan"
-                                                name="media_sk_penghargaan">
+                                            <input type="file" id="media_sk_penghargaan" name="media_sk_penghargaan">
                                             <small class="text-danger" id="error_media_sk_penghargaan"></small>
                                             <a href="" id="download_media_sk_penghargaan">Download</a>
                                         </div>

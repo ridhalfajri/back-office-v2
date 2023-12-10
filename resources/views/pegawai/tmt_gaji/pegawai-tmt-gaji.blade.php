@@ -26,6 +26,7 @@
                                 <th>No</th>
                                 <th>Tmt Gaji</th>
                                 <th>Nominal</th>
+                                <th>Status</th>
                                 <th>Aksi</th>
                             </tr>
                         </thead>
@@ -34,6 +35,7 @@
                                 <th>No</th>
                                 <th>Tmt Gaji</th>
                                 <th>Nominal</th>
+                                <th>Status</th>
                                 <th>Aksi</th>
                             </tr>
                         </tfoot>

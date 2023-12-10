@@ -39,17 +39,29 @@ class PegawaiTmtGajiController extends Controller
             [
                 'pegawai_id' => ['required', 'exists:pegawai,id'],
                 'gaji_id' => ['required', 'exists:gaji,id'],
-                'tmt_gaji' => ['required']
+                'tmt_gaji' => ['required'],
+                'is_active' => ['required'],
+                'media_tmt_gaji' => ['nullable'],
             ],
             [
                 'pegawai_id' => 'pegawai harus diisi',
                 'gaji_id' => 'gaji harus diisi',
                 'tmt_gaji' => 'tmt gaji harus diisi',
+                'is_active' => 'status harus diisi',
             ]
         );
         if ($validate->fails()) {
             return response()->json(['errors' => $validate->errors()]);
         } else {
+            $tmt_aktif = null;
+            if ($request->is_active == 1) {
+                //Cari TMT Gaji yang aktif
+                $tmt_aktif = PegawaiTmtGaji::where('pegawai_id', $request->pegawai_id)->where('is_active', true)->first();
+
+                if ($tmt_aktif != null) {
+                    $tmt_aktif->is_active = false;
+                }
+            }
             if ($request->tmt_gaji_id != null) {
                 $tmt_gaji = PegawaiTmtGaji::where('id', $request->tmt_gaji_id)->first();
             } else {
@@ -57,10 +69,20 @@ class PegawaiTmtGajiController extends Controller
             }
             $tmt_gaji->pegawai_id = $request->pegawai_id;
             $tmt_gaji->gaji_id = $request->gaji_id;
+            $tmt_gaji->is_active = $request->is_active;
 
-            $tmt_gaji->tmt_gaji = Carbon::parse($request->tmt_gaji)->translatedFormat('Y-m-d');
+            $tmt_gaji->tmt_gaji = date("Y-m-d", strtotime($request->tmt_gaji));
             try {
-                $tmt_gaji->save();
+                DB::transaction(function () use ($tmt_aktif, $tmt_gaji, $request) {
+                    if ($tmt_aktif != null) {
+                        $tmt_aktif->save();
+                    }
+                    $tmt_gaji->save();
+                    if ($request->file('media_tmt_gaji')) {
+                        $tmt_gaji->clearMediaCollection('media_tmt_gaji');
+                        $tmt_gaji->addMediaFromRequest('media_tmt_gaji')->toMediaCollection('media_tmt_gaji');
+                    }
+                });
                 return response()->json(['success' => 'Tmt Gaji Berhasil Disimpan']);
             } catch (QueryException $e) {
                 return response()->json(['errors' => ['connection' => 'Terjadi kesalahan koneksi']]);
@@ -97,13 +119,16 @@ class PegawaiTmtGajiController extends Controller
      */
     public function destroy(string $id)
     {
-        $diklat = PegawaiTmtGaji::where('id', $id)->first();
+        $pegawai_tmt_gaji = PegawaiTmtGaji::where('id', $id)->first();
 
-        if ($diklat == null) {
+        if ($pegawai_tmt_gaji == null) {
             return response()->json(['errors' => ['connection' => 'Tidak menemukan data yang dihapus']]);
         }
         try {
-            $diklat->delete();
+            if ($pegawai_tmt_gaji->hasMedia("media_tmt_gaji")) {
+                $pegawai_tmt_gaji->getMedia("media_tmt_gaji")[0]->delete();
+            }
+            $pegawai_tmt_gaji->delete();
             return response()->json(['success' => 'Sukses Mengubah Data']);
         } catch (QueryException $e) {
             return response()->json(['errors' => ['connection' => 'Data gagal dihapus']]);
@@ -114,9 +139,9 @@ class PegawaiTmtGajiController extends Controller
      */
     public function datatable(Request $request)
     {
-        $tmt_gaji = PegawaiTmtGaji::select('pegawai_tmt_gaji.id', 'tmt_gaji', 'gaji.nominal as nominal')
+        $tmt_gaji = PegawaiTmtGaji::select('pegawai_tmt_gaji.id', 'tmt_gaji', 'gaji.nominal as nominal', 'is_active')
             ->join('gaji', 'pegawai_tmt_gaji.gaji_id', '=', 'gaji.id')
-            ->where('pegawai_id', $request->pegawai_id)->orderBy('pegawai_tmt_gaji.created_at', 'ASC');
+            ->where('pegawai_id', $request->pegawai_id)->orderBy('pegawai_tmt_gaji.is_active', 'DESC');
         return DataTables::of($tmt_gaji)
             ->addColumn('no', '')
             ->addColumn('aksi', 'pegawai.tmt_gaji.aksi-tmt-gaji')
@@ -139,6 +164,7 @@ class PegawaiTmtGajiController extends Controller
     {
         try {
             $tmt_gaji = PegawaiTmtGaji::select('id', 'pegawai_id', 'tmt_gaji', 'gaji_id')->where('id', $request->id)->first();
+            $tmt_gaji->media_tmt_gaji = $tmt_gaji->getMedia("media_tmt_gaji")[0]->getUrl();
             $tmt_gaji->tmt_gaji = Carbon::parse($tmt_gaji->tmt_gaji)->translatedFormat('d/m/Y');
             return response()->json(['result' => $tmt_gaji]);
         } catch (QueryException $e) {
