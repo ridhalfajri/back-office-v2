@@ -20,7 +20,11 @@
                 <div class="col-md-12">
                     <div class="card card-profile">
                         <div class="card-body text-center">
+                            @if(!empty($pegawai->media_foto_pegawai))
+                            <img class="card-profile-img" src="{{ $pegawai->media_foto_pegawai }}" alt="" />
+                            @else
                             <img class="card-profile-img" src="../assets/images/sm/avatar1.jpg" alt="" />
+                            @endif
                             <h4 class="mb-3">{{ $pegawai->nama_depan . ' ' . $pegawai->nama_belakang }}</h4>
                             <p class="mb-4">{{ $pegawai->email_kantor . ' | ' . $pegawai->no_telp }}
                             </p>
@@ -64,13 +68,9 @@
                             <a class="nav-link" id="pills-penghargaan-tab" data-toggle="pill" href="#pills-penghargaan"
                                 role="tab" aria-controls="pills-penghargaan" aria-selected="true">Penghargaan</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" id="pills-thp-tab" data-toggle="pill" href="#pills-thp" role="tab"
-                                aria-controls="pills-thp" aria-selected="true">THP</a>
-                        </li>
                     </ul>
                 </div>
-                <div class="col-lg-12 col-md-12">
+                <div class="col-lg-8 col-md-12">
                     <div class="tab-content" id="pills-tabContent">
                         <div class="tab-pane fade show active" id="pills-profile" role="tabpanel"
                             aria-labelledby="pills-profile-tab">
@@ -78,8 +78,8 @@
                                 <div class="card-header">
                                     <h3 class="card-title">Profile</h3>
                                     <div class="card-options">
-                                        <a href="#" class="card-options-fullscreen"
-                                            data-toggle="card-fullscreen"><i class="fe fe-maximize"></i></a>
+                                        <a href="#" class="card-options-fullscreen" data-toggle="card-fullscreen"><i
+                                                class="fe fe-maximize"></i></a>
                                         <div class="item-action dropdown ml-2">
                                             <a href="javascript:void(0)" data-toggle="dropdown"><i
                                                     class="fe fe-more-vertical"></i></a>
@@ -88,7 +88,7 @@
                                                         class="dropdown-icon fa fa-drivers-license-o"></i> Curriculum
                                                     Vitae</a>
                                                 <div class="dropdown-divider"></div>
-                                                <a href="javascript:void(0)" class="dropdown-item"><i
+                                                <a href="{{ route('pegawai.edit', $pegawai->id) }}" id="btn-edit" class="dropdown-item"><i
                                                         class="dropdown-icon fa fa-edit"></i> Ubah</a>
                                             </div>
                                         </div>
@@ -280,12 +280,9 @@
                             aria-labelledby="pills-penghargaan-tab">
                             @include('pegawai.penghargaan.pegawai-penghargaan')
                         </div>
-                        <div class="tab-pane fade" id="pills-thp" role="tabpanel" aria-labelledby="pills-thp-tab">
-                            @include('pegawai.thp.index')
-                        </div>
                     </div>
                 </div>
-                {{-- <div class="col-lg-4 col-md-12">
+                <div class="col-lg-4 col-md-12">
                     <div class="card">
                         <div class="card-body">
                             <div class="widgets1">
@@ -431,7 +428,7 @@
                             </ul>
                         </div>
                     </div>
-                </div> --}}
+                </div>
             </div>
         </div>
     </div>
@@ -595,8 +592,7 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <form id="form-tmt-gaji" action="{{ route('tmt-gaji.store') }}" action="POST" autocomplete="off"
-                    enctype="multipart/form-data">
+                <form id="form-tmt-gaji" action="{{ route('tmt-gaji.store') }}" action="POST" autocomplete="off">
                     @csrf
                     <div class="modal-body">
                         <div class="col-md-12 col-lg-12">
@@ -629,30 +625,6 @@
                                         </div>
                                         <small class="text-danger" id="error_gaji_id"></small>
 
-                                    </div>
-                                    <div class="form-group">
-                                        <div class="form-label">Status</div>
-                                        <div class="custom-controls-stacked">
-                                            <label class="custom-control custom-radio custom-control-inline">
-                                                <input type="radio" class="custom-control-input" name="is_active"
-                                                    value="1">
-                                                <span class="custom-control-label">Aktif</span>
-                                            </label>
-                                            <label class="custom-control custom-radio custom-control-inline">
-                                                <input type="radio" class="custom-control-input" name="is_active"
-                                                    checked="" value="0">
-                                                <span class="custom-control-label">Tidak Aktif</span>
-                                            </label>
-                                        </div>
-                                        <small class="text-danger" id="error_is_active"></small>
-                                    </div>
-                                    <div class="form-group col-lg-12 col-md-6 col-sm-12">
-                                        <label class="form-label">SK TMT Gaji</label>
-                                        <div class="input-group">
-                                            <input type="file" id="media_tmt_gaji" name="media_tmt_gaji">
-                                            <a id="download_media_tmt_gaji" href="">Download</a>
-                                            <small class="text-danger" id="error_media_tmt_gaji"></small>
-                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -728,7 +700,6 @@
                                     <input type="text" id="p_tanggal_ijazah" disabled=""
                                         class="form-control mt-3 state-valid" value="">
                                 </div>
-
                                 <div class="form-group">
                                     <label class="form-label">File Sertifikat</label>
                                     <a href="#" id="p_media_ijazah" class="btn btn-primary">Download</a>
@@ -951,7 +922,8 @@
                                     <div class="form-group">
                                         <label class="form-label">Nomor SK</label>
                                         <input type="text" id="no_sk" name="no_sk"
-                                            class="form-control mt-3 state-valid" value="" placeholder="Nomor SK">
+                                            class="form-control mt-3 state-valid" value=""
+                                            placeholder="Nomor SK">
                                         <small class="text-danger" id="error_no_sk"></small>
 
                                     </div>
@@ -974,7 +946,8 @@
                                     <div class="form-group">
                                         <label class="form-label">SK Penghargaan</label>
                                         <div class="input-group">
-                                            <input type="file" id="media_sk_penghargaan" name="media_sk_penghargaan">
+                                            <input type="file" id="media_sk_penghargaan"
+                                                name="media_sk_penghargaan">
                                             <small class="text-danger" id="error_media_sk_penghargaan"></small>
                                             <a href="" id="download_media_sk_penghargaan">Download</a>
                                         </div>
@@ -1008,7 +981,6 @@
     <script src="{{ asset('assets/js/custom/pendidikan.js') }}"></script>
     <script src="{{ asset('assets/js/custom/keluarga.js') }}"></script>
     <script src="{{ asset('assets/js/custom/penghargaan.js') }}"></script>
-    <script src="{{ asset('assets/js/custom/thp.js') }}"></script>
 
 
     <script>
@@ -1194,11 +1166,30 @@
                 url = "{{ route('penghargaan.datatable') }}"
                 pegawai_id = "{{ $pegawai->id }}"
                 get_table_penghargaan(url, pegawai_id)
-            } else if (tab_id == 'pills-thp-tab') {
-                url = "{{ route('thp.datatable') }}"
-                pegawai_id = "{{ $pegawai->id }}"
-                get_table_thp(url, pegawai_id)
             }
         })
+    </script>
+
+    {{-- Modal Edit Pegawai --}}
+    <script>
+        $('#btn-edit').on('click', function(e) {
+            var id = $('#pegawai_id').val();
+            $.ajax({
+                type: "GET",
+                url: "{{ route('pegawai.edit', "+ id +") }}",
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                cache: false,
+                success: function(response) {
+                    $('#modal-edit-pegawai').modal('show');
+
+                },
+                error: function(data) {
+                    console.log('error : ', data);
+                }
+            });
+
+        });
     </script>
 @endpush
