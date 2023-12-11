@@ -8,7 +8,7 @@
 <link rel="stylesheet"
     href="{{ asset('assets/plugins/datatable/fixedeader/dataTables.fixedheader.bootstrap4.min.css') }}">
 
-    {{-- custom css datatable --}}
+{{-- custom css datatable --}}
 {{-- <link rel="stylesheet" href="{{ asset('assets/plugins/datatable/custom.css') }}"> --}}
 <link rel="stylesheet" href="{{ asset('assets/plugins/sweetalert/sweetalert.css') }}">
 <!-- Toastr -->
@@ -205,12 +205,7 @@
                     </tbody>
                 </table>
                 <br>
-                {{-- <a href="{{ route('pegawai-riwayat-umak.export-to-excel') }}">
-                    <button type="button" class="btn btn-success waves-effect waves-light">
-                        Export to Excel
-                    </button>
-                </a> --}}
-                <button id="exportExcel" class="btn btn-success waves-effect waves-light">
+                <button type="button" id="exportExcel" class="btn btn-success waves-effect waves-light">
                     Export to Excel
                 </button>
                 </div>
@@ -366,22 +361,22 @@
                 e.preventDefault();
                 table.ajax.reload();
             });
-    });
-    
-    //export data excel
-    $('#exportExcel').on('click', function(e) {
-        e.preventDefault();
-        let bulan =  $("#bulan").val();
-        let tahun =  $("#tahun").val();
-        let unitKerjaId =  $("#unitKerja").val();
 
-        if(null === unitKerjaId || '' === unitKerjaId){
-            window.location.href = '{{ url("kalkulasi/export-to-excel/umak") }}/' + bulan +'/'+ tahun;
-        } else {
-            window.location.href = '{{ url("kalkulasi/export-to-excel/umak") }}/' + bulan +'/'+ tahun +'/'+ unitKerjaId;
-        }
+            //export data excel
+            $('#exportExcel').on('click', function(e) {
+                e.preventDefault();
+                let bulan =  $("#bulan").val();
+                let tahun =  $("#tahun").val();
+                let unitKerjaId =  $("#unitKerja").val();
 
-    });
+                if(null === unitKerjaId || '' === unitKerjaId){
+                    window.location.href = '{{ url("kalkulasi/export-to-excel/umak") }}/' + bulan +'/'+ tahun;
+                } else {
+                    window.location.href = '{{ url("kalkulasi/export-to-excel/umak") }}/' + bulan +'/'+ tahun +'/'+ unitKerjaId;
+                }
+            });
+
+        });
 </script>
 
 @endpush

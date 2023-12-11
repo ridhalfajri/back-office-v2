@@ -28,9 +28,8 @@ class DataExportPru implements FromCollection, WithHeadings
     */
     public function collection()
     {
-        $data = PegawaiRiwayatUmak::select('p.nama_depan', 'p.nama_belakang', 'p.nip', 'uk.nama as unit_kerja', 'um.nominal',
-            'pegawai_riwayat_umak.jumlah_hari_masuk', 'pegawai_riwayat_umak.total', 'pegawai_riwayat_umak.is_double',
-            'pegawai_riwayat_umak.bulan', 'pegawai_riwayat_umak.tahun')
+        $data = PegawaiRiwayatUmak::select(DB::raw('CONCAT(p.nama_depan," ",p.nama_belakang) AS nama_pegawai'), 'p.nip', 'uk.nama as unit_kerja', 'um.nominal',
+            'pegawai_riwayat_umak.jumlah_hari_masuk', 'pegawai_riwayat_umak.total', 'pegawai_riwayat_umak.is_double', DB::raw('MONTHNAME(STR_TO_DATE(pegawai_riwayat_umak.bulan, "%m")) as nama_bulan'), 'pegawai_riwayat_umak.tahun')
             ->join('pegawai as p','p.id','=','pegawai_riwayat_umak.pegawai_id')
             ->join('pegawai_riwayat_jabatan as prj', 'prj.pegawai_id', '=', 'pegawai_riwayat_umak.pegawai_id')
             ->join('jabatan_unit_kerja as juk', 'juk.id', '=', 'prj.jabatan_unit_kerja_id')
@@ -46,6 +45,7 @@ class DataExportPru implements FromCollection, WithHeadings
             ->where('pegawai_riwayat_umak.bulan', '=', $this->bulan)
             ->where('pegawai_riwayat_umak.tahun', '=', $this->tahun)
             ->orderBy('uk.id','asc')
+            ->orderBy('p.nama_depan','asc')
             ->get();
 
             if(null != $this->unitKerjaId || '' != $this->unitKerjaId){
@@ -58,8 +58,7 @@ class DataExportPru implements FromCollection, WithHeadings
     public function headings(): array
     {
         return [
-            'Nama Depan',
-            'Nama Belakang',
+            'Nama Pegawai',
             'NIP',
             'Unit Kerja',
             'Uang Makan Harian',

@@ -67,7 +67,9 @@ class PegawaiRiwayatUmakController extends Controller
             //
             ->where('pegawai_riwayat_umak.bulan', '=', $bulan)
             ->where('pegawai_riwayat_umak.tahun', '=', $tahun)
-            ->orderBy('uk.id','asc');
+            ->orderBy('uk.id','asc')
+            ->orderBy('p.nama_depan','asc')
+            ;
 
             if(null != $unitKerja || '' != $unitKerja){
                 $data->where('uk.id', '=', $unitKerja);
@@ -358,10 +360,6 @@ class PegawaiRiwayatUmakController extends Controller
             $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
             $this->authorize('kabiro', $kabiro);
             
-            // $bulan = $request->bulan;
-            // $tahun = $request->tahun;
-            // $unitKerja = $request->unitKerja;
-
             $fileName = 'Riwayat_Uang_Makan_Pegawai'.'_'.$tahun.'_'.$bulan.'.xlsx';
             
             $unitKerja = null;
@@ -377,10 +375,6 @@ class PegawaiRiwayatUmakController extends Controller
             $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
             $this->authorize('kabiro', $kabiro);
             
-            // $bulan = $request->bulan;
-            // $tahun = $request->tahun;
-            // $unitKerja = $request->unitKerja;
-
             $fileName = null;
             if(null != $unitKerjaId || '' != $unitKerjaId){
                 $namaUker = DB::table('unit_kerja')
