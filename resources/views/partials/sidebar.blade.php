@@ -113,6 +113,8 @@
             <li class="{{ Request::is('master*') ? 'active' : '' }}">
                 <a href="javascript:void(0)" class="has-arrow"><i class="icon-doc"></i><span>Master</span></a>
                 <ul class="sub-menu js__content">
+                    <li class="{{ Request::is('master/pegawai-riwayat-golongan*') ? 'active' : '' }}"><a
+                        href="{{ route('pegawai-riwayat-golongan.index') }}">Riwayat Golongan Pegawai</a></li>
                     <li class="{{ Request::is('master/tukin*') ? 'active' : '' }}"><a
                             href="{{ route('tukin.index') }}">Tukin</a></li>
                     <li class="{{ Request::is('master/uang-makan*') ? 'active' : '' }}"><a

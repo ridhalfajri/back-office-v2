@@ -38,7 +38,7 @@
                         @csrf
                         @method('PATCH')
                         <div class="row clearfix">
-                            <div class="col-12 col-lg-12 col-md-12">
+                            <div class="col-12 col-lg-6 col-md-6">
                                 <div class="form-group @error('nama')has-error @enderror">
                                     <label>Unit Kerja <span class="text-danger"><sup>*</sup></span></label>
                                     <input type="text" name="nama" id="nama" value="{{ old('nama') ?? $unit->nama }}"

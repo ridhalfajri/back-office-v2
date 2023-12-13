@@ -31,7 +31,12 @@ class DataExportPru implements FromCollection, WithHeadings
         $data = PegawaiRiwayatUmak::select(DB::raw('CONCAT(p.nama_depan," ",p.nama_belakang) AS nama_pegawai'), 'p.nip', 'uk.nama as unit_kerja', 'um.nominal',
             'pegawai_riwayat_umak.jumlah_hari_masuk', 'pegawai_riwayat_umak.total', 'pegawai_riwayat_umak.is_double', DB::raw('MONTHNAME(STR_TO_DATE(pegawai_riwayat_umak.bulan, "%m")) as nama_bulan'), 'pegawai_riwayat_umak.tahun')
             ->join('pegawai as p','p.id','=','pegawai_riwayat_umak.pegawai_id')
-            ->join('pegawai_riwayat_jabatan as prj', 'prj.pegawai_id', '=', 'pegawai_riwayat_umak.pegawai_id')
+            //->join('pegawai_riwayat_jabatan as prj', 'prj.pegawai_id', '=', 'pegawai_riwayat_umak.pegawai_id')
+            ->join('pegawai_riwayat_jabatan as prj', function ($join) {
+                $join->on('prj.pegawai_id','=','pegawai_riwayat_umak.pegawai_id')
+                    ->where('prj.is_now','=',1)
+                    ;
+            })
             ->join('jabatan_unit_kerja as juk', 'juk.id', '=', 'prj.jabatan_unit_kerja_id')
             ->join('hirarki_unit_kerja as huk', 'huk.id', '=', 'juk.hirarki_unit_kerja_id')
             ->leftJoin('unit_kerja as uk', 'uk.id', '=', 'huk.child_unit_kerja_id')

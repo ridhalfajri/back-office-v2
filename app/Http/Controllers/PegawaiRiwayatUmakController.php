@@ -30,7 +30,7 @@ class PegawaiRiwayatUmakController extends Controller
         $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
         $this->authorize('kabiro', $kabiro);
 
-        $title = 'Pegawai Riwayat Uang Makan';
+        $title = 'Riwayat Uang Makan Pegawai';
         
         $dataUnitKerja = DB::table('unit_kerja')
         ->select('*')
@@ -54,7 +54,12 @@ class PegawaiRiwayatUmakController extends Controller
             'pegawai_riwayat_umak.jumlah_hari_masuk', 'pegawai_riwayat_umak.total', 'pegawai_riwayat_umak.is_double',
             'pegawai_riwayat_umak.bulan', 'pegawai_riwayat_umak.tahun', 'uk.nama as unit_kerja')
             ->join('pegawai as p','p.id','=','pegawai_riwayat_umak.pegawai_id')
-            ->join('pegawai_riwayat_jabatan as prj', 'prj.pegawai_id', '=', 'pegawai_riwayat_umak.pegawai_id')
+            //->join('pegawai_riwayat_jabatan as prj', 'prj.pegawai_id', '=', 'pegawai_riwayat_umak.pegawai_id')
+            ->join('pegawai_riwayat_jabatan as prj', function ($join) {
+                $join->on('prj.pegawai_id','=','pegawai_riwayat_umak.pegawai_id')
+                    ->where('prj.is_now','=',1)
+                    ;
+            })
             ->join('jabatan_unit_kerja as juk', 'juk.id', '=', 'prj.jabatan_unit_kerja_id')
             ->join('hirarki_unit_kerja as huk', 'huk.id', '=', 'juk.hirarki_unit_kerja_id')
             ->leftJoin('unit_kerja as uk', 'uk.id', '=', 'huk.child_unit_kerja_id')
@@ -191,7 +196,7 @@ class PegawaiRiwayatUmakController extends Controller
         $isDouble = 'N';
         if('12' == Carbon::parse($tanggalMulaiSplit)->translatedFormat('m')
             && '12' == Carbon::parse($tanggalAkhirSplit)->translatedFormat('m')){
-                $bulanKeDb = Carbon::parse($tanggalAkhirSplit)->translatedFormat('m');
+                $bulanKeDb = Carbon::parse($tanggalAkhirSplit)->translatedFormat('m'); //'12'
                 $isDouble = 'Y';
         }
 
@@ -209,6 +214,8 @@ class PegawaiRiwayatUmakController extends Controller
                     ->whereIn('sp.nama', array('PNS', 'CPNS', 'PPPK'))
                     ;
             })
+            ->whereNotNull('tanggal_berhenti')
+            ->whereNotNull('tanggal_wafat')
             //untuk test, data pegawai_riwayat_golongan harus ada!
             //->where('p.id','=',498)
             ->get();

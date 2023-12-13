@@ -35,6 +35,7 @@ use App\Http\Controllers\StatusPegawaiController;
 use App\Http\Controllers\ThpController;
 use App\Http\Controllers\UnitKerjaController;
 use App\Http\Controllers\TukinController;
+use App\Http\Controllers\PegawaiRiwayatGolonganController;
 use App\Http\Controllers\PegawaiRiwayatUmakController;
 
 
@@ -140,6 +141,9 @@ Route::middleware('auth')->group(function () {
 
         Route::post('/tukin/datatable', [TukinController::class, 'datatable'])->name('tukin.datatable');
         Route::resource('/tukin', TukinController::class);
+
+        Route::post('/pegawai-riwayat-golongan/datatable', [PegawaiRiwayatGolonganController::class, 'datatable'])->name('pegawai-riwayat-golongan.datatable');
+        Route::resource('/pegawai-riwayat-golongan', PegawaiRiwayatGolonganController::class);
         //
     });
 

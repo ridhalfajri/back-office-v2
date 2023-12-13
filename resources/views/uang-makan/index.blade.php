@@ -36,6 +36,7 @@
                     </h4>
                 </div>
                 <div class="card-body">
+                    <h5 class="box-title" style="text-align: center;"><b>List Master Uang Makan</b></h5>
                     <table id="tbl-data"
                     class="table table-hover js-basic-example dataTable table_custom spacing5">
                     <thead>

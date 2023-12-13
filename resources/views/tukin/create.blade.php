@@ -37,7 +37,7 @@
                     <form method="post"  action="{{ route('tukin.store') }}"  accept-charset="utf-8">
                         @csrf
                         <div class="row clearfix">
-                            <div class="col-12 col-lg-12 col-md-12">
+                            <div class="col-12 col-lg-6 col-md-6">
                                 <div class="form-group @error('grade')has-error @enderror">
                                     <label>Grade <span class="text-danger"><sup>*</sup></span></label>
                                     <input type="number" name="grade" id="grade" value="{{ old('grade') }}"

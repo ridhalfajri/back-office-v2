@@ -74,7 +74,7 @@
                                 <div class="form-group @error('tahunCalc')has-error @enderror">
                                     <label class="form-label">Aksi</label>
                                     <button type="submit" class="btn btn-primary btn-sm waves-effect waves-light">Kalkulasi Seluruh Pegawai</button>
-                                    {{-- @if (Carbon\Carbon::now()->format('d') == '07')
+                                    {{-- @if (Carbon\Carbon::now()->format('m') != '01')
                                     <button type="submit" class="btn btn-primary btn-sm waves-effect waves-light">Kalkulasi Seluruh Pegawai</button>
                                     @else
                                     <button disabled class="btn btn-primary btn-sm waves-effect waves-light">Kalkulasi Seluruh Pegawai</button>

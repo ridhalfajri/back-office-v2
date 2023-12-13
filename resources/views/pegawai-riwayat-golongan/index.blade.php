@@ -13,7 +13,8 @@
 <link rel="stylesheet" href="{{ asset('assets/plugins/sweetalert/sweetalert.css') }}">
 <!-- Toastr -->
 <link rel="stylesheet" href="{{ asset('assets/plugins/toastr/toastr.css') }}">
-
+<!-- Select2 -->
+<link rel="stylesheet" href="{{ asset('assets/plugins/select2/css/select2.min.css') }}">
 @endpush
 
 @push('breadcrumb')
@@ -32,27 +33,67 @@
                 <div class="card-header">
                     <h4 class="card-title">
                         <button type="button" class="btn btn-xs btn-primary" id="btn-add"
-                        onclick="window.location.href = '{{ route('tukin.create') }}';">
+                        onclick="window.location.href = '{{ route('pegawai-riwayat-golongan.create') }}';">
                         Tambah</button>
                     </h4>
                 </div>
                 <div class="card-body">
-                    <h5 class="box-title" style="text-align: center;"><b>List Master Tukin</b></h5>
+                    {{-- <label class="form-label"><i>Filter Datatable</i></label> --}}
+                    <div class="row clearfix">
+                        <div class="col-12 col-lg-6 col-md-6">
+                            <div class="form-group @error('unitKerja')has-error @enderror">
+                                <label class="form-label">Unit Kerja</label>
+                                <select id="unitKerja" name="unitKerja" class="form-control">
+                                    <option value="">--Pilih--</option>
+                                    @foreach ($dataUnitKerja as $data)
+                                        {{-- @if (old('unitKerja') == $data->id )
+                                            <option value="{{ $data->id }}" selected>{{ $data->nama }}</option>
+                                        @else
+                                            <option value="{{ $data->id }}">{{ $data->nama }}</option>
+                                        @endif --}}
+                                       
+                                        <option value="{{ $data->id }}">{{ $data->nama }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-lg-6 col-md-6">
+                            <div class="form-group @error('isAktif')has-error @enderror">
+                                <label class="form-label">Status</label>
+                                <select id="isAktif" name="isAktif" class="form-control">
+                                    <option value="">--Pilih--</option>
+                                    <option value="1">Aktif</option>
+                                    <option value="0">Tidak Aktif</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <h5 class="box-title" style="text-align: center;"><b>List Riwayat Golongan Pegawai</b></h5>
+                
                     <table id="tbl-data"
                     class="table table-hover js-basic-example dataTable table_custom spacing5">
                     <thead>
                         <tr>
                             <th class="font-weight-bold text-dark" style="width: 5%">No</th>
-                            <th class="font-weight-bold text-dark">Grade</th>
-                            <th class="font-weight-bold text-dark">Nominal</th>
+                            <th class="font-weight-bold text-dark">Nama Pegawai</th>
+                            <th class="font-weight-bold text-dark">NIP</th>
+                            <th class="font-weight-bold text-dark">Unit Kerja</th>
+                            <th class="font-weight-bold text-dark">Golongan</th>
+                            <th class="font-weight-bold text-dark">Status</th>
                             <th class="font-weight-bold text-dark">Aksi</th>
                         </tr>
                     </thead>
                     <tfoot>
                         <tr>
-                            <th class="font-weight-bold text-dark">No</th>
-                            <th class="font-weight-bold text-dark">Grade</th>
-                            <th class="font-weight-bold text-dark">Nominal</th>
+                            <th class="font-weight-bold text-dark" style="width: 5%">No</th>
+                            <th class="font-weight-bold text-dark">Nama Pegawai</th>
+                            <th class="font-weight-bold text-dark">NIP</th>
+                            <th class="font-weight-bold text-dark">Unit Kerja</th>
+                            <th class="font-weight-bold text-dark">Golongan</th>
+                            <th class="font-weight-bold text-dark">Status</th>
                             <th class="font-weight-bold text-dark">Aksi</th>
                         </tr>
                     </tfoot>
@@ -68,16 +109,28 @@
 
 @push('script')
 <!-- Data Tables -->
+    
     <script src="{{ asset('assets/bundles/dataTables.bundle.js') }}"></script>
     <script src="{{ asset('assets/js/table/datatable.js') }}"></script>
     <script src="{{ asset('assets/plugins/sweetalert/sweetalert.min.js') }}"></script>
     <script src="{{ asset('assets/plugins/toastr/toastr.min.js') }}"></script>
-
-<script type="text/javascript">
+    <!-- Select2 -->
+    <script src="{{ asset('assets/plugins/select2/js/select2.min.js') }}"></script>
+   
+    <script type="text/javascript">
         "use strict"
         let table;
 
         $(function() {
+            $('#unitKerja').select2({
+                width: 'resolve'
+            });
+
+            $('#isAktif').select2({
+                width: 'resolve'
+            });
+
+
             table = $('#tbl-data').DataTable({
                 processing: true,
                 destroy: true,
@@ -91,10 +144,15 @@
                 info: true,
                 autoWidth: false,
                 ajax: {
-                    url: '{{ route('tukin.datatable') }}',
+                    url: '{{ route('pegawai-riwayat-golongan.datatable') }}',
                     type: 'POST',
                     headers: {
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    data: function(d) {
+                        //untuk on change datatable
+                        d.unitKerja = $('#unitKerja').val();
+                        d.isAktif = $('#isAktif').val();
                     }
                 },
                 columns: [{
@@ -103,15 +161,29 @@
                         class: 'text-center'
                     },
                     {
-                        data: 'grade',
-                        name: 'grade',
+                        data: 'nama_pegawai',
+                        name: 'nama_pegawai',
                         class: 'text-center'
                     },
                     {
-                        data: 'nominal',
-                        name: 'nominal',
-                        class: 'text-center',
-                        render: $.fn.dataTable.render.number('.', ',', 2, 'Rp')
+                        data: 'nip',
+                        name: 'p.nip',
+                        class: 'text-center'
+                    },
+                    {
+                        data: 'unit_kerja',
+                        name: 'uk.nama',
+                        class: 'text-center'
+                    },
+                    {
+                        data: 'nama_golongan',
+                        name: 'g.nama',
+                        class: 'text-center'
+                    },
+                    {
+                        data: 'status',
+                        name: 'status',
+                        class: 'text-center'
                     },
                     {
                         data: 'aksi',
@@ -140,6 +212,17 @@
                 });
             });
 
+            //untuk on change
+            $('#unitKerja').change(function(e) {
+                e.preventDefault();
+                table.ajax.reload();
+            });
+
+            $('#isAktif').change(function(e) {
+                e.preventDefault();
+                table.ajax.reload();
+            });
+
             $('#tbl-data').delegate('button.delete', 'click', function(e) {
                 e.preventDefault();
 
@@ -159,7 +242,7 @@
                     if (isConfirm) {
                         delete_data(that.data('id')).then(function(hasil) {
                             if (hasil.status.error == true) {
-                                toastr['error']('Data Tunjangan Kinerja gagal di hapus!');
+                                toastr['error']('Data Riwayat Golongan gagal di hapus!');
                             } else {
                                 table.ajax.reload();
                                 toastr['success'](hasil.status.message);
@@ -179,7 +262,7 @@
     function delete_data(id) {
             return new Promise(function(resolve, reject) {
                 $.ajax({
-                    url: "{{ url('master/tukin') }}/" + id,
+                    url: "{{ url('master/pegawai-riwayat-golongan') }}/" + id,
                     method: 'POST',
                     headers: {
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
@@ -191,7 +274,7 @@
                 }).done(function(hasil) {
                     resolve(hasil);
                 }).fail(function() {
-                    reject('Gagal menghapus data Tunjangan Kinerja!');
+                    reject('Gagal menghapus data Riwayat Golongan!');
                 })
             })
         }
