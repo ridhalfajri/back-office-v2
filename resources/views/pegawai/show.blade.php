@@ -233,27 +233,27 @@
                                                     disabled="" value="{{ $pegawai->no_bpjs }}">
                                             </div>
                                         </div>
-                                        <div class="col-sm-6 col-md-4">
+                                        <div class="col-sm-6 col-md-6">
                                             <div class="form-group">
                                                 <label class="form-label">No Taspen</label>
                                                 <input type="text" class="form-control" placeholder="No Taspen"
                                                     disabled="" value="{{ $pegawai->no_taspen }}">
                                             </div>
                                         </div>
-                                        <div class="col-sm-6 col-md-4">
+                                        <div class="col-sm-6 col-md-6">
                                             <div class="form-group">
                                                 <label class="form-label">No Fingerprint</label>
                                                 <input type="text" class="form-control" placeholder="No Fingerprint"
                                                     disabled="" value="{{ $pegawai->no_fingerprint }}">
                                             </div>
                                         </div>
-                                        <div class="col-sm-6 col-md-4">
+                                        {{-- <div class="col-sm-6 col-md-4">
                                             <div class="form-group">
                                                 <label class="form-label">Kartu Pegawai</label>
                                                 <input type="text" class="form-control" placeholder="Kartu Pegawai"
                                                     disabled="" value="{{ $pegawai->no_kartu_pegawai }}">
                                             </div>
-                                        </div>
+                                        </div> --}}
                                     </div>
                                 </div>
                             </div>

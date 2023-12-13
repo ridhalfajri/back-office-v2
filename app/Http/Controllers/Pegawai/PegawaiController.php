@@ -81,6 +81,8 @@ class PegawaiController extends Controller
      */
     public function show(string $id)
     {
+        $cek_pegawai = Pegawai::where('id', $id)->first();
+        $this->authorize('personal', $cek_pegawai);
         $title = 'Pegawai';
         try {
             $propinsi = Propinsi::select('id', 'nama')->get();
@@ -104,7 +106,6 @@ class PegawaiController extends Controller
                 'status_dinas',
                 'tanggal_berhenti',
                 'tanggal_wafat',
-                'no_kartu_pegawai',
                 'no_bpjs',
                 'no_taspen',
                 'no_enroll',
@@ -189,7 +190,7 @@ class PegawaiController extends Controller
             'status_dinas',
             'tanggal_berhenti',
             'tanggal_wafat',
-            'no_kartu_pegawai',
+            // 'no_kartu_pegawai',
             'no_bpjs',
             'no_taspen',
             'no_enroll',
@@ -232,7 +233,7 @@ class PegawaiController extends Controller
                 'jenis_pegawai_id' => 'required',
                 'status_pegawai_id' => 'required',
                 'status_dinas' => 'required',
-                'no_kartu_pegawai' => 'nullable|between:7,10|string',
+                // 'no_kartu_pegawai' => 'nullable|between:7,10|string',
                 'tanggal_wafat' => 'nullable|date',
                 'tanggal_berhenti' => 'nullable|date',
                 'no_bpjs' => 'required|digits:13',
@@ -269,8 +270,8 @@ class PegawaiController extends Controller
                 'jenis_pegawai_id.required' => 'Jenis pegawai harus diisi',
                 'status_pegawai_id.required' => 'Status pegawai harus diisi',
                 'status_dinas.required' => 'Status dinas harus diisi',
-                'no_kartu_pegawai.between' => 'Nomor kartu pegawai diantara 7-10 karakter',
-                'no_kartu_pegawai.string' => 'Nomor kartu pegawai harus string',
+                // 'no_kartu_pegawai.between' => 'Nomor kartu pegawai diantara 7-10 karakter',
+                // 'no_kartu_pegawai.string' => 'Nomor kartu pegawai harus string',
                 'tanggal_wafat.date' => 'Tanggal wafat harus format tanggal',
                 'tanggal_berhenti.date' => 'Tanggal berhenti harus format tanggal',
                 'no_bpjs.required' => 'Nomor BPJS harus diisi',
@@ -312,7 +313,7 @@ class PegawaiController extends Controller
             $pegawai->no_bpjs = $request->no_bpjs;
             $pegawai->no_taspen = $request->no_taspen;
             $pegawai->no_enroll = $request->no_enroll;
-            $pegawai->no_kartu_pegawai = $request->no_kartu_pegawai;
+            // $pegawai->no_kartu_pegawai = $request->no_kartu_pegawai;
             try {
                 DB::transaction(function () use ($pegawai, $request) {
                     $pegawai->save();
@@ -343,12 +344,24 @@ class PegawaiController extends Controller
     /**
      * Datatable for pegawai.
      */
-    public function datatable()
+    public function datatable(Request $request)
     {
-        $pegawai = Pegawai::select('id', 'nip', 'nama_depan', 'nama_belakang', 'no_telp', 'email_kantor')->orderBy('created_at', 'DESC')->get();
+        $pegawai = Pegawai::select('pegawai.id', 'nip', 'nama_depan', 'nama_belakang', DB::raw('CONCAT(nama_depan," " ,nama_belakang) AS nama_lengkap'), 'no_telp', 'email_kantor', 'uk.nama AS nama_unit_kerja')->orderBy('nama_unit_kerja', 'DESC')
+            ->join('pegawai_riwayat_jabatan AS prj', 'prj.pegawai_id', '=', 'pegawai.id')
+            ->join('jabatan_unit_kerja AS juk', 'juk.id', '=', 'prj.jabatan_unit_kerja_id')
+            ->join('hirarki_unit_kerja AS huk', 'huk.id', '=', 'juk.hirarki_unit_kerja_id')
+            ->join('unit_kerja AS uk', 'uk.id', '=', 'huk.child_unit_kerja_id')
+            ->where('prj.is_now', 1);
+
+        if ($request->unit_kerja != null) {
+            $pegawai->where('huk.child_unit_kerja_id', $request->unit_kerja);
+        }
         return DataTables::of($pegawai)
             ->addColumn('no', '')
             ->addColumn('aksi', 'pegawai.aksi')
+            ->filterColumn('nama_lengkap', function ($query, $keyword) {
+                $query->whereRaw("CONCAT(nama_depan,' ',nama_belakang) like ?", ["%$keyword%"]);
+            })
             ->rawColumns(['aksi'])
             ->make(true);
     }

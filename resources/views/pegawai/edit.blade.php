@@ -225,26 +225,26 @@
                               <small class="text-danger" id="error_no_bpjs"></small>
                           </div>
 
-                          <div class="form-group col-sm-4 col-md-4">
+                          <div class="form-group col-sm-6 col-md-6">
                               <label class="form-label">No Taspen</label>
                               <input type="text" class="form-control" id="no_taspen" name="no_taspen"
                                   placeholder="Nomor Taspen" value="{{ $pegawai->no_taspen }}">
                               <small class="text-danger" id="error_no_taspen"></small>
                           </div>
 
-                          <div class="form-group col-sm-4 col-md-4">
+                          <div class="form-group col-sm-6 col-md-6">
                               <label class="form-label">No Fingerprint</label>
                               <input type="text" class="form-control" id="no_enroll" name="no_enroll"
                                   placeholder="Nomor Fingerprint" value="{{ $pegawai->no_enroll }}">
                               <small class="text-danger" id="error_no_enroll"></small>
                           </div>
 
-                          <div class="form-group col-sm-4 col-md-4">
+                          {{-- <div class="form-group col-sm-4 col-md-4">
                               <label class="form-label">No Kartu Pegawai</label>
                               <input type="text" class="form-control" id="no_kartu_pegawai" name="no_kartu_pegawai"
                                   placeholder="Nomor Kartu Pegawai" value="{{ $pegawai->no_kartu_pegawai }}">
                               <small class="text-danger" id="error_no_kartu_pegawai"></small>
-                          </div>
+                          </div> --}}
 
                           <div class="form-group col-md-6 col-sm-6">
                               <label class="form-label">Foto Pegawai</label>
