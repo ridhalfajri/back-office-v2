@@ -44,7 +44,7 @@
                                     <select id="golongan_id" name="golongan_id" class="form-control">
                                         <option value="">--Pilih--</option>
                                         @foreach ($golongan as $item)
-                                            @if (old('golongan_id') && old('golongan_id') == $item->id)
+                                            @if (old('golongan_id') == $item->id)
                                                 <option value="{{ $item->id }}" selected>{{ $item->nama }}</option>
                                             @else
                                                 <option value="{{ $item->id }}">{{ $item->nama }}</option>

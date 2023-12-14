@@ -51,7 +51,7 @@
                                     <select id="jenis_unit_kerja_id" name="jenis_unit_kerja_id" class="form-control">
                                         <option value="">--Pilih--</option>
                                         @foreach ($jenisUnit as $item)
-                                            @if (old('jenis_unit_kerja_id') && old('jenis_unit_kerja_id') == $item->id)
+                                            @if (old('jenis_unit_kerja_id') == $item->id)
                                                 <option value="{{ $item->id }}" selected>{{ $item->nama }}</option>
                                             @else
                                                 <option value="{{ $item->id }}">{{ $item->nama }}</option>

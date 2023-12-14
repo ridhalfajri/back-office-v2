@@ -150,6 +150,9 @@ class PegawaiRiwayatUmakController extends Controller
         $tanggalAkhirSplit = $splitTanggal[1];
         //$waktuPlusSatuBulan = date('m', strtotime($tanggalAkhirSplit . ' +1 month'));
 
+        $tanggalMulaiFormat = Carbon::parse($tanggalMulaiSplit)->translatedFormat('Y-m-d');
+        $tanggalAkhirFormat = Carbon::parse($tanggalAkhirSplit)->translatedFormat('Y-m-d');
+
         //dd($waktuPlusSatuBulan);
         $bulan = Carbon::parse($tanggalAkhirSplit)->translatedFormat('m');
         
@@ -200,8 +203,18 @@ class PegawaiRiwayatUmakController extends Controller
                 $isDouble = 'Y';
         }
 
-        $tanggalMulaiFormat = Carbon::parse($tanggalMulaiSplit)->translatedFormat('Y-m-d');
-        $tanggalAkhirFormat = Carbon::parse($tanggalAkhirSplit)->translatedFormat('Y-m-d');
+        //validasi jika bukan bulan 12 dan 01, tanggal mulai dan tanggal akhir harus sesuai 1 bulan
+        //02, 03, 04, 05, 06, 07, 08, 09, 10, 11
+        $firstDayOfMonth = date('Y-m-01', strtotime($tanggalMulaiFormat));
+        $lastDayOfMonth = date('Y-m-t', strtotime($tanggalMulaiFormat));
+        if($bulan == '02' || $bulan == '03' || $bulan == '04' || $bulan == '05' || $bulan == '06'
+        || $bulan == '07' || $bulan == '08' || $bulan == '09' || $bulan == '10' || $bulan == '11'){
+            if(($tanggalMulaiFormat != $firstDayOfMonth) || ($tanggalAkhirFormat != $lastDayOfMonth)){
+                session()->flash('message', 'Tanggal awal dan tanggal akhir yang dipilih tidak dalam 1 bulan!');
+
+                return redirect()->back();
+            }
+        }
 
         DB::beginTransaction();
 
@@ -214,8 +227,8 @@ class PegawaiRiwayatUmakController extends Controller
                     ->whereIn('sp.nama', array('PNS', 'CPNS', 'PPPK'))
                     ;
             })
-            ->whereNotNull('tanggal_berhenti')
-            ->whereNotNull('tanggal_wafat')
+            ->whereNull('tanggal_berhenti')
+            ->whereNull('tanggal_wafat')
             //untuk test, data pegawai_riwayat_golongan harus ada!
             //->where('p.id','=',498)
             ->get();

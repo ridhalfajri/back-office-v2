@@ -110,7 +110,7 @@
                                     <em>Silakan upload file SK (jpg/jpeg/png/pdf max 2Mb)</em>
                                     <br>
                                     @if ($prg->sk_golongan)
-                                        <a href="//{{ $prg->sk_golongan }}">Download</a>
+                                        <a href="//{{ $prg->sk_golongan }}" target="_blank">Download</a>
                                     @endif
                                 </div>
 
