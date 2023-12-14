@@ -131,12 +131,6 @@ class PegawaiRiwayatGolonganController extends Controller
     {
         DB::beginTransaction();
 
-        if($request->file('dokumen_sk') != '') {
-            $request->validate([
-                'dokumen_sk' => 'mimes:jpg,jpeg,png,pdf|max:2048',
-            ]);
-        }
-
         $this->validate($request, [
             'pegawai_id' => ['required'],
             'golongan_id' => ['required'],
@@ -144,6 +138,7 @@ class PegawaiRiwayatGolonganController extends Controller
             'no_sk' => ['required'],
             'tanggal_sk' => ['required'],
             'is_active' => ['required'],
+            'sk_golongan' => ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:2048'],
         ],
         [
             'pegawai_id.required'=>'data pegawai harus diisi!',
@@ -152,6 +147,9 @@ class PegawaiRiwayatGolonganController extends Controller
             'no_sk.required'=>'data no. sk harus diisi!',
             'tanggal_sk.required'=>'data tanggal sk harus diisi!',
             'is_active.required'=>'data status harus diisi!',
+            'sk_golongan.mimes' => 'format file sk harus pdf/jpg/jpeg/png!',
+            'sk_golongan.max' => 'ukuran file terlalu besar (maksimal file 2Mb)!',
+            'sk_golongan.file' => 'upload data harus berupa file!',
         ]);
 
         try {
@@ -176,14 +174,19 @@ class PegawaiRiwayatGolonganController extends Controller
                 }
 
                 //insert
-                $request['pegawai_id'] = $request->pegawai_id;
-                $request['golongan_id'] = $request->golongan_id;
-                $request['tmt_golongan'] = $request->tmt_golongan;
-                $request['no_sk'] = $request->no_sk;
-                $request['tanggal_sk'] = $request->tanggal_sk;
-                $request['is_active'] = $request->is_active;
-    
-                PegawaiRiwayatGolongan::create($request->all());
+                $prg = new PegawaiRiwayatGolongan();
+                $prg->pegawai_id = $request->pegawai_id;
+                $prg->golongan_id = $request->golongan_id;
+                $prg->tmt_golongan = $request->tmt_golongan;
+                $prg->no_sk = $request->no_sk;
+                $prg->tanggal_sk = $request->tanggal_sk;
+                $prg->is_active = $request->is_active;
+
+                $prg->save();
+
+                if ($request->sk_golongan) {
+                    $prg->addMediaFromRequest('sk_golongan')->toMediaCollection('sk_golongan');
+                }
 
                 DB::commit();
                 Log::info('Data berhasil di-insert di method store pada PegawaiRiwayatGolonganController!');
@@ -209,6 +212,11 @@ class PegawaiRiwayatGolonganController extends Controller
         $title = 'Ubah Riwayat Golongan Pegawai';
 
         $prg = $pegawai_riwayat_golongan;
+
+        $cek_media = $prg->getMedia("sk_golongan")->count();
+        if ($cek_media) {
+            $prg->sk_golongan = $prg->getMedia("sk_golongan")[0]->getUrl();
+        }
 
         //nama pegawai
         $pegawai = DB::table('pegawai as p')
@@ -238,12 +246,6 @@ class PegawaiRiwayatGolonganController extends Controller
     {  
         DB::beginTransaction();
 
-        if($request->file('dokumen_sk') != '') {
-            $request->validate([
-                'dokumen_sk' => 'mimes:jpg,jpeg,png,pdf|max:2048',
-            ]);
-        }
-
         $this->validate($request, [
             'pegawai_id' => ['required'],
             'golongan_id' => ['required'],
@@ -251,6 +253,7 @@ class PegawaiRiwayatGolonganController extends Controller
             'no_sk' => ['required'],
             'tanggal_sk' => ['required'],
             'is_active' => ['required'],
+            'sk_golongan' => ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:2048'],
         ],
         [
             'pegawai_id.required'=>'data pegawai harus diisi!',
@@ -259,6 +262,9 @@ class PegawaiRiwayatGolonganController extends Controller
             'no_sk.required'=>'data no. sk harus diisi!',
             'tanggal_sk.required'=>'data tanggal sk harus diisi!',
             'is_active.required'=>'data status harus diisi!',
+            'sk_golongan.mimes' => 'format file sk harus pdf/jpg/jpeg/png!',
+            'sk_golongan.max' => 'ukuran file terlalu besar (maksimal file 2Mb)!',
+            'sk_golongan.file' => 'upload data harus berupa file!',
         ]);
 
         try {
@@ -294,6 +300,11 @@ class PegawaiRiwayatGolonganController extends Controller
 
                 $pegawai_riwayat_golongan->update();
 
+                if ($request->file('sk_golongan')) {
+                    $pegawai_riwayat_golongan->clearMediaCollection('sk_golongan');
+                    $pegawai_riwayat_golongan->addMediaFromRequest('sk_golongan')->toMediaCollection('sk_golongan');
+                }
+
                 DB::commit();
                 Log::info('Data berhasil di-update di method update pada PegawaiRiwayatGolonganController!');
 
@@ -322,7 +333,6 @@ class PegawaiRiwayatGolonganController extends Controller
     {           
         DB::beginTransaction();
         try {
-            //$profisiensiMSampelUp->deleted_by = Auth::user()->username;;
             $pegawai_riwayat_golongan->delete();
 
             $response['status'] = [

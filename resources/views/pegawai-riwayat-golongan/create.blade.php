@@ -35,7 +35,7 @@
                         </div>
                     @endif
 
-                    <form method="post"  action="{{ route('pegawai-riwayat-golongan.store') }}"  accept-charset="utf-8">
+                    <form method="post"  action="{{ route('pegawai-riwayat-golongan.store') }}"  accept-charset="utf-8" enctype="multipart/form-data">
                         @csrf
                         <div class="row clearfix">
                             <div class="col-12 col-lg-6 col-md-6">
@@ -104,9 +104,9 @@
                                     </select>
                                 </div>
 
-                                <div class="form-group @error('dokumen_sk')has-error @enderror">
-                                    <label>Upload SK <span class="text-danger"><sup>*</sup></span></label>
-                                    <input class="form-control fileClass" type="file" id="dokumen_sk" name="dokumen_sk">                       
+                                <div class="form-group @error('sk_golongan')has-error @enderror">
+                                    <label>Upload SK </label>
+                                    <input class="form-control fileClass" type="file" id="sk_golongan" name="sk_golongan">                       
                                     <em>Silakan upload file SK (jpg/jpeg/png/pdf max 2Mb)</em>
                                 </div>
 

@@ -34,7 +34,7 @@
                         </div>
                     @endif
 
-                    <form method="post" action="{{ route('pegawai-riwayat-golongan.update',$prg->id) }}" accept-charset="utf-8">
+                    <form method="post" action="{{ route('pegawai-riwayat-golongan.update',$prg->id) }}" accept-charset="utf-8" enctype="multipart/form-data">
                         @csrf
                         @method('PATCH')
                         <div class="row clearfix">
@@ -104,18 +104,14 @@
                                     </select>
                                 </div>
 
-                                <div class="form-group @error('dokumen_sk')has-error @enderror">
-                                    <label>Upload SK <span class="text-danger"><sup>*</sup></span></label>
-                                    <input class="form-control fileClass" type="file" id="dokumen_sk" name="dokumen_sk">                       
+                                <div class="form-group @error('sk_golongan')has-error @enderror">
+                                    <label>Upload SK </label>
+                                    <input class="form-control fileClass" type="file" id="sk_golongan" name="sk_golongan">                       
                                     <em>Silakan upload file SK (jpg/jpeg/png/pdf max 2Mb)</em>
-                                    {{-- <br>
-                                    @if(($dataProf->path_file_kwitansi!='' || $dataProf->path_file_kwitansi!=null) && file_exists(public_path('storage/uploads/file-kwitansi/'.$dataProf->path_file_kwitansi)))                         
-                                    <div id="filediv" style="display:''"> 
-                                        <div class="file">
-                                            <a href="{{asset('storage/uploads/file-kwitansi/'.$dataProf->path_file_kwitansi)}}" target="_blank"><label class="file_{{$dataProf->path_file_kwitansi}}">{{ $dataProf->path_file_kwitansi }}</label> </a>
-                                        </div>                   
-                                    </div>
-                                    @endif --}}
+                                    <br>
+                                    @if ($prg->sk_golongan)
+                                        <a href="//{{ $prg->sk_golongan }}">Download</a>
+                                    @endif
                                 </div>
 
                             </div>
