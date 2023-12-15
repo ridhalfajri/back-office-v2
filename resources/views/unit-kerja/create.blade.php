@@ -1,9 +1,9 @@
 @extends('template')
 
 @push('style')
+    <link rel="stylesheet" href="{{ asset('assets/plugins/sweetalert/sweetalert.css') }}">
     <!-- Select2 -->
     <link rel="stylesheet" href="{{ asset('assets/plugins/select2/css/select2.min.css') }}">
-    
 @endpush
 
 @push('breadcrumb')
@@ -35,7 +35,7 @@
                         </div>
                     @endif
 
-                    <form method="post"  action="{{ route('unit-kerja.store') }}"  accept-charset="utf-8">
+                    <form class="needs-validation" id="form-uker" method="post"  action="{{ route('unit-kerja.store') }}"  accept-charset="utf-8" novalidate>
                         @csrf
                         <div class="row clearfix">
                             <div class="col-12 col-lg-6 col-md-6">
@@ -90,6 +90,7 @@
 @endsection
 
 @push('script')
+    <script src="{{ asset('assets/plugins/sweetalert/sweetalert.min.js') }}"></script>
     <!-- Select2 -->
     <script src="{{ asset('assets/plugins/select2/js/select2.min.js') }}"></script>
 
@@ -98,6 +99,44 @@
         $('#jenis_unit_kerja_id').select2({
             width: 'resolve'
         });
+
+        (function () {
+          'use strict'
+
+          var forms = document.querySelectorAll('.needs-validation')
+
+          Array.prototype.slice.call(forms)
+            .forEach(function (form) {
+              form.addEventListener('submit', function (event) {
+                event.preventDefault()
+                if (!form.checkValidity()) {
+                  event.stopPropagation()
+                  form.classList.add('was-validated')
+                }else
+                {
+                    // Konfirmasi sebelum menyimpan data
+                    swal({
+                        title: 'Konfirmasi!',
+                        text: 'Apakah anda yakin ingin menyimpan data?',
+                        type: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#78c0ec',
+                        confirmButtonText: 'Ya',
+                        cancelButtonText: 'Tidak',
+                        closeOnConfirm: true,
+                        closeOnCancel: false
+                    }, function(isConfirm) {
+                        if (isConfirm) {
+                            form.submit()
+                        } else {
+                            swal('Informasi', 'Simpan data dibatalkan', 'error');
+                            event.stopPropagation()
+                        }
+                    });
+                }
+              }, false)
+            });
+        })();
 
     </script>
 @endpush

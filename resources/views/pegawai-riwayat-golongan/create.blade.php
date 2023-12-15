@@ -1,16 +1,17 @@
 @extends('template')
 
 @push('style')
+    <link rel="stylesheet" href="{{ asset('assets/plugins/sweetalert/sweetalert.css') }}">
     <!-- Select2 -->
     <link rel="stylesheet" href="{{ asset('assets/plugins/select2/css/select2.min.css') }}">
-    
 @endpush
 
 @push('breadcrumb')
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="{{ route('dashboard') }}"><i class="fa fa-home"></i></a></li>
-            <li class="breadcrumb-item"><a href="{{ route('pegawai-riwayat-golongan.index') }}">Riwayat Golongan Pegawai</a></li>
+            <li class="breadcrumb-item"><a href="{{ route('pegawai-riwayat-golongan.index') }}">Riwayat Golongan Pegawai</a>
+            </li>
             <li class="breadcrumb-item active" aria-current="page">{{ $title }}</li>
         </ol>
     </nav>
@@ -35,7 +36,9 @@
                         </div>
                     @endif
 
-                    <form method="post"  action="{{ route('pegawai-riwayat-golongan.store') }}"  accept-charset="utf-8" enctype="multipart/form-data">
+                    <form class="needs-validation" id="form-prg" method="post"
+                        action="{{ route('pegawai-riwayat-golongan.store') }}" accept-charset="utf-8"
+                        enctype="multipart/form-data" novalidate>
                         @csrf
                         <div class="row clearfix">
                             <div class="col-12 col-lg-6 col-md-6">
@@ -45,7 +48,8 @@
                                         <option value="">--Pilih--</option>
                                         @foreach ($pegawai as $item)
                                             @if (old('pegawai_id') == $item->id)
-                                                <option value="{{ $item->id }}" selected>{{ $item->nama_pegawai }}</option>
+                                                <option value="{{ $item->id }}" selected>{{ $item->nama_pegawai }}
+                                                </option>
                                             @else
                                                 <option value="{{ $item->id }}">{{ $item->nama_pegawai }}</option>
                                             @endif
@@ -106,7 +110,8 @@
 
                                 <div class="form-group @error('sk_golongan')has-error @enderror">
                                     <label>Upload SK </label>
-                                    <input class="form-control fileClass" type="file" id="sk_golongan" name="sk_golongan">                       
+                                    <input class="form-control fileClass" type="file" id="sk_golongan"
+                                        name="sk_golongan">
                                     <em>Silakan upload file SK (jpg/jpeg/png/pdf max 2Mb)</em>
                                 </div>
 
@@ -127,11 +132,11 @@
 @endsection
 
 @push('script')
+    <script src="{{ asset('assets/plugins/sweetalert/sweetalert.min.js') }}"></script>
     <!-- Select2 -->
     <script src="{{ asset('assets/plugins/select2/js/select2.min.js') }}"></script>
 
     <script type="text/javascript">
-
         $('#golongan_id').select2({
             width: 'resolve'
         });
@@ -144,5 +149,41 @@
             width: 'resolve'
         });
 
+        (function() {
+            'use strict'
+
+            var forms = document.querySelectorAll('.needs-validation')
+
+            Array.prototype.slice.call(forms)
+                .forEach(function(form) {
+                    form.addEventListener('submit', function(event) {
+                        event.preventDefault()
+                        if (!form.checkValidity()) {
+                            event.stopPropagation()
+                            form.classList.add('was-validated')
+                        } else {
+                            // Konfirmasi sebelum menyimpan data
+                            swal({
+                                title: 'Konfirmasi!',
+                                text: 'Apakah anda yakin ingin menyimpan data?',
+                                type: 'warning',
+                                showCancelButton: true,
+                                confirmButtonColor: '#78c0ec',
+                                confirmButtonText: 'Ya',
+                                cancelButtonText: 'Tidak',
+                                closeOnConfirm: true,
+                                closeOnCancel: false
+                            }, function(isConfirm) {
+                                if (isConfirm) {
+                                    form.submit()
+                                } else {
+                                    swal('Informasi', 'Simpan data dibatalkan', 'error');
+                                    event.stopPropagation()
+                                }
+                            });
+                        }
+                    }, false)
+                });
+        })();
     </script>
 @endpush
