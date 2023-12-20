@@ -6,10 +6,11 @@
 @endpush
 
 @push('breadcrumb')
-        <div class="btn-group btn-breadcrumb">
-            <a href="/" class="btn btn-light"><i class="fa fa-home"></i></a>
-            <a href="/presensi/pre-ijin" class="btn btn-light"><i class="fa fa-list"></i> PreIjin</a>
-            <a href="#" class="btn btn-light"><i class="fa fa-pensil"></i> Ubah Data PreIjin</a>
+        <div class="breadcrumb">
+            <a href="/" class="btn btn-link"><i class="fa fa-home"></i> Home</a>
+            <div class="btn">></div>
+            <a href="/presensi/pre-ijin" class="btn btn-link"><i class="fa fa-list"></i> PreIjin</a>
+            <a href="#" class="btn btn-link"><i class="fa fa-pensil"></i> Ubah Data PreIjin</a>
             {{-- <a href="/" class="btn btn-outline-danger"><i class="fa fa-chevron-circle-left"></i> Kembali</a> --}}
         </div>
 @endpush

@@ -5,10 +5,12 @@
 @endpush
 
 @push('breadcrumb')
-        <div class="btn-group btn-breadcrumb">
-            <a href="/" class="btn btn-primary"><i class="fa fa-home"></i></a>
-            <a href="/presensi/pre-tak-tercatat" class="btn btn-info"><i class="fa fa-list"></i> PreTakTercatat</a>
-            <a href="#" class="btn btn-warning"><i class="fa fa-pensil"></i> Ubah Data PreTakTercatat</a>
+        <div class="breadcrumb">
+            <a href="/" class="btn btn-link"><i class="fa fa-home"></i> Home</a>
+            <div class="btn">></div>
+            <a href="/presensi/pre-tak-tercatat" class="btn btn-link"><i class="fa fa-list"></i> PreTakTercatat</a>
+            <div class="btn">></div>
+            <a href="#" class="btn btn-link"><i class="fa fa-pensil"></i> Ubah Data PreTakTercatat</a>
             {{-- <a href="/" class="btn btn-outline-danger"><i class="fa fa-chevron-circle-left"></i> Kembali</a> --}}
         </div>
 @endpush

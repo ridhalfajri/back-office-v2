@@ -15,9 +15,10 @@
 @endpush
 
 @push('breadcrumb')
-        <div class="btn-group btn-breadcrumb">
-            <a href="/" class="btn btn-light"><i class="fa fa-home"></i></a>
-            <a href="{{ route('pre-ijin.index') }}" class="btn btn-light"><i class="fa fa-list"></i> Ijin Kehadiran</a>
+        <div class="breadcrumb">
+            <a href="/" class="btn btn-link"><i class="fa fa-home"></i> Home</a>
+            <div class="btn">></div>
+            <a href="{{ route('pre-ijin.index') }}" class="btn btn-link"><i class="fa fa-list"></i> Ijin Kehadiran</a>
         </div>
 @endpush
 
@@ -40,151 +41,8 @@
                 </div>
             </div>
         </div>
-        <div class="card-body">
-            <div class="student-info">
 
-                @php
-                    $jabatan = '';
-                    $unitkerja = '';
-                @endphp
-
-                @foreach ($pegawai as $data)
-                    @if($data->is_plt == 1)
-                        @if($jabatan == '')
-                            @php
-                                $jabatan = $data->nama_jabatan;
-                            @endphp
-                        @else
-                            @php
-                                $jabatan = $jabatan . ' / '. $data->nama_jabatan;
-                            @endphp
-                        @endif
-                    @else
-                        @if($jabatan == '')
-                            @php
-                                $jabatan = $data->nama_jabatan ;
-                            @endphp
-                        @else
-                            @php
-                                $jabatan = $jabatan .' / '. $data->nama_jabatan;
-                            @endphp
-                        @endif
-                    @endif
-
-                    @if($unitkerja == '')
-                            @php
-                                $unitkerja = $data->nama_unit_kerja;
-                            @endphp
-                        @else
-                            @php
-                                $unitkerja = $unitkerja . ' / ' . $data->nama_unit_kerja;
-                            @endphp
-                        @endif
-
-
-                @endforeach
-
-                @foreach ($pegawai as $data)
-
-                    <div class="row rowdata">
-                        <div class="col-sm-2">
-                            <strong>NIP</strong>
-                        </div>
-                        <div class="col-sm-4">
-                            : {{ $data->nip }}
-                        </div>
-
-                        <div class="col-sm-2">
-                            <strong>Pangkat</strong>
-                        </div>
-                        <div class="col-sm-4">
-                            : {{ $data->nama_pangkat }}
-                        </div>
-                    </div>
-
-                    <div class="row rowdata">
-                        <div class="col-sm-2">
-                            <strong>Nama Pegawai</strong>
-                        </div>
-                        <div class="col-sm-4">
-                            : {{ $data->nama_depan . ' ' . $data->nama_belakang }}
-                        </div>
-
-                        <div class="col-sm-2">
-                            <strong>Nama Golongan</strong>
-                        </div>
-                        <div class="col-sm-4">
-                            : {{ $data->nama_golongan }}
-                        </div>
-                    </div>
-
-                    <div class="row rowdata">
-                        <div class="col-sm-2">
-                            <strong>Tempat & Tanggal Lahir</strong>
-                        </div>
-                        <div class="col-sm-4">
-                            : {{ $data->tempat_lahir }}, {{ \Carbon\Carbon::parse($data->tanggal_lahir)->format('d/m/Y') }}
-                        </div>
-
-                        <div class="col-sm-2">
-                            <strong>Jenis Jabatan</strong>
-                        </div>
-                        <div class="col-sm-4">
-                            : {{ $data->jenis_jabatan }}
-                        </div>
-
-                    </div>
-
-                    <div class="row rowdata">
-                        <div class="col-sm-2">
-                            <strong>Unit Kerja</strong>
-                        </div>
-                        <div class="col-sm-4">
-                            : {{ $unitkerja  }}
-                        </div>
-
-                        <div class="col-sm-2">
-                            <strong>Nama Jabatan</strong>
-                        </div>
-                        <div class="col-sm-4">
-                            : {{ $jabatan }}
-                        </div>
-                    </div>
-
-                    <div class="row rowdata">
-                        <div class="col-sm-2">
-                            <strong>Kuota Ijin Kehadiran dan Presensi Tidak Tercatat</strong>
-                        </div>
-                        <div class="col-sm-4">
-                            :
-                            @if($totalKuota>=3)
-                                <strong class="btn btn-danger">{{ $totalKuota  }} dari 3</strong>
-                            @else
-                                <strong class="btn btn-success">{{ $totalKuota  }} dari 3</strong>
-                            @endif
-                        </div>
-                    </div>
-
-                    @break
-                @endforeach
-
-                {{-- <div class="row rowdata">
-                    <div class="col-sm-2">
-                        <strong>Unit Kerja</strong>
-                    </div>
-
-                    <div class="col-sm-10">
-                        <select class="form-control" id="jabatan_unit_kerja_id" name="jabatan_unit_kerja_id" required>
-                            @foreach ($pegawai as $data)
-                                <option value="{{ $data->id }}" {{ (old('jabatan_unit_kerja_id') == $data->id || $data->is_plt == 0)? 'selected' : '' }}>{{ $data->nama_unit_kerja }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                </div> --}}
-
-
-            </div>
-        </div>
+        @include('presensi.detail')
 
         <div class="card-body">
 
@@ -299,25 +157,26 @@
                     name: 'Keterangan'
                 },
                 {
-                        data: 'status',
-                        name: 'Status'
-                        render: function(data, type, row) {
-                            switch (data) {
-                                case "Pengajuan":
-                                    return '<span class="badge badge-pill badge-warning">' + data +
-                                        '</span>';
-                                    break;
-                                case "Disetujui":
-                                    return '<span class="badge badge-pill badge-primary">' + data +
-                                        '</span>';
-                                    break;
-                                case "Ditolak":
-                                    return '<span class="badge badge-pill badge-danger">' + data +
-                                        '</span>';
-                                    break;
-                            }
+                    data: 'status',
+                    name: 'Status',
+                    class: 'text-center',
+                    render: function(data, type, row) {
+                        switch (data) {
+                            case "Pengajuan":
+                                return '<span class="badge badge-pill badge-warning">' + data +
+                                    '</span>';
+                                break;
+                            case "Disetujui":
+                                return '<span class="badge badge-pill badge-primary">' + data +
+                                    '</span>';
+                                break;
+                            case "Ditolak":
+                                return '<span class="badge badge-pill badge-danger">' + data +
+                                    '</span>';
+                                break;
                         }
-                    },
+                    }
+                },
                 {
                     data: 'aksi',
                     name: 'aksi',
@@ -331,7 +190,13 @@
             }],
             order: [
                 [1, 'asc']
-            ]
+            ],
+            // rowCallback: function(row, data) {
+            //     if (data['status'] === 'Disetujui') {
+            //         // Select the specific cell you want to color
+            //         $('td:nth-child(5)', row).addClass('bg-primary text-white');
+            //     }
+            // }
         });
 
         table.on('draw.dt', function() {

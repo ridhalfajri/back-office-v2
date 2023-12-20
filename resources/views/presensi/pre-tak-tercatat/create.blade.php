@@ -6,10 +6,12 @@
 @endpush
 
 @push('breadcrumb')
-        <div class="btn-group btn-breadcrumb">
-            <a href="/" class="btn btn-light"><i class="fa fa-home"></i></a>
-            <a href="{{ route('pre-tak-tercatat.index') }}" class="btn btn-light"><i class="fa fa-list"></i> Riwayat Presensi Tidak Tercatat</a>
-            <a href="#" class="btn btn-light"><i class="fa fa-pensil"></i> Pengisian Form Pengajuan Ijin</a>
+        <div class="breadcrumb">
+            <a href="/" class="btn btn-link"><i class="fa fa-home"></i> Home</a>
+            <div class="btn">></div>
+            <a href="{{ route('pre-tak-tercatat.index') }}" class="btn btn-link"><i class="fa fa-list"></i> Riwayat Presensi Tidak Tercatat</a>
+            <div class="btn">></div>
+            <a href="#" class="btn btn-link"><i class="fa fa-pensil"></i> Pengisian Form Pengajuan Ijin</a>
         </div>
 @endpush
 

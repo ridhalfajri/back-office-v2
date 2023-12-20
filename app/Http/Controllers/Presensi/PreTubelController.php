@@ -10,6 +10,7 @@ use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Models\PreTubel;
+use Carbon\Carbon;
 use SplFileInfo;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -29,8 +30,9 @@ class PreTubelController extends Controller
 
     public function datatable(PreTubel $preTubel)
     {
+        // ->select('s.id','s.tanggal_awal','s.tanggal_akhir','s.is_active','p.id as pegawai_id','p.nip','p.nama_depan','p.nama_belakang','p.tempat_lahir','p.tanggal_lahir','p.email_kantor','p.no_enroll','x.id as jabatan_id','x.jabatan_tukin_id','q.jabatan_unit_kerja_id','z.jenis_jabatan','z.nama_jabatan','z.grade','z.nominal','y.nama_unit_kerja','x.hirarki_unit_kerja_id','y.nama_jenis_unit_kerja','y.nama_parent_unit_kerja','q.is_plt')
         $data = DB::table('pegawai as p')
-                ->select('s.id','s.tanggal_awal','s.tanggal_akhir','s.is_active','p.id as pegawai_id','p.nip','p.nama_depan','p.nama_belakang','p.tempat_lahir','p.tanggal_lahir','p.email_kantor','p.no_enroll','x.id as jabatan_id','x.jabatan_tukin_id','q.jabatan_unit_kerja_id','z.jenis_jabatan','z.nama_jabatan','z.grade','z.nominal','y.nama_unit_kerja','x.hirarki_unit_kerja_id','y.nama_jenis_unit_kerja','y.nama_parent_unit_kerja','q.is_plt')
+                ->select('s.id','s.tanggal_awal','s.tanggal_akhir','s.is_active','p.id as pegawai_id','p.nip','p.nama_depan','p.nama_belakang','p.tempat_lahir','p.tanggal_lahir','p.email_kantor','z.jenis_jabatan','z.nama_jabatan','y.nama_unit_kerja','y.nama_jenis_unit_kerja','y.nama_parent_unit_kerja')
                 ->join('pegawai_riwayat_jabatan as q', function ($join) {
                     $join->on('p.id', '=', 'q.pegawai_id')->where('q.is_now', '=', 1);
                 })
@@ -49,15 +51,48 @@ class PreTubelController extends Controller
                         LEFT JOIN jabatan_struktural as d ON d.id = a.jabatan_id
                         LEFT JOIN jabatan_fungsional as e ON e.id = a.jabatan_id
                         LEFT JOIN jabatan_fungsional_umum as f ON f.id = a.jabatan_id) as z'), 'x.jabatan_tukin_id', '=', 'z.id')
-
                 ->orderBy('s.id', 'desc')
-                ->get();
+                ;
 
         return Datatables::of($data)
             ->addColumn('no', '')
             ->addColumn('nama', function ($row) {
                 return $row->nama_depan . ' ' . $row->nama_belakang;
            })
+           ->filterColumn('nama', function ($query, $keyword) {
+                // Custom filter logic for 'nama' column
+                $query->where(function ($query) use ($keyword) {
+                    $query->where('nama_depan', 'LIKE', "%$keyword%")
+                        ->orWhere('nama_belakang', 'LIKE', "%$keyword%");
+                });
+            })
+
+           ->editColumn('tanggal_awal', function ($row) {
+                // Set the locale to Indonesian
+                DB::statement('SET lc_time_names = "id_ID"');
+                $formattedDate = Carbon::parse($row->tanggal_awal)->isoFormat('dddd, D MMMM Y');
+
+                return $formattedDate;
+            })
+            ->filterColumn('s.tanggal_awal', function ($query, $keyword) {
+                // Set the locale to Indonesian
+                DB::statement('SET lc_time_names = "id_ID"');
+                $query->whereRaw("DATE_FORMAT(tanggal_awal, '%W, %d %M %Y') like ?", ["%$keyword%"]);
+            })
+
+            ->editColumn('tanggal_akhir', function ($row) {
+                // Set the locale to Indonesian
+                DB::statement('SET lc_time_names = "id_ID"');
+                $formattedDate = Carbon::parse($row->tanggal_akhir)->isoFormat('dddd, D MMMM Y');
+
+                return $formattedDate;
+            })
+            ->filterColumn('s.tanggal_akhir', function ($query, $keyword) {
+                // Set the locale to Indonesian
+                DB::statement('SET lc_time_names = "id_ID"');
+                $query->whereRaw("DATE_FORMAT(tanggal_akhir, '%W, %d %M %Y') like ?", ["%$keyword%"]);
+            })
+
             ->addColumn('aksi', function ($row) {
 
                 $editButton = '<a href="'.route('pre-tubel.edit',  $row->id).'" class="btn btn-sm btn-icon btn-warning on-default edit" title="Ubah"><i class="fa fa-pencil text-white"></i></a>';

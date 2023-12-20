@@ -28,8 +28,8 @@
         <li class="{{ request()->segment(1) == 'presensi' ? 'active' : '' }}">
             <a href="javascript:void(0)" class="has-arrow"><i class="fa fa-clock-o"></i><span>Presensi</span></a>
             <ul class="{{ request()->segment(1) == 'presensi' ? 'active' : '' }}">
-                <li class="{{ request()->segment(2) == 'presensi-pegawai' ? 'active' : '' }}">
-                    <a href="{{ route('presensi-pegawai.index') }}">Presensiku </span></a>
+                <li class="{{ request()->segment(2) == 'presensiku' ? 'active' : '' }}">
+                    <a href="{{ route('presensiku.index') }}">Presensiku </span></a>
                 </li>
 
                 <li class="{{ request()->segment(2) == 'pre-ijin' ? 'active' : '' }}">
@@ -63,7 +63,12 @@
             <li class="{{ request()->segment(1) == 'pegawai' ? 'active' : '' }}">
                 <a href="{{ route('pegawai.index') }}"><i class="icon-users"></i><span>Pegawai</span></a>
             </li>
-            <li><a href="{{ route('presensi-pegawai.index') }}"><i class="fa fa-clock-o"></i><span>Presensi</span></a></li>
+
+            <li class="{{ request()->segment(1) == 'presensi-pegawai' ? 'active' : '' }}">
+                <a href="{{ route('presensi-pegawai') }}"><i class="fa fa-clock-o"></i><span>Presensi Pegawai</span></a>
+            </li>
+
+
             <li
                 class="{{ request()->segment(2) == 'pengajuan_masuk_sdmoh' || request()->segment(2) == 'saldo_cuti_pegawai' ? 'active' : '' }}">
                 <a href="javascript:void(0)" class="has-arrow"><i class="icon-doc"></i><span>Cuti Pegawai</span></a>
@@ -104,9 +109,9 @@
                 <a href="{{ route('pre-jam-kerja.index') }}"><i class="fa fa-cogs"></i>Pengaturan Jam Kerja</span></a>
             </li>
 
-            {{-- <li class="{{ request()->segment(2) == 'hari-libur' ? 'active' : '' }}">
+            <li class="{{ request()->segment(2) == 'hari-libur' ? 'active' : '' }}">
                 <a href="{{ route('hari-libur.index') }}"><i class="fa fa-cogs"></i>Daftar Hari Libur</span></a>
-            </li> --}}
+            </li>
 
             <li><a href="{{ route('jabatan-unit-kerja.index') }}"><i class="fa fa-snowflake-o"></i><span>Jabatan Unit
                         Kerja</span></a></li>

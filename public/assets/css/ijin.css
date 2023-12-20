@@ -38,3 +38,20 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     width: auto;
 }
 
+table th {
+    text-align: left;
+    vertical-align: middle;
+    font-weight: bold;
+    color: #343a40; /*Change this color value based on your preference */
+    /* background-color: #f8f9fa; Change this background color value based on your preference */
+    /* Add any additional styles you need for <th> elements */
+}
+
+table td {
+    text-align: left;
+    vertical-align: middle;
+    /* font-weight: bold; */
+    /* color: #343a40; Change this color value based on your preference */
+    /* background-color: #f8f9fa; Change this background color value based on your preference */
+    /* Add any additional styles you need for <th> elements */
+}

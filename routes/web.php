@@ -110,9 +110,15 @@ Route::middleware('auth')->group(function () {
          Route::post('/hari-libur/datatable', [HariLiburController::class, 'datatable'])->name('hari-libur.datatable');
 
          //Presensi
-         Route::resource('/presensi-pegawai', PresensiPegawaiController::class);
-         Route::post('/presensi-pegawai/datatable', [PresensiPegawaiController::class, 'datatable'])->name('presensi-pegawai.datatable');
-         Route::post('/presensi-pegawai/getdatapresensi', [PresensiPegawaiController::class, 'getdatapresensi'])->name('presensi-pegawai.getdatapresensi');
+         Route::resource('/presensiku', PresensiPegawaiController::class);
+         Route::post('/presensiku/datatable', [PresensiPegawaiController::class, 'datatable'])->name('presensiku.datatable');
+         Route::post('/presensiku/getdatapresensi', [PresensiPegawaiController::class, 'getdatapresensi'])->name('presensiku.getdatapresensi');
+
+         Route::post('/presensi-pegawai/getanggotatim', [PresensiPegawaiController::class, 'getAnggotaTim'])->name('presensi-pegawai.getanggotatim');
+
+         Route::get('/presensi-pegawai/',  [PresensiPegawaiController::class, 'dataPresensiPegawai'])->name('presensi-pegawai');
+         Route::post('/presensi-pegawai/datatablepresensi', [PresensiPegawaiController::class, 'datatablePresensi'])->name('presensi-pegawai.datatablepresensi');
+         Route::post('/presensi-pegawai/getdatapresensipegawai', [PresensiPegawaiController::class, 'getdataPresensiPegawai'])->name('presensi-pegawai.getdatapresensipegawai');
 
      });
 

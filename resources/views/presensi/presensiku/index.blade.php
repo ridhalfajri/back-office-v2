@@ -7,19 +7,21 @@
         href="{{ asset('assets/plugins/datatable/fixedeader/dataTables.fixedcolumns.bootstrap4.min.css') }}">
     <link rel="stylesheet"
         href="{{ asset('assets/plugins/datatable/fixedeader/dataTables.fixedheader.bootstrap4.min.css') }}">
+@endpush
 
-    <link rel="stylesheet" href="{{ asset('assets/plugins/sweetalert/sweetalert.css') }}">
-    <!-- Toastr -->
-    <link rel="stylesheet" href="{{ asset('assets/plugins/toastr/toastr.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/css/ijin.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/plugins/select2-4.0.13/dist/css/select2.min.css') }}">
+@push('style')
+<link rel="stylesheet" href="{{ asset('assets/plugins/sweetalert/sweetalert.css') }}">
+<!-- Toastr -->
+<link rel="stylesheet" href="{{ asset('assets/plugins/toastr/toastr.css') }}">
+<link rel="stylesheet" href="{{ asset('assets/css/ijin.css') }}">
+
 @endpush
 
 @push('breadcrumb')
         <div class="breadcrumb">
             <a href="/" class="btn btn-link"><i class="fa fa-home"></i> Home</a>
             <div class="btn">></div>
-            <a href="{{ route('presensi-pegawai') }}" class="btn btn-light"><i class="fa fa-list"></i> Presensi</a>
+            <a href="{{ route('presensiku.index') }}" class="btn btn-link"><i class="fa fa-list"></i> Presensi</a>
 
         </div>
 @endpush
@@ -29,63 +31,150 @@
     <div class="card">
 
         <div class="card-body">
+            <div class="student-info">
+
+                @php
+                    $jabatan = '';
+                    $unitkerja = '';
+                @endphp
+
+                @foreach ($pegawai as $data)
+                    @if($data->is_plt == 1)
+                        @if($jabatan == '')
+                            @php
+                                $jabatan = $data->nama_jabatan;
+                            @endphp
+                        @else
+                            @php
+                                $jabatan = $jabatan . ' / '. $data->nama_jabatan;
+                            @endphp
+                        @endif
+                    @else
+                        @if($jabatan == '')
+                            @php
+                                $jabatan = $data->nama_jabatan ;
+                            @endphp
+                        @else
+                            @php
+                                $jabatan = $jabatan .' / '. $data->nama_jabatan;
+                            @endphp
+                        @endif
+                    @endif
+
+                    @if($unitkerja == '')
+                            @php
+                                $unitkerja = $data->nama_unit_kerja;
+                            @endphp
+                        @else
+                            @php
+                                $unitkerja = $unitkerja . ' / ' . $data->nama_unit_kerja;
+                            @endphp
+                        @endif
+
+
+                @endforeach
+
+                @foreach ($pegawai as $data)
+
+                    <div class="row rowdata">
+                        <div class="col-sm-2">
+                            <strong>NIP</strong>
+                        </div>
+                        <div class="col-sm-4">
+                            : {{ $data->nip }}
+                        </div>
+
+                        <div class="col-sm-2">
+                            <strong>Pangkat</strong>
+                        </div>
+                        <div class="col-sm-4">
+                            : {{ $data->nama_pangkat }}
+                        </div>
+                    </div>
+
+                    <div class="row rowdata">
+                        <div class="col-sm-2">
+                            <strong>Nama Pegawai</strong>
+                        </div>
+                        <div class="col-sm-4">
+                            : {{ $data->nama_depan . ' ' . $data->nama_belakang }}
+                        </div>
+
+                        <div class="col-sm-2">
+                            <strong>Nama Golongan</strong>
+                        </div>
+                        <div class="col-sm-4">
+                            : {{ $data->nama_golongan }}
+                        </div>
+                    </div>
+
+                    <div class="row rowdata">
+                        <div class="col-sm-2">
+                            <strong>Tempat & Tanggal Lahir</strong>
+                        </div>
+                        <div class="col-sm-4">
+                            : {{ $data->tempat_lahir }}, {{ \Carbon\Carbon::parse($data->tanggal_lahir)->format('d/m/Y') }}
+                        </div>
+
+                        <div class="col-sm-2">
+                            <strong>Jenis Jabatan</strong>
+                        </div>
+                        <div class="col-sm-4">
+                            : {{ $data->jenis_jabatan }}
+                        </div>
+
+                    </div>
+
+                    <div class="row rowdata">
+                        <div class="col-sm-2">
+                            <strong>Unit Kerja</strong>
+                        </div>
+                        <div class="col-sm-4">
+                            : {{ $unitkerja  }}
+                        </div>
+
+                        <div class="col-sm-2">
+                            <strong>Nama Jabatan</strong>
+                        </div>
+                        <div class="col-sm-4">
+                            : {{ $jabatan }}
+                        </div>
+                    </div>
+
+                    @break
+                @endforeach
+            </div>
+        </div>
+
+        <div class="card-body">
 
             <div class="row rowdata">
-                <div class="col-3">
+                <div class="col-6">
                     <div class="form-group">
                         <label>Filter Dari Tanggal : </label>
                         <input type="date" class="form-control" id="date_awal" name = "date_awal" placeholder="Pilih Tanggal"/>
 
                     </div>
-                </div>
-
-                <div class="col-3">
+                  </div>
+                  <div class="col-6">
                     <div class="form-group">
                         <label>Sampai Tanggal : </label>
                         <input type="date" class="form-control" id="date_akhir" name = "date_akhir" placeholder="Pilih Tanggal"/>
 
                     </div>
-                </div>
+                  </div>
 
-                <div class="col-3">
-                    <div class="form-group">
-                        <label>Nama Pegawai : </label>
-                        <select class="form-control" id="pegawai_id" name="pegawai_id" required>
-                            <option value="" selected>Semua</option>
-                            @foreach ($pegawai as $data)
-                                <option value="{{ $data->id }}" {{ old('pegawai_id') == $data->id ? 'selected' : '' }}> NIP: {{ $data->nip }}  |  Nama : {{ $data->nama_depan . ' ' . $data->nama_belakang }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                </div>
-
-                <div class="col-3">
-                    <div class="form-group">
-                        <label>Unit Kerja : </label>
-                        <select class="form-control" id="hirarki_unit_kerja_id" name="hirarki_unit_kerja_id" required>
-                            <option value="" selected>Semua</option>
-                            @foreach ($hirarkiUnitKerja as $data)
-                                <option value="{{ $data->id }}" {{ old('hirarki_unit_kerja_id') == $data->id ? 'selected' : '' }}>{{ $data->nama_unit_kerja }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                </div>
-
-            </div>
-
-            <div class="row rowdata">
-                <div class="col-6">
+                  <div class="col-6">
                     <button class="btn btn-primary" id="btnShowData"><i class="fa fa-search" aria-hidden="true"></i> Cari Data</button>
-                </div>
-                <div class="col-6">
-                    <form method="POST" action="{{ route('presensi-pegawai.getdatapresensipegawai') }}">
+                  </div>
+                  <div class="col-6">
+                    <form method="POST" action="{{ route('presensiku.getdatapresensi') }}">
                         @csrf <!-- CSRF protection -->
                         <button class="btn btn-primary" type="submit"><i class="fa fa-refresh" aria-hidden="true"></i> Syncronize Data Presensi</button>
                     </form>
-                </div>
+
+                  </div>
             </div>
-
-
         </div>
 
         <div class="card-body">
@@ -93,36 +182,26 @@
                 <table id="tbl-data" class="table table-hover dataTable table-striped table-bordered display">
                     <thead>
                         <tr>
-                            <th style="width: 5%" class="font-weight-bold text-dark align-middle">No</th>
-                            <th class="font-weight-bold text-dark align-middle">NIP</th>
-                            <th class="font-weight-bold text-dark align-middle">Nama Pegawai</th>
-                            <th class="font-weight-bold text-dark align-middle">Jabatan</th>
-                            <th class="font-weight-bold text-dark align-middle">Unit Kerja</th>
-                            <th class="font-weight-bold text-dark align-middle">Tanggal Presensi</th>
-                            <th class="font-weight-bold text-dark align-middle">Jam Masuk</th>
-                            <th class="font-weight-bold text-dark align-middle">Jam Pulang</th>
-                            <th class="font-weight-bold text-dark align-middle">Kekurangan Jam Kerja</th>
-                            <th class="font-weight-bold text-dark align-middle">Kelebihan Jam Kerja</th>
-                            <th class="font-weight-bold text-dark align-middle">Nominal Potongan</th>
-                            <th class="font-weight-bold text-dark align-middle">Status Kehadiran</th>
-                            <th class="font-weight-bold text-dark align-middle">Keterangan</th>
+                            <th style="width: 5%" class="font-weight-bold text-dark">No</th>
+                            <th class="font-weight-bold text-dark">Tanggal Presensi</th>
+                            <th class="font-weight-bold text-dark">Jam Masuk</th>
+                            <th class="font-weight-bold text-dark">Jam Pulang</th>
+                            <th class="font-weight-bold text-dark">Kekurangan Jam</th>
+                            <th class="font-weight-bold text-dark">Nominal Potongan</th>
+                            <th class="font-weight-bold text-dark">Status Kehadiran</th>
+                            <th class="font-weight-bold text-dark">Keterangan</th>
                         </tr>
                     </thead>
                     <tfoot>
                         <tr>
-                            <th class="font-weight-bold text-dark align-middle">No</th>
-                            <th class="font-weight-bold text-dark align-middle">NIP</th>
-                            <th class="font-weight-bold text-dark align-middle">Nama Pegawai</th>
-                            <th class="font-weight-bold text-dark align-middle">Jabatan</th>
-                            <th class="font-weight-bold text-dark align-middle">Unit Kerja</th>
-                            <th class="font-weight-bold text-dark align-middle">Tanggal Presensi</th>
-                            <th class="font-weight-bold text-dark align-middle">Jam Masuk</th>
-                            <th class="font-weight-bold text-dark align-middle">Jam Pulang</th>
-                            <th class="font-weight-bold text-dark align-middle">Kekurangan Jam Kerja Normal</th>
-                            <th class="font-weight-bold text-dark align-middle">Kelebihan Jam Kerja</th>
-                            <th class="font-weight-bold text-dark align-middle">Nominal Potongan</th>
-                            <th class="font-weight-bold text-dark align-middle">Status Kehadiran</th>
-                            <th class="font-weight-bold text-dark align-middle">Keterangan</th>
+                            <th class="font-weight-bold text-dark">No</th>
+                            <th class="font-weight-bold text-dark">Tanggal Presensi</th>
+                            <th class="font-weight-bold text-dark">Jam Masuk</th>
+                            <th class="font-weight-bold text-dark">Jam Pulang</th>
+                            <th class="font-weight-bold text-dark">Kekurangan Jam</th>
+                            <th class="font-weight-bold text-dark">Nominal Potongan</th>
+                            <th class="font-weight-bold text-dark">Status Kehadiran</th>
+                            <th class="font-weight-bold text-dark">Keterangan</th>
                         </tr>
                     </tfoot>
                     <tbody>
@@ -140,10 +219,9 @@
 <script src="{{ asset('assets/plugins/toastr/toastr.min.js') }}" type="text/javascript"></script>
 <script src="{{ asset('assets/bundles/dataTables.bundle.js') }}"></script>
 <script src="{{ asset('assets/js/table/datatable.js') }}"></script>
-<script src="{{ asset('assets/plugins/select2-4.0.13/dist/js/select2.min.js') }}"></script>
 
 <script>
-    let table;
+     let table;
 
     $(document).ready(function() {
 
@@ -175,8 +253,6 @@
             // DataTable configuration options
         });
 
-        $('#pegawai_id').select2();
-        $('#hirarki_unit_kerja_id').select2();
 
         $('#btnShowData').on('click', function() {
 
@@ -188,8 +264,7 @@
 
             var dateAwal = document.getElementById('date_awal').value;
             var dateAkhir = document.getElementById('date_akhir').value;
-            var selectedPegawaiId = document.getElementById('pegawai_id').value;
-            var selectedHirarkiUnitKerjaId = document.getElementById('hirarki_unit_kerja_id').value;
+
 
             table = $('#tbl-data').DataTable({
                 processing: true,
@@ -204,16 +279,14 @@
                 info: true,
                 autoWidth: false,
                 ajax: {
-                    url: '{{ route('presensi-pegawai.datatablepresensi') }}',
+                    url: '{{ route('presensiku.datatable') }}',
                     type: 'POST',
                     headers: {
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
                     },
                     data: {
                         date_awal: dateAwal,
-                        date_akhir: dateAkhir,
-                        pegawai_id: selectedPegawaiId,
-                        hirarki_unit_kerja_id: selectedHirarkiUnitKerjaId
+                        date_akhir: dateAkhir
                     },
                 },
                 columns: [
@@ -221,22 +294,6 @@
                         data: 'no',
                         name: 'no',
                         className: 'text-center'
-                    },
-                    {
-                        data: 'nip',
-                        name: 'nip',
-                    },
-                    {
-                        data: 'nama',
-                        name: 'nama'
-                    },
-                    {
-                        data: 'nama_jabatan',
-                        name: 'nama_jabatan'
-                    },
-                    {
-                        data: 'nama_unit_kerja',
-                        name: 'nama_unit_kerja'
                     },
                     {
                         data: 'tanggal_presensi',
@@ -253,32 +310,6 @@
                     {
                         data: 'kekurangan_jam',
                         name: 'kekurangan_jam',
-                        className: 'text-center',
-                        render: function(data, type, row) {
-                            switch (data) {
-                                case "00:00:00":
-                                    return '<strong>' + data + '</strong>';
-                                    break;
-                                default:
-                                    return '<span class="badge badge-pill badge-danger">' + '<strong">' + data + '</strong>' +
-                                        '</span>';
-                            }
-                        }
-                    },
-                    {
-                        data: 'kelebihan_jam',
-                        name: 'kelebihan_jam',
-                        className: 'text-center',
-                        render: function(data, type, row) {
-                            switch (data) {
-                                case "00:00:00":
-                                    return '<strong>' + data + '</strong>';
-                                    break;
-                                default:
-                                    return '<span class="badge badge-pill badge-success">' + '<strong>' + data + '</strong>' +
-                                        '</span>';
-                            }
-                        }
                     },
                     {
                         data: 'nominal_potongan',
@@ -319,7 +350,7 @@
 
             $.ajax({
                 type: "POST",
-                url: "{{ route('presensi-pegawai.getdatapresensipegawai') }}",
+                url: "{{ route('presensiku.getdatapresensi') }}",
                 headers: {
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
                 },
@@ -332,6 +363,8 @@
             });
 
         });
+
+        $("#btnShowData").click();
 
     });
 </script>

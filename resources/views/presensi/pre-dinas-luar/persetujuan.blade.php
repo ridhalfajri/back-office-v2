@@ -15,9 +15,10 @@
 @endpush
 
 @push('breadcrumb')
-        <div class="btn-group btn-breadcrumb">
-            <a href="/" class="btn btn-outerline"><i class="fa fa-home"></i></a>
-            <a href="{{ route('pre-dinas-luar.index') }}" class="btn btn-outerline"><i class="fa fa-list"></i> Dinas Luar</a>
+        <div class="breadcrumb">
+            <a href="/" class="btn btn-link"><i class="fa fa-home"></i> Home</a>
+            <div class="btn">></div>
+            <a href="{{ route('pre-dinas-luar.index') }}" class="btn btn-link"><i class="fa fa-list"></i> Dinas Luar</a>
         </div>
 @endpush
 
@@ -169,10 +170,64 @@
             </div>
         </div>
 
+
+        <div class="card-body">
+            <h5><strong>Riwayat Persetujuan Dinas Luar Berdasarkan Unit Kerja<strong></h5>
+        </div>
+
         <div class="card-body">
 
-            <h5><strong>Riwayat Persetujuan Dinas Luar Berdasarkan Unit Kerja<strong></h5>
+            <div class="row">
+                <div class="col-3">
+                    <div class="form-group">
+                        <label>Filter Dari Tanggal : </label>
+                        <input type="date" class="form-control" id="date_awal" name = "date_awal" placeholder="Pilih Tanggal"/>
 
+                    </div>
+                </div>
+
+                <div class="col-3">
+                    <div class="form-group">
+                        <label>Sampai Tanggal : </label>
+                        <input type="date" class="form-control" id="date_akhir" name = "date_akhir" placeholder="Pilih Tanggal"/>
+
+                    </div>
+                </div>
+
+                <div class="col-3">
+                    <div class="form-group">
+                        <label>Nama Pegawai : </label>
+                        <select class="form-control" id="pegawai_id" name="pegawai_id" required>
+                            <option value="" selected>Semua</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-3">
+                    <div class="form-group">
+                        <label>Status Persetujuan : </label>
+                        <select class="form-control" id="status" name="status" required>
+                            <option value="" selected>Semua</option>
+                            <option value="1" selected>Pengajuan</option>
+                            <option value="2" selected>Disetujui</option>
+                            <option value="3" selected>Ditolak</option>
+                        </select>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="row rowdata">
+                <div class="col-6">
+                    <button class="btn btn-primary" id="btnShowData"><i class="fa fa-search" aria-hidden="true"></i> Cari Data</button>
+                </div>
+            </div>
+
+
+        </div>
+
+
+        <div class="card-body">
             <br>
             <!-- /.dropdown js__dropdown -->
             <table id="tbl-data" class="table table-striped table-bordered display nowrap" style="width:100%">
@@ -225,11 +280,6 @@
 <script>
     let table;
 
-   $(document).ready(function() {
-       table = $('#tbl-data').DataTable();
-       $('#hirarki_unit_kerja_id').select2();
-   });
-
    setTimeout(function() {
         var hirarki_unit_kerja_id = @json($pegawai[0]->hirarki_unit_kerja_id);
         $('#hirarki_unit_kerja_id').val(hirarki_unit_kerja_id);
@@ -241,6 +291,61 @@
 
 <script type="text/javascript">
     "use strict"
+
+    $(document).ready(function() {
+        table = $('#tbl-data').DataTable();
+        $('#hirarki_unit_kerja_id').select2();
+
+        var currentDate = new Date();
+        // Set the date to the 1st day of the current month
+        currentDate.setDate(1);
+
+        // Format the date to 'YYYY-MM-DD'
+        var formattedDate = currentDate.toISOString().split('T')[0];
+
+        document.getElementById('date_awal').value = formattedDate;
+
+        // Get the current date
+        var currentDate = new Date();
+
+        // Format the date to 'YYYY-MM-DD'
+        var formattedDate = currentDate.toISOString().split('T')[0];
+
+        // Set the default value for the date_akhir input
+        document.getElementById('date_akhir').value = formattedDate;
+
+
+        $('#btnShowData').on('click', function() {
+            showDataPresensi();
+            getAnggotaTim();
+        });
+
+
+        $('#hirarki_unit_kerja_id').on('change', function(e) {
+            e.preventDefault();
+
+            //===================
+
+            var selectElement = document.getElementById('status');
+            selectElement.selectedIndex = 0; //semua sebagai default
+
+            // Get the select element
+            var selectElement = $('#pegawai_id');
+                // Clear existing options
+                selectElement.empty();
+
+                // Add a default option
+                var defaultOption = $('<option>', {
+                    value: '',
+                    text: 'Semua'
+                });
+                selectElement.append(defaultOption);
+            //===================
+            showDataPresensi();
+            getAnggotaTim();
+
+        });
+    });
 
     $(function() {
         toastr.options = {
@@ -265,99 +370,6 @@
         @if(session('success'))
             toastr['success']('{{ session("success") }}');
         @endif
-
-        $('#hirarki_unit_kerja_id').on('change', function(e) {
-            e.preventDefault();
-            const id = $(this).val();
-            var pegawaiId = $(this).data('id');
-
-            table.destroy();
-
-            table = $('#tbl-data').DataTable({
-                processing: true,
-                serverSide: true,
-                deferRender: true,
-                responsive: true,
-                pageLength: 10,
-                paging: true,
-                searching: true,
-                ordering: true,
-                info: true,
-                autoWidth: false,
-                ajax: {
-                    url: '{{ route("pre-dinas-luar.datatablepersetujuan") }}',
-                    type: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    data:{
-                        hirarki_unit_kerja_id: id,
-                        pegawai_id : pegawaiId
-                    }
-                },
-                columns: [
-                    {
-                        data: 'no',
-                        name: 'no',
-                        class: 'text-center'
-                    },
-                    {
-                        data: 'nip',
-                        name: 'Nip',
-                    },
-                    {
-                        data: 'nama',
-                        name: 'Nama',
-                    },
-                    {
-                        data: 'tanggal_dinas_awal',
-                        name: 'Tanggal Dinas Awal',
-                    },
-                    {
-                        data: 'tanggal_dinas_akhir',
-                        name: 'Tanggal Dinas Akhir',
-                    },
-                    {
-                        data: 'nama_kegiatan',
-                        name: 'Nama Kegiatan',
-                    },
-                    {
-                        data: 'lokasi',
-                        name: 'Lokasi',
-                    },
-                    {
-                        data: 'status',
-                        name: 'Status',
-                    },
-                    {
-                        data: 'aksi',
-                        name: 'aksi',
-                        class: 'text-center'
-                    },
-                ],
-                columnDefs: [{
-                    'sortable': false,
-                    'searchable': false,
-                    'targets': [0, -1]
-                }],
-                order: [
-                    [1, 'asc']
-                ]
-            });
-
-            table.on('draw.dt', function() {
-                var info = table.page.info();
-                table.column(0, {
-                    search: 'applied',
-                    order: 'applied',
-                    page: 'applied'
-                }).nodes().each(function(cell, i) {
-                    cell.innerHTML = i + 1 + info.start;
-                });
-            });
-        });
-
-
 
         $('#tbl-data').delegate('button.setujui', 'click', function(e) {
             e.preventDefault();
@@ -465,6 +477,165 @@
         });
 
     });
+
+    function showDataPresensi(){
+
+        var dateAwal = document.getElementById('date_awal').value;
+        var dateAkhir = document.getElementById('date_akhir').value;
+        var selectedPegawaiId = document.getElementById('pegawai_id').value;
+
+        var UnitKerja = document.getElementById('hirarki_unit_kerja_id');
+        var hirarkiUnitKerjaId = UnitKerja.value;
+        var pimpinanId = @json($pegawai[0]->id);
+        var sts_pengajuan = document.getElementById('status').value;
+
+        table.destroy();
+
+        table = $('#tbl-data').DataTable({
+                processing: true,
+                serverSide: true,
+                deferRender: true,
+                responsive: true,
+                pageLength: 10,
+                paging: true,
+                searching: true,
+                ordering: true,
+                info: true,
+                autoWidth: false,
+                ajax: {
+                    url: '{{ route("pre-dinas-luar.datatablepersetujuan") }}',
+                    type: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    data:{
+                        hirarki_unit_kerja_id: hirarkiUnitKerjaId,
+                        pimpinan_Id : pimpinanId,
+                        date_awal: dateAwal,
+                        date_akhir: dateAkhir,
+                        pegawai_id : selectedPegawaiId,
+                        status_pengajuan: sts_pengajuan,
+                    }
+                },
+                columns: [
+                    {
+                        data: 'no',
+                        name: 'no',
+                        class: 'text-center'
+                    },
+                    {
+                        data: 'nip',
+                        name: 'Nip',
+                    },
+                    {
+                        data: 'nama',
+                        name: 'Nama',
+                    },
+                    {
+                        data: 'tanggal_dinas_awal',
+                        name: 'Tanggal Dinas Awal',
+                    },
+                    {
+                        data: 'tanggal_dinas_akhir',
+                        name: 'Tanggal Dinas Akhir',
+                    },
+                    {
+                        data: 'nama_kegiatan',
+                        name: 'Nama Kegiatan',
+                    },
+                    {
+                        data: 'lokasi',
+                        name: 'Lokasi',
+                    },
+                    {
+                        data: 'status_approve',
+                        name: 'status_approve',
+                    },
+                    {
+                        data: 'aksi',
+                        name: 'aksi',
+                        class: 'text-center'
+                    },
+                ],
+                columnDefs: [{
+                    'sortable': false,
+                    'searchable': false,
+                    'targets': [0, -1]
+                }],
+                order: [
+                    [1, 'asc']
+                ]
+            });
+
+
+            table.on('draw.dt', function() {
+                var info = table.page.info();
+                table.column(0, {
+                    search: 'applied',
+                    order: 'applied',
+                    page: 'applied'
+                }).nodes().each(function(cell, i) {
+                    cell.innerHTML = i + 1 + info.start;
+                });
+            });
+        }
+
+    function getAnggotaTim() {
+
+        var selectedUnitKerjaId = document.getElementById('hirarki_unit_kerja_id').value;
+        var pimpinanId = @json($pegawai[0]->id);
+
+        // Parameters to be sent in the request body
+        var requestData = {
+        pimpinan_id: pimpinanId,
+        hirarki_unit_kerja_id: selectedUnitKerjaId
+        };
+
+
+        // Make an AJAX request using jQuery
+        $.ajax({
+        url: '{{ route("presensi-pegawai.getanggotatim") }}',
+        type: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        data:{
+            pimpinan_id: pimpinanId,
+            hirarki_unit_kerja_id: selectedUnitKerjaId
+        },
+        success: function(data) {
+
+            // Get the select element
+            var selectElement = $('#pegawai_id');
+            // Clear existing options
+            selectElement.empty();
+
+            // Add a default option
+            var defaultOption = $('<option>', {
+                value: '',
+                text: 'Semua'
+            });
+            selectElement.append(defaultOption);
+
+            // Add an option for each data item
+            $.each(data, function(index, item) {
+                var option = $('<option>', {
+                    value: item.pegawai_id,
+                    text: item.nama_depan + ' ' + item.nama_belakang
+                });
+                selectElement.append(option);
+            });
+
+            // Set the default option as selected
+            defaultOption.prop('selected', true);
+        },
+        error: function(error) {
+            console.error('Error fetching data:', error);
+        }
+        });
+
+    }
+
 
     function confirmasi(id,jwb) {
         return new Promise(function(resolve, reject) {

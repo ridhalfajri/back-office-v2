@@ -4,11 +4,11 @@ namespace App\Http\Controllers\Presensi;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Yajra\Datatables\Datatables;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Models\PreJamKerja;
+use Yajra\DataTables\Facades\DataTables;
 
 class PreJamKerjaController extends Controller
 {
