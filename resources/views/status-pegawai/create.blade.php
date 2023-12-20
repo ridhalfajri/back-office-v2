@@ -1,6 +1,7 @@
 @extends('template')
 
 @push('style')
+    <link rel="stylesheet" href="{{ asset('assets/plugins/sweetalert/sweetalert.css') }}">
     <!-- Select2 -->
     <link rel="stylesheet" href="{{ asset('assets/plugins/select2/css/select2.min.css') }}">
 @endpush
@@ -34,10 +35,11 @@
                         </div>
                     @endif
 
-                    <form method="post"  action="{{ route('status-pegawai.store') }}"  accept-charset="utf-8">
+                    <form class="needs-validation" id="form-status" method="post"
+                        action="{{ route('status-pegawai.store') }}" accept-charset="utf-8" novalidate>
                         @csrf
                         <div class="row clearfix">
-                            <div class="col-12 col-lg-12 col-md-12">
+                            <div class="col-12 col-lg-6 col-md-6">
                                 <div class="form-group @error('nama')has-error @enderror">
                                     <label>Status Pegawai <span class="text-danger"><sup>*</sup></span></label>
                                     <input type="text" name="nama" id="nama" value="{{ old('nama') }}"
@@ -61,15 +63,47 @@
 @endsection
 
 @push('script')
+    <script src="{{ asset('assets/plugins/sweetalert/sweetalert.min.js') }}"></script>
     <!-- Select2 -->
     <script src="{{ asset('assets/plugins/select2/js/select2.min.js') }}" type="text/javascript"></script>
 
     <script type="text/javascript">
-        "use strict"
+        (function () {
+          'use strict'
 
-        // $('#golongan_id').select2({
-        //         width: 'resolve'
-        // });
+          var forms = document.querySelectorAll('.needs-validation')
 
+          Array.prototype.slice.call(forms)
+            .forEach(function (form) {
+              form.addEventListener('submit', function (event) {
+                event.preventDefault()
+                if (!form.checkValidity()) {
+                  event.stopPropagation()
+                  form.classList.add('was-validated')
+                }else
+                {
+                    // Konfirmasi sebelum menyimpan data
+                    swal({
+                        title: 'Konfirmasi!',
+                        text: 'Apakah anda yakin ingin menyimpan data?',
+                        type: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#78c0ec',
+                        confirmButtonText: 'Ya',
+                        cancelButtonText: 'Tidak',
+                        closeOnConfirm: true,
+                        closeOnCancel: false
+                    }, function(isConfirm) {
+                        if (isConfirm) {
+                            form.submit()
+                        } else {
+                            swal('Informasi', 'Simpan data dibatalkan', 'error');
+                            event.stopPropagation()
+                        }
+                    });
+                }
+              }, false)
+            });
+        })();
     </script>
 @endpush

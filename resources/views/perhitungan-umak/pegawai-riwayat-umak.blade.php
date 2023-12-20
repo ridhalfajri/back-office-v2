@@ -8,7 +8,7 @@
 <link rel="stylesheet"
     href="{{ asset('assets/plugins/datatable/fixedeader/dataTables.fixedheader.bootstrap4.min.css') }}">
 
-    {{-- custom css datatable --}}
+{{-- custom css datatable --}}
 {{-- <link rel="stylesheet" href="{{ asset('assets/plugins/datatable/custom.css') }}"> --}}
 <link rel="stylesheet" href="{{ asset('assets/plugins/sweetalert/sweetalert.css') }}">
 <!-- Toastr -->
@@ -74,7 +74,7 @@
                                 <div class="form-group @error('tahunCalc')has-error @enderror">
                                     <label class="form-label">Aksi</label>
                                     <button type="submit" class="btn btn-primary btn-sm waves-effect waves-light">Kalkulasi Seluruh Pegawai</button>
-                                    {{-- @if (Carbon\Carbon::now()->format('d') == '07')
+                                    {{-- @if (Carbon\Carbon::now()->format('m') != '01')
                                     <button type="submit" class="btn btn-primary btn-sm waves-effect waves-light">Kalkulasi Seluruh Pegawai</button>
                                     @else
                                     <button disabled class="btn btn-primary btn-sm waves-effect waves-light">Kalkulasi Seluruh Pegawai</button>
@@ -158,6 +158,12 @@
                                 <select id="unitKerja" name="unitKerja" class="form-control">
                                     <option value="">--Pilih--</option>
                                     @foreach ($dataUnitKerja as $data)
+                                        {{-- @if (old('unitKerja') == $data->id )
+                                            <option value="{{ $data->id }}" selected>{{ $data->nama }}</option>
+                                        @else
+                                            <option value="{{ $data->id }}">{{ $data->nama }}</option>
+                                        @endif --}}
+                                       
                                         <option value="{{ $data->id }}">{{ $data->nama }}</option>
                                     @endforeach
                                 </select>
@@ -198,6 +204,10 @@
                     <tbody>
                     </tbody>
                 </table>
+                <br>
+                <button type="button" id="exportExcel" class="btn btn-success waves-effect waves-light">
+                    Export to Excel
+                </button>
                 </div>
             </div>
         </div>
@@ -266,7 +276,7 @@
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
                     },
                     data: function(d) {
-                        //untuk on change berubah data tablenya
+                        //untuk on change datatable
                         d.bulan = $('#bulan').val();
                         d.tahun = $('#tahun').val();
                         d.unitKerja = $('#unitKerja').val();
@@ -336,7 +346,7 @@
                 });
             });
 
-            //untuk on change
+            //untuk on change datatable
             $('#bulan').change(function(e) {
                 e.preventDefault();
                 table.ajax.reload();
@@ -351,9 +361,23 @@
                 e.preventDefault();
                 table.ajax.reload();
             });
-    })
 
-    
+            //export data excel
+            $('#exportExcel').on('click', function(e) {
+                e.preventDefault();
+                let bulan =  $("#bulan").val();
+                let tahun =  $("#tahun").val();
+                let unitKerjaId =  $("#unitKerja").val();
+
+                if(null === unitKerjaId || '' === unitKerjaId){
+                    window.location.href = '{{ url("kalkulasi/export-to-excel/umak") }}/' + bulan +'/'+ tahun;
+                } else {
+                    window.location.href = '{{ url("kalkulasi/export-to-excel/umak") }}/' + bulan +'/'+ tahun +'/'+ unitKerjaId;
+                }
+            });
+
+        });
 </script>
+
 @endpush
 
