@@ -1,4 +1,5 @@
-<a href="{{ route('unit-kerja.edit', $id) }}" class="btn btn-sm btn-icon btn-warning on-default edit" title="Ubah">
+<a href="{{ route('pegawai-riwayat-golongan.edit', $id) }}" class="btn btn-sm btn-icon btn-warning on-default edit"
+    title="Ubah">
     <i class="fa fa-pencil text-white"></i>
 </a>
 <button type="button" data-type="confirm" data-id="{{ $id }}"

@@ -15,6 +15,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\DataExportPru;
+
 class PegawaiRiwayatUmakController extends Controller
 {
     /**
@@ -27,7 +30,7 @@ class PegawaiRiwayatUmakController extends Controller
         $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
         $this->authorize('kabiro', $kabiro);
 
-        $title = 'Pegawai Riwayat Uang Makan';
+        $title = 'Riwayat Uang Makan Pegawai';
         
         $dataUnitKerja = DB::table('unit_kerja')
         ->select('*')
@@ -51,7 +54,12 @@ class PegawaiRiwayatUmakController extends Controller
             'pegawai_riwayat_umak.jumlah_hari_masuk', 'pegawai_riwayat_umak.total', 'pegawai_riwayat_umak.is_double',
             'pegawai_riwayat_umak.bulan', 'pegawai_riwayat_umak.tahun', 'uk.nama as unit_kerja')
             ->join('pegawai as p','p.id','=','pegawai_riwayat_umak.pegawai_id')
-            ->join('pegawai_riwayat_jabatan as prj', 'prj.pegawai_id', '=', 'pegawai_riwayat_umak.pegawai_id')
+            //->join('pegawai_riwayat_jabatan as prj', 'prj.pegawai_id', '=', 'pegawai_riwayat_umak.pegawai_id')
+            ->join('pegawai_riwayat_jabatan as prj', function ($join) {
+                $join->on('prj.pegawai_id','=','pegawai_riwayat_umak.pegawai_id')
+                    ->where('prj.is_now','=',1)
+                    ;
+            })
             ->join('jabatan_unit_kerja as juk', 'juk.id', '=', 'prj.jabatan_unit_kerja_id')
             ->join('hirarki_unit_kerja as huk', 'huk.id', '=', 'juk.hirarki_unit_kerja_id')
             ->leftJoin('unit_kerja as uk', 'uk.id', '=', 'huk.child_unit_kerja_id')
@@ -64,7 +72,9 @@ class PegawaiRiwayatUmakController extends Controller
             //
             ->where('pegawai_riwayat_umak.bulan', '=', $bulan)
             ->where('pegawai_riwayat_umak.tahun', '=', $tahun)
-            ->orderBy('uk.id','asc');
+            ->orderBy('uk.id','asc')
+            ->orderBy('p.nama_depan','asc')
+            ;
 
             if(null != $unitKerja || '' != $unitKerja){
                 $data->where('uk.id', '=', $unitKerja);
@@ -140,8 +150,12 @@ class PegawaiRiwayatUmakController extends Controller
         $tanggalAkhirSplit = $splitTanggal[1];
         //$waktuPlusSatuBulan = date('m', strtotime($tanggalAkhirSplit . ' +1 month'));
 
+        $tanggalMulaiFormat = Carbon::parse($tanggalMulaiSplit)->translatedFormat('Y-m-d');
+        $tanggalAkhirFormat = Carbon::parse($tanggalAkhirSplit)->translatedFormat('Y-m-d');
+
         //dd($waktuPlusSatuBulan);
         $bulan = Carbon::parse($tanggalAkhirSplit)->translatedFormat('m');
+        
         $bulanKeDb = null;
         if($bulan == '01'){
             $bulanKeDb = '02';
@@ -185,12 +199,22 @@ class PegawaiRiwayatUmakController extends Controller
         $isDouble = 'N';
         if('12' == Carbon::parse($tanggalMulaiSplit)->translatedFormat('m')
             && '12' == Carbon::parse($tanggalAkhirSplit)->translatedFormat('m')){
-                $bulanKeDb = Carbon::parse($tanggalAkhirSplit)->translatedFormat('m');
+                $bulanKeDb = Carbon::parse($tanggalAkhirSplit)->translatedFormat('m'); //'12'
                 $isDouble = 'Y';
         }
 
-        $tanggalMulaiFormat = Carbon::parse($tanggalMulaiSplit)->translatedFormat('Y-m-d');
-        $tanggalAkhirFormat = Carbon::parse($tanggalAkhirSplit)->translatedFormat('Y-m-d');
+        //validasi jika bukan bulan 12 dan 01, tanggal mulai dan tanggal akhir harus sesuai 1 bulan
+        //02, 03, 04, 05, 06, 07, 08, 09, 10, 11
+        $firstDayOfMonth = date('Y-m-01', strtotime($tanggalMulaiFormat));
+        $lastDayOfMonth = date('Y-m-t', strtotime($tanggalMulaiFormat));
+        if($bulan == '02' || $bulan == '03' || $bulan == '04' || $bulan == '05' || $bulan == '06'
+        || $bulan == '07' || $bulan == '08' || $bulan == '09' || $bulan == '10' || $bulan == '11'){
+            if(($tanggalMulaiFormat != $firstDayOfMonth) || ($tanggalAkhirFormat != $lastDayOfMonth)){
+                session()->flash('message', 'Tanggal awal dan tanggal akhir yang dipilih tidak dalam 1 bulan!');
+
+                return redirect()->back();
+            }
+        }
 
         DB::beginTransaction();
 
@@ -203,6 +227,8 @@ class PegawaiRiwayatUmakController extends Controller
                     ->whereIn('sp.nama', array('PNS', 'CPNS', 'PPPK'))
                     ;
             })
+            ->whereNull('tanggal_berhenti')
+            ->whereNull('tanggal_wafat')
             //untuk test, data pegawai_riwayat_golongan harus ada!
             //->where('p.id','=',498)
             ->get();
@@ -259,6 +285,7 @@ class PegawaiRiwayatUmakController extends Controller
 
                     //cek ke tabel pegawai_riwayat_umak ada data tidak
                     $cekDataPru = null;
+                    
                     if($isDouble == 'Y'){
                         $cekDataPru = DB::table('pegawai_riwayat_umak')
                         ->select('*')
@@ -345,6 +372,42 @@ class PegawaiRiwayatUmakController extends Controller
             //         ->with('error', 'Error saat Proses Data Pegawai Riwayat Uang Makan!');
         }  
         
+    }
+
+    public function exportToExcel($bulan, $tahun)
+    {
+        try {
+            $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
+            $this->authorize('kabiro', $kabiro);
+            
+            $fileName = 'Riwayat_Uang_Makan_Pegawai'.'_'.$tahun.'_'.$bulan.'.xlsx';
+            
+            $unitKerja = null;
+            return Excel::download(new DataExportPru($bulan, $tahun, $unitKerja), $fileName);
+        } catch (\Exception $e) {
+            Log::error($e->getMessage(), ['Export data excel gagal di method exportToExcel pada PegawaiRiwayatUmakController!']);
+        }
+    }
+
+    public function exportToExcelDua($bulan, $tahun, $unitKerjaId)
+    {
+        try {
+            $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
+            $this->authorize('kabiro', $kabiro);
+            
+            $fileName = null;
+            if(null != $unitKerjaId || '' != $unitKerjaId){
+                $namaUker = DB::table('unit_kerja')
+                ->select('nama', 'singkatan')
+                ->where('id','=',$unitKerjaId)
+                ->first();
+                $fileName = 'Riwayat_Uang_Makan_Pegawai_'.$namaUker->singkatan.'_'.$tahun.'_'.$bulan.'.xlsx';
+            }
+
+            return Excel::download(new DataExportPru($bulan, $tahun, $unitKerjaId), $fileName);
+        } catch (\Exception $e) {
+            Log::error($e->getMessage(), ['Export data excel gagal di method exportToExcelDua pada PegawaiRiwayatUmakController!']);
+        }
     }
 
 }

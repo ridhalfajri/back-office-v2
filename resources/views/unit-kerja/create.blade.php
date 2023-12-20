@@ -1,9 +1,9 @@
 @extends('template')
 
 @push('style')
+    <link rel="stylesheet" href="{{ asset('assets/plugins/sweetalert/sweetalert.css') }}">
     <!-- Select2 -->
     <link rel="stylesheet" href="{{ asset('assets/plugins/select2/css/select2.min.css') }}">
-    
 @endpush
 
 @push('breadcrumb')
@@ -35,10 +35,10 @@
                         </div>
                     @endif
 
-                    <form method="post"  action="{{ route('unit-kerja.store') }}"  accept-charset="utf-8">
+                    <form class="needs-validation" id="form-uker" method="post"  action="{{ route('unit-kerja.store') }}"  accept-charset="utf-8" novalidate>
                         @csrf
                         <div class="row clearfix">
-                            <div class="col-12 col-lg-12 col-md-12">
+                            <div class="col-12 col-lg-6 col-md-6">
                                 <div class="form-group @error('nama')has-error @enderror">
                                     <label>Unit Kerja <span class="text-danger"><sup>*</sup></span></label>
                                     <input type="text" name="nama" id="nama" value="{{ old('nama') }}"
@@ -51,7 +51,7 @@
                                     <select id="jenis_unit_kerja_id" name="jenis_unit_kerja_id" class="form-control">
                                         <option value="">--Pilih--</option>
                                         @foreach ($jenisUnit as $item)
-                                            @if (old('jenis_unit_kerja_id') && old('jenis_unit_kerja_id') == $item->id)
+                                            @if (old('jenis_unit_kerja_id') == $item->id)
                                                 <option value="{{ $item->id }}" selected>{{ $item->nama }}</option>
                                             @else
                                                 <option value="{{ $item->id }}">{{ $item->nama }}</option>
@@ -90,6 +90,7 @@
 @endsection
 
 @push('script')
+    <script src="{{ asset('assets/plugins/sweetalert/sweetalert.min.js') }}"></script>
     <!-- Select2 -->
     <script src="{{ asset('assets/plugins/select2/js/select2.min.js') }}"></script>
 
@@ -98,6 +99,44 @@
         $('#jenis_unit_kerja_id').select2({
             width: 'resolve'
         });
+
+        (function () {
+          'use strict'
+
+          var forms = document.querySelectorAll('.needs-validation')
+
+          Array.prototype.slice.call(forms)
+            .forEach(function (form) {
+              form.addEventListener('submit', function (event) {
+                event.preventDefault()
+                if (!form.checkValidity()) {
+                  event.stopPropagation()
+                  form.classList.add('was-validated')
+                }else
+                {
+                    // Konfirmasi sebelum menyimpan data
+                    swal({
+                        title: 'Konfirmasi!',
+                        text: 'Apakah anda yakin ingin menyimpan data?',
+                        type: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#78c0ec',
+                        confirmButtonText: 'Ya',
+                        cancelButtonText: 'Tidak',
+                        closeOnConfirm: true,
+                        closeOnCancel: false
+                    }, function(isConfirm) {
+                        if (isConfirm) {
+                            form.submit()
+                        } else {
+                            swal('Informasi', 'Simpan data dibatalkan', 'error');
+                            event.stopPropagation()
+                        }
+                    });
+                }
+              }, false)
+            });
+        })();
 
     </script>
 @endpush
