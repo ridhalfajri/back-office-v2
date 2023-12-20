@@ -14,6 +14,7 @@ use App\Http\Controllers\JabatanUnitKerjaController;
 use App\Http\Controllers\LdapController;
 use App\Http\Controllers\Pegawai\AnakController;
 use App\Http\Controllers\Pegawai\PegawaiDiklatController;
+use App\Http\Controllers\Pegawai\pegawaiJabatanController;
 use App\Http\Controllers\Pegawai\PegawaiRiwayatThpController;
 use App\Http\Controllers\Pegawai\PegawaiTmtGajiController;
 use App\Http\Controllers\Pegawai\PenghargaanController;
@@ -60,65 +61,64 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-     // Gaji Pegawai
-     Route::get('/gaji/get-golongan', [GajiController::class, 'getGolongan'])->name('gaji.get-golongan');
-     Route::post('/gaji/datatable', [GajiController::class, 'datatable'])->name('gaji.datatable');
-     Route::post('/gaji/get-gaji', [GajiController::class, 'get_gaji'])->name('gaji.get-gaji');
-     Route::resource('/gaji', GajiController::class);
+    // Gaji Pegawai
+    Route::get('/gaji/get-golongan', [GajiController::class, 'getGolongan'])->name('gaji.get-golongan');
+    Route::post('/gaji/datatable', [GajiController::class, 'datatable'])->name('gaji.datatable');
+    Route::post('/gaji/get-gaji', [GajiController::class, 'get_gaji'])->name('gaji.get-gaji');
+    Route::resource('/gaji', GajiController::class);
 
-     Route::post('/jabatan-tukin/datatable', [JabatanTukinController::class, 'datatable'])->name('jabatan-tukin.datatable');
-     Route::post('/jabatan-tukin/getjabatan', [JabatanTukinController::class, 'getjabatan'])->name('jabatan-tukin.getjabatan');
-     Route::post('/jabatan-tukin/gettukin', [JabatanTukinController::class, 'gettukin'])->name('jabatan-tukin.gettukin');
-     Route::resource('/jabatan-tukin', JabatanTukinController::class);
+    Route::post('/jabatan-tukin/datatable', [JabatanTukinController::class, 'datatable'])->name('jabatan-tukin.datatable');
+    Route::post('/jabatan-tukin/getjabatan', [JabatanTukinController::class, 'getjabatan'])->name('jabatan-tukin.getjabatan');
+    Route::post('/jabatan-tukin/gettukin', [JabatanTukinController::class, 'gettukin'])->name('jabatan-tukin.gettukin');
+    Route::resource('/jabatan-tukin', JabatanTukinController::class);
 
-     Route::post('/jabatan-unit-kerja/datatable', [JabatanUnitKerjaController::class, 'datatable'])->name('jabatan-unit-kerja.datatable');
-     Route::resource('/jabatan-unit-kerja', JabatanUnitKerjaController::class);
+    Route::post('/jabatan-unit-kerja/datatable', [JabatanUnitKerjaController::class, 'datatable'])->name('jabatan-unit-kerja.datatable');
+    Route::resource('/jabatan-unit-kerja', JabatanUnitKerjaController::class);
 
-     Route::post('/presensi/pre-ijin/konfirmasi', [PreIjinController::class, 'konfirmasi'])->name('pre-ijin.konfirmasi');
-     Route::get('/presensi/pre-ijin/persetujuan', [PreIjinController::class, 'persetujuan'])->name('pre-ijin.persetujuan');
+    Route::post('/presensi/pre-ijin/konfirmasi', [PreIjinController::class, 'konfirmasi'])->name('pre-ijin.konfirmasi');
+    Route::get('/presensi/pre-ijin/persetujuan', [PreIjinController::class, 'persetujuan'])->name('pre-ijin.persetujuan');
 
-     Route::post('/presensi/pre-tak-tercatat/konfirmasi', [PreTakTercatatController::class, 'konfirmasi'])->name('pre-tak-tercatat.konfirmasi');
-     Route::get('/presensi/pre-tak-tercatat/persetujuan', [PreTakTercatatController::class, 'persetujuan'])->name('pre-tak-tercatat.persetujuan');
+    Route::post('/presensi/pre-tak-tercatat/konfirmasi', [PreTakTercatatController::class, 'konfirmasi'])->name('pre-tak-tercatat.konfirmasi');
+    Route::get('/presensi/pre-tak-tercatat/persetujuan', [PreTakTercatatController::class, 'persetujuan'])->name('pre-tak-tercatat.persetujuan');
 
-     Route::post('/presensi/pre-dinas-luar/konfirmasi', [PreDinasLuarController::class, 'konfirmasi'])->name('pre-dinas-luar.konfirmasi');
-     Route::get('/presensi/pre-dinas-luar/persetujuan', [PreDinasLuarController::class, 'persetujuan'])->name('pre-dinas-luar.persetujuan');
+    Route::post('/presensi/pre-dinas-luar/konfirmasi', [PreDinasLuarController::class, 'konfirmasi'])->name('pre-dinas-luar.konfirmasi');
+    Route::get('/presensi/pre-dinas-luar/persetujuan', [PreDinasLuarController::class, 'persetujuan'])->name('pre-dinas-luar.persetujuan');
 
-     Route::prefix('presensi')->group(function () {
+    Route::prefix('presensi')->group(function () {
 
-         Route::resource('/pre-tubel',PreTubelController::class);
-         Route::post('/pre-tubel/datatable', [PreTubelController::class, 'datatable'])->name('pre-tubel.datatable');
+        Route::resource('/pre-tubel', PreTubelController::class);
+        Route::post('/pre-tubel/datatable', [PreTubelController::class, 'datatable'])->name('pre-tubel.datatable');
 
-         Route::resource('/pre-dinas-luar', PreDinasLuarController::class);
-         Route::post('/pre-dinas-luar/datatable', [PreDinasLuarController::class, 'datatable'])->name('pre-dinas-luar.datatable');
-         Route::post('/pre-dinas-luar/datatablepersetujuan', [PreDinasLuarController::class, 'datatablepersetujuan'])->name('pre-dinas-luar.datatablepersetujuan');
+        Route::resource('/pre-dinas-luar', PreDinasLuarController::class);
+        Route::post('/pre-dinas-luar/datatable', [PreDinasLuarController::class, 'datatable'])->name('pre-dinas-luar.datatable');
+        Route::post('/pre-dinas-luar/datatablepersetujuan', [PreDinasLuarController::class, 'datatablepersetujuan'])->name('pre-dinas-luar.datatablepersetujuan');
 
-         Route::resource('/pre-tak-tercatat', PreTakTercatatController::class);
-         Route::post('/pre-tak-tercatat/datatable', [PreTakTercatatController::class, 'datatable'])->name('pre-tak-tercatat.datatable');
-         Route::post('/pre-tak-tercatat/datatablepersetujuan', [PreTakTercatatController::class, 'datatablepersetujuan'])->name('pre-tak-tercatat.datatablepersetujuan');
+        Route::resource('/pre-tak-tercatat', PreTakTercatatController::class);
+        Route::post('/pre-tak-tercatat/datatable', [PreTakTercatatController::class, 'datatable'])->name('pre-tak-tercatat.datatable');
+        Route::post('/pre-tak-tercatat/datatablepersetujuan', [PreTakTercatatController::class, 'datatablepersetujuan'])->name('pre-tak-tercatat.datatablepersetujuan');
 
-         Route::resource('/pre-tubel',PreTubelController::class);
-         Route::post('/pre-tubel/datatable', [PreTubelController::class, 'datatable'])->name('pre-tubel.datatable');
+        Route::resource('/pre-tubel', PreTubelController::class);
+        Route::post('/pre-tubel/datatable', [PreTubelController::class, 'datatable'])->name('pre-tubel.datatable');
 
-         Route::resource('/pre-ijin',PreIjinController::class);
-         Route::post('/pre-ijin/datatable', [PreIjinController::class, 'datatable'])->name('pre-ijin.datatable');
-         Route::post('/pre-ijin/datatablepersetujuan', [PreIjinController::class, 'datatablepersetujuan'])->name('pre-ijin.datatablepersetujuan');
+        Route::resource('/pre-ijin', PreIjinController::class);
+        Route::post('/pre-ijin/datatable', [PreIjinController::class, 'datatable'])->name('pre-ijin.datatable');
+        Route::post('/pre-ijin/datatablepersetujuan', [PreIjinController::class, 'datatablepersetujuan'])->name('pre-ijin.datatablepersetujuan');
 
-         //Pengaturan jam kerja
-         Route::resource('/pre-jam-kerja', PreJamKerjaController::class);
-         Route::post('/pre-jam-kerja/datatable', [PreJamKerjaController::class, 'datatable'])->name('pre-jam-kerja.datatable');
+        //Pengaturan jam kerja
+        Route::resource('/pre-jam-kerja', PreJamKerjaController::class);
+        Route::post('/pre-jam-kerja/datatable', [PreJamKerjaController::class, 'datatable'])->name('pre-jam-kerja.datatable');
 
-         Route::resource('/hari-libur', HariLiburController::class);
-         Route::post('/hari-libur/datatable', [HariLiburController::class, 'datatable'])->name('hari-libur.datatable');
+        Route::resource('/hari-libur', HariLiburController::class);
+        Route::post('/hari-libur/datatable', [HariLiburController::class, 'datatable'])->name('hari-libur.datatable');
 
-         //Presensi
-         Route::resource('/presensi-pegawai', PresensiPegawaiController::class);
-         Route::post('/presensi-pegawai/datatable', [PresensiPegawaiController::class, 'datatable'])->name('presensi-pegawai.datatable');
-         Route::post('/presensi-pegawai/getdatapresensi', [PresensiPegawaiController::class, 'getdatapresensi'])->name('presensi-pegawai.getdatapresensi');
+        //Presensi
+        Route::resource('/presensi-pegawai', PresensiPegawaiController::class);
+        Route::post('/presensi-pegawai/datatable', [PresensiPegawaiController::class, 'datatable'])->name('presensi-pegawai.datatable');
+        Route::post('/presensi-pegawai/getdatapresensi', [PresensiPegawaiController::class, 'getdatapresensi'])->name('presensi-pegawai.getdatapresensi');
+    });
 
-     });
-
-     //uang makan
-     Route::prefix('kalkulasi')->group(function () {
+    //uang makan
+    Route::prefix('kalkulasi')->group(function () {
         //indrawan
         Route::get('/export-to-excel/umak/{bulan}/{tahun}', [PegawaiRiwayatUmakController::class, 'exportToExcel'])->name('pegawai-riwayat-umak.export-excel-umak');
         Route::get('/export-to-excel/umak/{bulan}/{tahun}/{unitKerjaId}', [PegawaiRiwayatUmakController::class, 'exportToExcelDua'])->name('pegawai-riwayat-umak.export-excel-umak-dua');
@@ -182,7 +182,7 @@ Route::middleware('auth')->group(function () {
         // Diklat
         Route::post('/diklat/datatable', [PegawaiDiklatController::class, 'datatable'])->name('diklat.datatable');
         Route::get('/diklat/create/{pegawai_id}', [PegawaiDiklatController::class, 'create'])->name('diklat.create');
-        Route::resource('/diklat', PegawaiDiklatController::class)->except(['create', 'index']);
+        Route::resource('/diklat', PegawaiDiklatController::class);
 
         // TMT Gaji
         Route::post('/tmt-gaji/tmt-gaji-by-id', [PegawaiTmtGajiController::class, 'getTmtGajiById'])->name('tmt-gaji.get-tmt-gaji-by-id');
@@ -192,7 +192,12 @@ Route::middleware('auth')->group(function () {
         // Riwayat Jabatan
         Route::get('/riwayat-jabatan', [RiwayatJabatanController::class, 'index'])->name('riwayat-jabatan.index');
         Route::post('/riwayat-jabatan/datatable', [RiwayatJabatanController::class, 'datatable'])->name('riwayat-jabatan.datatable');
+        Route::get('/riwayat-jabatan/{id}/create', [RiwayatJabatanController::class, 'create'])->name('riwayat-jabatan.create');
+        Route::post('/riwayat-jabatan/{id}/store', [RiwayatJabatanController::class, 'store'])->name('riwayat-jabatan.store');
         Route::get('/riwayat-jabatan/show/{id}', [RiwayatJabatanController::class, 'show'])->name('riwayat-jabatan.show');
+        Route::get('/riwayat-jabatan/get-fungsional-umum', [RiwayatJabatanController::class, 'get_fungsional_umum'])->name('riwayat-jabatan.get_fungsional_umum');
+        Route::get('/riwayat-jabatan/get-fungsional-tertentu', [RiwayatJabatanController::class, 'get_fungsional_tertentu'])->name('riwayat-jabatan.get_fungsional_tertentu');
+        Route::get('/riwayat-jabatan/get-eselon-dua', [RiwayatJabatanController::class, 'get_eselon_dua'])->name('riwayat-jabatan.get_eselon_dua');
 
         // Pegawai
         Route::post('/datatable', [PegawaiController::class, 'datatable'])->name('pegawai.datatable');
@@ -205,7 +210,7 @@ Route::middleware('auth')->group(function () {
                 'update' => 'pegawai.update',
                 'destroy' => 'pegawai.destroy',
             ]
-        ])->parameters(['' => 'id'])->only(['index', 'show']);
+        ])->parameters(['' => 'id'])->only(['index', 'show', 'edit', 'update']);
     });
     Route::get('/esselon2/pegawai', [PegawaiController::class, 'index_esselon'])->name('pegawai.index-esselon');
 
@@ -263,5 +268,3 @@ Route::middleware('guest')->group(function () {
     Route::get('/login', [LdapController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [LdapController::class, 'login'])->name('login.check');
 });
-
-
