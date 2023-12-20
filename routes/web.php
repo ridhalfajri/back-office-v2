@@ -14,6 +14,7 @@ use App\Http\Controllers\JabatanUnitKerjaController;
 use App\Http\Controllers\LdapController;
 use App\Http\Controllers\Pegawai\AnakController;
 use App\Http\Controllers\Pegawai\PegawaiDiklatController;
+use App\Http\Controllers\Pegawai\pegawaiJabatanController;
 use App\Http\Controllers\Pegawai\PegawaiRiwayatThpController;
 use App\Http\Controllers\Pegawai\PegawaiTmtGajiController;
 use App\Http\Controllers\Pegawai\PenghargaanController;
@@ -175,7 +176,7 @@ Route::middleware('auth')->group(function () {
         // Diklat
         Route::post('/diklat/datatable', [PegawaiDiklatController::class, 'datatable'])->name('diklat.datatable');
         Route::get('/diklat/create/{pegawai_id}', [PegawaiDiklatController::class, 'create'])->name('diklat.create');
-        Route::resource('/diklat', PegawaiDiklatController::class)->except(['create', 'index']);
+        Route::resource('/diklat', PegawaiDiklatController::class);
 
         // TMT Gaji
         Route::post('/tmt-gaji/tmt-gaji-by-id', [PegawaiTmtGajiController::class, 'getTmtGajiById'])->name('tmt-gaji.get-tmt-gaji-by-id');
@@ -185,7 +186,12 @@ Route::middleware('auth')->group(function () {
         // Riwayat Jabatan
         Route::get('/riwayat-jabatan', [RiwayatJabatanController::class, 'index'])->name('riwayat-jabatan.index');
         Route::post('/riwayat-jabatan/datatable', [RiwayatJabatanController::class, 'datatable'])->name('riwayat-jabatan.datatable');
+        Route::get('/riwayat-jabatan/{id}/create', [RiwayatJabatanController::class, 'create'])->name('riwayat-jabatan.create');
+        Route::post('/riwayat-jabatan/{id}/store', [RiwayatJabatanController::class, 'store'])->name('riwayat-jabatan.store');
         Route::get('/riwayat-jabatan/show/{id}', [RiwayatJabatanController::class, 'show'])->name('riwayat-jabatan.show');
+        Route::get('/riwayat-jabatan/get-fungsional-umum', [RiwayatJabatanController::class, 'get_fungsional_umum'])->name('riwayat-jabatan.get_fungsional_umum');
+        Route::get('/riwayat-jabatan/get-fungsional-tertentu', [RiwayatJabatanController::class, 'get_fungsional_tertentu'])->name('riwayat-jabatan.get_fungsional_tertentu');
+        Route::get('/riwayat-jabatan/get-eselon-dua', [RiwayatJabatanController::class, 'get_eselon_dua'])->name('riwayat-jabatan.get_eselon_dua');
 
         // Pegawai
         Route::post('/datatable', [PegawaiController::class, 'datatable'])->name('pegawai.datatable');

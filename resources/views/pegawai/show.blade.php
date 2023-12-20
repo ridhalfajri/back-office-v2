@@ -49,6 +49,10 @@
                                 aria-controls="pills-alamat" aria-selected="true">Alamat</a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link" id="pills-jabatan-tab" data-toggle="pill" href="{{ route('riwayat-jabatan.show', $pegawai->id) }}" role="tab"
+                                aria-controls="pills-jabatan" aria-selected="true">Jabatan</a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link" id="pills-diklat-tab" data-toggle="pill" href="#pills-diklat" role="tab"
                                 aria-controls="pills-diklat" aria-selected="true">Diklat</a>
                         </li>
@@ -978,7 +982,6 @@
     <script src="{{ asset('assets/js/custom/diklat.js') }}"></script>
     <script src="{{ asset('assets/js/custom/alamat.js') }}"></script>
     <script src="{{ asset('assets/js/custom/tmt_gaji.js') }}"></script>
-    <script src="{{ asset('assets/js/custom/pendidikan.js') }}"></script>
     <script src="{{ asset('assets/js/custom/keluarga.js') }}"></script>
     <script src="{{ asset('assets/js/custom/penghargaan.js') }}"></script>
 
@@ -1148,7 +1151,7 @@
                 url = "{{ route('diklat.datatable') }}"
                 get_table_diklat(url)
                 $(this).tab('show')
-            } else if (tab_id == 'pills-tmt-gaji-tab') {
+            }else if (tab_id == 'pills-tmt-gaji-tab') {
                 url = "{{ route('tmt-gaji.datatable') }}"
                 pegawai_id = "{{ $pegawai->id }}"
                 get_table_tmt_gaji(url, pegawai_id)
