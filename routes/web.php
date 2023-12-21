@@ -111,17 +111,16 @@ Route::middleware('auth')->group(function () {
         Route::resource('/hari-libur', HariLiburController::class);
         Route::post('/hari-libur/datatable', [HariLiburController::class, 'datatable'])->name('hari-libur.datatable');
 
-         //Presensi
-         Route::resource('/presensiku', PresensiPegawaiController::class);
-         Route::post('/presensiku/datatable', [PresensiPegawaiController::class, 'datatable'])->name('presensiku.datatable');
-         Route::post('/presensiku/getdatapresensi', [PresensiPegawaiController::class, 'getdatapresensi'])->name('presensiku.getdatapresensi');
+        //Presensi
+        Route::resource('/presensiku', PresensiPegawaiController::class);
+        Route::post('/presensiku/datatable', [PresensiPegawaiController::class, 'datatable'])->name('presensiku.datatable');
+        Route::post('/presensiku/getdatapresensi', [PresensiPegawaiController::class, 'getdatapresensi'])->name('presensiku.getdatapresensi');
 
-         Route::post('/presensi-pegawai/getanggotatim', [PresensiPegawaiController::class, 'getAnggotaTim'])->name('presensi-pegawai.getanggotatim');
+        Route::post('/presensi-pegawai/getanggotatim', [PresensiPegawaiController::class, 'getAnggotaTim'])->name('presensi-pegawai.getanggotatim');
 
-         Route::get('/presensi-pegawai/',  [PresensiPegawaiController::class, 'dataPresensiPegawai'])->name('presensi-pegawai');
-         Route::post('/presensi-pegawai/datatablepresensi', [PresensiPegawaiController::class, 'datatablePresensi'])->name('presensi-pegawai.datatablepresensi');
-         Route::post('/presensi-pegawai/getdatapresensipegawai', [PresensiPegawaiController::class, 'getdataPresensiPegawai'])->name('presensi-pegawai.getdatapresensipegawai');
-
+        Route::get('/presensi-pegawai/',  [PresensiPegawaiController::class, 'dataPresensiPegawai'])->name('presensi-pegawai');
+        Route::post('/presensi-pegawai/datatablepresensi', [PresensiPegawaiController::class, 'datatablePresensi'])->name('presensi-pegawai.datatablepresensi');
+        Route::post('/presensi-pegawai/getdatapresensipegawai', [PresensiPegawaiController::class, 'getdataPresensiPegawai'])->name('presensi-pegawai.getdatapresensipegawai');
     });
 
     //uang makan
@@ -220,7 +219,6 @@ Route::middleware('auth')->group(function () {
         ])->parameters(['' => 'id'])->only(['index', 'show', 'edit', 'update']);
     });
     Route::get('/esselon2/pegawai', [PegawaiController::class, 'index_esselon'])->name('pegawai.index-esselon');
-
     Route::prefix('data')->group(function () {
         Route::post('/penghargaan/get-penghargaan', [PenghargaanController::class, 'get_penghargaan'])->name('gaji.get-penghargaan');
         Route::post('propinsi', [PropinsiController::class, 'getPropinsi'])->name('propinsi.data');
@@ -266,7 +264,14 @@ Route::middleware('auth')->group(function () {
         Route::post('/datatable', [PegawaiRiwayatThpController::class, 'datatable'])->name('penghasilan.datatable');
         Route::post('/datatable_show', [PegawaiRiwayatThpController::class, 'datatable_show'])->name('penghasilan.datatable_show');
     });
+    Route::get('/esselon2/penghasilan', [PegawaiRiwayatThpController::class, 'index_esselon'])->name('penghasilan.index-esselon');
+    Route::post('/esselon2/penghasilan/datatable_esselon', [PegawaiRiwayatThpController::class, 'datatable_esselon'])->name('penghasilan.datatable-esselon');
+    Route::post('/esselon2/penghasilan/datatable_show_esselon', [PegawaiRiwayatThpController::class, 'datatable_show_esselon'])->name('penghasilan.datatable-show-esselon');
+    Route::get('/esselon2/penghasilan/show/{id}', [PegawaiRiwayatThpController::class, 'show_esselon'])->name('penghasilan.show-esselon');
+    Route::get('/esselon2/penghasilan/show/gaji/{id}', [PegawaiRiwayatThpController::class, 'gaji_detail_esselon'])->name('penghasilan.gaji-detail-esselon');
+    Route::get('/esselon2/penghasilan/show/tukin/{id}', [PegawaiRiwayatThpController::class, 'tukin_detail_esselon'])->name('penghasilan.tukin-detail-esselon');
 });
+
 
 Route::middleware('guest')->group(function () {
     Route::get('/', function () {
