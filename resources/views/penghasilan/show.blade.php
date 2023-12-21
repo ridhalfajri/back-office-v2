@@ -64,7 +64,7 @@
                                             <label class="form-label">Tahun</label>
                                             <select id="tahun" name="tahun"
                                                 class="select-filter multiselect multiselect-custom">
-                                                @for ($a = Carbon\Carbon::now()->format('Y'); $a >= 2005; $a--)
+                                                @for ($a = Carbon\Carbon::now()->format('Y') + 1; $a >= 2005; $a--)
                                                     @if ($a == Carbon\Carbon::now()->format('Y'))
                                                         <option value="{{ $a }}" selected>{{ $a }}
                                                         </option>
