@@ -54,8 +54,14 @@
             <li class="{{ request()->segment(2) == 'pengajuan_masuk' ? 'active' : '' }}"><a
                     href="{{ route('cuti.pengajuan-masuk') }}"><i class="icon-call-end"></i><span>Pengajuan
                         Cuti</span></a></li>
-            <li class="{{ request()->segment(1) == 'esselon2' ? 'active' : '' }}">
+            <li
+                class="{{ request()->segment(1) == 'esselon2' && request()->segment(2) == 'pegawai' ? 'active' : '' }}">
                 <a href="{{ route('pegawai.index-esselon') }}"><i class="icon-users"></i><span>Staff</span></a>
+            </li>
+            <li
+                class="{{ request()->segment(1) == 'esselon2' && request()->segment(2) == 'penghasilan' ? 'active' : '' }}">
+                <a href="{{ route('penghasilan.index-esselon') }}"><i class="icon-users"></i><span>Penghasilan
+                        Staff</span></a>
             </li>
         @endif
         @if (auth()->user()->pegawai->jabatan_sekarang->tx_tipe_jabatan_id == 5)
@@ -65,7 +71,8 @@
             </li>
 
             <li class="{{ request()->segment(1) == 'presensi-pegawai' ? 'active' : '' }}">
-                <a href="{{ route('presensi-pegawai') }}"><i class="fa fa-clock-o"></i><span>Presensi Pegawai</span></a>
+                <a href="{{ route('presensi-pegawai') }}"><i class="fa fa-clock-o"></i><span>Presensi
+                        Pegawai</span></a>
             </li>
 
 
@@ -119,7 +126,7 @@
                 <a href="javascript:void(0)" class="has-arrow"><i class="icon-doc"></i><span>Master</span></a>
                 <ul class="sub-menu js__content">
                     <li class="{{ Request::is('master/pegawai-riwayat-golongan*') ? 'active' : '' }}"><a
-                        href="{{ route('pegawai-riwayat-golongan.index') }}">Riwayat Golongan Pegawai</a></li>
+                            href="{{ route('pegawai-riwayat-golongan.index') }}">Riwayat Golongan Pegawai</a></li>
                     <li class="{{ Request::is('master/tukin*') ? 'active' : '' }}"><a
                             href="{{ route('tukin.index') }}">Tukin</a></li>
                     <li class="{{ Request::is('master/uang-makan*') ? 'active' : '' }}"><a
@@ -134,4 +141,3 @@
 
     </ul>
 </nav>
-

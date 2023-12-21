@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Pegawai;
 
 use App\Http\Controllers\Controller;
+use App\Models\HirarkiUnitKerja;
 use App\Models\JabatanFungsional;
 use App\Models\JabatanFungsionalUmum;
 use App\Models\JabatanStruktural;
@@ -397,5 +398,188 @@ class PegawaiRiwayatThpController extends Controller
             $keluarga++;
         }
         return $keluarga * $HARGA_BERAS;
+    }
+
+    public function index_esselon()
+    {
+        $atasan_langsung = PegawaiRiwayatJabatan::select('pegawai_id')->whereIn('tx_tipe_jabatan_id', [2, 5])->where('pegawai_id', auth()->user()->pegawai_id)->first();
+        $this->authorize('atasan_langsung', $atasan_langsung);
+        $title = 'Pegawai';
+        $riwayat_jabatan = PegawaiRiwayatJabatan::where('pegawai_id', auth()->user()->pegawai_id)->where('is_now', 1)->get();
+        if ($riwayat_jabatan[0]->tx_tipe_jabatan_id == 1) {
+            $unit_kerja = HirarkiUnitKerja::select('*')->join('unit_kerja', 'unit_kerja.id', '=', 'hirarki_unit_kerja.child_unit_kerja_id')->where('parent_unit_kerja_id', 2)->get();
+        } else {
+            foreach ($riwayat_jabatan as $key) {
+                $unit_kerja[] = [
+                    'id' => $key->jabatan_unit_kerja->hirarki_unit_kerja->child->id,
+                    'nama' => $key->jabatan_unit_kerja->hirarki_unit_kerja->child->nama,
+
+                ];
+            }
+        }
+        return view('penghasilan-esselon2.index', compact('title', 'unit_kerja'));
+    }
+    public function datatable_esselon(Request $request)
+    {
+        $pegawai = Pegawai::select('pegawai.id', 'nama_depan', 'nama_belakang', 'nip', DB::raw('CONCAT(nama_depan," " ,nama_belakang) AS nama_lengkap'), 'uk.nama as unit_kerja', 'ttj.tipe_jabatan AS jabatan')
+            ->join('pegawai_riwayat_jabatan AS prj', 'pegawai.id', '=', 'prj.pegawai_id')
+            ->join('tx_tipe_jabatan AS ttj', 'prj.tx_tipe_jabatan_id', '=', 'ttj.id')
+            ->join('jabatan_unit_kerja AS juk', 'juk.id', '=', 'prj.jabatan_unit_kerja_id')
+            ->join('hirarki_unit_kerja AS huk', 'huk.id', '=', 'juk.hirarki_unit_kerja_id')
+            ->join('unit_kerja AS uk', 'uk.id', '=', 'huk.child_unit_kerja_id')
+            ->where('prj.is_now', 1)
+            ->groupBy('nip')
+            ->orderBy('nama_lengkap', 'ASC');
+        if ($request->unit_kerja != null) {
+            $pegawai->where('huk.child_unit_kerja_id', $request->unit_kerja);
+        }
+        return DataTables::of($pegawai)
+            ->addColumn('no', '')
+            ->addColumn('aksi', 'penghasilan-esselon2.aksi')
+            ->filterColumn('nama_lengkap', function ($query, $keyword) {
+                $query->whereRaw("CONCAT(nama_depan,' ',nama_belakang) like ?", ["%$keyword%"]);
+            })
+            ->rawColumns(['aksi'])
+            ->make(true);
+    }
+    public function  show_esselon($id)
+    {
+        $atasan_langsung = PegawaiRiwayatJabatan::select('pegawai_id')->whereIn('tx_tipe_jabatan_id', [2, 5])->where('pegawai_id', auth()->user()->pegawai_id)->first();
+        $this->authorize('atasan_langsung', $atasan_langsung);
+
+        $pegawai = Pegawai::where('id', $id)->first();
+        $title = 'Detail THP Pegawai';
+        return view('penghasilan-esselon2.show', compact('title', 'pegawai'));
+    }
+    public function datatable_show_esselon(Request $request)
+    {
+        $pegawai = PegawaiRiwayatThp::select('pegawai_riwayat_thp.*', 'pegawai_riwayat_thp.id AS id_thp', 'pegawai_riwayat_umak.total', 'pegawai_riwayat_umak.id AS id_umak')
+            ->leftJoin('pegawai_riwayat_umak', function ($join) {
+                // $join->on(DB::raw('pegawai_riwayat_umak.bulan COLLATE utf8mb4_unicode_ci'), '=', DB::raw('pegawai_riwayat_thp.bulan COLLATE utf8mb4_unicode_ci'))
+                //     ->where(DB::raw('pegawai_riwayat_umak.tahun COLLATE utf8mb4_unicode_ci'), '=', DB::raw('pegawai_riwayat_thp.tahun COLLATE utf8mb4_unicode_ci'))
+                //     ->where(DB::raw('pegawai_riwayat_umak.pegawai_id COLLATE utf8mb4_unicode_ci'), '=', DB::raw('pegawai_riwayat_thp.pegawai_id COLLATE utf8mb4_unicode_ci'));
+                $join->on('pegawai_riwayat_umak.bulan', '=', 'pegawai_riwayat_thp.bulan');
+                $join->on('pegawai_riwayat_umak.tahun', '=', 'pegawai_riwayat_thp.tahun');
+                $join->on('pegawai_riwayat_umak.pegawai_id', '=', 'pegawai_riwayat_thp.pegawai_id');
+            })->where('pegawai_riwayat_thp.pegawai_id', $request->pegawai_id)
+            ->where('pegawai_riwayat_thp.bulan', $request->bulan)
+            ->where('pegawai_riwayat_thp.tahun', $request->tahun)->get();
+        return DataTables::of($pegawai)
+            ->addColumn('no', '')
+            ->addColumn('aksi', 'penghasilan-esselon2.show_aksi')
+            ->addColumn('periode', function ($pegawai) {
+                switch ($pegawai->bulan) {
+                    case '01':
+                        return 'Januari - ' . $pegawai->tahun;
+                        break;
+                    case '02':
+                        return 'Februari - ' . $pegawai->tahun;
+                        break;
+                    case '03':
+                        return 'Maret - ' . $pegawai->tahun;
+                        break;
+                    case '04':
+                        return 'April - ' . $pegawai->tahun;
+                        break;
+                    case '05':
+                        return 'Mei - ' . $pegawai->tahun;
+                        break;
+                    case '06':
+                        return 'Juni - ' . $pegawai->tahun;
+                        break;
+                    case '07':
+                        return 'Juli - ' . $pegawai->tahun;
+                        break;
+                    case '08':
+                        return 'Agustus - ' . $pegawai->tahun;
+                        break;
+                    case '09':
+                        return 'September - ' . $pegawai->tahun;
+                        break;
+                    case '10':
+                        return 'Oktober - ' . $pegawai->tahun;
+                        break;
+                    case '11':
+                        return 'November - ' . $pegawai->tahun;
+                        break;
+                    case '12':
+                        return 'Desember - ' . $pegawai->tahun;
+                        break;
+                }
+            })
+            ->addColumn('gaji', function ($pegawai) {
+                return (
+                    $pegawai->nominal_gaji_pokok +
+                    $pegawai->tunjangan_beras +
+                    $pegawai->tunjangan_pasangan +
+                    $pegawai->tunjangan_anak +
+                    $pegawai->tunjangan_jabatan +
+                    $pegawai->tunjangan_pajak
+                ) - (
+                    $pegawai->potongan_simpanan_wajib +
+                    $pegawai->potongan_iwp +
+                    $pegawai->potongan_bpjs +
+                    $pegawai->potongan_bpjs_lainnya +
+                    $pegawai->potongan_pajak +
+                    $pegawai->potongan_taper
+                );
+            })
+            ->addColumn('tukin', function ($pegawai) {
+                return $pegawai->tunjangan_kinerja - $pegawai->potongan_tukin;
+            })
+            ->rawColumns(['aksi'])
+            ->make(true);
+    }
+
+    public function gaji_detail_esselon($id)
+    {
+        $atasan_langsung = PegawaiRiwayatJabatan::select('pegawai_id')->whereIn('tx_tipe_jabatan_id', [2, 5])->where('pegawai_id', auth()->user()->pegawai_id)->first();
+        $this->authorize('atasan_langsung', $atasan_langsung);
+        $title = 'Gaji';
+        $gaji = PegawaiRiwayatThp::where('pegawai_riwayat_thp.id', $id)
+            ->select(
+                'nominal_gaji_pokok',
+                'tunjangan_beras',
+                'tunjangan_pasangan',
+                'tunjangan_anak',
+                'tunjangan_jabatan',
+                'tunjangan_pajak',
+                'potongan_simpanan_wajib',
+                'potongan_iwp',
+                'potongan_bpjs',
+                'potongan_bpjs_lainnya',
+                'potongan_pajak',
+                'potongan_tapera',
+                'bulan',
+                'tahun',
+                'pegawai.nama_depan',
+                'pegawai.nama_belakang',
+                'pegawai.nip',
+                'pegawai.email_kantor'
+            )->join('pegawai', 'pegawai.id', 'pegawai_riwayat_thp.pegawai_id')
+            ->first();
+        $monthName = date("F", strtotime("$gaji->tahun-$gaji->bulan-01"));
+        $gaji->periode = Carbon::parse($monthName)->translatedFormat('F') . ' - ' . $gaji->tahun;
+        $gaji->total_tunjangan = $gaji->nominal_gaji_pokok + $gaji->tunjangan_beras + $gaji->tunjangan_jabatan + $gaji->tunjangan_pasangan + $gaji->tunjangan_anak + $gaji->tunjangan_pajak;
+        $gaji->total_potongan = $gaji->potongan_simpanan_wajib + $gaji->potongan_iwp + $gaji->potongan_bpjs + $gaji->potongan_bpjs_lainnya + $gaji->potongan_pajak + $gaji->potongan_tapera;
+        $gaji->total_pendapatan = $gaji->total_tunjangan - $gaji->total_potongan;
+        return view('penghasilan-esselon2.gaji-detail', compact('title', 'gaji'));
+    }
+    public function tukin_detail_esselon($id)
+    {
+        $atasan_langsung = PegawaiRiwayatJabatan::select('pegawai_id')->whereIn('tx_tipe_jabatan_id', [2, 5])->where('pegawai_id', auth()->user()->pegawai_id)->first();
+        $this->authorize('atasan_langsung', $atasan_langsung);
+
+        $title = "Tukin Detail";
+        $tukin = PegawaiRiwayatThp::where('pegawai_riwayat_thp.id', $id)->select('tunjangan_kinerja', 'potongan_tukin', 'bulan', 'tahun', 'p.nama_depan', 'p.nama_belakang', 'p.nip', 'p.email_kantor')
+            ->join('pegawai AS p', 'p.id', '=', 'pegawai_riwayat_thp.pegawai_id')
+            ->first();
+        $monthName = date("F", strtotime("$tukin->tahun-$tukin->bulan-01"));
+        $tukin->periode = Carbon::parse($monthName)->translatedFormat('F') . ' - ' . $tukin->tahun;
+        //TODO: ambil semua data presensi lalu tampilkan pada detail
+        //? jika data nominal perhitungan 0 bagaimana? tampilkan atau tidak?
+        //?
+
+        return view('penghasilan-esselon2.tukin-detail', compact('title', 'tukin'));
     }
 }
