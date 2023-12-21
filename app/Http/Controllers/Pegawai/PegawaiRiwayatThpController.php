@@ -8,6 +8,7 @@ use App\Models\JabatanFungsionalUmum;
 use App\Models\JabatanStruktural;
 use App\Models\Pegawai;
 use App\Models\PegawaiAnak;
+use App\Models\PegawaiBpjsLainnya;
 use App\Models\PegawaiRiwayatJabatan;
 use App\Models\PegawaiRiwayatThp;
 use App\Models\PegawaiSuamiIstri;
@@ -232,10 +233,10 @@ class PegawaiRiwayatThpController extends Controller
                 $TUNJANGAN_JABATAN = $this->_tunjangan_jabatan($pegawai, $gaji, $jabatan);
 
                 $jabatan_plt = PegawaiRiwayatJabatan::where('pegawai_id', $pegawai->id)->where('is_now', true)->where('is_plt', true)->first();
-                if ($jabatan_plt != null) {
-                    $nominal = JabatanStruktural::select('nominal_tunjangan')->where('id', $jabatan_plt->jabatan_unit_kerja->jabatan_tukin->jabatan_id)->first();
-                    $TUNJANGAN_JABATAN += 0.5 * $nominal;
-                }
+                // if ($jabatan_plt != null) {
+                //     $nominal = JabatanStruktural::select('nominal_tunjangan')->where('id', $jabatan_plt->jabatan_unit_kerja->jabatan_tukin->jabatan_id)->first();
+                //     $TUNJANGAN_JABATAN += 0.5 * $nominal;
+                // }
 
                 //* TUNJANGAN KINERJA
                 $TUNJANGAN_KINERJA = $jabatan->jabatan_unit_kerja->jabatan_tukin->tukin->nominal;
@@ -264,7 +265,13 @@ class PegawaiRiwayatThpController extends Controller
 
                 //* POTONGAN BPJS LAINNYA
                 //? BAGAIMANA MENGELOLA BPJS LAINNYA?
-                $POTONGAN_BPJS_LAINNYA = 0;
+                $bpjs_lainnya = PegawaiBpjsLainnya::where('pegawai_id', $pegawai->id)->first();
+                if ($bpjs_lainnya != null) {
+                    $count_bpjs_lainnya = $bpjs_lainnya->total_mertua + $bpjs_lainnya->total_orang_tua + $bpjs_lainnya->total_kelebihan_anak;
+                    $POTONGAN_BPJS_LAINNYA = $count_bpjs_lainnya * 0.01 * $SUM_THP;
+                } else {
+                    $POTONGAN_BPJS_LAINNYA = 0;
+                }
 
                 //* POTONGAN IWP
                 $POTONGAN_IWP = 0.1 * $NOMINAL_GAJI_POKOK;
@@ -363,7 +370,7 @@ class PegawaiRiwayatThpController extends Controller
          */
         if ($pegawai->status_pegawai_id == 4) {
             //CPNS
-            return 0.8 * $gaji->gaji->nominal_tunjangan_jabatan;
+            return $gaji->gaji->nominal_tunjangan_jabatan;
         } else if ($jabatan->jabatan_unit_kerja->jabatan_tukin->jenis_jabatan_id == 2) {
             //JFT
             $nominal = JabatanFungsional::select('nominal_tunjangan')->where('id', $jabatan->jabatan_unit_kerja->jabatan_tukin->jabatan_id)->first();
