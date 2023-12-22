@@ -95,6 +95,11 @@
                     </li>
                 </ul>
             </li>
+
+            <li class="{{ Request::is('pegawai-riwayat-golongan*') ? 'active' : '' }}"><a
+                href="{{ route('pegawai-riwayat-golongan.index') }}"><i
+                class="fa fa-credit-card"></i><span>Riwayat Golongan Pegawai</span></a></li>
+
             <li class="{{ request()->segment(1) == 'penghasilan' ? 'active' : '' }}"><a
                     href="{{ route('penghasilan.index') }}"><i
                         class="fa fa-credit-card"></i><span>Penghasilan</span></a>
@@ -125,10 +130,8 @@
             <li class="{{ Request::is('master*') ? 'active' : '' }}">
                 <a href="javascript:void(0)" class="has-arrow"><i class="icon-doc"></i><span>Master</span></a>
                 <ul class="sub-menu js__content">
-                    <li class="{{ Request::is('master/pegawai-riwayat-golongan*') ? 'active' : '' }}"><a
-                            href="{{ route('pegawai-riwayat-golongan.index') }}">Riwayat Golongan Pegawai</a></li>
                     <li class="{{ Request::is('master/tukin*') ? 'active' : '' }}"><a
-                            href="{{ route('tukin.index') }}">Tukin</a></li>
+                            href="{{ route('tukin.index') }}">Grade Tukin</a></li>
                     <li class="{{ Request::is('master/uang-makan*') ? 'active' : '' }}"><a
                             href="{{ route('uang-makan.index') }}">Uang Makan</a></li>
                     <li class="{{ Request::is('master/unit-kerja*') ? 'active' : '' }}"><a

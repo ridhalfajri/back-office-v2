@@ -84,6 +84,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/presensi/pre-dinas-luar/konfirmasi', [PreDinasLuarController::class, 'konfirmasi'])->name('pre-dinas-luar.konfirmasi');
     Route::get('/presensi/pre-dinas-luar/persetujuan', [PreDinasLuarController::class, 'persetujuan'])->name('pre-dinas-luar.persetujuan');
 
+    //indrawan
+    Route::post('/pegawai-riwayat-golongan/datatable', [PegawaiRiwayatGolonganController::class, 'datatable'])->name('pegawai-riwayat-golongan.datatable');
+    Route::resource('/pegawai-riwayat-golongan', PegawaiRiwayatGolonganController::class);
+
     Route::prefix('presensi')->group(function () {
 
         Route::resource('/pre-tubel', PreTubelController::class);
@@ -147,9 +151,6 @@ Route::middleware('auth')->group(function () {
 
         Route::post('/tukin/datatable', [TukinController::class, 'datatable'])->name('tukin.datatable');
         Route::resource('/tukin', TukinController::class);
-
-        Route::post('/pegawai-riwayat-golongan/datatable', [PegawaiRiwayatGolonganController::class, 'datatable'])->name('pegawai-riwayat-golongan.datatable');
-        Route::resource('/pegawai-riwayat-golongan', PegawaiRiwayatGolonganController::class);
         //
     });
 

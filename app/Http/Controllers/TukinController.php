@@ -21,7 +21,7 @@ class TukinController extends Controller
     */
     public function index()
     {            
-        $title = 'Tunjangan Kinerja';
+        $title = 'Grade Tukin';
 
         return view('tukin.index', compact('title'));
     }
@@ -48,7 +48,7 @@ class TukinController extends Controller
     */
     public function create()
     {            
-        $title = 'Buat Tunjangan Kinerja';
+        $title = 'Buat Grade Tukin';
 
         return view('tukin.create', compact('title'));
     }
@@ -128,7 +128,7 @@ class TukinController extends Controller
     */
     public function edit(Tukin $tukin)
     {               
-        $title = 'Ubah Tunjangan Kinerja';
+        $title = 'Ubah Grade Tukin';
 
         $tukin = $tukin;
 
