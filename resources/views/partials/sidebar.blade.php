@@ -2,6 +2,10 @@
     <ul class="metismenu">
         {{-- PERSONAL --}}
         <li class="g_heading">Personal</li>
+        {{-- indrawan --}}
+        <li class="{{ Request::is('grade-tukin*') ? 'active' : '' }}"><a href="{{ route('grade-tukin.index') }}"><i
+                    class="fa fa-money"></i><span>Info Grade Tukin</span></a></li>
+
         <li class="{{ request()->segment(2) == auth()->user()->pegawai_id ? 'active' : '' }}"><a
                 href="{{ route('pegawai.show', auth()->user()->pegawai_id) }}"><i
                     class="icon-home"></i><span>Profile</span></a></li>
@@ -96,14 +100,17 @@
                 </ul>
             </li>
 
-            <li class="{{ Request::is('pegawai-riwayat-golongan*') ? 'active' : '' }}"><a
-                href="{{ route('pegawai-riwayat-golongan.index') }}"><i
-                class="fa fa-credit-card"></i><span>Riwayat Golongan Pegawai</span></a></li>
-
             <li class="{{ request()->segment(1) == 'penghasilan' ? 'active' : '' }}"><a
                     href="{{ route('penghasilan.index') }}"><i
                         class="fa fa-credit-card"></i><span>Penghasilan</span></a>
             </li>
+
+            <li class="{{ Request::is('pegawai-riwayat-golongan*') ? 'active' : '' }}"><a
+                href="{{ route('pegawai-riwayat-golongan.index') }}"><i class="fa fa-credit-card"></i><span>Riwayat
+                    Golongan Pegawai</span></a></li>
+
+            <li class="{{ Request::is('pegawai-bpjs-lainnya*') ? 'active' : '' }}"><a
+                href="{{ route('pegawai-bpjs-lainnya.index') }}"><i class="fa fa-credit-card"></i><span>Tambahan BPJS Pegawai</span></a></li>
         @endif
 
         {{-- KABIRO SDMOH --}}
@@ -138,6 +145,8 @@
                             href="{{ route('unit-kerja.index') }}">Unit Kerja</a></li>
                     <li class="{{ Request::is('master/status-pegawai*') ? 'active' : '' }}"><a
                             href="{{ route('status-pegawai.index') }}">Status Pegawai</a></li>
+                    <li class="{{ Request::is('master/tunjangan-beras*') ? 'active' : '' }}"><a
+                            href="{{ route('tunjangan-beras.index') }}">Tunjangan Beras</a></li>
                 </ul>
             </li>
         @endif

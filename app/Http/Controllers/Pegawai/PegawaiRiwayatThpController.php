@@ -12,11 +12,13 @@ use App\Models\PegawaiAnak;
 use App\Models\PegawaiBpjsLainnya;
 use App\Models\PegawaiRiwayatJabatan;
 use App\Models\PegawaiRiwayatThp;
+use App\Models\PegawaiRiwayatUmak;
 use App\Models\PegawaiSuamiIstri;
 use App\Models\PegawaiTmtGaji;
 use App\Models\PrePotonganTukin;
 use App\Models\Presensi;
 use App\Models\PreTubel;
+use App\Models\TunjanganBeras;
 use App\Models\UnitKerja;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -198,6 +200,55 @@ class PegawaiRiwayatThpController extends Controller
 
         return view('penghasilan.tukin-detail', compact('title', 'tukin'));
     }
+
+    //indrawan
+    public function umak_detail($id)
+    {
+        $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
+        $this->authorize('kabiro', $kabiro);
+        //where('pegawai_riwayat_umak.id', $id)
+        $title = "Uang Makan Detail";
+
+        //cek period
+        $cekPeriodUmak = PegawaiRiwayatUmak::where('id', $id)->first();
+
+        //cek double/tidak
+        $rowUmak = PegawaiRiwayatUmak::where('bulan', $cekPeriodUmak->bulan)
+        ->where('tahun', $cekPeriodUmak->tahun)
+        ->count();
+
+        $umak = [];
+        if($rowUmak == 1){
+            $umak = PegawaiRiwayatUmak::where('pegawai_riwayat_umak.bulan', $cekPeriodUmak->bulan)
+            ->where('pegawai_riwayat_umak.tahun', $cekPeriodUmak->tahun)
+            ->select('p.nama_depan', 'p.nama_belakang', 'p.nip', 'p.email_kantor',
+            'um.nominal',
+            DB::raw('SUM(pegawai_riwayat_umak.jumlah_hari_masuk) as jumlah_hari_masuk'),
+            DB::raw('SUM(pegawai_riwayat_umak.total) as total'))
+            ->leftJoin('pegawai AS p', 'p.id', '=', 'pegawai_riwayat_umak.pegawai_id')
+            ->leftJoin('uang_makan AS um', 'um.id', '=', 'pegawai_riwayat_umak.uang_makan_id')
+            ->first();
+        }
+
+        if($rowUmak == 2){
+            $umak = PegawaiRiwayatUmak::where('pegawai_riwayat_umak.bulan', $cekPeriodUmak->bulan)
+            ->where('pegawai_riwayat_umak.tahun', $cekPeriodUmak->tahun)
+            ->select('p.nama_depan', 'p.nama_belakang', 'p.nip', 'p.email_kantor',
+            DB::raw('SUM(um.nominal)/2 as nominal'),
+            DB::raw('SUM(pegawai_riwayat_umak.jumlah_hari_masuk) as jumlah_hari_masuk'),
+            DB::raw('SUM(pegawai_riwayat_umak.total) as total'))
+            ->leftJoin('pegawai AS p', 'p.id', '=', 'pegawai_riwayat_umak.pegawai_id')
+            ->leftJoin('uang_makan AS um', 'um.id', '=', 'pegawai_riwayat_umak.uang_makan_id')
+            ->first();
+        }
+
+        $monthName = date("F", strtotime("$cekPeriodUmak->tahun-$cekPeriodUmak->bulan-01"));
+        $umak->periode = Carbon::parse($monthName)->translatedFormat('F') . ' - ' . $cekPeriodUmak->tahun;
+
+        return view('penghasilan.umak-detail', compact('title', 'umak'));
+    }
+    //
+
     public function generate_tukin(Request $request)
     {
         $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
@@ -304,7 +355,9 @@ class PegawaiRiwayatThpController extends Controller
 
                 //* POTONGAN BPJS LAINNYA
                 //? BAGAIMANA MENGELOLA BPJS LAINNYA?
-                $bpjs_lainnya = PegawaiBpjsLainnya::where('pegawai_id', $pegawai->id)->first();
+                $bpjs_lainnya = PegawaiBpjsLainnya::where('pegawai_id', $pegawai->id)
+                ->where('is_active',true)
+                ->first();
                 if ($bpjs_lainnya != null) {
                     $count_bpjs_lainnya = $bpjs_lainnya->total_mertua + $bpjs_lainnya->total_orang_tua + $bpjs_lainnya->total_kelebihan_anak;
                     $POTONGAN_BPJS_LAINNYA = $count_bpjs_lainnya * 0.01 * $SUM_THP;
@@ -425,7 +478,11 @@ class PegawaiRiwayatThpController extends Controller
     }
     protected function _tunjangan_beras($pasangan, $count_anak)
     {
-        $HARGA_BERAS = 72420; // HARUSNYA DIMASUKIN KE DALAM TABEL MASTER HARGA BERAS
+        //$HARGA_BERAS = 72420; // HARUSNYA DIMASUKIN KE DALAM TABEL MASTER HARGA BERAS
+        //
+        $cekTuber = TunjanganBeras::where('is_active', '=' ,'Y')
+        ->first();
+
         $keluarga = 1;
         if ($pasangan != null) {
             $keluarga++;
@@ -435,7 +492,8 @@ class PegawaiRiwayatThpController extends Controller
         } else if ($count_anak == 1) {
             $keluarga++;
         }
-        return $keluarga * $HARGA_BERAS;
+        //return $keluarga * $HARGA_BERAS;
+        return $keluarga * $cekTuber->total;
     }
 
     public function index_esselon()
@@ -621,4 +679,52 @@ class PegawaiRiwayatThpController extends Controller
 
         return view('penghasilan-esselon2.tukin-detail', compact('title', 'tukin'));
     }
+
+    //indrawan
+    public function umak_detail_esselon($id)
+    {
+        $atasan_langsung = PegawaiRiwayatJabatan::select('pegawai_id')->whereIn('tx_tipe_jabatan_id', [2, 5])->where('pegawai_id', auth()->user()->pegawai_id)->first();
+        $this->authorize('atasan_langsung', $atasan_langsung);
+        //where('pegawai_riwayat_umak.id', $id)
+        $title = "Uang Makan Detail";
+
+        //cek period
+        $cekPeriodUmak = PegawaiRiwayatUmak::where('id', $id)->first();
+
+        //cek double/tidak
+        $rowUmak = PegawaiRiwayatUmak::where('bulan', $cekPeriodUmak->bulan)
+        ->where('tahun', $cekPeriodUmak->tahun)
+        ->count();
+
+        $umak = [];
+        if($rowUmak == 1){
+            $umak = PegawaiRiwayatUmak::where('pegawai_riwayat_umak.bulan', $cekPeriodUmak->bulan)
+            ->where('pegawai_riwayat_umak.tahun', $cekPeriodUmak->tahun)
+            ->select('p.nama_depan', 'p.nama_belakang', 'p.nip', 'p.email_kantor',
+            'um.nominal',
+            DB::raw('SUM(pegawai_riwayat_umak.jumlah_hari_masuk) as jumlah_hari_masuk'),
+            DB::raw('SUM(pegawai_riwayat_umak.total) as total'))
+            ->leftJoin('pegawai AS p', 'p.id', '=', 'pegawai_riwayat_umak.pegawai_id')
+            ->leftJoin('uang_makan AS um', 'um.id', '=', 'pegawai_riwayat_umak.uang_makan_id')
+            ->first();
+        }
+
+        if($rowUmak == 2){
+            $umak = PegawaiRiwayatUmak::where('pegawai_riwayat_umak.bulan', $cekPeriodUmak->bulan)
+            ->where('pegawai_riwayat_umak.tahun', $cekPeriodUmak->tahun)
+            ->select('p.nama_depan', 'p.nama_belakang', 'p.nip', 'p.email_kantor',
+            DB::raw('SUM(um.nominal)/2 as nominal'),
+            DB::raw('SUM(pegawai_riwayat_umak.jumlah_hari_masuk) as jumlah_hari_masuk'),
+            DB::raw('SUM(pegawai_riwayat_umak.total) as total'))
+            ->leftJoin('pegawai AS p', 'p.id', '=', 'pegawai_riwayat_umak.pegawai_id')
+            ->leftJoin('uang_makan AS um', 'um.id', '=', 'pegawai_riwayat_umak.uang_makan_id')
+            ->first();
+        }
+
+        $monthName = date("F", strtotime("$cekPeriodUmak->tahun-$cekPeriodUmak->bulan-01"));
+        $umak->periode = Carbon::parse($monthName)->translatedFormat('F') . ' - ' . $cekPeriodUmak->tahun;
+
+        return view('penghasilan-esselon2.umak-detail', compact('title', 'umak'));
+    }
+    //
 }
