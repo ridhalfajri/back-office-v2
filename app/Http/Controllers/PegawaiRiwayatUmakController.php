@@ -203,22 +203,23 @@ class PegawaiRiwayatUmakController extends Controller
                 $isDouble = 'Y';
         }
 
-        //validasi jika bukan bulan 12 dan 01, tanggal mulai dan tanggal akhir harus sesuai 1 bulan
-        //02, 03, 04, 05, 06, 07, 08, 09, 10, 11
-        $firstDayOfMonth = date('Y-m-01', strtotime($tanggalMulaiFormat));
-        $lastDayOfMonth = date('Y-m-t', strtotime($tanggalMulaiFormat));
-        if($bulan == '02' || $bulan == '03' || $bulan == '04' || $bulan == '05' || $bulan == '06'
-        || $bulan == '07' || $bulan == '08' || $bulan == '09' || $bulan == '10' || $bulan == '11'){
-            if(($tanggalMulaiFormat != $firstDayOfMonth) || ($tanggalAkhirFormat != $lastDayOfMonth)){
-                session()->flash('message', 'Tanggal awal dan tanggal akhir yang dipilih tidak dalam 1 bulan!');
-
-                return redirect()->back();
-            }
-        }
-
         DB::beginTransaction();
 
         try {
+            //validasi jika bukan bulan 12 dan 01, tanggal mulai dan tanggal akhir harus sesuai 1 bulan
+            //02, 03, 04, 05, 06, 07, 08, 09, 10, 11
+            $firstDayOfMonth = date('Y-m-01', strtotime($tanggalMulaiFormat));
+            $lastDayOfMonth = date('Y-m-t', strtotime($tanggalMulaiFormat));
+            if($bulan == '02' || $bulan == '03' || $bulan == '04' || $bulan == '05' || $bulan == '06'
+            || $bulan == '07' || $bulan == '08' || $bulan == '09' || $bulan == '10' || $bulan == '11'){
+                if(($tanggalMulaiFormat != $firstDayOfMonth) || ($tanggalAkhirFormat != $lastDayOfMonth)){
+                    // session()->flash('message', 'Tanggal awal dan tanggal akhir yang dipilih tidak dalam 1 bulan!');
+                    // return redirect()->back();
+
+                    return response()->json(['errors' => 'Tanggal awal dan tanggal akhir yang dipilih tidak dalam 1 bulan!']);
+                }
+            }
+            
             //looping data pegawai
             $listPegawai = DB::table('pegawai as p')
             ->select('p.id', 'p.no_enroll')
@@ -279,9 +280,12 @@ class PegawaiRiwayatUmakController extends Controller
                         //
                         $totalUangMakan = $nominalUangMakan*$jumlahHariMasuk;
                     } else {
-                        session()->flash('message', 'Ada pegawai yang datanya belum ada di tabel pegawai_riwayat_golongan!');
+                        // session()->flash('message', 'Ada pegawai yang datanya belum ada di tabel pegawai_riwayat_golongan!');
+                        // return redirect()->back();
+                        DB::rollBack();
+                        Log::warning('Ada pegawai yang datanya belum ada di tabel pegawai_riwayat_golongan di method kalkulasi pada PegawaiRiwayatUmakController!');
 
-                        return redirect()->back();
+                        return response()->json(['errors' => 'Ada pegawai yang datanya belum ada di tabel pegawai_riwayat_golongan!']);
                     }
 
                     //cek ke tabel pegawai_riwayat_umak ada data tidak
@@ -348,17 +352,20 @@ class PegawaiRiwayatUmakController extends Controller
                     }
                 }
             } else {
-                session()->flash('message', 'Data pegawai tidak ada untuk memproses kalkulasi uang makan!');
+                // session()->flash('message', 'Data pegawai tidak ada untuk memproses kalkulasi uang makan!');
+                // return redirect()->back();
 
-                return redirect()->back();
+                return response()->json(['errors' => 'Data pegawai tidak ada untuk memproses kalkulasi uang makan!']);
             }
 
             DB::commit();
             Log::info('Data uang makan berhasil di-kalkulasi di method kalkulasi pada PegawaiRiwayatUmakController!');
 
-            session()->flash('success', 'Berhasil kalkulasi uang makan pegawai!');
+            //session()->flash('success', 'Berhasil kalkulasi uang makan pegawai!');
+            //return redirect()->back();
+            return response()->json(['success' => 'Berhasil kalkulasi uang makan pegawai']);
 
-            return redirect()->back();
+            
             // return redirect()->route('pegawai-riwayat-umak.index')
             //     ->with('success', 'Data Pegawai Riwayat Uang Makan berhasil di-insert!');
         } catch (\Exception $e) {
@@ -366,9 +373,11 @@ class PegawaiRiwayatUmakController extends Controller
             DB::rollback();
             Log::error($e->getMessage(), ['Data gagal di-insert atau di-update di method kalkulasi pada PegawaiRiwayatUmakController!']);
 
-            session()->flash('message', 'Error saat proses data!');
+            // session()->flash('message', 'Error saat proses data!');
+            // return redirect()->back();
 
-            return redirect()->back();
+            return response()->json(['errors' => 'Error saat proses data!']);
+
             // return redirect()->route('pegawai-riwayat-umak.index')
             //         ->with('error', 'Error saat Proses Data Pegawai Riwayat Uang Makan!');
         }  

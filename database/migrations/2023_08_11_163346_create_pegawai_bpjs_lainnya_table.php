@@ -22,6 +22,7 @@ return new class extends Migration
             $table->text('keterangan_mertua')->nullable();
             $table->text('keterangan_orang_tua')->nullable();
             $table->text('keterangan_kelebihan_anak')->nullable();
+            $table->boolean('is_active');
             $table->timestamps();
             $table->foreign('pegawai_id')->references('id')->on('pegawai')->onUpdate('cascade')->onDelete('cascade');
         });

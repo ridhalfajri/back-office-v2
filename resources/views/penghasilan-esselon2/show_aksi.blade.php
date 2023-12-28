@@ -7,7 +7,7 @@
         <a href="{{ route('penghasilan.tukin-detail-esselon', $id_thp) }}" class="dropdown-item"><i
                 class="dropdown-icon fa fa-eye"></i>
             Riwayat Tukin</a>
-        <a href="#" class="dropdown-item"><i class="dropdown-icon fa fa-eye"></i>
+        <a href="{{ route('penghasilan.umak-detail-esselon', $id_umak) }}" class="dropdown-item"><i class="dropdown-icon fa fa-eye"></i>
             Riwayat Uang Makan</a>
     </div>
 </div>
