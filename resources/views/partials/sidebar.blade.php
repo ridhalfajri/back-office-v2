@@ -97,6 +97,14 @@
                     <li class="{{ Request::is('kalkulasi/pegawai-riwayat-umak*') ? 'active' : '' }}">
                         <a href="{{ route('pegawai-riwayat-umak.index') }}">Riwayat Uang Makan Pegawai</a>
                     </li>
+
+                    <li class="">
+                        <a href="#">THR</a>
+                    </li>
+
+                    <li class="">
+                        <a href="#">Gaji Ke-13</a>
+                    </li>
                 </ul>
             </li>
 
