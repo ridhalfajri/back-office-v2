@@ -253,13 +253,13 @@ class PegawaiRiwayatUmakController extends Controller
                     ->whereBetween('tanggal_presensi', [$tanggalMulaiFormat, $tanggalAkhirFormat])
                     ->where('no_enroll','=',$dataPegawai->no_enroll)
                     ->where('status_kehadiran','=','HADIR')
-                    ->where(function($query) {
-                        $query->whereRaw('jam_masuk != null')
-                            ->orWhereRaw('jam_pulang != null')
-                            ->orWhere('jam_pulang','!=','00:00:00')
-                            ->orWhere('jam_masuk','!=','00:00:00')
-                            ;
-                    })
+                    // ->where(function($query) {
+                    //     $query->whereRaw('jam_masuk != null')
+                    //         ->orWhereRaw('jam_pulang != null')
+                    //         ->orWhere('jam_pulang','!=','00:00:00')
+                    //         ->orWhere('jam_masuk','!=','00:00:00')
+                    //         ;
+                    // })
                     ->count();
 
                     $umakPegawai = DB::table('uang_makan as um')

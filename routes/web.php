@@ -38,10 +38,14 @@ use App\Http\Controllers\UnitKerjaController;
 use App\Http\Controllers\TukinController;
 use App\Http\Controllers\GradeTukinController;
 use App\Http\Controllers\TunjanganBerasController;
+use App\Http\Controllers\AturanThrGajiplusController;
 use App\Http\Controllers\PegawaiRiwayatGolonganController;
 use App\Http\Controllers\PegawaiBpjsLainnyaController;
 use App\Http\Controllers\PegawaiRiwayatUmakController;
-
+use App\Http\Controllers\PegawaiRiwayatThrController;
+use App\Http\Controllers\PegawaiRiwayatGajiplusController;
+use App\Http\Controllers\RiwayatGajiplusController;
+use App\Http\Controllers\RiwayatThrController;
 
 /*
 |--------------------------------------------------------------------------
@@ -93,6 +97,12 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/grade-tukin', [GradeTukinController::class, 'datatable'])->name('grade-tukin.datatable');
     Route::resource('/grade-tukin', GradeTukinController::class)->only('index');
+
+    Route::post('/riwayat-thr', [RiwayatThrController::class, 'datatable'])->name('riwayat-thr.datatable');
+    Route::resource('/riwayat-thr', RiwayatThrController::class)->only('index');
+
+    Route::post('/riwayat-gajiplus', [RiwayatGajiplusController::class, 'datatable'])->name('riwayat-gajiplus.datatable');
+    Route::resource('/riwayat-gajiplus', RiwayatGajiplusController::class)->only('index');
     
     Route::post('/pegawai-bpjs-lainnya/datatable', [PegawaiBpjsLainnyaController::class, 'datatable'])->name('pegawai-bpjs-lainnya.datatable');
     Route::resource('/pegawai-bpjs-lainnya', PegawaiBpjsLainnyaController::class);
@@ -146,9 +156,19 @@ Route::middleware('auth')->group(function () {
         Route::post('/pegawai-riwayat-umak/kalkulasi-umak', [PegawaiRiwayatUmakController::class, 'kalkulasiUmak'])->name('pegawai-riwayat-umak.kalkulasi-umak');
         Route::resource('/pegawai-riwayat-umak', PegawaiRiwayatUmakController::class)->only(['index']);
 
-        //thr?
+        //thr
+        Route::get('/export-to-excel/thr/{tahun}', [PegawaiRiwayatThrController::class, 'exportToExcel'])->name('pegawai-riwayat-thr.export-excel-thr');
+        Route::get('/export-to-excel/thr/{tahun}/{unitKerjaId}', [PegawaiRiwayatThrController::class, 'exportToExcelDua'])->name('pegawai-riwayat-thr.export-excel-thr-dua');
+        Route::post('/pegawai-riwayat-thr/datatable', [PegawaiRiwayatThrController::class, 'datatable'])->name('pegawai-riwayat-thr.datatable');
+        Route::post('/pegawai-riwayat-thr/kalkulasi-thr', [PegawaiRiwayatThrController::class, 'kalkulasiThr'])->name('pegawai-riwayat-thr.kalkulasi-thr');
+        Route::resource('/pegawai-riwayat-thr', PegawaiRiwayatThrController::class)->only(['index']);
 
-        //gaji 13?
+        //gaji 13
+        Route::get('/export-to-excel/gajiplus/{tahun}', [PegawaiRiwayatGajiplusController::class, 'exportToExcel'])->name('pegawai-riwayat-gajiplus.export-excel-gajiplus');
+        Route::get('/export-to-excel/gajiplus/{tahun}/{unitKerjaId}', [PegawaiRiwayatGajiplusController::class, 'exportToExcelDua'])->name('pegawai-riwayat-gajiplus.export-excel-gajiplus-dua');
+        Route::post('/pegawai-riwayat-gajiplus/datatable', [PegawaiRiwayatGajiplusController::class, 'datatable'])->name('pegawai-riwayat-gajiplus.datatable');
+        Route::post('/pegawai-riwayat-gajiplus/kalkulasi-gajiplus', [PegawaiRiwayatGajiplusController::class, 'kalkulasiGajiplus'])->name('pegawai-riwayat-gajiplus.kalkulasi-gajiplus');
+        Route::resource('/pegawai-riwayat-gajiplus', PegawaiRiwayatGajiplusController::class)->only(['index']);
     });
 
     //master data
@@ -168,6 +188,9 @@ Route::middleware('auth')->group(function () {
 
         Route::post('/tunjangan-beras/datatable', [TunjanganBerasController::class, 'datatable'])->name('tunjangan-beras.datatable');
         Route::resource('/tunjangan-beras', TunjanganBerasController::class);
+
+        Route::post('/aturan-thr-gajiplus/datatable', [AturanThrGajiplusController::class, 'datatable'])->name('aturan-thr-gajiplus.datatable');
+        Route::resource('/aturan-thr-gajiplus', AturanThrGajiplusController::class);
         //
     });
 

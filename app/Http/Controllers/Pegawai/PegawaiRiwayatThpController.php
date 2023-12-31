@@ -273,6 +273,7 @@ class PegawaiRiwayatThpController extends Controller
 
             //!DATA DUMMY
             $all_pegawai = Pegawai::where('pegawai.status_dinas', 1)
+            ->select('pegawai.*')
             ->leftJoin('status_pegawai as sp', function ($join) {
                 $join->on('sp.id','=','pegawai.status_pegawai_id')
                     ->whereIn('sp.nama', array('PNS', 'CPNS', 'PPPK'))
@@ -298,18 +299,12 @@ class PegawaiRiwayatThpController extends Controller
                 $TUNJANGAN_ANAK = $this->_tunjangan_anak($NOMINAL_GAJI_POKOK, $count_anak);
 
                 //*TUNJANGAN JABATAN
-
                 $jabatan = PegawaiRiwayatJabatan::where('pegawai_id', $pegawai->id)->where('is_now', true)->where('is_plt', false)->first();
                 $TUNJANGAN_JABATAN = $this->_tunjangan_jabatan($pegawai, $gaji, $jabatan);
 
-                $jabatan_plt = PegawaiRiwayatJabatan::where('pegawai_id', $pegawai->id)->where('is_now', true)->where('is_plt', true)->first();
-                // if ($jabatan_plt != null) {
-                //     $nominal = JabatanStruktural::select('nominal_tunjangan')->where('id', $jabatan_plt->jabatan_unit_kerja->jabatan_tukin->jabatan_id)->first();
-                //     $TUNJANGAN_JABATAN += 0.5 * $nominal;
-                // }
-
                 //* TUNJANGAN KINERJA
                 $TUNJANGAN_KINERJA = $jabatan->jabatan_unit_kerja->jabatan_tukin->tukin->nominal;
+                $jabatan_plt = PegawaiRiwayatJabatan::where('pegawai_id', $pegawai->id)->where('is_now', true)->where('is_plt', true)->first();
                 if ($jabatan_plt != null) {
                     $TUNJANGAN_KINERJA += 0.2 * $jabatan_plt->jabatan_unit_kerja->jabatan_tukin->tukin->nominal;
                 }
@@ -466,11 +461,11 @@ class PegawaiRiwayatThpController extends Controller
         } else if ($jabatan->jabatan_unit_kerja->jabatan_tukin->jenis_jabatan_id == 2) {
             //JFT
             $nominal = JabatanFungsional::select('nominal_tunjangan')->where('id', $jabatan->jabatan_unit_kerja->jabatan_tukin->jabatan_id)->first();
-            return $nominal;
+            return $nominal->nominal_tunjangan;
         } else if ($jabatan->jabatan_unit_kerja->jabatan_tukin->jenis_jabatan_id == 1) {
             //STRUKTURAL
             $nominal = JabatanStruktural::select('nominal_tunjangan')->where('id', $jabatan->jabatan_unit_kerja->jabatan_tukin->jabatan_id)->first();
-            return $nominal;
+            return $nominal->nominal_tunjangan;
         } else if ($jabatan->jabatan_unit_kerja->jabatan_tukin->jenis_jabatan_id == 4) {
             //JFU
             return $gaji->gaji->nominal_tunjangan_jabatan;
