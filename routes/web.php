@@ -47,6 +47,7 @@ use App\Http\Controllers\PegawaiRiwayatGajiplusController;
 use App\Http\Controllers\RiwayatGajiplusController;
 use App\Http\Controllers\RiwayatThrController;
 use App\Http\Controllers\RuangRapatController;
+use App\Http\Controllers\PesanRuangRapatController;
 
 /*
 |--------------------------------------------------------------------------
@@ -107,6 +108,9 @@ Route::middleware('auth')->group(function () {
     
     Route::post('/pegawai-bpjs-lainnya/datatable', [PegawaiBpjsLainnyaController::class, 'datatable'])->name('pegawai-bpjs-lainnya.datatable');
     Route::resource('/pegawai-bpjs-lainnya', PegawaiBpjsLainnyaController::class);
+
+    Route::post('/pesan-ruang-rapat/datatable', [PesanRuangRapatController::class, 'datatable'])->name('pesan-ruang-rapat.datatable');
+    Route::resource('/pesan-ruang-rapat', PesanRuangRapatController::class)->except('edit', 'update');
     //
 
     Route::prefix('presensi')->group(function () {

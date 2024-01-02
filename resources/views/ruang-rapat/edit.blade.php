@@ -46,7 +46,7 @@
                                 <div class="form-group @error('nama')has-error @enderror">
                                     <label>Nama Ruang Rapat <span class="text-danger"><sup>*</sup></span></label>
                                     <input type="text" name="nama" id="nama" value="{{ old('nama') ?? $atg->nama }}"
-                                        class="form-control" required="" maxlength="255" placeholder="Nama Ruang Rapat"
+                                        class="form-control" required="" maxlength="255" placeholder="Nama Ruang Rapat (Gedung - Lantai - Ruangan)"
                                         autocomplete="off">
                                 </div>
 
