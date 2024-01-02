@@ -2,10 +2,6 @@
     <ul class="metismenu">
         {{-- PERSONAL --}}
         <li class="g_heading">Personal</li>
-        {{-- indrawan --}}
-        <li class="{{ Request::is('grade-tukin*') ? 'active' : '' }}"><a href="{{ route('grade-tukin.index') }}"><i
-                    class="fa fa-money"></i><span>Info Grade Tukin</span></a></li>
-
         <li class="{{ request()->segment(2) == auth()->user()->pegawai_id ? 'active' : '' }}"><a
                 href="{{ route('pegawai.show', auth()->user()->pegawai_id) }}"><i
                     class="icon-home"></i><span>Profile</span></a>
@@ -59,6 +55,10 @@
                 </li>
 
             </ul>
+        </li>
+        {{-- indrawan --}}
+        <li class="{{ Request::is('grade-tukin*') ? 'active' : '' }}"><a href="{{ route('grade-tukin.index') }}"><i
+            class="fa fa-money"></i><span>Info Grade Tukin</span></a>
         </li>
 
         {{-- ESSELON 2 --}}
@@ -150,6 +150,8 @@
                             href="{{ route('tunjangan-beras.index') }}">Tunjangan Beras</a></li>
                     <li class="{{ Request::is('master/aturan-thr-gajiplus*') ? 'active' : '' }}"><a
                         href="{{ route('aturan-thr-gajiplus.index') }}">Aturan THR dan Gaji-13</a></li>
+                    <li class="{{ Request::is('master/ruang-rapat*') ? 'active' : '' }}"><a
+                        href="{{ route('ruang-rapat.index') }}">Ruang Rapat</a></li>
                 </ul>
             </li>
 

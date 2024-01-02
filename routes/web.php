@@ -46,6 +46,7 @@ use App\Http\Controllers\PegawaiRiwayatThrController;
 use App\Http\Controllers\PegawaiRiwayatGajiplusController;
 use App\Http\Controllers\RiwayatGajiplusController;
 use App\Http\Controllers\RiwayatThrController;
+use App\Http\Controllers\RuangRapatController;
 
 /*
 |--------------------------------------------------------------------------
@@ -191,6 +192,9 @@ Route::middleware('auth')->group(function () {
 
         Route::post('/aturan-thr-gajiplus/datatable', [AturanThrGajiplusController::class, 'datatable'])->name('aturan-thr-gajiplus.datatable');
         Route::resource('/aturan-thr-gajiplus', AturanThrGajiplusController::class);
+
+        Route::post('/ruang-rapat/datatable', [RuangRapatController::class, 'datatable'])->name('ruang-rapat.datatable');
+        Route::resource('/ruang-rapat', RuangRapatController::class);
         //
     });
 
