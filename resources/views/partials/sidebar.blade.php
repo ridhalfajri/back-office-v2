@@ -57,6 +57,9 @@
             </ul>
         </li>
         {{-- indrawan --}}
+        {{-- <li class="{{ Request::is('pesan-ruang-rapat*') ? 'active' : '' }}"><a href="{{ route('pesan-ruang-rapat.index') }}"><i
+            class="icon-home"></i><span>Pesan Ruang Rapat</span></a>
+        </li> --}}
         <li class="{{ Request::is('grade-tukin*') ? 'active' : '' }}"><a href="{{ route('grade-tukin.index') }}"><i
             class="fa fa-money"></i><span>Info Grade Tukin</span></a>
         </li>
@@ -150,8 +153,8 @@
                             href="{{ route('tunjangan-beras.index') }}">Tunjangan Beras</a></li>
                     <li class="{{ Request::is('master/aturan-thr-gajiplus*') ? 'active' : '' }}"><a
                         href="{{ route('aturan-thr-gajiplus.index') }}">Aturan THR dan Gaji-13</a></li>
-                    <li class="{{ Request::is('master/ruang-rapat*') ? 'active' : '' }}"><a
-                        href="{{ route('ruang-rapat.index') }}">Ruang Rapat</a></li>
+                    {{-- <li class="{{ Request::is('master/ruang-rapat*') ? 'active' : '' }}"><a
+                        href="{{ route('ruang-rapat.index') }}">Ruang Rapat</a></li> --}}
                 </ul>
             </li>
 
