@@ -1,13 +1,14 @@
 <div class="item-action dropdown ml-2">
     <a href="javascript:void(0)" data-toggle="dropdown"><i class="fe fe-align-justify"></i></a>
     <div class="dropdown-menu dropdown-menu-right">
-        <a href="{{ route('penghasilan.gaji-detail-esselon', $id_thp) }}" class="dropdown-item"><i
-                class="dropdown-icon fa fa-eye"></i>
+        <a @if ($id_thp != null) href="{{ route('penghasilan.gaji-detail-esselon', $id_thp) }}" @endif
+            class="dropdown-item"><i class="dropdown-icon fa fa-eye"></i>
             Riwayat Gaji</a>
-        <a href="{{ route('penghasilan.tukin-detail-esselon', $id_thp) }}" class="dropdown-item"><i
-                class="dropdown-icon fa fa-eye"></i>
+        <a @if ($id_thp != null) href="{{ route('penghasilan.tukin-detail-esselon', $id_thp) }}" @endif
+            class="dropdown-item"><i class="dropdown-icon fa fa-eye"></i>
             Riwayat Tukin</a>
-        <a href="{{ route('penghasilan.umak-detail-esselon', $id_umak) }}" class="dropdown-item"><i class="dropdown-icon fa fa-eye"></i>
+        <a @if ($id_umak != null) href="{{ route('penghasilan.umak-detail-esselon', $id_umak) }}" @endif
+            class="dropdown-item"><i class="dropdown-icon fa fa-eye"></i>
             Riwayat Uang Makan</a>
     </div>
 </div>

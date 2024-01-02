@@ -70,8 +70,12 @@ class PegawaiRiwayatThpController extends Controller
     }
     public function datatable_show(Request $request)
     {
-        $pegawai = PegawaiRiwayatThp::select('pegawai_riwayat_thp.*', 'pegawai_riwayat_thp.id AS id_thp', 'pegawai_riwayat_umak.id AS id_umak',
-        DB::raw('SUM(pegawai_riwayat_umak.total) as total'))
+        $pegawai = PegawaiRiwayatThp::select(
+            'pegawai_riwayat_thp.*',
+            'pegawai_riwayat_thp.id AS id_thp',
+            'pegawai_riwayat_umak.id AS id_umak',
+            DB::raw('SUM(pegawai_riwayat_umak.total) as total')
+        )
             ->leftJoin('pegawai_riwayat_umak', function ($join) {
                 // $join->on(DB::raw('pegawai_riwayat_umak.bulan COLLATE utf8mb4_unicode_ci'), '=', DB::raw('pegawai_riwayat_thp.bulan COLLATE utf8mb4_unicode_ci'))
                 //     ->where(DB::raw('pegawai_riwayat_umak.tahun COLLATE utf8mb4_unicode_ci'), '=', DB::raw('pegawai_riwayat_thp.tahun COLLATE utf8mb4_unicode_ci'))
@@ -151,8 +155,9 @@ class PegawaiRiwayatThpController extends Controller
 
     public function gaji_detail($id)
     {
-        $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
-        $this->authorize('kabiro', $kabiro);
+        $pegawai = PegawaiRiwayatThp::where('id', $id)->select('pegawai_id')->first();
+        $cek_pegawai = Pegawai::where('id', $pegawai->pegawai_id)->first();
+        $this->authorize('personal', $cek_pegawai);
         $title = 'Gaji';
         $gaji = PegawaiRiwayatThp::where('pegawai_riwayat_thp.id', $id)
             ->select(
@@ -185,8 +190,9 @@ class PegawaiRiwayatThpController extends Controller
     }
     public function tukin_detail($id)
     {
-        $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
-        $this->authorize('kabiro', $kabiro);
+        $pegawai = PegawaiRiwayatThp::where('id', $id)->select('pegawai_id')->first();
+        $cek_pegawai = Pegawai::where('id', $pegawai->pegawai_id)->first();
+        $this->authorize('personal', $cek_pegawai);
 
         $title = "Tukin Detail";
         $tukin = PegawaiRiwayatThp::where('pegawai_riwayat_thp.id', $id)->select('tunjangan_kinerja', 'potongan_tukin', 'bulan', 'tahun', 'p.nama_depan', 'p.nama_belakang', 'p.nip', 'p.email_kantor')
@@ -204,8 +210,9 @@ class PegawaiRiwayatThpController extends Controller
     //indrawan
     public function umak_detail($id)
     {
-        $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
-        $this->authorize('kabiro', $kabiro);
+        $pegawai = PegawaiRiwayatUmak::where('id', $id)->select('pegawai_id')->first();
+        $cek_pegawai = Pegawai::where('id', $pegawai->pegawai_id)->first();
+        $this->authorize('personal', $cek_pegawai);
         //where('pegawai_riwayat_umak.id', $id)
         $title = "Uang Makan Detail";
 
@@ -214,32 +221,42 @@ class PegawaiRiwayatThpController extends Controller
 
         //cek double/tidak
         $rowUmak = PegawaiRiwayatUmak::where('bulan', $cekPeriodUmak->bulan)
-        ->where('tahun', $cekPeriodUmak->tahun)
-        ->count();
+            ->where('tahun', $cekPeriodUmak->tahun)
+            ->count();
 
         $umak = [];
-        if($rowUmak == 1){
+        if ($rowUmak == 1) {
             $umak = PegawaiRiwayatUmak::where('pegawai_riwayat_umak.bulan', $cekPeriodUmak->bulan)
-            ->where('pegawai_riwayat_umak.tahun', $cekPeriodUmak->tahun)
-            ->select('p.nama_depan', 'p.nama_belakang', 'p.nip', 'p.email_kantor',
-            'um.nominal',
-            DB::raw('SUM(pegawai_riwayat_umak.jumlah_hari_masuk) as jumlah_hari_masuk'),
-            DB::raw('SUM(pegawai_riwayat_umak.total) as total'))
-            ->leftJoin('pegawai AS p', 'p.id', '=', 'pegawai_riwayat_umak.pegawai_id')
-            ->leftJoin('uang_makan AS um', 'um.id', '=', 'pegawai_riwayat_umak.uang_makan_id')
-            ->first();
+                ->where('pegawai_riwayat_umak.tahun', $cekPeriodUmak->tahun)
+                ->select(
+                    'p.nama_depan',
+                    'p.nama_belakang',
+                    'p.nip',
+                    'p.email_kantor',
+                    'um.nominal',
+                    DB::raw('SUM(pegawai_riwayat_umak.jumlah_hari_masuk) as jumlah_hari_masuk'),
+                    DB::raw('SUM(pegawai_riwayat_umak.total) as total')
+                )
+                ->leftJoin('pegawai AS p', 'p.id', '=', 'pegawai_riwayat_umak.pegawai_id')
+                ->leftJoin('uang_makan AS um', 'um.id', '=', 'pegawai_riwayat_umak.uang_makan_id')
+                ->first();
         }
 
-        if($rowUmak == 2){
+        if ($rowUmak == 2) {
             $umak = PegawaiRiwayatUmak::where('pegawai_riwayat_umak.bulan', $cekPeriodUmak->bulan)
-            ->where('pegawai_riwayat_umak.tahun', $cekPeriodUmak->tahun)
-            ->select('p.nama_depan', 'p.nama_belakang', 'p.nip', 'p.email_kantor',
-            DB::raw('SUM(um.nominal)/2 as nominal'),
-            DB::raw('SUM(pegawai_riwayat_umak.jumlah_hari_masuk) as jumlah_hari_masuk'),
-            DB::raw('SUM(pegawai_riwayat_umak.total) as total'))
-            ->leftJoin('pegawai AS p', 'p.id', '=', 'pegawai_riwayat_umak.pegawai_id')
-            ->leftJoin('uang_makan AS um', 'um.id', '=', 'pegawai_riwayat_umak.uang_makan_id')
-            ->first();
+                ->where('pegawai_riwayat_umak.tahun', $cekPeriodUmak->tahun)
+                ->select(
+                    'p.nama_depan',
+                    'p.nama_belakang',
+                    'p.nip',
+                    'p.email_kantor',
+                    DB::raw('SUM(um.nominal)/2 as nominal'),
+                    DB::raw('SUM(pegawai_riwayat_umak.jumlah_hari_masuk) as jumlah_hari_masuk'),
+                    DB::raw('SUM(pegawai_riwayat_umak.total) as total')
+                )
+                ->leftJoin('pegawai AS p', 'p.id', '=', 'pegawai_riwayat_umak.pegawai_id')
+                ->leftJoin('uang_makan AS um', 'um.id', '=', 'pegawai_riwayat_umak.uang_makan_id')
+                ->first();
         }
 
         $monthName = date("F", strtotime("$cekPeriodUmak->tahun-$cekPeriodUmak->bulan-01"));
@@ -266,23 +283,22 @@ class PegawaiRiwayatThpController extends Controller
             //validasi tanggal awal 21 dan akhir 20
             $tglAwal = date('d', strtotime($tanggal_mulai));
             $tglAkhir = date('d', strtotime($tanggal_akhir));
-            if($tglAwal != 21 || $tglAkhir != 20){
+            if ($tglAwal != 21 || $tglAkhir != 20) {
                 //keluarkan pop up warning
                 return response()->json(['errors' => ['exists' => 'Tanggal awal tidak 20 atau Tanggal akhir tidak 21!']]);
             }
 
             //!DATA DUMMY
             $all_pegawai = Pegawai::where('pegawai.status_dinas', 1)
-            ->select('pegawai.*')
-            ->leftJoin('status_pegawai as sp', function ($join) {
-                $join->on('sp.id','=','pegawai.status_pegawai_id')
-                    ->whereIn('sp.nama', array('PNS', 'CPNS', 'PPPK'))
-                    ;
-            })
-            ->whereNull('pegawai.tanggal_berhenti')
-            ->whereNull('pegawai.tanggal_wafat')
-            //->where('pegawai.id', 492)
-            ->get();
+                ->select('pegawai.*')
+                ->leftJoin('status_pegawai as sp', function ($join) {
+                    $join->on('sp.id', '=', 'pegawai.status_pegawai_id')
+                        ->whereIn('sp.nama', array('PNS', 'CPNS', 'PPPK'));
+                })
+                ->whereNull('pegawai.tanggal_berhenti')
+                ->whereNull('pegawai.tanggal_wafat')
+                //->where('pegawai.id', 492)
+                ->get();
             // $all_pegawai = Pegawai::where('status_dinas', 1)->get();
             DB::beginTransaction();
             foreach ($all_pegawai as $pegawai) {
@@ -327,15 +343,14 @@ class PegawaiRiwayatThpController extends Controller
                 }
 
                 //untuk yang tubel
-                $cekTubel = PreTubel::where(function($query) use ($tanggal_mulai, $tanggal_akhir) {
+                $cekTubel = PreTubel::where(function ($query) use ($tanggal_mulai, $tanggal_akhir) {
                     $query->where('tanggal_awal', '<=', $tanggal_akhir)
-                        ->where('tanggal_akhir', '>=', $tanggal_mulai)
-                        ;
+                        ->where('tanggal_akhir', '>=', $tanggal_mulai);
                 })
-                ->where('is_active', '=' ,'Y')
-                ->where('no_enroll', '=' ,$pegawai->no_enroll)
-                ->first();
-                if($cekTubel != null){
+                    ->where('is_active', '=', 'Y')
+                    ->where('no_enroll', '=', $pegawai->no_enroll)
+                    ->first();
+                if ($cekTubel != null) {
                     $PERSEN_TUBEL = 0.8;
 
                     $NOMINAL_GAJI_POKOK = $PERSEN_TUBEL * $NOMINAL_GAJI_POKOK;
@@ -351,8 +366,8 @@ class PegawaiRiwayatThpController extends Controller
                 //* POTONGAN BPJS LAINNYA
                 //? BAGAIMANA MENGELOLA BPJS LAINNYA?
                 $bpjs_lainnya = PegawaiBpjsLainnya::where('pegawai_id', $pegawai->id)
-                ->where('is_active',true)
-                ->first();
+                    ->where('is_active', true)
+                    ->first();
                 if ($bpjs_lainnya != null) {
                     $count_bpjs_lainnya = $bpjs_lainnya->total_mertua + $bpjs_lainnya->total_orang_tua + $bpjs_lainnya->total_kelebihan_anak;
                     $POTONGAN_BPJS_LAINNYA = $count_bpjs_lainnya * 0.01 * $SUM_THP;
@@ -475,8 +490,8 @@ class PegawaiRiwayatThpController extends Controller
     {
         //$HARGA_BERAS = 72420; // HARUSNYA DIMASUKIN KE DALAM TABEL MASTER HARGA BERAS
         //
-        $cekTuber = TunjanganBeras::where('is_active', '=' ,'Y')
-        ->first();
+        $cekTuber = TunjanganBeras::where('is_active', '=', 'Y')
+            ->first();
 
         $keluarga = 1;
         if ($pasangan != null) {
@@ -544,8 +559,12 @@ class PegawaiRiwayatThpController extends Controller
     }
     public function datatable_show_esselon(Request $request)
     {
-        $pegawai = PegawaiRiwayatThp::select('pegawai_riwayat_thp.*', 'pegawai_riwayat_thp.id AS id_thp', 'pegawai_riwayat_umak.id AS id_umak',
-            DB::raw('SUM(pegawai_riwayat_umak.total) as total'))
+        $pegawai = PegawaiRiwayatThp::select(
+            'pegawai_riwayat_thp.*',
+            'pegawai_riwayat_thp.id AS id_thp',
+            'pegawai_riwayat_umak.id AS id_umak',
+            DB::raw('SUM(pegawai_riwayat_umak.total) as total')
+        )
             ->leftJoin('pegawai_riwayat_umak', function ($join) {
                 // $join->on(DB::raw('pegawai_riwayat_umak.bulan COLLATE utf8mb4_unicode_ci'), '=', DB::raw('pegawai_riwayat_thp.bulan COLLATE utf8mb4_unicode_ci'))
                 //     ->where(DB::raw('pegawai_riwayat_umak.tahun COLLATE utf8mb4_unicode_ci'), '=', DB::raw('pegawai_riwayat_thp.tahun COLLATE utf8mb4_unicode_ci'))
@@ -688,32 +707,42 @@ class PegawaiRiwayatThpController extends Controller
 
         //cek double/tidak
         $rowUmak = PegawaiRiwayatUmak::where('bulan', $cekPeriodUmak->bulan)
-        ->where('tahun', $cekPeriodUmak->tahun)
-        ->count();
+            ->where('tahun', $cekPeriodUmak->tahun)
+            ->count();
 
         $umak = [];
-        if($rowUmak == 1){
+        if ($rowUmak == 1) {
             $umak = PegawaiRiwayatUmak::where('pegawai_riwayat_umak.bulan', $cekPeriodUmak->bulan)
-            ->where('pegawai_riwayat_umak.tahun', $cekPeriodUmak->tahun)
-            ->select('p.nama_depan', 'p.nama_belakang', 'p.nip', 'p.email_kantor',
-            'um.nominal',
-            DB::raw('SUM(pegawai_riwayat_umak.jumlah_hari_masuk) as jumlah_hari_masuk'),
-            DB::raw('SUM(pegawai_riwayat_umak.total) as total'))
-            ->leftJoin('pegawai AS p', 'p.id', '=', 'pegawai_riwayat_umak.pegawai_id')
-            ->leftJoin('uang_makan AS um', 'um.id', '=', 'pegawai_riwayat_umak.uang_makan_id')
-            ->first();
+                ->where('pegawai_riwayat_umak.tahun', $cekPeriodUmak->tahun)
+                ->select(
+                    'p.nama_depan',
+                    'p.nama_belakang',
+                    'p.nip',
+                    'p.email_kantor',
+                    'um.nominal',
+                    DB::raw('SUM(pegawai_riwayat_umak.jumlah_hari_masuk) as jumlah_hari_masuk'),
+                    DB::raw('SUM(pegawai_riwayat_umak.total) as total')
+                )
+                ->leftJoin('pegawai AS p', 'p.id', '=', 'pegawai_riwayat_umak.pegawai_id')
+                ->leftJoin('uang_makan AS um', 'um.id', '=', 'pegawai_riwayat_umak.uang_makan_id')
+                ->first();
         }
 
-        if($rowUmak == 2){
+        if ($rowUmak == 2) {
             $umak = PegawaiRiwayatUmak::where('pegawai_riwayat_umak.bulan', $cekPeriodUmak->bulan)
-            ->where('pegawai_riwayat_umak.tahun', $cekPeriodUmak->tahun)
-            ->select('p.nama_depan', 'p.nama_belakang', 'p.nip', 'p.email_kantor',
-            DB::raw('SUM(um.nominal)/2 as nominal'),
-            DB::raw('SUM(pegawai_riwayat_umak.jumlah_hari_masuk) as jumlah_hari_masuk'),
-            DB::raw('SUM(pegawai_riwayat_umak.total) as total'))
-            ->leftJoin('pegawai AS p', 'p.id', '=', 'pegawai_riwayat_umak.pegawai_id')
-            ->leftJoin('uang_makan AS um', 'um.id', '=', 'pegawai_riwayat_umak.uang_makan_id')
-            ->first();
+                ->where('pegawai_riwayat_umak.tahun', $cekPeriodUmak->tahun)
+                ->select(
+                    'p.nama_depan',
+                    'p.nama_belakang',
+                    'p.nip',
+                    'p.email_kantor',
+                    DB::raw('SUM(um.nominal)/2 as nominal'),
+                    DB::raw('SUM(pegawai_riwayat_umak.jumlah_hari_masuk) as jumlah_hari_masuk'),
+                    DB::raw('SUM(pegawai_riwayat_umak.total) as total')
+                )
+                ->leftJoin('pegawai AS p', 'p.id', '=', 'pegawai_riwayat_umak.pegawai_id')
+                ->leftJoin('uang_makan AS um', 'um.id', '=', 'pegawai_riwayat_umak.uang_makan_id')
+                ->first();
         }
 
         $monthName = date("F", strtotime("$cekPeriodUmak->tahun-$cekPeriodUmak->bulan-01"));
