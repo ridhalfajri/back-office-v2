@@ -54,8 +54,8 @@ class RiwayatGajiplusController extends Controller
             'pegawai_riwayat_gajiplus.tunjangan_anak', 'pegawai_riwayat_gajiplus.tunjangan_jabatan', 'pegawai_riwayat_gajiplus.tunjangan_kinerja',
             'pegawai_riwayat_gajiplus.tahun', 'pegawai_riwayat_gajiplus.total_gajiplus')
             ->where('pegawai_riwayat_gajiplus.tahun', '=', $tahun)
-            //->where('pegawai_riwayat_gajiplus.pegawai_id', '=', Auth::user()->pegawai_id)
-            ->where('pegawai_riwayat_gajiplus.pegawai_id', '=', 498)
+            ->where('pegawai_riwayat_gajiplus.pegawai_id', '=', Auth::user()->pegawai_id)
+            //->where('pegawai_riwayat_gajiplus.pegawai_id', '=', 498)
             ->orderBy('pegawai_riwayat_gajiplus.tahun','desc')
             ;
         }else {
@@ -63,8 +63,8 @@ class RiwayatGajiplusController extends Controller
                 'pegawai_riwayat_gajiplus.nominal_gaji_pokok', 'pegawai_riwayat_gajiplus.tunjangan_beras', 'pegawai_riwayat_gajiplus.tunjangan_pasangan',
                 'pegawai_riwayat_gajiplus.tunjangan_anak', 'pegawai_riwayat_gajiplus.tunjangan_jabatan', 'pegawai_riwayat_gajiplus.tunjangan_kinerja',
                 'pegawai_riwayat_gajiplus.tahun', 'pegawai_riwayat_gajiplus.total_gajiplus')
-                //->where('pegawai_riwayat_gajiplus.pegawai_id', '=', Auth::user()->pegawai_id)
-                ->where('pegawai_riwayat_gajiplus.pegawai_id', '=', 498)
+                ->where('pegawai_riwayat_gajiplus.pegawai_id', '=', Auth::user()->pegawai_id)
+                //->where('pegawai_riwayat_gajiplus.pegawai_id', '=', 498)
                 ->orderBy('pegawai_riwayat_gajiplus.tahun','desc')
                 ;
         }
