@@ -63,6 +63,9 @@
         <li class="{{ Request::is('grade-tukin*') ? 'active' : '' }}"><a href="{{ route('grade-tukin.index') }}"><i
             class="fa fa-money"></i><span>Info Grade Tukin</span></a>
         </li>
+        <li class="{{ Request::is('grade-tukin*') ? 'active' : '' }}"><a href="{{ route('grade-tukin.index') }}"><i
+            class="fa fa-money"></i><span>Pengajuan PMK</span></a>
+        </li>
 
         {{-- ESSELON 2 --}}
         @if (auth()->user()->pegawai->jabatan_sekarang->tx_tipe_jabatan_id == 2 ||
