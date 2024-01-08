@@ -49,9 +49,9 @@
                                 aria-controls="pills-alamat" aria-selected="true">Alamat</a>
                         </li>
                         <li class="nav-item">
+
                             <a class="nav-link" id="pills-jabatan-tab" data-toggle="pill"
-                                href="{{ route('riwayat-jabatan.show', $pegawai->id) }}" role="tab"
-                                aria-controls="pills-jabatan" aria-selected="true">Jabatan</a>
+                                href="{{ route('riwayat-jabatan.show', $pegawai->id) }}" role="tab" aria-controls="pills-jabatan" aria-selected="true">Jabatan</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" id="pills-diklat-tab" data-toggle="pill" href="#pills-diklat" role="tab"
@@ -266,6 +266,9 @@
                         </div>
                         <div class="tab-pane fade" id="pills-alamat" role="tabpanel" aria-labelledby="pills-alamat-tab">
                             @include('pegawai.pegawai-alamat')
+                        </div>
+                        <div class="tab-pane fade" id="pills-jabatan" role="tabpanel" aria-labelledby="pills-jabatan-tab">
+                            @include('pegawai.pegawai-jabatan')
                         </div>
                         <div class="tab-pane fade" id="pills-diklat" role="tabpanel" aria-labelledby="pills-diklat-tab">
                             @include('pegawai.pegawai-diklat')
@@ -1004,6 +1007,7 @@
     <script src="{{ asset('assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
     {{-- File Upload --}}
     <script src="{{ asset('assets/plugins/dropify/js/dropify.min.js') }}"></script>
+    <script src="{{ asset('assets/js/custom/jabatan.js') }}"></script>
     <script src="{{ asset('assets/js/custom/diklat.js') }}"></script>
     <script src="{{ asset('assets/js/custom/alamat.js') }}"></script>
     <script src="{{ asset('assets/js/custom/tmt_gaji.js') }}"></script>
@@ -1176,7 +1180,12 @@
                 url = "{{ route('diklat.datatable') }}"
                 get_table_diklat(url)
                 $(this).tab('show')
-            } else if (tab_id == 'pills-tmt-gaji-tab') {
+            }else if (tab_id == 'pills-jabatan-tab') {
+                url = "{{ route('riwayat-jabatan.datatable') }}"
+                get_table_jabatan(url)
+                $(this).tab('show')
+            }else if (tab_id == 'pills-tmt-gaji-tab') {
+
                 url = "{{ route('tmt-gaji.datatable') }}"
                 pegawai_id = "{{ $pegawai->id }}"
                 get_table_tmt_gaji(url, pegawai_id)
