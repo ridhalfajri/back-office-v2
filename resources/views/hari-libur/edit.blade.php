@@ -2,12 +2,13 @@
 @push('style')
     <link rel="stylesheet" href="{{ asset('assets/plugins/sweetalert/sweetalert.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/plugins/select2-4.0.13/dist/css/select2.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/ijin.css') }}">
 @endpush
 
 @push('breadcrumb')
         <div class="btn-group btn-breadcrumb">
             <a href="/" class="btn btn-primary"><i class="fa fa-home"></i></a>
-            <a href="/hari-libur" class="btn btn-info"><i class="fa fa-list"></i> HariLibur</a>
+            <a href="/presensi/hari-libur" class="btn btn-info"><i class="fa fa-list"></i> HariLibur</a>
             <a href="#" class="btn btn-warning"><i class="fa fa-pensil"></i> Ubah Data HariLibur</a>
             {{-- <a href="/" class="btn btn-outline-danger"><i class="fa fa-chevron-circle-left"></i> Kembali</a> --}}
         </div>
@@ -15,7 +16,7 @@
 
 @section('content')
     <div class="section-body">
-        <div class="card">
+        <div class="card col-4">
             <div class="card-body">
                 <div class="card-content">
                     <form class="needs-validation" id="hariLiburForm" method="post"  action="{{ route('hari-libur.update',$hariLibur->id) }}"  accept-charset="utf-8" novalidate>
@@ -24,10 +25,10 @@
 
                         <div class="row clearfix">
                             <div class="col-12 col-lg-12 col-md-12">
-                                <div class="form-group  @error('is_libur') has-error @enderror">
-                                    <label>Is Libur<span class="text-danger"><sup>*</sup></span></label>
-                                    <input class="form-control" type="number" id="is_libur" name = "is_libur" value = "{{ old('is_libur') ?? $hariLibur->is_libur }}" placeholder="Is Libur" autocomplete="off"/>
-                                    @error('is_libur')
+                                <div class="form-group @error('tanggal') has-error @enderror">
+                                    <label>Tanggal<span class="text-danger"><sup>*</sup></span></label>
+                                    <input class="form-control" type="date" id="tanggal" name = "tanggal"  value = "{{ old('tanggal') ?? $hariLibur->tanggal }}" placeholder="Tanggal" autocomplete="off"/>
+                                    @error('tanggal')
                                         <small class="text-danger">{{ $message }}</small>
                                     @enderror
                                 </div>
@@ -36,9 +37,9 @@
 
                         <div class="row clearfix">
                             <div class="col-12 col-lg-12 col-md-12">
-                                <div class="form-group  @error('keterangan') has-error @enderror">
+                                <div class="form-group @error('keterangan') has-error @enderror">
                                     <label>Keterangan<span class="text-danger"><sup>*</sup></span></label>
-                                    <input class="form-control"id="keterangan" name = "keterangan" value = "{{ old('keterangan') ?? $hariLibur->keterangan }}"maxlength = "100" placeholder="Keterangan" autocomplete="off"/>
+                                    <input class="form-control"id="keterangan" name = "keterangan" maxlength = "100"  value = "{{ old('keterangan') ?? $hariLibur->keterangan }}" placeholder="Keterangan" autocomplete="off"/>
                                     @error('keterangan')
                                         <small class="text-danger">{{ $message }}</small>
                                     @enderror
@@ -48,22 +49,13 @@
 
                         <div class="row clearfix">
                             <div class="col-12 col-lg-12 col-md-12">
-                                <div class="form-group  @error('tahun') has-error @enderror">
-                                    <label>Tahun<span class="text-danger"><sup>*</sup></span></label>
-                                    <input class="form-control"id="tahun" name = "tahun" value = "{{ old('tahun') ?? $hariLibur->tahun }}" placeholder="Tahun" autocomplete="off"/>
-                                    @error('tahun')
-                                        <small class="text-danger">{{ $message }}</small>
-                                    @enderror
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row clearfix">
-                            <div class="col-12 col-lg-12 col-md-12">
-                                <div class="form-group  @error('tanggal') has-error @enderror">
-                                    <label>Tanggal<span class="text-danger"><sup>*</sup></span></label>
-                                    <input class="form-control"id="tanggal" name = "tanggal" value = "{{ old('tanggal') ?? $hariLibur->tanggal }}" placeholder="Tanggal" autocomplete="off"/>
-                                    @error('tanggal')
+                                <div class="form-group @error('is_libur') has-error @enderror">
+                                    <label>Hari Libur :<span class="text-danger"><sup>*</sup></span></label>
+                                    <select class="form-control" id="is_libur" name="is_libur">
+                                        <option value="1" selected>Ya</option>
+                                        <option value="0">Tidak</option>
+                                    </select>
+                                    @error('is_libur')
                                         <small class="text-danger">{{ $message }}</small>
                                     @enderror
                                 </div>

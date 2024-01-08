@@ -13,11 +13,12 @@
 @endpush
 
 @push('breadcrumb')
-        <div class="btn-group btn-breadcrumb">
-            <a href="/" class="btn btn-primary"><i class="fa fa-home"></i></a>
-            <a href="{{ route('hari-libur.index') }}" class="btn btn-info"><i class="fa fa-list"></i> HariLibur</a>
-            <a href="/presensi/hari-libur/create" class="btn btn-success"><i class="fa fa-plus"></i> HariLibur Baru</a>
-            {{-- <a href="/" class="btn btn-outline-danger"><i class="fa fa-chevron-circle-left"></i> Kembali</a> --}}
+        <div class="breadcrumb">
+            <a href="/" class="btn btn-link"><i class="fa fa-home"></i> Home</a>
+            <div class="btn">></div>
+            <a href="{{ route('hari-libur.index') }}" class="btn btn-link"><i class="fa fa-list"></i> HariLibur</a>
+            <div class="btn">></div>
+            <a href="/presensi/hari-libur/create" class="btn btn-link"><i class="fa fa-plus"></i> HariLibur Baru</a>
         </div>
 @endpush
 
@@ -32,6 +33,7 @@
                         <th>No.</th>
 						<th>tanggal</th>
 						<th>keterangan</th>
+                        <th>Hari Libur</th>
                          <th style="width: 40px">aksi</th>
                     </tr>
                 </thead>
@@ -40,7 +42,8 @@
                     <tr>
                         <th>No.</th>
 						<th>tanggal</th>
-						<th>keterangan</th>
+                        <th>keterangan</th>
+                        <th>Hari Libur</th>
                          <th style="width: 40px">aksi</th>
                     </tr>
                 </tfoot>
@@ -87,6 +90,10 @@
             toastr['success']('{{ session("success") }}');
         @endif
 
+        @if(session('error'))
+            toastr['error']('{{ session("error") }}');
+        @endif
+
         table = $('#tbl-data').DataTable({
             processing: true,
             serverSide: true,
@@ -119,6 +126,11 @@
                 {
                     data: 'keterangan',
                     name: 'Keterangan',
+                    class: 'text-center'
+                },
+                {
+                    data: 'is_libur',
+                    name: 'is_libur',
                     class: 'text-center'
                 },
                 {
@@ -186,7 +198,7 @@
     function delete_data(id) {
         return new Promise(function(resolve, reject) {
             $.ajax({
-                url: "{{ url('hari-libur') }}/" + id,
+                url: "{{ url('/presensi/hari-libur') }}/" + id,
                 method: 'POST',
                 headers: {
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'

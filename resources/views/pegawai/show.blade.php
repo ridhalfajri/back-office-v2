@@ -20,10 +20,10 @@
                 <div class="col-md-12">
                     <div class="card card-profile">
                         <div class="card-body text-center">
-                            @if(!empty($pegawai->media_foto_pegawai))
-                            <img class="card-profile-img" src="{{ $pegawai->media_foto_pegawai }}" alt="" />
+                            @if (!empty($pegawai->media_foto_pegawai))
+                                <img class="card-profile-img" src="{{ $pegawai->media_foto_pegawai }}" alt="" />
                             @else
-                            <img class="card-profile-img" src="../assets/images/sm/avatar1.jpg" alt="" />
+                                <img class="card-profile-img" src="../assets/images/sm/avatar1.jpg" alt="" />
                             @endif
                             <h4 class="mb-3">{{ $pegawai->nama_depan . ' ' . $pegawai->nama_belakang }}</h4>
                             <p class="mb-4">{{ $pegawai->email_kantor . ' | ' . $pegawai->no_telp }}
@@ -49,8 +49,9 @@
                                 aria-controls="pills-alamat" aria-selected="true">Alamat</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" id="pills-jabatan-tab" data-toggle="pill" href="#pills-jabatan" role="tab"
-                                aria-controls="pills-jabatan" aria-selected="true">Jabatan</a>
+
+                            <a class="nav-link" id="pills-jabatan-tab" data-toggle="pill"
+                                href="{{ route('riwayat-jabatan.show', $pegawai->id) }}" role="tab" aria-controls="pills-jabatan" aria-selected="true">Jabatan</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" id="pills-diklat-tab" data-toggle="pill" href="#pills-diklat" role="tab"
@@ -82,8 +83,8 @@
                                 <div class="card-header">
                                     <h3 class="card-title">Profile</h3>
                                     <div class="card-options">
-                                        <a href="#" class="card-options-fullscreen" data-toggle="card-fullscreen"><i
-                                                class="fe fe-maximize"></i></a>
+                                        <a href="#" class="card-options-fullscreen"
+                                            data-toggle="card-fullscreen"><i class="fe fe-maximize"></i></a>
                                         <div class="item-action dropdown ml-2">
                                             <a href="javascript:void(0)" data-toggle="dropdown"><i
                                                     class="fe fe-more-vertical"></i></a>
@@ -92,8 +93,9 @@
                                                         class="dropdown-icon fa fa-drivers-license-o"></i> Curriculum
                                                     Vitae</a>
                                                 <div class="dropdown-divider"></div>
-                                                <a href="{{ route('pegawai.edit', $pegawai->id) }}" id="btn-edit" class="dropdown-item"><i
-                                                        class="dropdown-icon fa fa-edit"></i> Ubah</a>
+                                                <a href="{{ route('pegawai.edit', $pegawai->id) }}" id="btn-edit"
+                                                    class="dropdown-item"><i class="dropdown-icon fa fa-edit"></i>
+                                                    Ubah</a>
                                             </div>
                                         </div>
                                     </div>
@@ -631,7 +633,30 @@
                                             </select>
                                         </div>
                                         <small class="text-danger" id="error_gaji_id"></small>
-
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="form-label">Status</div>
+                                        <div class="custom-controls-stacked">
+                                            <label class="custom-control custom-radio custom-control-inline">
+                                                <input type="radio" class="custom-control-input" name="is_active"
+                                                    value="1">
+                                                <span class="custom-control-label">Aktif</span>
+                                            </label>
+                                            <label class="custom-control custom-radio custom-control-inline">
+                                                <input type="radio" class="custom-control-input" name="is_active"
+                                                    checked="" value="0">
+                                                <span class="custom-control-label">Tidak Aktif</span>
+                                            </label>
+                                        </div>
+                                        <small class="text-danger" id="error_is_active"></small>
+                                    </div>
+                                    <div class="form-group col-lg-12 col-md-6 col-sm-12">
+                                        <label class="form-label">SK TMT Gaji</label>
+                                        <div class="input-group">
+                                            <input type="file" id="media_tmt_gaji" name="media_tmt_gaji">
+                                            <a id="download_media_tmt_gaji" href="">Download</a>
+                                            <small class="text-danger" id="error_media_tmt_gaji"></small>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -1160,6 +1185,7 @@
                 get_table_jabatan(url)
                 $(this).tab('show')
             }else if (tab_id == 'pills-tmt-gaji-tab') {
+
                 url = "{{ route('tmt-gaji.datatable') }}"
                 pegawai_id = "{{ $pegawai->id }}"
                 get_table_tmt_gaji(url, pegawai_id)
@@ -1187,7 +1213,7 @@
             var id = $('#pegawai_id').val();
             $.ajax({
                 type: "GET",
-                url: "{{ route('pegawai.edit', "+ id +") }}",
+                url: "{{ route('pegawai.edit', '+ id +') }}",
                 headers: {
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
                 },

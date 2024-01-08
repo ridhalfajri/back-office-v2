@@ -64,7 +64,7 @@ return [
             'driver' => 'eloquent',
             'model' => App\Models\User::class,
         ],
-
+        'permissions' => Spatie\Permission\Models\Permission::class,
         // 'users' => [
         //     'driver' => 'database',
         //     'table' => 'users',

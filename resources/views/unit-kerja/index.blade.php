@@ -36,6 +36,7 @@
                     </h4>
                 </div>
                 <div class="card-body">
+                    <h5 class="box-title" style="text-align: center;"><b>List Master Unit Kerja</b></h5>
                     <table id="tbl-data"
                     class="table table-hover js-basic-example dataTable table_custom spacing5">
                     <thead>
@@ -44,7 +45,7 @@
                             <th class="font-weight-bold text-dark">Unit Kerja</th>
                             <th class="font-weight-bold text-dark">Jenis<br>Unit Kerja</th>
                             <th class="font-weight-bold text-dark">Singkatan</th>
-                            <th class="font-weight-bold text-dark">Keterangan</th>
+                            {{-- <th class="font-weight-bold text-dark">Keterangan</th> --}}
                             <th class="font-weight-bold text-dark">Aksi</th>
                         </tr>
                     </thead>
@@ -54,7 +55,7 @@
                             <th class="font-weight-bold text-dark">Unit Kerja</th>
                             <th class="font-weight-bold text-dark">Jenis<br>Unit Kerja</th>
                             <th class="font-weight-bold text-dark">Singkatan</th>
-                            <th class="font-weight-bold text-dark">Keterangan</th>
+                            {{-- <th class="font-weight-bold text-dark">Keterangan</th> --}}
                             <th class="font-weight-bold text-dark">Aksi</th>
                         </tr>
                     </tfoot>
@@ -120,11 +121,11 @@
                         name: 'unit_kerja.singkatan',
                         class: 'text-center'
                     },
-                    {
-                        data: 'keterangan',
-                        name: 'unit_kerja.keterangan',
-                        class: 'text-center'
-                    },
+                    // {
+                    //     data: 'keterangan',
+                    //     name: 'unit_kerja.keterangan',
+                    //     class: 'text-center'
+                    // },
                     {
                         data: 'aksi',
                         name: 'aksi',

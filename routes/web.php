@@ -36,8 +36,18 @@ use App\Http\Controllers\StatusPegawaiController;
 use App\Http\Controllers\ThpController;
 use App\Http\Controllers\UnitKerjaController;
 use App\Http\Controllers\TukinController;
+use App\Http\Controllers\GradeTukinController;
+use App\Http\Controllers\TunjanganBerasController;
+use App\Http\Controllers\AturanThrGajiplusController;
+use App\Http\Controllers\PegawaiRiwayatGolonganController;
+use App\Http\Controllers\PegawaiBpjsLainnyaController;
 use App\Http\Controllers\PegawaiRiwayatUmakController;
-
+use App\Http\Controllers\PegawaiRiwayatThrController;
+use App\Http\Controllers\PegawaiRiwayatGajiplusController;
+use App\Http\Controllers\RiwayatGajiplusController;
+use App\Http\Controllers\RiwayatThrController;
+use App\Http\Controllers\RuangRapatController;
+use App\Http\Controllers\PesanRuangRapatController;
 
 /*
 |--------------------------------------------------------------------------
@@ -83,6 +93,26 @@ Route::middleware('auth')->group(function () {
     Route::post('/presensi/pre-dinas-luar/konfirmasi', [PreDinasLuarController::class, 'konfirmasi'])->name('pre-dinas-luar.konfirmasi');
     Route::get('/presensi/pre-dinas-luar/persetujuan', [PreDinasLuarController::class, 'persetujuan'])->name('pre-dinas-luar.persetujuan');
 
+    //indrawan
+    Route::post('/pegawai-riwayat-golongan/datatable', [PegawaiRiwayatGolonganController::class, 'datatable'])->name('pegawai-riwayat-golongan.datatable');
+    Route::resource('/pegawai-riwayat-golongan', PegawaiRiwayatGolonganController::class);
+
+    Route::post('/grade-tukin', [GradeTukinController::class, 'datatable'])->name('grade-tukin.datatable');
+    Route::resource('/grade-tukin', GradeTukinController::class)->only('index');
+
+    Route::post('/riwayat-thr', [RiwayatThrController::class, 'datatable'])->name('riwayat-thr.datatable');
+    Route::resource('/riwayat-thr', RiwayatThrController::class)->only('index');
+
+    Route::post('/riwayat-gajiplus', [RiwayatGajiplusController::class, 'datatable'])->name('riwayat-gajiplus.datatable');
+    Route::resource('/riwayat-gajiplus', RiwayatGajiplusController::class)->only('index');
+    
+    Route::post('/pegawai-bpjs-lainnya/datatable', [PegawaiBpjsLainnyaController::class, 'datatable'])->name('pegawai-bpjs-lainnya.datatable');
+    Route::resource('/pegawai-bpjs-lainnya', PegawaiBpjsLainnyaController::class);
+
+    Route::post('/pesan-ruang-rapat/datatable', [PesanRuangRapatController::class, 'datatable'])->name('pesan-ruang-rapat.datatable');
+    Route::resource('/pesan-ruang-rapat', PesanRuangRapatController::class)->except('edit', 'update');
+    //
+
     Route::prefix('presensi')->group(function () {
 
         Route::resource('/pre-tubel', PreTubelController::class);
@@ -111,17 +141,39 @@ Route::middleware('auth')->group(function () {
         Route::post('/hari-libur/datatable', [HariLiburController::class, 'datatable'])->name('hari-libur.datatable');
 
         //Presensi
-        Route::resource('/presensi-pegawai', PresensiPegawaiController::class);
-        Route::post('/presensi-pegawai/datatable', [PresensiPegawaiController::class, 'datatable'])->name('presensi-pegawai.datatable');
-        Route::post('/presensi-pegawai/getdatapresensi', [PresensiPegawaiController::class, 'getdatapresensi'])->name('presensi-pegawai.getdatapresensi');
+        Route::resource('/presensiku', PresensiPegawaiController::class);
+        Route::post('/presensiku/datatable', [PresensiPegawaiController::class, 'datatable'])->name('presensiku.datatable');
+        Route::post('/presensiku/getdatapresensi', [PresensiPegawaiController::class, 'getdatapresensi'])->name('presensiku.getdatapresensi');
+
+        Route::post('/presensi-pegawai/getanggotatim', [PresensiPegawaiController::class, 'getAnggotaTim'])->name('presensi-pegawai.getanggotatim');
+
+        Route::get('/presensi-pegawai/',  [PresensiPegawaiController::class, 'dataPresensiPegawai'])->name('presensi-pegawai');
+        Route::post('/presensi-pegawai/datatablepresensi', [PresensiPegawaiController::class, 'datatablePresensi'])->name('presensi-pegawai.datatablepresensi');
+        Route::post('/presensi-pegawai/getdatapresensipegawai', [PresensiPegawaiController::class, 'getdataPresensiPegawai'])->name('presensi-pegawai.getdatapresensipegawai');
     });
 
     //uang makan
     Route::prefix('kalkulasi')->group(function () {
         //indrawan
+        Route::get('/export-to-excel/umak/{bulan}/{tahun}', [PegawaiRiwayatUmakController::class, 'exportToExcel'])->name('pegawai-riwayat-umak.export-excel-umak');
+        Route::get('/export-to-excel/umak/{bulan}/{tahun}/{unitKerjaId}', [PegawaiRiwayatUmakController::class, 'exportToExcelDua'])->name('pegawai-riwayat-umak.export-excel-umak-dua');
         Route::post('/pegawai-riwayat-umak/datatable', [PegawaiRiwayatUmakController::class, 'datatable'])->name('pegawai-riwayat-umak.datatable');
         Route::post('/pegawai-riwayat-umak/kalkulasi-umak', [PegawaiRiwayatUmakController::class, 'kalkulasiUmak'])->name('pegawai-riwayat-umak.kalkulasi-umak');
         Route::resource('/pegawai-riwayat-umak', PegawaiRiwayatUmakController::class)->only(['index']);
+
+        //thr
+        Route::get('/export-to-excel/thr/{tahun}', [PegawaiRiwayatThrController::class, 'exportToExcel'])->name('pegawai-riwayat-thr.export-excel-thr');
+        Route::get('/export-to-excel/thr/{tahun}/{unitKerjaId}', [PegawaiRiwayatThrController::class, 'exportToExcelDua'])->name('pegawai-riwayat-thr.export-excel-thr-dua');
+        Route::post('/pegawai-riwayat-thr/datatable', [PegawaiRiwayatThrController::class, 'datatable'])->name('pegawai-riwayat-thr.datatable');
+        Route::post('/pegawai-riwayat-thr/kalkulasi-thr', [PegawaiRiwayatThrController::class, 'kalkulasiThr'])->name('pegawai-riwayat-thr.kalkulasi-thr');
+        Route::resource('/pegawai-riwayat-thr', PegawaiRiwayatThrController::class)->only(['index']);
+
+        //gaji 13
+        Route::get('/export-to-excel/gajiplus/{tahun}', [PegawaiRiwayatGajiplusController::class, 'exportToExcel'])->name('pegawai-riwayat-gajiplus.export-excel-gajiplus');
+        Route::get('/export-to-excel/gajiplus/{tahun}/{unitKerjaId}', [PegawaiRiwayatGajiplusController::class, 'exportToExcelDua'])->name('pegawai-riwayat-gajiplus.export-excel-gajiplus-dua');
+        Route::post('/pegawai-riwayat-gajiplus/datatable', [PegawaiRiwayatGajiplusController::class, 'datatable'])->name('pegawai-riwayat-gajiplus.datatable');
+        Route::post('/pegawai-riwayat-gajiplus/kalkulasi-gajiplus', [PegawaiRiwayatGajiplusController::class, 'kalkulasiGajiplus'])->name('pegawai-riwayat-gajiplus.kalkulasi-gajiplus');
+        Route::resource('/pegawai-riwayat-gajiplus', PegawaiRiwayatGajiplusController::class)->only(['index']);
     });
 
     //master data
@@ -138,6 +190,15 @@ Route::middleware('auth')->group(function () {
 
         Route::post('/tukin/datatable', [TukinController::class, 'datatable'])->name('tukin.datatable');
         Route::resource('/tukin', TukinController::class);
+
+        Route::post('/tunjangan-beras/datatable', [TunjanganBerasController::class, 'datatable'])->name('tunjangan-beras.datatable');
+        Route::resource('/tunjangan-beras', TunjanganBerasController::class);
+
+        Route::post('/aturan-thr-gajiplus/datatable', [AturanThrGajiplusController::class, 'datatable'])->name('aturan-thr-gajiplus.datatable');
+        Route::resource('/aturan-thr-gajiplus', AturanThrGajiplusController::class);
+
+        Route::post('/ruang-rapat/datatable', [RuangRapatController::class, 'datatable'])->name('ruang-rapat.datatable');
+        Route::resource('/ruang-rapat', RuangRapatController::class);
         //
     });
 
@@ -208,7 +269,6 @@ Route::middleware('auth')->group(function () {
         ])->parameters(['' => 'id'])->only(['index', 'show', 'edit', 'update']);
     });
     Route::get('/esselon2/pegawai', [PegawaiController::class, 'index_esselon'])->name('pegawai.index-esselon');
-
     Route::prefix('data')->group(function () {
         Route::post('/penghargaan/get-penghargaan', [PenghargaanController::class, 'get_penghargaan'])->name('gaji.get-penghargaan');
         Route::post('propinsi', [PropinsiController::class, 'getPropinsi'])->name('propinsi.data');
@@ -250,11 +310,20 @@ Route::middleware('auth')->group(function () {
         Route::get('/', [PegawaiRiwayatThpController::class, 'index'])->name('penghasilan.index');
         Route::get('/show/gaji/{id}', [PegawaiRiwayatThpController::class, 'gaji_detail'])->name('penghasilan.gaji-detail');
         Route::get('/show/tukin/{id}', [PegawaiRiwayatThpController::class, 'tukin_detail'])->name('penghasilan.tukin-detail');
+        Route::get('/show/umak/{id}', [PegawaiRiwayatThpController::class, 'umak_detail'])->name('penghasilan.umak-detail');
         Route::get('/show/{id}', [PegawaiRiwayatThpController::class, 'show'])->name('penghasilan.show');
         Route::post('/datatable', [PegawaiRiwayatThpController::class, 'datatable'])->name('penghasilan.datatable');
         Route::post('/datatable_show', [PegawaiRiwayatThpController::class, 'datatable_show'])->name('penghasilan.datatable_show');
     });
+    Route::get('/esselon2/penghasilan', [PegawaiRiwayatThpController::class, 'index_esselon'])->name('penghasilan.index-esselon');
+    Route::post('/esselon2/penghasilan/datatable_esselon', [PegawaiRiwayatThpController::class, 'datatable_esselon'])->name('penghasilan.datatable-esselon');
+    Route::post('/esselon2/penghasilan/datatable_show_esselon', [PegawaiRiwayatThpController::class, 'datatable_show_esselon'])->name('penghasilan.datatable-show-esselon');
+    Route::get('/esselon2/penghasilan/show/{id}', [PegawaiRiwayatThpController::class, 'show_esselon'])->name('penghasilan.show-esselon');
+    Route::get('/esselon2/penghasilan/show/gaji/{id}', [PegawaiRiwayatThpController::class, 'gaji_detail_esselon'])->name('penghasilan.gaji-detail-esselon');
+    Route::get('/esselon2/penghasilan/show/tukin/{id}', [PegawaiRiwayatThpController::class, 'tukin_detail_esselon'])->name('penghasilan.tukin-detail-esselon');
+    Route::get('/esselon2/penghasilan/show/umak/{id}', [PegawaiRiwayatThpController::class, 'umak_detail_esselon'])->name('penghasilan.umak-detail-esselon');
 });
+
 
 Route::middleware('guest')->group(function () {
     Route::get('/', function () {

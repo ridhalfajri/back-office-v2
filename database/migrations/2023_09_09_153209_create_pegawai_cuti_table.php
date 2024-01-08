@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('pegawai_id');
             $table->unsignedTinyInteger('jenis_cuti_id');
+            $table->string('keterangan_cuti_p', 150)->nullable(true);
+            $table->string('detail_keterangan_cuti_p', 50)->nullable(true);
             $table->date('tanggal_awal_cuti');
             $table->date('tanggal_akhir_cuti');
             $table->tinyInteger('lama_cuti')->nullable(false);

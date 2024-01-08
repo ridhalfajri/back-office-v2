@@ -15,15 +15,17 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('pegawai_id');
             $table->unsignedBigInteger('nominal_gaji_pokok');
+            $table->unsignedBigInteger('tunjangan_beras');
             $table->unsignedBigInteger('tunjangan_pasangan');
             $table->unsignedBigInteger('tunjangan_anak');
             $table->unsignedBigInteger('tunjangan_jabatan');
             $table->unsignedBigInteger('tunjangan_kinerja');
             $table->unsignedBigInteger('tunjangan_pajak');
-            $table->unsignedBigInteger('potongan_gaji');
             $table->unsignedBigInteger('potongan_simpanan_wajib');
             $table->unsignedBigInteger('potongan_tukin');
+            $table->unsignedBigInteger('potongan_iwp');
             $table->unsignedBigInteger('potongan_bpjs');
+            $table->unsignedBigInteger('potongan_bpjs_lainnya');
             $table->unsignedBigInteger('potongan_pajak');
             $table->unsignedBigInteger('potongan_tapera')->nullable(true);
             $table->unsignedBigInteger('total_thp')->nullable(true);

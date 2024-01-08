@@ -8,6 +8,7 @@ use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Models\HariLibur;
+use Carbon\Carbon;
 
 class HariLiburController extends Controller
 {
@@ -30,6 +31,27 @@ class HariLiburController extends Controller
 
         return Datatables::of($data)
             ->addColumn('no', '')
+            // ->editColumn('tanggal', function ($row) {
+            //     // Set the locale to Indonesian
+            //     DB::statement('SET lc_time_names = "id_ID"');
+            //     // Format the date as needed, assuming tanggal_presensi is a Carbon instance
+            //     $formattedDate = Carbon::parse($row->tanggal)->isoFormat('dddd, D MMMM Y');
+            //     return $formattedDate;
+            // })
+            // ->filterColumn('tanggal', function ($query, $keyword) {
+            //     // Set the locale to Indonesian
+            //     DB::statement('SET lc_time_names = "id_ID"');
+            //     $query->whereRaw("DATE_FORMAT(tanggal, '%W, %d %M %Y') like ?", ["%$keyword%"]);
+
+            // })
+            ->editColumn('is_libur', function ($row) {
+                // Modify the value of the 'jenis_ijin' column based
+                if ($row->is_libur == 1) {
+                    return 'Ya';
+                }else {
+                    return 'Tidak';
+                }
+            })
             ->addColumn('aksi', function ($row) {
 
                 $editButton = '<a href="'.route('hari-libur.edit',  $row->id).'" class="btn btn-sm btn-icon btn-warning on-default edit" title="Ubah"><i class="fa fa-pencil text-white"></i></a>';
@@ -63,24 +85,29 @@ class HariLiburController extends Controller
     public function store(Request $request)
     {
         try {
+
             $this->validate($request, [
 				'is_libur' => 'required',
 				'keterangan' => 'required',
-				'tahun' => 'required',
-				'tanggal' => 'required',
+                'tanggal' => 'required|date|unique:hari_libur,tanggal',
             ]);
 
             $input = [];
+
+            $dateParts = explode('-',  $request->tanggal);
+
 			$input['is_libur'] = $request->is_libur;
 			$input['keterangan'] = $request->keterangan;
-			$input['tahun'] = $request->tahun;
+			$input['tahun'] = $dateParts[0];
 			$input['tanggal'] = $request->tanggal;
             HariLibur::create($input);
 
             return redirect()->route('hari-libur.index')
             ->with('success', 'Data Hari Libur berhasil disimpan');
+
         }catch (QueryException $e) {
             $msg = $e->getMessage();
+            Log::error("error Save Hari Libur :" . $e->getMessage());
             return redirect()->route('hari-libur.index')
             ->with('error', 'Simpan data Hari Libur gagal, Err: ' . $msg);
         }
@@ -121,16 +148,19 @@ class HariLiburController extends Controller
     public function update(Request $request,HariLibur $hariLibur)
     {
         try {
+
             $this->validate($request, [
-				'is_libur' => 'required',
-				'keterangan' => 'required',
-				'tahun' => 'required',
-				'tanggal' => 'required',
+                'is_libur' => 'required',
+                'keterangan' => 'required',
+                'tanggal' => 'required',
             ]);
+
+            $dateParts = explode('-',  $request->tanggal);
+
 
 			$hariLibur->is_libur = $request->is_libur;
 			$hariLibur->keterangan = $request->keterangan;
-			$hariLibur->tahun = $request->tahun;
+			$hariLibur->tahun = $dateParts[0];
 			$hariLibur->tanggal = $request->tanggal;
             $hariLibur->save();
 
@@ -138,6 +168,7 @@ class HariLiburController extends Controller
             ->with('success', 'Data Hari Libur berhasil diupdate');
         } catch (QueryException $e) {
             $msg = $e->getMessage();
+            Log::error("error Update Hari Libur :" . $e->getMessage());
             return redirect()->route('hari-libur.index')
             ->with('error', 'Ubah data Hari Libur gagal, Err: ' . $msg);
         }
@@ -159,6 +190,7 @@ class HariLiburController extends Controller
         } catch (QueryException $e) {
             $blnValue = true;
             $msg = $e->getMessage();
+            Log::error("error Hapus Hari Libur :" . $e->getMessage());
         }
 
         $data = [

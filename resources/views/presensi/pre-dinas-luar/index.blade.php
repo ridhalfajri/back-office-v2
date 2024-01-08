@@ -10,14 +10,16 @@
 <link rel="stylesheet" href="{{ asset('assets/plugins/select2-4.0.13/dist/css/select2.min.css') }}">
 <!-- Toastr -->
 <link rel="stylesheet" href="{{ asset('assets/plugins/toastr/toastr.css') }}">
+
 <link rel="stylesheet" href="{{ asset('assets/css/ijin.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/css/cust_dt.css') }}">
 @endpush
 
 @push('breadcrumb')
-        <div class="btn-group btn-breadcrumb">
-            <a href="/" class="btn btn-outer"><i class="fa fa-home"></i></a>
-            <a href="{{ route('pre-ijin.index') }}" class="btn btn-outer"><i class="fa fa-list"></i> Dinas Luar</a>
+        <div class="breadcrumb">
+            <a href="/" class="btn btn-link"><i class="fa fa-home"></i> Home</a>
+            <div class="btn">></div>
+            <a href="{{ route('pre-ijin.index') }}" class="btn btn-link"><i class="fa fa-list"></i> Dinas Luar</a>
         </div>
 @endpush
 
@@ -155,9 +157,10 @@
             </div>
         </div>
 
+
         <div class="card-body">
 
-            <h5><strong>Riwayat Presensiku Tidak Tercatat<strong></h5>
+            <h5><strong>Riwayat Dinas Luar<strong></h5>
 
             <br>
             <!-- /.dropdown js__dropdown -->
@@ -169,8 +172,8 @@
 						<th rowspan="2">nama kegiatan</th>
 						<th rowspan="2">lokasi</th>
                         <th rowspan="2">status approval</th>
-						<th rowspan="2">is active</th>
-                         <th rowspan="2" style="width: 40px">aksi</th>
+						<th rowspan="2">status aktive</th>
+                        <th rowspan="2" style="width: 40px">aksi</th>
                     </tr>
                     <tr>
                         <th>Dari Tanggal</th>
@@ -187,7 +190,7 @@
                         <th>nama kegiatan</th>
                         <th>lokasi</th>
 						<th>status approval</th>
-                        <th>is active</th>
+                        <th>status aktive</th>
                         <th style="width: 40px">aksi</th>
                     </tr>
                 </tfoot>
@@ -237,6 +240,7 @@
 
         table = $('#tbl-data').DataTable({
             processing: true,
+            destroy: true,
             serverSide: true,
             deferRender: true,
             responsive: true,
@@ -257,27 +261,30 @@
                 {
                     data: 'no',
                     name: 'no',
-                    class: 'text-center'
+                    class: 'text-center align-middle'
                 },
 				{
                     data: 'tanggal_dinas_awal',
-                    name: 'Tanggal Dinas Awal'
+                    name: 'tanggal_dinas_awal'
                 },
                 {
                     data: 'tanggal_dinas_akhir',
-                    name: 'Tanggal Dinas Akhir'
+                    name: 'tanggal_dinas_akhir'
                 },
                 {
                     data: 'nama_kegiatan',
-                    name: 'Nama Kegiatan'
+                    name: 'nama_kegiatan',
+                    class: 'align-middle'
                 },
                 {
                     data: 'lokasi',
-                    name: 'Lokasi'
+                    name: 'lokasi',
+                    class: 'align-middle'
                 },
                 {
                     data: 'status',
-                    name: 'Status'
+                    name: 'status',
+                    class: 'text-center align-middle',
                     render: function(data, type, row) {
                         switch (data) {
                             case "Pengajuan":
@@ -297,12 +304,13 @@
                 },
                 {
                     data: 'is_active',
-                    name: 'Is Active'
+                    name: 'is_active',
+                    class: 'text-center align-middle',
                 },
                 {
                     data: 'aksi',
                     name: 'aksi',
-                    class: 'text-center'
+                    class: 'text-center align-middle',
                 },
             ],
             columnDefs: [{

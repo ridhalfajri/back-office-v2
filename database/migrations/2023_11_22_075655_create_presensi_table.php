@@ -23,7 +23,7 @@ class CreatePresensiTable extends Migration
 			 $table->time('jam_pulang')->nullable(true);
 			 $table->integer('is_ijin')->nullable(false)->default('0'); //0= tidak ijin, 1=ijin datang_terlambat, 2=ijin pulang awal, 3=ijin datang terlambat dan pulang awal, 4 = tidak tercatat jam masuk, 5 = tidak tercatat jam pulang
              $table->enum('is_jk_normal',['Y', 'N'])->nullable(false)->default('Y');//untuk handling jam kerja pada saat bulan ramadhan
-             $table->enum('status_kehadiran',['Hadir','Alpha','Cuti','Dinas Luar','Tugas Belajar'])->nullable(false);
+             $table->enum('status_kehadiran',['Hadir','Alpha','Cuti','Dinas Luar','Tugas Belajar','Libur'])->nullable(false);
 			 $table->time('kekurangan_jam')->nullable(true);
 			 $table->datetime('tanggal_update')->nullable(false)
                                                 ->default(DB::raw('CURRENT_TIMESTAMP'))

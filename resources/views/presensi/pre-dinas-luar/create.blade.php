@@ -9,10 +9,11 @@
 @endpush
 
 @push('breadcrumb')
-        <div class="btn-group btn-breadcrumb">
-            <a href="/" class="btn btn-outer"><i class="fa fa-home"></i></a>
-            <a href="{{ route('pre-dinas-luar.index') }}" class="btn btn-outline"><i class="fa fa-list"></i> Riwayat Dinas Luar</a>
-            <a href="#" class="btn btn-outline"><i class="fa fa-pensil"></i> Pengisian Form Pengajuan Ijin</a>
+    <div class="breadcrumb">
+        <a href="/" class="btn btn-link"><i class="fa fa-home"></i> Home</a>
+        <div class="btn">></div>
+            <a href="{{ route('pre-dinas-luar.index') }}" class="btn btn-link"><i class="fa fa-list"></i> Riwayat Dinas Luar</a>
+            <a href="#" class="btn btn-link"><i class="fa fa-pensil"></i> Pengisian Form Pengajuan Ijin</a>
 
         </div>
 @endpush

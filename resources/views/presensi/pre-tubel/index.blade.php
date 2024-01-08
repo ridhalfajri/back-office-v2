@@ -13,10 +13,12 @@
 @endpush
 
 @push('breadcrumb')
-        <div class="btn-group btn-breadcrumb">
-            <a href="/" class="btn btn-light"><i class="fa fa-home"></i></a>
-            <a href="{{ route('pre-tubel.index') }}" class="btn btn-light"><i class="fa fa-list"></i> Tugas Belajar</a>
-            <a href="/presensi/pre-tubel/create" class="btn btn-light"><i class="fa fa-plus"></i> Tugas Belajar Baru</a>
+        <div class="breadcrumb">
+            <a href="/" class="btn btn-link"><i class="fa fa-home"></i> Home</a>
+            <div class="btn">></div>
+            <a href="{{ route('pre-tubel.index') }}" class="btn btn-link"><i class="fa fa-list"></i> Tugas Belajar</a>
+            <div class="btn">></div>
+            <a href="/presensi/pre-tubel/create" class="btn btn-link"><i class="fa fa-plus"></i> Tugas Belajar Baru</a>
             {{-- <a href="/" class="btn btn-outline-danger"><i class="fa fa-chevron-circle-left"></i> Kembali</a> --}}
         </div>
 @endpush
@@ -36,7 +38,7 @@
                         <th>tanggal berakhir</th>
                         <th>nama jabatan</th>
                         <th>nama unit kerja</th>
-                        <th>is active</th>
+                        <th>Status Aktif</th>
                         <th style="width: 40px">aksi</th>
                     </tr>
                 </thead>
@@ -50,7 +52,7 @@
                         <th>tanggal berakhir</th>
                         <th>nama jabatan</th>
                         <th>nama unit kerja</th>
-                        <th>is active</th>
+                        <th>Status Aktif</th>
                         <th style="width: 40px">aksi</th>
                     </tr>
                 </tfoot>
@@ -123,33 +125,33 @@
                 },
 				{
                     data: 'nip',
-                    name: 'Nip'
+                    name: 'p.nip'
                 },
                 {
                     data: 'nama',
-                    name: 'Nama'
+                    name: 'nama'
                 },
 				{
                     data: 'tanggal_awal',
-                    name: 'Tanggal Awal',
+                    name: 's.tanggal_awal',
                     class: 'text-center'
                 },
 				{
                     data: 'tanggal_akhir',
-                    name: 'Tanggal Akhir',
+                    name: 's.tanggal_akhir',
                     class: 'text-center'
                 },
                 {
                     data: 'nama_jabatan',
-                    name: 'Nama Jabatan'
+                    name: 'z.nama_jabatan'
                 },
                 {
                     data: 'nama_unit_kerja',
-                    name: 'Nama Unit Kerja'
+                    name: 'y.nama_unit_kerja'
                 },
                 {
                     data: 'is_active',
-                    name: 'Is Active',
+                    name: 's.is_active',
                     class: 'text-center'
                 },
                 {

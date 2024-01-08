@@ -10,10 +10,12 @@
 @endpush
 
 @push('breadcrumb')
-        <div class="btn-group btn-breadcrumb">
-            <a href="/" class="btn btn-light"><i class="fa fa-home"></i></a>
-            <a href="/presensi/pre-tubel" class="btn btn-light"><i class="fa fa-list"></i> Tugas Belajar</a>
-            <a href="#" class="btn btn-light"><i class="fa fa-pencil"></i> Input Data Tugas Belajar</a>
+        <div class="breadcrumb">
+            <a href="/" class="btn btn-link"><i class="fa fa-home"></i> Home</a>
+            <div class="btn">></div>
+            <a href="/presensi/pre-tubel" class="btn btn-link"><i class="fa fa-list"></i> Tugas Belajar</a>
+            <div class="btn">></div>
+            <a href="#" class="btn btn-link"><i class="fa fa-pencil"></i> Input Data Tugas Belajar</a>
             {{-- <a href="/gaji" class="btn btn-outline-danger"><i class="fa fa-chevron-circle-left"></i> Kembali</a> --}}
 
         </div>

@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Log;
 use App\Models\PreDinasLuar;
 use App\Models\Pegawai;
 use App\Helpers\PegawaiHelper;
+use Carbon\Carbon;
 use SplFileInfo;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -31,11 +32,12 @@ class PreDinasLuarController extends Controller
 
     public function datatable()
     {
+
         $data = PreDinasLuar::select('pre_dinas_luar.id', 'pre_dinas_luar.no_enroll', 'pre_dinas_luar.tanggal_dinas_awal','pre_dinas_luar.tanggal_dinas_akhir', 'pre_dinas_luar.nama_kegiatan', 'pre_dinas_luar.lokasi','pre_dinas_luar.status_approve', 'pre_dinas_luar.is_active')
                 ->join('pegawai', 'pre_dinas_luar.no_enroll', '=', 'pegawai.no_enroll')
                 ->where('pegawai.id','=',auth()->user()->pegawai->id)
-                ->orderByDesc('pre_dinas_luar.id')
-                ->get();
+                ->orderBy('pre_dinas_luar.tanggal_dinas_awal', 'asc')
+                ;
 
         return Datatables::of($data)
             ->addColumn('no', '')
@@ -49,6 +51,32 @@ class PreDinasLuarController extends Controller
                     return 'Ditolak';
                 }
             })
+            ->editColumn('tanggal_dinas_awal', function ($row) {
+                // Set the locale to Indonesian
+                DB::statement('SET lc_time_names = "id_ID"');
+                $formattedDate = Carbon::parse($row->tanggal_dinas_awal)->isoFormat('D MMMM Y');
+                return $formattedDate;
+            })
+            ->filterColumn('tanggal_dinas_awal', function ($query, $keyword) {
+                // Set the locale to Indonesian
+                DB::statement('SET lc_time_names = "id_ID"');
+                $query->whereRaw("DATE_FORMAT(tanggal_dinas_awal, '%d %M %Y') like ?", ["%$keyword%"]);
+
+            })
+
+            ->editColumn('tanggal_dinas_akhir', function ($row) {
+                // Set the locale to Indonesian
+                DB::statement('SET lc_time_names = "id_ID"');
+                $formattedDate = Carbon::parse($row->tanggal_dinas_akhir)->isoFormat('D MMMM Y');
+                return $formattedDate;
+            })
+            ->filterColumn('tanggal_dinas_akhir', function ($query, $keyword) {
+                // Set the locale to Indonesian
+                DB::statement('SET lc_time_names = "id_ID"');
+                $query->whereRaw("DATE_FORMAT(tanggal_dinas_akhir, '%d %M %Y') like ?", ["%$keyword%"]);
+
+            })
+
             ->addColumn('aksi', function ($row) {
 
                 if ($row->status_approve == 1){
@@ -70,36 +98,44 @@ class PreDinasLuarController extends Controller
     {
 
         $data = DB::table('pegawai as p')
-                ->select('s.id','s.tanggal_dinas_awal','s.tanggal_dinas_akhir','s.nama_kegiatan','s.lokasi','s.status_approve','p.id as pegawai_id','p.nip','p.nama_depan','p.nama_belakang','p.tempat_lahir','p.tanggal_lahir','p.email_kantor','p.no_enroll','x.id as jabatan_id','x.jabatan_tukin_id','q.jabatan_unit_kerja_id','z.jenis_jabatan','z.nama_jabatan','z.grade','z.nominal','y.nama_unit_kerja','x.hirarki_unit_kerja_id','y.nama_jenis_unit_kerja','y.nama_parent_unit_kerja','q.is_plt')
-                ->join('pegawai_riwayat_jabatan as q', function ($join) {
-                    $join->on('p.id', '=', 'q.pegawai_id')->where('q.is_now', '=', 1);
-                })
-                ->join('pre_dinas_luar as s', 's.no_enroll', '=', 'p.no_enroll')
-                ->join('jabatan_unit_kerja as x', 'q.jabatan_unit_kerja_id', '=', 'x.id')
-                ->join(DB::raw('(SELECT a.id, a.child_unit_kerja_id, a.parent_unit_kerja_id, b.nama as nama_unit_kerja, c.nama_jenis_unit_kerja, c.nama_parent_unit_kerja FROM hirarki_unit_kerja as a
-                    INNER JOIN unit_kerja as b ON a.child_unit_kerja_id = b.id
-                    INNER JOIN (SELECT a.id, a.child_unit_kerja_id, a.parent_unit_kerja_id, c.nama as nama_jenis_unit_kerja, b.nama as nama_parent_unit_kerja FROM hirarki_unit_kerja as a
-                        INNER JOIN unit_kerja as b ON a.parent_unit_kerja_id = b.id
-                        INNER JOIN jenis_unit_kerja as c ON c.id = b.jenis_unit_kerja_id) as c ON a.id = c.id) as y'), 'x.hirarki_unit_kerja_id', '=', 'y.id')
-                ->join(DB::raw('(SELECT a.id, a.jabatan_id, a.jenis_jabatan_id, b.nama as jenis_jabatan, c.grade, c.nominal,
-                        CASE WHEN a.jenis_jabatan_id = 1 THEN d.nama WHEN a.jenis_jabatan_id = 2 THEN e.nama WHEN a.jenis_jabatan_id = 4 THEN f.nama ELSE NULL END AS nama_jabatan
-                        FROM jabatan_tukin as a
-                        INNER JOIN jenis_jabatan as b ON a.jenis_jabatan_id = b.id
-                        INNER JOIN tukin as c ON a.tukin_id = c.id
-                        LEFT JOIN jabatan_struktural as d ON d.id = a.jabatan_id
-                        LEFT JOIN jabatan_fungsional as e ON e.id = a.jabatan_id
-                        LEFT JOIN jabatan_fungsional_umum as f ON f.id = a.jabatan_id) as z'), 'x.jabatan_tukin_id', '=', 'z.id')
-                ->where('x.hirarki_unit_kerja_id', '=', $request->hirarki_unit_kerja_id)
-                ->where('p.id','<>', $request->pegawai_id)
-                ->orderBy('s.id', 'desc')
-                ->get();
+                    ->select('s.id','s.tanggal_dinas_awal','s.tanggal_dinas_akhir','s.nama_kegiatan','s.lokasi','s.status_approve','p.id as pegawai_id','p.nip','p.nama_depan','p.nama_belakang','p.tempat_lahir','p.tanggal_lahir','p.email_kantor','p.no_enroll','x.id as jabatan_id','x.jabatan_tukin_id','q.jabatan_unit_kerja_id','z.jenis_jabatan','z.nama_jabatan','z.grade','z.nominal','y.nama_unit_kerja','x.hirarki_unit_kerja_id','y.nama_jenis_unit_kerja','y.nama_parent_unit_kerja','q.is_plt')
+                    ->join('pegawai_riwayat_jabatan as q', function ($join) {
+                        $join->on('p.id', '=', 'q.pegawai_id')->where('q.is_now', '=', 1);
+                    })
+                    ->join('pre_dinas_luar as s', 's.no_enroll', '=', 'p.no_enroll')
+                    ->join('jabatan_unit_kerja as x', 'q.jabatan_unit_kerja_id', '=', 'x.id')
+                    ->join(DB::raw('(SELECT a.id, a.child_unit_kerja_id, a.parent_unit_kerja_id, b.nama as nama_unit_kerja, c.nama_jenis_unit_kerja, c.nama_parent_unit_kerja FROM hirarki_unit_kerja as a
+                        INNER JOIN unit_kerja as b ON a.child_unit_kerja_id = b.id
+                        INNER JOIN (SELECT a.id, a.child_unit_kerja_id, a.parent_unit_kerja_id, c.nama as nama_jenis_unit_kerja, b.nama as nama_parent_unit_kerja FROM hirarki_unit_kerja as a
+                            INNER JOIN unit_kerja as b ON a.parent_unit_kerja_id = b.id
+                            INNER JOIN jenis_unit_kerja as c ON c.id = b.jenis_unit_kerja_id) as c ON a.id = c.id) as y'), 'x.hirarki_unit_kerja_id', '=', 'y.id')
+                    ->join(DB::raw('(SELECT a.id, a.jabatan_id, a.jenis_jabatan_id, b.nama as jenis_jabatan, c.grade, c.nominal,
+                            CASE WHEN a.jenis_jabatan_id = 1 THEN d.nama WHEN a.jenis_jabatan_id = 2 THEN e.nama WHEN a.jenis_jabatan_id = 4 THEN f.nama ELSE NULL END AS nama_jabatan
+                            FROM jabatan_tukin as a
+                            INNER JOIN jenis_jabatan as b ON a.jenis_jabatan_id = b.id
+                            INNER JOIN tukin as c ON a.tukin_id = c.id
+                            LEFT JOIN jabatan_struktural as d ON d.id = a.jabatan_id
+                            LEFT JOIN jabatan_fungsional as e ON e.id = a.jabatan_id
+                            LEFT JOIN jabatan_fungsional_umum as f ON f.id = a.jabatan_id) as z'), 'x.jabatan_tukin_id', '=', 'z.id')
+                    ->where('x.hirarki_unit_kerja_id', '=', $request->hirarki_unit_kerja_id)
+                    ->where('p.id','<>', $request->pimpinan_Id)
+                    ->whereBetween('s.tanggal_dinas_awal', [$request->date_awal, $request->date_akhir]);
+
+                if(!empty($request->pegawai_id)){
+                    $data->where('p.id','=',$request->pegawai_id);
+                }
+
+                if(!empty($request->status_pengajuan)){
+                    $data->where('s.status_approve','=',$request->status_pengajuan);
+                }
+
+                $data->orderBy('s.tanggal_dinas_awal', 'asc');
 
 
-                // dd($data);
 
         return Datatables::of($data)
             ->addColumn('no', '')
-            ->addColumn('status', function ($row) {
+            ->addColumn('status_approve', function ($row) {
                 if ($row->status_approve == 1) {
                     return 'Pengajuan';
                 } elseif ($row->status_approve == 2) {
@@ -111,10 +147,34 @@ class PreDinasLuarController extends Controller
             ->addColumn('nama', function ($row) {
                  return $row->nama_depan . ' ' . $row->nama_belakang;
             })
-            // ->filterColumn('status', function ($query, $keyword) {
-            //     // Add a custom filter for the 'jenis_ijin' column
-            //     $query->where('status', $keyword);
-            // })
+            ->editColumn('tanggal_dinas_awal', function ($row) {
+                // Set the locale to Indonesian
+                DB::statement('SET lc_time_names = "id_ID"');
+                // Format the date as needed, assuming tanggal_presensi is a Carbon instance
+                $formattedDate = Carbon::parse($row->tanggal_dinas_awal)->isoFormat('dddd, D MMMM Y');
+
+                return $formattedDate;
+            })
+            ->filterColumn('tanggal_dinas_awal', function ($query, $keyword) {
+                // Set the locale to Indonesian
+                DB::statement('SET lc_time_names = "id_ID"');
+                $query->whereRaw("DATE_FORMAT(tanggal_dinas_awal, '%W, %d %M %Y') like ?", ["%$keyword%"]);
+
+            })
+            ->editColumn('tanggal_dinas_akhir', function ($row) {
+                // Set the locale to Indonesian
+                DB::statement('SET lc_time_names = "id_ID"');
+                // Format the date as needed, assuming tanggal_presensi is a Carbon instance
+                $formattedDate = Carbon::parse($row->tanggal_dinas_akhir)->isoFormat('dddd, D MMMM Y');
+
+                return $formattedDate;
+            })
+            ->filterColumn('tanggal_dinas_akhir', function ($query, $keyword) {
+                // Set the locale to Indonesian
+                DB::statement('SET lc_time_names = "id_ID"');
+                $query->whereRaw("DATE_FORMAT(tanggal_dinas_akhir, '%W, %d %M %Y') like ?", ["%$keyword%"]);
+
+            })
             ->addColumn('aksi', function ($row) {
 
                 if ($row->status_approve == 1){
@@ -203,6 +263,7 @@ class PreDinasLuarController extends Controller
             ->with('success', 'Data presensi tidak tercatat berhasil disimpan');
         }catch (QueryException $e) {
             $msg = $e->getMessage();
+            Log::error("error Save DL :" . $e->getMessage());
             return redirect()->route('pre-dinas-luar.index')
             ->with('error', 'Simpan data presensi tidak tercatat gagal, Err: ' . $msg);
         }
