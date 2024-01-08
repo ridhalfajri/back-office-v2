@@ -318,13 +318,16 @@ class PreTakTercatatController extends Controller
             } catch (\Exception $e) {
                 // Handle any exceptions that may occur during the update
                 DB::rollback();
-                Log::error('terjadi kesalahan ketika konfirmasi ijin :' . $e->getMessage());
+                $msg = 'Error : ' . class_basename(get_class($this)) . ' Method : ' . __FUNCTION__ . ' msg : ' . $e->getMessage();
+                Log::error($msg);
                 $msg = $e->getMessage();
             }
 
 
         } catch (QueryException $e) {
             $blnValue = true;
+            $msg = 'Error : ' . class_basename(get_class($this)) . ' Method : ' . __FUNCTION__ . ' msg : ' . $e->getMessage();
+            Log::error($msg);
             $msg = $e->getMessage();
         }
 
@@ -395,6 +398,8 @@ class PreTakTercatatController extends Controller
             return redirect()->route('pre-tak-tercatat.index')
             ->with('success', 'Data Pre Tak Tercatat berhasil diupdate');
         } catch (QueryException $e) {
+            $msg = 'Error : ' . class_basename(get_class($this)) . ' Method : ' . __FUNCTION__ . ' msg : ' . $e->getMessage();
+            Log::error($msg);
             $msg = $e->getMessage();
             return redirect()->route('pre-tak-tercatat.index')
             ->with('error', 'Ubah data Pre Tak Tercatat gagal, Err: ' . $msg);
@@ -416,6 +421,8 @@ class PreTakTercatatController extends Controller
             $msg = "Data berhasil dihapus";
         } catch (QueryException $e) {
             $blnValue = true;
+            $msg = 'Error : ' . class_basename(get_class($this)) . ' Method : ' . __FUNCTION__ . ' msg : ' . $e->getMessage();
+            Log::error($msg);
             $msg = $e->getMessage();
         }
 

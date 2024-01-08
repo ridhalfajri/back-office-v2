@@ -146,7 +146,8 @@ class JabatanUnitKerjaController extends Controller
             return redirect()->route('jabatan-unit-kerja.index')
             ->with('success', 'Data Jabatan Unit Kerja berhasil disimpan');
         }catch (QueryException $e) {
-            $msg = $e->getMessage();
+            $msg = 'Error : ' . class_basename(get_class($this)) . ' Method : ' . __FUNCTION__ . ' msg : ' . $e->getMessage();
+            Log::error($msg);
             return redirect()->route('jabatan-unit-kerja.index')
             ->with('error', 'Simpan data Jabatan Unit Kerja gagal, Err: ' . $msg);
         }
@@ -227,7 +228,8 @@ class JabatanUnitKerjaController extends Controller
             return redirect()->route('jabatan-unit-kerja.index')
             ->with('success', 'Data Jabatan Unit Kerja berhasil diupdate');
         } catch (QueryException $e) {
-            $msg = $e->getMessage();
+            $msg = 'Error : ' . class_basename(get_class($this)) . ' Method : ' . __FUNCTION__ . ' msg : ' . $e->getMessage();
+            Log::error($msg);
             return redirect()->route('jabatan-unit-kerja.index')
             ->with('error', 'Ubah data Jabatan Unit Kerja gagal, Err: ' . $msg);
         }
@@ -248,6 +250,8 @@ class JabatanUnitKerjaController extends Controller
             $msg = "Data berhasil dihapus";
         } catch (QueryException $e) {
             $blnValue = true;
+            $msg = 'Error : ' . class_basename(get_class($this)) . ' Method : ' . __FUNCTION__ . ' msg : ' . $e->getMessage();
+            Log::error($msg);
             $msg = $e->getMessage();
         }
 

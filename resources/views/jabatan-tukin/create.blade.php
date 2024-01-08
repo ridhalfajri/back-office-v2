@@ -2,6 +2,13 @@
 @push('style')
     <link rel="stylesheet" href="{{ asset('assets/plugins/sweetalert/sweetalert.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/plugins/select2-4.0.13/dist/css/select2.min.css') }}">
+
+    <style>
+        .hidden {
+            display: none;
+        }
+    </style>
+
 @endpush
 
 @push('breadcrumb')
@@ -15,7 +22,7 @@
 
 @section('content')
     <div class="section-body">
-        <div class="card">
+        <div class="card col-4">
             <div class="card-body">
                 <div class="card-content">
                     <form class="needs-validation" id="jabatanTukinForm" method="post"  action="{{ route('jabatan-tukin.store') }}"  accept-charset="utf-8" novalidate>
@@ -77,6 +84,19 @@
                                 </div>
                             </div>
                         </div>
+
+                        <div class="row clearfix">
+                            <div class="col-12 col-lg-12 col-md-12"  id="inputTunjab" name= "inputTunjab">
+                                <div class="form-group @error('nominal') has-error @enderror">
+                                    <label>Nominal Tunjangan Jabatan<span class="text-danger"><sup>*</sup></span></label>
+                                    <input class="form-control" id="nominal_tunjangan_jabatan" name = "nominal_tunjangan_jabatan" placeholder="Tunjangan Jabatan Umum" autocomplete="off"/>
+                                    @error('nominal_tunjangan_jabatan')
+                                        <small class="text-danger">{{ $message }}</small>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+
                         <button type="submit" class="btn btn-primary btn-sm waves-effect waves-light"><i class="fa fa-check-square" aria-hidden="true"></i> Simpan</button>
                     </form>
                 </div>
@@ -140,6 +160,18 @@
                 console.log(jenis_jabatan_id);
                 get_jabatan(jenis_jabatan_id, jabatan_id);
             }
+
+
+            $("#nominal_tunjangan_jabatan").on("keyup change", function(e) {
+                // Ambil nilai teks dari input
+                let inputValue =  $("#nominal_tunjangan_jabatan").val();
+                // Hapus semua karakter non-angka
+                inputValue = inputValue.replace(/\D/g, '');
+                // Format angka menjadi format mata uang Indonesia
+                let formattedValue = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(inputValue);
+
+                $("#nominal_tunjangan_jabatan").val(formattedValue);
+            });
 
         });
 

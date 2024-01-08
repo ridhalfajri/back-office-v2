@@ -19,9 +19,9 @@ class HariLiburController extends Controller
     */
     public function index()
     {
-        $title = 'List Data Hari Libur';
+        $title = 'List Data Hari Besar';
 
-        return view('hari-libur.index', compact('title'));
+        return view('hari-besar.index', compact('title'));
     }
 
     public function datatable(HariLibur $hariLibur)
@@ -54,7 +54,7 @@ class HariLiburController extends Controller
             })
             ->addColumn('aksi', function ($row) {
 
-                $editButton = '<a href="'.route('hari-libur.edit',  $row->id).'" class="btn btn-sm btn-icon btn-warning on-default edit" title="Ubah"><i class="fa fa-pencil text-white"></i></a>';
+                $editButton = '<a href="'.route('hari-besar.edit',  $row->id).'" class="btn btn-sm btn-icon btn-warning on-default edit" title="Ubah"><i class="fa fa-pencil text-white"></i></a>';
                 $deleteButton = '<button class="btn btn-sm btn-icon btn-danger on-default delete" data-id="' . $row->id . '" title="Hapus"><i class="fa fa-trash"></i></button>';
 
                 return '<div style="display: inline-block; white-space: nowrap; margin: 0 10px;">' . $editButton . ' ' . $deleteButton . '</div>';
@@ -71,9 +71,9 @@ class HariLiburController extends Controller
     */
     public function create()
     {
-        $title = 'Tambah Data Hari Libur';
+        $title = 'Tambah Data Hari Besar';
 
-        return view('hari-libur.create', compact('title'));
+        return view('hari-besar.create', compact('title'));
     }
 
     /**
@@ -102,14 +102,14 @@ class HariLiburController extends Controller
 			$input['tanggal'] = $request->tanggal;
             HariLibur::create($input);
 
-            return redirect()->route('hari-libur.index')
-            ->with('success', 'Data Hari Libur berhasil disimpan');
+            return redirect()->route('hari-besar.index')
+            ->with('success', 'Data Hari Besar berhasil disimpan');
 
         }catch (QueryException $e) {
-            $msg = $e->getMessage();
-            Log::error("error Save Hari Libur :" . $e->getMessage());
-            return redirect()->route('hari-libur.index')
-            ->with('error', 'Simpan data Hari Libur gagal, Err: ' . $msg);
+            $msg = 'Error : ' . class_basename(get_class($this)) . ' Method : ' . __FUNCTION__ . ' msg : ' . $e->getMessage();
+            Log::error($msg);
+            return redirect()->route('hari-besar.index')
+            ->with('error', 'Simpan data Hari Besar gagal, Err: ' . $msg);
         }
 
     }
@@ -133,9 +133,9 @@ class HariLiburController extends Controller
     */
     public function edit(HariLibur $hariLibur)
     {
-        $title = 'Ubah Data Hari Libur';
+        $title = 'Ubah Data Hari Besar';
 
-        return view('hari-libur.edit', compact('title','hariLibur'));
+        return view('hari-besar.edit', compact('title','hariLibur'));
     }
 
     /**
@@ -164,13 +164,13 @@ class HariLiburController extends Controller
 			$hariLibur->tanggal = $request->tanggal;
             $hariLibur->save();
 
-            return redirect()->route('hari-libur.index')
-            ->with('success', 'Data Hari Libur berhasil diupdate');
+            return redirect()->route('hari-besar.index')
+            ->with('success', 'Data Hari Besar berhasil diupdate');
         } catch (QueryException $e) {
-            $msg = $e->getMessage();
-            Log::error("error Update Hari Libur :" . $e->getMessage());
-            return redirect()->route('hari-libur.index')
-            ->with('error', 'Ubah data Hari Libur gagal, Err: ' . $msg);
+            $msg = 'Error : ' . class_basename(get_class($this)) . ' Method : ' . __FUNCTION__ . ' msg : ' . $e->getMessage();
+            Log::error($msg);
+            return redirect()->route('hari-besar.index')
+            ->with('error', 'Ubah data Hari Besar gagal, Err: ' . $msg);
         }
     }
 
@@ -189,8 +189,8 @@ class HariLiburController extends Controller
             $msg = "Data berhasil dihapus";
         } catch (QueryException $e) {
             $blnValue = true;
-            $msg = $e->getMessage();
-            Log::error("error Hapus Hari Libur :" . $e->getMessage());
+            $msg = 'Error : ' . class_basename(get_class($this)) . ' Method : ' . __FUNCTION__ . ' msg : ' . $e->getMessage();
+            Log::error($msg);
         }
 
         $data = [

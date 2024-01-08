@@ -283,7 +283,9 @@
         })();
 
         $(document).ready(function() {
-            $('#jenis').select2();
+            $('#jenis').select2({
+                width: '100%',
+            });
         });
     </script>
 

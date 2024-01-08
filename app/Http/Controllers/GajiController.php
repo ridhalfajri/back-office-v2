@@ -50,7 +50,7 @@ class GajiController extends Controller
     {
 
         //  $data = Gaji::select('gaji.id as id','masa_kerja',  DB::raw("CONCAT('Rp. ', FORMAT(nominal, 0)) AS nominal"), 'golongan.nama as nama')->join('golongan', 'golongan.id', '=', 'gaji.golongan_id');
-        $data = Gaji::select('gaji.id as id', 'masa_kerja', "nominal", 'golongan.nama as nama','golongan.nama_pangkat as nama_pangkat')->join('golongan', 'golongan.id', '=', 'gaji.golongan_id');
+        $data = Gaji::select('gaji.id as id', 'masa_kerja', 'nominal', 'nominal_tunjangan_jabatan','golongan.nama as nama','golongan.nama_pangkat as nama_pangkat')->join('golongan', 'golongan.id', '=', 'gaji.golongan_id');
 
         return Datatables::of($data)
             ->addColumn('no', '')
@@ -79,6 +79,15 @@ class GajiController extends Controller
             ->filterColumn('nominal', function ($query, $keyword) {
                 $query->whereRaw("CONCAT('Rp. ', REPLACE(FORMAT(nominal, 0), ',', '.')) like ?", ["%$keyword%"])
                       ->orWhereRaw("nominal LIKE ?", ["%$keyword%"]);
+            })
+            ->editColumn('nominal_tunjangan_jabatan', function ($row) {
+                // Format the data as needed here
+                $nom =  (float)$row->nominal_tunjangan_jabatan;
+                return "Rp. " . number_format($nom, 0, ',', '.');
+            })
+            ->filterColumn('nominal_tunjangan_jabatan', function ($query, $keyword) {
+                $query->whereRaw("CONCAT('Rp. ', REPLACE(FORMAT(nominal_tunjangan_jabatan, 0), ',', '.')) like ?", ["%$keyword%"])
+                      ->orWhereRaw("nominal_tunjangan_jabatan LIKE ?", ["%$keyword%"]);
             })
 
             ->rawColumns(['aksi'])
@@ -112,12 +121,15 @@ class GajiController extends Controller
                 'golongan_id' => 'required|unique:gaji,golongan_id,NULL,id,golongan_id,'.$request->golongan_id.',masa_kerja,'.$request->masa_kerja.',nominal,'.preg_replace('/[^\d]/', '', $request->nominal),
                 'masa_kerja' => 'required|min:0',
                 'nominal' => 'required|min:1',
+                'nominal_tunjangan_jabatan' => 'required|min:1',
             ],[
-                'golongan_id.required' => 'Kolom golongan harus diisi.',
+                'golongan_id.required' => 'Golongan harus diisi.',
                 'golongan_id.unique' => 'Golongan, Masa Kerja dan Nominal sudah ada di database.',
-                'masa_kerja.required' => 'Kolom masa kerja harus diisi.',
-                'nominal.required' => 'Kolom nominal harus diisi.',
-                'nominal.min' => 'Jumlah Nominal harus lebih besar dari Nol .',
+                'masa_kerja.required' => 'Masa kerja harus diisi.',
+                'nominal.required' => 'Nominal Gaji harus diisi.',
+                'nominal.min' => 'Jumlah Nominal Gaji harus lebih besar dari Nol .',
+                'nominal_tunjangan_jabatan.required' => 'Nominal Tunjangan Jabatan harus diisi.',
+                'nominal_tunjangan_jabatan.min' => 'Jumlah Nominal harus lebih besar dari Nol .'
             ]);
 
 
@@ -125,6 +137,8 @@ class GajiController extends Controller
             $input['golongan_id'] = $request->golongan_id;
             $input['masa_kerja'] = $request->masa_kerja;
             $input["nominal"] = preg_replace('/[^\d]/', '', $request->nominal);
+            $input["nominal_tunjangan_jabatan"] = preg_replace('/[^\d]/', '', $request->nominal_tunjangan_jabatan);
+
             Gaji::create($input);
 
             return redirect()->route('gaji.index')
@@ -172,20 +186,26 @@ class GajiController extends Controller
         try {
 
             $this->validate($request, [
-                'golongan_id' => 'required|unique:gaji,golongan_id,'.$request->id.',id,masa_kerja,'.$request->masa_kerja.',nominal,'.preg_replace('/[^\d]/', '', $request->nominal),
+                'golongan_id' => 'required|unique:gaji,golongan_id,'.$gaji->id.',id,masa_kerja,'.$request->masa_kerja.',nominal,'.preg_replace('/[^\d]/', '', $request->nominal),
                 'masa_kerja' => 'required|min:1',
                 'nominal' => 'required|min:1',
+                'nominal_tunjangan_jabatan' => 'required|min:1',
             ],[
                 'golongan_id.required' => 'Kolom golongan harus diisi.',
                 'golongan_id.unique' => 'Golongan, Masa Kerja dan Nominal sudah ada di database.',
                 'masa_kerja.required' => 'Kolom masa kerja harus diisi.',
                 'nominal.required' => 'Kolom nominal harus diisi.',
                 'nominal.min' => 'Jumlah Nominal harus lebih besar dari Nol .',
+                'nominal_tunjangan_jabatan.required' => 'Nominal Tunjangan Jabatan harus diisi.',
+                'nominal_tunjangan_jabatan.min' => 'Jumlah Nominal harus lebih besar dari Nol .',
             ]);
+
 
             $gaji->golongan_id = $request->golongan_id;
             $gaji->masa_kerja = $request->masa_kerja;
             $gaji->nominal = preg_replace('/[^\d]/', '', $request->nominal);
+            $gaji->nominal_tunjangan_jabatan = preg_replace('/[^\d]/', '', $request->nominal_tunjangan_jabatan);
+
             $gaji->save();
 
             return redirect()->route('gaji.index')

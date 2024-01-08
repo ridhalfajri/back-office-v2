@@ -285,15 +285,17 @@ class PreIjinController extends Controller
             } catch (\Exception $e) {
                 // Handle any exceptions that may occur during the update
                 DB::rollback();
-                Log::error('terjadi kesalahan ketika konfirmasi ijin :' . $e->getMessage());
+                $msg = 'Error : ' . class_basename(get_class($this)) . ' Method : ' . __FUNCTION__ . ' msg : ' . $e->getMessage();
+                Log::error($msg);
                 $msg = $e->getMessage();
             }
 
 
         } catch (QueryException $e) {
             $blnValue = true;
+            $msg = 'Error : ' . class_basename(get_class($this)) . ' Method : ' . __FUNCTION__ . ' msg : ' . $e->getMessage();
+            Log::error($msg);
             $msg = $e->getMessage();
-            Log::error('terjadi kesalahan ketika konfirmasi ijin :' . $e->getMessage());
         }
 
         $data = [
@@ -335,8 +337,8 @@ class PreIjinController extends Controller
             return redirect()->route('pre-ijin.index')
             ->with('success', 'Data Pre ijin berhasil disimpan');
         }catch (QueryException $e) {
-            $msg = $e->getMessage();
-            Log::error("error Save Ijin :" . $e->getMessage());
+            $msg = 'Error : ' . class_basename(get_class($this)) . ' Method : ' . __FUNCTION__ . ' msg : ' . $e->getMessage();
+            Log::error($msg);
             return redirect()->route('pre-ijin.index')
             ->with('error', 'Simpan data Pre ijin gagal, Err: ' . $msg);
         }
@@ -396,7 +398,8 @@ class PreIjinController extends Controller
             return redirect()->route('pre-ijin.index')
             ->with('success', 'Data Pre ijin berhasil diupdate');
         } catch (QueryException $e) {
-            $msg = $e->getMessage();
+            $msg = 'Error : ' . class_basename(get_class($this)) . ' Method : ' . __FUNCTION__ . ' msg : ' . $e->getMessage();
+            Log::error($msg);
             return redirect()->route('pre-ijin.index')
             ->with('error', 'Ubah data Pre ijin gagal, Err: ' . $msg);
         }
@@ -419,6 +422,8 @@ class PreIjinController extends Controller
             $msg = "Data berhasil dihapus";
         } catch (QueryException $e) {
             $blnValue = true;
+            $msg = 'Error : ' . class_basename(get_class($this)) . ' Method : ' . __FUNCTION__ . ' msg : ' . $e->getMessage();
+            Log::error($msg);
             $msg = $e->getMessage();
         }
 

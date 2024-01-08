@@ -16,9 +16,9 @@
         <div class="breadcrumb">
             <a href="/" class="btn btn-link"><i class="fa fa-home"></i> Home</a>
             <div class="btn">></div>
-            <a href="{{ route('hari-libur.index') }}" class="btn btn-link"><i class="fa fa-list"></i> HariLibur</a>
+            <a href="{{ route('hari-besar.index') }}" class="btn btn-link"><i class="fa fa-list"></i> Hari Besar</a>
             <div class="btn">></div>
-            <a href="/presensi/hari-libur/create" class="btn btn-link"><i class="fa fa-plus"></i> HariLibur Baru</a>
+            <a href="/presensi/hari-besar/create" class="btn btn-link"><i class="fa fa-plus"></i> Hari Besar Baru</a>
         </div>
 @endpush
 
@@ -106,7 +106,7 @@
             info: true,
             autoWidth: false,
             ajax: {
-                url: '{{ route("hari-libur.datatable") }}',
+                url: '{{ route("hari-besar.datatable") }}',
                 type: 'POST',
                 headers: {
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
@@ -179,7 +179,7 @@
                 if (isConfirm) {
                     delete_data(that.data('id')).then(function(hasil) {
                         if (hasil.status.error == true) {
-                            toastr['error']('Data Hari Libur gagal di hapus!');
+                            toastr['error']('Data Hari Besar gagal di hapus!');
                         } else {
                             table.ajax.reload();
                             toastr['success'](hasil.status.message);
@@ -198,7 +198,7 @@
     function delete_data(id) {
         return new Promise(function(resolve, reject) {
             $.ajax({
-                url: "{{ url('/presensi/hari-libur') }}/" + id,
+                url: "{{ url('/presensi/hari-besar') }}/" + id,
                 method: 'POST',
                 headers: {
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
@@ -210,7 +210,7 @@
             }).done(function(hasil) {
                 resolve(hasil);
             }).fail(function() {
-                reject('Gagal menghapus data Hari Libur!');
+                reject('Gagal menghapus data Hari Besar!');
             })
         })
     }

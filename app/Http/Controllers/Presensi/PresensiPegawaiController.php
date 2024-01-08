@@ -14,7 +14,9 @@ use Illuminate\Support\Facades\Auth;
 use App\Helpers\PresensiHelper;
 use Illuminate\Support\Carbon;
 use App\Helpers\PegawaiHelper;
+use stdClass;
 use Yajra\DataTables\Facades\DataTables;
+use \Barryvdh\Debugbar\Facades\Debugbar;
 
 class PresensiPegawaiController extends Controller
 {
@@ -37,13 +39,16 @@ class PresensiPegawaiController extends Controller
     public function getdatapresensi(Request $request)
     {
         PresensiHelper::get_DataPresensi();
+        $responseData = ['status' => 'success', 'message' => 'Request processed successfully'];
+        return response()->json($responseData);
+
         return redirect()->route('presensiku.index')
             ->with('success', 'Syncronize Data Presensi berhasil');
     }
 
     public function datatable(Request $request)
     {
-
+        Debugbar::addMessage('Test','Info');
         $user = Auth::user();
 
         $pegawai = Pegawai::where('id', '=', $user->pegawai_id)->first();
@@ -90,22 +95,53 @@ class PresensiPegawaiController extends Controller
 
     public function dataPresensiPegawai()
     {
+
         $title = 'List Data Presensi Pegawai';
-        $pegawai = Pegawai::where(function ($query) {
-            $query->where('tanggal_berhenti', null)
-                  ->orWhere('tanggal_berhenti', '');
-        })->get();
 
-        $hirarkiUnitKerja = DB::table('db_backoffice.hirarki_unit_kerja as a')
-                ->select('a.id', 'a.child_unit_kerja_id', 'a.parent_unit_kerja_id', 'b.nama as nama_unit_kerja', 'c.nama_jenis_unit_kerja', 'c.nama_parent_unit_kerja')
-                ->join('unit_kerja as b', 'a.child_unit_kerja_id', '=', 'b.id')
-                ->join(DB::raw('(SELECT a.id, a.child_unit_kerja_id, a.parent_unit_kerja_id, c.nama as nama_jenis_unit_kerja, b.nama as nama_parent_unit_kerja
-                        FROM db_backoffice.hirarki_unit_kerja a
-                        INNER JOIN unit_kerja b ON a.parent_unit_kerja_id = b.id
-                        INNER JOIN jenis_unit_kerja c ON c.id = b.jenis_unit_kerja_id) c'), 'a.id', '=', 'c.id')
-                ->orderBy('b.nama', 'asc')
-                ->get();
+        if (auth()->user()->pegawai->jabatan_sekarang->tx_tipe_jabatan_id == 1 || auth()->user()->pegawai->jabatan_sekarang->tx_tipe_jabatan_id == 2 ){
 
+
+            $pimpinan = PegawaiHelper::getPegawaiData(auth()->user()->pegawai->id);
+
+            $hirarkiUnitKerja = [];
+
+            foreach ($pimpinan as $data) {
+                // Create a new object for each item in the loop
+                $unitkerja = new stdClass();
+                $unitkerja->id = $data->hirarki_unit_kerja_id;
+                $unitkerja->nama_unit_kerja = $data->nama_unit_kerja;
+                // Add more properties as needed
+
+                // Add the new object to the array
+                $hirarkiUnitKerja[] = $unitkerja;
+            }
+
+            $pegawai = DB::table('pegawai as p')
+                    ->select('p.id','p.nip','p.nama_depan','p.nama_belakang','p.tempat_lahir','p.tanggal_lahir','p.email_kantor','p.no_enroll','x.id as jabatan_id','x.jabatan_tukin_id','q.jabatan_unit_kerja_id','x.hirarki_unit_kerja_id')
+                    ->join('pegawai_riwayat_jabatan as q', function ($join) {
+                        $join->on('p.id', '=', 'q.pegawai_id')->where('q.is_now', '=', 1);
+                    })
+                    ->join('jabatan_unit_kerja as x', 'q.jabatan_unit_kerja_id', '=', 'x.id')
+                    ->whereIn('x.hirarki_unit_kerja_id', $pimpinan->pluck('hirarki_unit_kerja_id')->toArray())
+                    ->where('p.id','<>',  $pimpinan->first()->id)->orderBy('p.nama_depan')->get();
+
+        } else{
+
+            $pegawai = Pegawai::where(function ($query) {
+                $query->where('tanggal_berhenti', null)
+                    ->orWhere('tanggal_berhenti', '');
+            })->orderBy('nama_depan')->get();
+
+            $hirarkiUnitKerja = DB::table('db_backoffice.hirarki_unit_kerja as a')
+                    ->select('a.id', 'a.child_unit_kerja_id', 'a.parent_unit_kerja_id', 'b.nama as nama_unit_kerja', 'c.nama_jenis_unit_kerja', 'c.nama_parent_unit_kerja')
+                    ->join('unit_kerja as b', 'a.child_unit_kerja_id', '=', 'b.id')
+                    ->join(DB::raw('(SELECT a.id, a.child_unit_kerja_id, a.parent_unit_kerja_id, c.nama as nama_jenis_unit_kerja, b.nama as nama_parent_unit_kerja
+                            FROM db_backoffice.hirarki_unit_kerja a
+                            INNER JOIN unit_kerja b ON a.parent_unit_kerja_id = b.id
+                            INNER JOIN jenis_unit_kerja c ON c.id = b.jenis_unit_kerja_id) c'), 'a.id', '=', 'c.id')
+                    ->orderBy('b.nama', 'asc')
+                    ->get();
+        }
 
         return view('presensi.presensi-pegawai.index', compact('title','pegawai','hirarkiUnitKerja'));
     }
@@ -167,6 +203,10 @@ class PresensiPegawaiController extends Controller
                 $data->where('p.id','=',$request->pegawai_id);
             }
 
+            if (auth()->user()->pegawai->jabatan_sekarang->tx_tipe_jabatan_id == 1 || auth()->user()->pegawai->jabatan_sekarang->tx_tipe_jabatan_id == 2 ){
+                $data->where('p.id','<>',auth()->user()->pegawai->id);
+            }
+
             $data->orderBy('o.tanggal_presensi', 'asc')
             ;
 
@@ -195,7 +235,6 @@ class PresensiPegawaiController extends Controller
                 $query->whereRaw("DATE_FORMAT(tanggal_presensi, '%W, %d %M %Y') like ?", ["%$keyword%"]);
 
             })
-
             ->make(true);
         }
 
@@ -225,7 +264,7 @@ class PresensiPegawaiController extends Controller
     public function getdataPresensiPegawai(Request $request)
     {
         PresensiHelper::get_DataPresensi();
-        return redirect()->route('presensi-pegawai.index')
+        return redirect()->route('presensi-pegawai')
             ->with('success', 'Syncronize Data Presensi berhasil');
     }
 

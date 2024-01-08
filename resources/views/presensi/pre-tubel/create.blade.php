@@ -137,8 +137,12 @@
         })();
 
         $(document).ready(function() {
-            $('#is_active').select2();
-            $('#no_enroll').select2();
+            $('#is_active').select2({
+                width: '100%',
+            });
+            $('#no_enroll').select2({
+                width: '100%',
+            });
         });
 
         $('.input-daterange-datepicker').daterangepicker({

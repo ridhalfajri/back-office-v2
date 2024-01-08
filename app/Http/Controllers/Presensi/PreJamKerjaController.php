@@ -91,8 +91,8 @@ class PreJamKerjaController extends Controller
             return redirect()->route('pre-jam-kerja.index')
             ->with('success', 'Data Pre Jam Kerja berhasil disimpan');
         }catch (QueryException $e) {
-            $msg = $e->getMessage();
-            Log::error("error Save Jam Kerja :" . $e->getMessage());
+            $msg = 'Error : ' . class_basename(get_class($this)) . ' Method : ' . __FUNCTION__ . ' msg : ' . $e->getMessage();
+            Log::error($msg);
             return redirect()->route('presensi.pre-jam-kerja.index')
             ->with('error', 'Simpan data Pre Jam Kerja gagal, Err: ' . $msg);
         }
@@ -159,6 +159,8 @@ class PreJamKerjaController extends Controller
             return redirect()->route('pre-jam-kerja.index')
             ->with('success', 'Data Jam Kerja berhasil diupdate');
         } catch (QueryException $e) {
+            $msg = 'Error : ' . class_basename(get_class($this)) . ' Method : ' . __FUNCTION__ . ' msg : ' . $e->getMessage();
+            Log::error($msg);
             $msg = $e->getMessage();
             return redirect()->route('presensi.pre-jam-kerja.index')
             ->with('error', 'Ubah data Jam Kerja gagal, Err: ' . $msg);
@@ -188,6 +190,8 @@ class PreJamKerjaController extends Controller
 
         } catch (QueryException $e) {
             $blnValue = true;
+            $msg = 'Error : ' . class_basename(get_class($this)) . ' Method : ' . __FUNCTION__ . ' msg : ' . $e->getMessage();
+            Log::error($msg);
             $msg = $e->getMessage();
         }
 

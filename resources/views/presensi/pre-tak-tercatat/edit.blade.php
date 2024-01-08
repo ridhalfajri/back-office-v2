@@ -159,7 +159,9 @@
         })();
 
         $(document).ready(function() {
-            $('#select2').select2();
+            $('#jenis').select2({
+                width: '100%',
+            });
         });
     </script>
 @endpush

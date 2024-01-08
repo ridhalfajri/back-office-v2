@@ -166,6 +166,7 @@
 
                   <div class="col-6">
                     <button class="btn btn-primary" id="btnShowData"><i class="fa fa-search" aria-hidden="true"></i> Cari Data</button>
+                    <button class="btn btn-warning" id="btnTest">Test</button>
                   </div>
                   <div class="col-6">
                     <form method="POST" action="{{ route('presensiku.getdatapresensi') }}">
@@ -253,6 +254,29 @@
             // DataTable configuration options
         });
 
+
+        $('#btnTest').on('click', function() {
+            console.log('OK');
+            $.ajax({
+                url: '{{ route('presensiku.getdatapresensi') }}',
+                type: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                success: function(response) {
+                    // Handle success here
+                    console.log('Request successful:', response);
+
+                    // You can process the response data or perform other actions.
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    // Handle error here
+                    console.error('Request failed:', textStatus, errorThrown);
+
+                    // You can display an error message to the user or perform other actions.
+                }
+            });
+        });
 
         $('#btnShowData').on('click', function() {
 

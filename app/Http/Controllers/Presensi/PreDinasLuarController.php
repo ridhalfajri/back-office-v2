@@ -262,8 +262,8 @@ class PreDinasLuarController extends Controller
             return redirect()->route('pre-dinas-luar.index')
             ->with('success', 'Data presensi tidak tercatat berhasil disimpan');
         }catch (QueryException $e) {
-            $msg = $e->getMessage();
-            Log::error("error Save DL :" . $e->getMessage());
+            $msg = 'Error : ' . class_basename(get_class($this)) . ' Method : ' . __FUNCTION__ . ' msg : ' . $e->getMessage();
+            Log::error($msg);
             return redirect()->route('pre-dinas-luar.index')
             ->with('error', 'Simpan data presensi tidak tercatat gagal, Err: ' . $msg);
         }
@@ -293,6 +293,8 @@ class PreDinasLuarController extends Controller
             $msg = "Status pengajuan dinas luar berhasil diubah";
         } catch (QueryException $e) {
             $blnValue = true;
+            $msg = 'Error : ' . class_basename(get_class($this)) . ' Method : ' . __FUNCTION__ . ' msg : ' . $e->getMessage();
+            Log::error($msg);
             $msg = $e->getMessage();
         }
 
@@ -363,7 +365,8 @@ class PreDinasLuarController extends Controller
             return redirect()->route('pre-dinas-luar.index')
             ->with('success', 'Data Pre Tak Tercatat berhasil diupdate');
         } catch (QueryException $e) {
-            $msg = $e->getMessage();
+            $msg = 'Error : ' . class_basename(get_class($this)) . ' Method : ' . __FUNCTION__ . ' msg : ' . $e->getMessage();
+            Log::error($msg);
             return redirect()->route('pre-dinas-luar.index')
             ->with('error', 'Ubah data Pre Tak Tercatat gagal, Err: ' . $msg);
         }
@@ -384,6 +387,8 @@ class PreDinasLuarController extends Controller
             $msg = "Data berhasil dihapus";
         } catch (QueryException $e) {
             $blnValue = true;
+            $msg = 'Error : ' . class_basename(get_class($this)) . ' Method : ' . __FUNCTION__ . ' msg : ' . $e->getMessage();
+            Log::error($msg);
             $msg = $e->getMessage();
         }
 

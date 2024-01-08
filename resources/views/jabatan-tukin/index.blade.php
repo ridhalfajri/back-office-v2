@@ -15,7 +15,7 @@
         <div class="btn-group btn-breadcrumb">
             <a href="/" class="btn btn-light"><i class="fa fa-home"></i></a>
             <a href="{{ route('jabatan-tukin.index') }}" class="btn btn-light"><i class="fa fa-list"></i> Tunjangan Kinerja Jabatan</a>
-            <a href="/jabatan-tukin/create" class="btn btn-light"><i class="fa fa-plus"></i> Tunjangan Kinerja Baru</a>
+            <a href="/jabatan-tukin/create" class="btn btn-light"><i class="fa fa-plus"></i> Tunjangan Kinerja Jabatan Baru</a>
             {{-- <a href="/" class="btn btn-outline-danger"><i class="fa fa-chevron-circle-left"></i> Kembali</a> --}}
         </div>
 @endpush
@@ -33,7 +33,8 @@
 						<th>Nama Jabatan</th>
                         <th>Grade</th>
                         <th>Nominal</th>
-                         <th style="width: 40px">aksi</th>
+                        <th>Nominal Tunjab</th>
+                        <th style="width: 40px">aksi</th>
                     </tr>
                 </thead>
                 <tbody></tbody>
@@ -44,6 +45,7 @@
 						<th>Nama Jabatan</th>
                         <th>Grade</th>
                         <th>Nominal</th>
+                        <th>Nominal Tunjab</th>
                         <th style="width: 40px">aksi</th>
                     </tr>
                 </tfoot>
@@ -90,6 +92,11 @@
             toastr['success']('{{ session("success") }}');
         @endif
 
+        @if(session('error'))
+            toastr['error']('{{ session("error") }}');
+        @endif
+
+
         table = $('#tbl-data').DataTable({
             processing: true,
             serverSide: true,
@@ -132,6 +139,11 @@
                 {
                     data: 'nominal',
                     name: 'nominal',
+                    class: 'text-center'
+                },
+                {
+                    data: 'nominal_tunjangan',
+                    name: 'nominal_tunjangan',
                     class: 'text-center'
                 },
                 {

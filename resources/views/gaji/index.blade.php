@@ -12,10 +12,12 @@
 @endpush
 
 @push('breadcrumb')
-    <div class="btn-group btn-breadcrumb">
-        <a href="/" class="btn btn-light"><i class="fa fa-home"></i></a>
-        <a href="/gaji" class="btn btn-light"><i class="fa fa-list"></i> Gaji</a>
-        <a href="/gaji/create" class="btn btn-light"><i class="fa fa-plus"></i> Gaji Baru</a>
+    <div class="breadcrumb">
+        <a href="/" class="btn btn-link"><i class="fa fa-home"></i> Home</a>
+        <a class="btn btn-link">></a>
+        <a href="/gaji" class="btn btn-link"><i class="fa fa-list"></i> Gaji</a>
+        {{-- <a class="btn btn-link">></a>
+        <a href="/gaji/create" class="btn btn-outline-primary"><i class="fa fa-plus"></i> Gaji Baru</a> --}}
         {{-- <a href="/gaji" class="btn btn-outline-danger"><i class="fa fa-chevron-circle-left"></i> Kembali</a> --}}
     </div>
 @endpush
@@ -23,22 +25,29 @@
 @section('content')
     <div class="section-body">
     <div class="card">
-        {{-- <div class="card-header">
+        <div class="card-header">
             <h4 class="card-title">
-                <button type="button" class="btn btn-xs btn-primary" id="btn-add" onclick="window.location.href = '{{ route("gaji.create") }}';"><i class="fa fa-plus"></i> Tambah</button>
+
+                <button type="button" class="btn btn-xs btn-primary" id="btn-add" onclick="window.location.href = '{{ route("gaji.create") }}'">
+                    <i class="fa fa-plus"></i> Gaji Baru
+                </button>
+
+                {{-- <button type="button" class="btn btn-xs btn-primary" id="btn-add" onclick="window.location.href = "{{ route("gaji.create") }}"><i class="fa fa-plus"></i> Gaji Baru</button>
+                <a href="/gaji/create" class="btn btn-xs btn-primary" id="btn-add"><i class="fa fa-plus"></i> Gaji Baru</a> --}}
             </h4>
             <!-- /.card-title -->
-        </div> --}}
+        </div>
         <div class="card-body">
             <!-- /.dropdown js__dropdown -->
             <table id="tbl-data" class="table table-striped table-bordered display" style="width:100%">
                 <thead>
                     <tr>
                         <th>No.</th>
-						<th>golongan_id</th>
+						<th>golongan</th>
 						<th>masa_kerja</th>
 						<th>nominal</th>
-                         <th style="width: 40px">aksi</th>
+                        <th>tunjab_umum</th>
+                        <th style="width: 40px">aksi</th>
                     </tr>
                 </thead>
                 <tbody></tbody>
@@ -48,7 +57,8 @@
 						<th>golongan</th>
 						<th>masa_kerja</th>
 						<th>nominal</th>
-                         <th style="width: 40px">aksi</th>
+                        <th>tunjab_umum</th>
+                        <th style="width: 40px">aksi</th>
                     </tr>
                 </tfoot>
             </table>
@@ -131,6 +141,11 @@
 				{
                     data: 'nominal',
                     name: 'Nominal',
+                    class: 'text-center'
+                },
+                {
+                    data: 'nominal_tunjangan_jabatan',
+                    name: 'nominal_tunjangan_jabatan',
                     class: 'text-center'
                 },
                 {

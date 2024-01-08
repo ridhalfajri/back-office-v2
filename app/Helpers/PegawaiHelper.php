@@ -169,20 +169,20 @@ class PegawaiHelper {
         //Status Persetujuan di batalkan
         if($preIjin->status == 1)
         {
-            if ($presensi == null) {
-                $presensi = new Presensi();
-            }
-            $presensi->no_enroll = $preIjin->no_enroll;
-            $presensi->jam_kerja_id = $jamKerja->id;
-            $presensi->tanggal_presensi = $preIjin->tanggal;
-            $presensi->is_ijin = 0;
-            $presensi->is_jk_normal = $jamKerja->is_jk_normal;
-            // ENUM('HADIR', 'ALPHA', 'DINAS LUAR', 'TUGAS BELAJAR')
-            $presensi->status_kehadiran = 'HADIR';
+            // if ($presensi == null) {
+            //     $presensi = new Presensi();
+            // }
+            // $presensi->no_enroll = $preIjin->no_enroll;
+            // $presensi->jam_kerja_id = $jamKerja->id;
+            // $presensi->tanggal_presensi = $preIjin->tanggal;
+            // $presensi->is_ijin = 0;
+            // $presensi->is_jk_normal = $jamKerja->is_jk_normal;
+            // // ENUM('HADIR', 'ALPHA', 'DINAS LUAR', 'TUGAS BELAJAR')
+            // $presensi->status_kehadiran = 'HADIR';
 
-            $presensi->keterangan = 'Ijin dibatalkan';
+            // $presensi->keterangan = 'Ijin dibatalkan';
 
-            $presensi->save();
+            // $presensi->save();
 
         }
         elseif ($preIjin->status == 2)
@@ -191,12 +191,16 @@ class PegawaiHelper {
 
             if ($presensi == null) {
                 $presensi = new Presensi();
+
+                $presensi->no_enroll = $preIjin->no_enroll;
+                $presensi->jam_kerja_id = $jamKerja->id;
+                $presensi->is_ijin = $preIjin->jenis_ijin;
+                $presensi->is_jk_normal = $jamKerja->is_jk_normal;
+                $presensi->jam_masuk = "00:00:00";
+                $presensi->jam_pulang = "00:00:00";
             }
-            $presensi->no_enroll = $preIjin->no_enroll;
-            $presensi->jam_kerja_id = $jamKerja->id;
+
             $presensi->tanggal_presensi = $preIjin->tanggal;
-            $presensi->is_ijin = $preIjin->jenis_ijin;
-            $presensi->is_jk_normal = $jamKerja->is_jk_normal;
             // ENUM('HADIR', 'ALPHA', 'DINAS LUAR', 'TUGAS BELAJAR')
             $presensi->status_kehadiran = 'HADIR';
 
@@ -214,6 +218,11 @@ class PegawaiHelper {
             }
 
             $presensi->save();
+
+            if ( (!empty($presensi->jam_masuk) && $presensi->jam_masuk !="00:00:00") && (!empty($presensi->jam_pulang) && $presensi->jam_pulang !="00:00:00")) {
+                $pegawai = Pegawai::where('no_enroll',$presensi->no_enroll)->first();
+                PresensiHelper::fncCalculatePresensi($pegawai,$presensi);
+            }
 
         }elseif ($preIjin->status == 3){
             //Status ditolak => tidak ada yang perlu diupdate
@@ -248,7 +257,7 @@ class PegawaiHelper {
             }
 
             $dayOfWeekIndex = Carbon::parse($preTakTercatat->tanggal_pengajuan)->format('N');
-            if($dayOfWeekIndex<5){
+            if($dayOfWeekIndex!=5){
                 $presensi->jam_masuk = $jamKerja->jam_masuk;
                 $presensi->jam_pulang = $jamKerja->jam_pulang;
             }else{
@@ -264,6 +273,10 @@ class PegawaiHelper {
 
             $presensi->keterangan = 'Presensi tidak tercatat';
             $presensi->save();
+
+            $pegawai = Pegawai::where('no_enroll',$presensi->no_enroll)->first();
+
+            PresensiHelper::fncCalculatePresensi($pegawai,$presensi);
 
             $Value = 2;
         }

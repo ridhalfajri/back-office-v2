@@ -252,7 +252,9 @@
         })();
 
         $(document).ready(function() {
-            $('#jenis_ijin').select2();
+            $('#jenis_ijin').select2({
+                width: '100%',
+            });
         });
     </script>
 

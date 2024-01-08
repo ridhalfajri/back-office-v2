@@ -169,6 +169,8 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         Yajra\DataTables\DataTablesServiceProvider::class,
+        Yajra\DataTables\ButtonsServiceProvider::class,
+        Barryvdh\Debugbar\ServiceProvider::class,
 
         //indrawan
         Maatwebsite\Excel\ExcelServiceProvider::class,
@@ -187,6 +189,7 @@ return [
 
     'aliases' => Facade::defaultAliases()->merge([
         // 'Example' => App\Facades\Example::class,
+        'DebugBar' =>  Barryvdh\Debugbar\Facades\Debugbar::class,
 
         //indrawan
         'Excel' => Maatwebsite\Excel\Facades\Excel::class,

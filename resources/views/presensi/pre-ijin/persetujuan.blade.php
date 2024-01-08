@@ -289,7 +289,9 @@
 
     $(document).ready(function() {
         table = $('#tbl-data').DataTable();
-        $('#hirarki_unit_kerja_id').select2();
+        $('#hirarki_unit_kerja_id').select2({
+            width: '100%',
+        });
 
         var currentDate = new Date();
         // Set the date to the 1st day of the current month

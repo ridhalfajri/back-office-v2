@@ -19,9 +19,11 @@ return new class extends Migration
             $table->text('nama_kegiatan')->nullable();
             $table->string('lokasi', 100)->nullable(true);
             $table->tinyInteger('status_approve')->nullable(true); //0 = pengajuan pegawai, 1 = acc atasan, 2 = ditolak atasan
+            $table->enum('is_active',['Y', 'N'])->nullable(false)->default('N');
 
             $table->timestamps();
         });
+
     }
 
     /**

@@ -64,13 +64,22 @@
                         Staff</span></a>
             </li>
         @endif
+
+        @if (auth()->user()->pegawai->jabatan_sekarang->tx_tipe_jabatan_id == 1 ||
+            auth()->user()->pegawai->jabatan_sekarang->tx_tipe_jabatan_id == 2)
+            <li class="{{ request()->segment(1) == 'presensi-pegawai' ? 'active' : '' }}">
+                <a href="{{ route('presensi-pegawai') }}"><i class="fa fa-clock-o"></i><span>Presensi
+                        Pegawai</span></a>
+            </li>
+        @endif
+
         @if (auth()->user()->pegawai->jabatan_sekarang->tx_tipe_jabatan_id == 5)
             <li class="g_heading">Kabiro</li>
             <li class="{{ request()->segment(1) == 'pegawai' ? 'active' : '' }}">
                 <a href="{{ route('pegawai.index') }}"><i class="icon-users"></i><span>Pegawai</span></a>
             </li>
 
-            <li class="{{ request()->segment(1) == 'presensi-pegawai' ? 'active' : '' }}">
+            <li class="{{ request()->segment(2) == 'presensi-pegawai' ? 'active' : '' }}">
                 <a href="{{ route('presensi-pegawai') }}"><i class="fa fa-clock-o"></i><span>Presensi
                         Pegawai</span></a>
             </li>
@@ -106,7 +115,7 @@
             <li class="g_heading">Master Data</li>
             <li><a href="{{ route('gaji.index') }}"><i class="fa fa-money"></i><span>Gaji Pegawai</span></a></li>
             <li><a href="{{ route('jabatan-tukin.index') }}"><i class="fa fa-money"></i><span>Tunjangan
-                        Kinerja</span></a>
+                        Kinerja Jabatan</span></a>
             </li>
             <li class="{{ request()->segment(2) == 'pre-tubel' ? 'active' : '' }}">
                 <a href="{{ route('pre-tubel.index') }}"><i class="fa fa-graduation-cap"></i>Tugas belajar</span></a>
@@ -117,7 +126,7 @@
             </li>
 
             <li class="{{ request()->segment(2) == 'hari-libur' ? 'active' : '' }}">
-                <a href="{{ route('hari-libur.index') }}"><i class="fa fa-cogs"></i>Daftar Hari Libur</span></a>
+                <a href="{{ route('hari-besar.index') }}"><i class="fa fa-cogs"></i>Daftar Hari Besar</span></a>
             </li>
 
             <li><a href="{{ route('jabatan-unit-kerja.index') }}"><i class="fa fa-snowflake-o"></i><span>Jabatan Unit

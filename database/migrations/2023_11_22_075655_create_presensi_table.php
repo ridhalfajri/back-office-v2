@@ -30,7 +30,7 @@ class CreatePresensiTable extends Migration
                                                 ->onUpdate(DB::raw('CURRENT_TIMESTAMP'));
              $table->unique(['no_enroll', 'tanggal_presensi']);
              $table->string('keterangan')->nullable(true);
-
+             $table->enum('is_online',['Y','N'])->nullable(false);
              $table->timestamps();
         });
     }
