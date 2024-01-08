@@ -51,7 +51,8 @@
                         <li class="nav-item">
 
                             <a class="nav-link" id="pills-jabatan-tab" data-toggle="pill"
-                                href="{{ route('riwayat-jabatan.show', $pegawai->id) }}" role="tab" aria-controls="pills-jabatan" aria-selected="true">Jabatan</a>
+                                href="{{ route('riwayat-jabatan.show', $pegawai->id) }}" role="tab"
+                                aria-controls="pills-jabatan" aria-selected="true">Jabatan</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" id="pills-diklat-tab" data-toggle="pill" href="#pills-diklat" role="tab"
@@ -75,7 +76,7 @@
                         </li>
                     </ul>
                 </div>
-                <div class="col-lg-8 col-md-12">
+                <div class="col-lg-12 col-md-12">
                     <div class="tab-content" id="pills-tabContent">
                         <div class="tab-pane fade show active" id="pills-profile" role="tabpanel"
                             aria-labelledby="pills-profile-tab">
@@ -267,7 +268,8 @@
                         <div class="tab-pane fade" id="pills-alamat" role="tabpanel" aria-labelledby="pills-alamat-tab">
                             @include('pegawai.pegawai-alamat')
                         </div>
-                        <div class="tab-pane fade" id="pills-jabatan" role="tabpanel" aria-labelledby="pills-jabatan-tab">
+                        <div class="tab-pane fade" id="pills-jabatan" role="tabpanel"
+                            aria-labelledby="pills-jabatan-tab">
                             @include('pegawai.pegawai-jabatan')
                         </div>
                         <div class="tab-pane fade" id="pills-diklat" role="tabpanel" aria-labelledby="pills-diklat-tab">
@@ -288,153 +290,6 @@
                         <div class="tab-pane fade" id="pills-penghargaan" role="tabpanel"
                             aria-labelledby="pills-penghargaan-tab">
                             @include('pegawai.penghargaan.pegawai-penghargaan')
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-12">
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="widgets1">
-                                <div class="icon">
-                                    <i class="icon-trophy text-success font-30"></i>
-                                </div>
-                                <div class="details">
-                                    <h6 class="mb-0 font600">Total Earned</h6>
-                                    <span class="mb-0">$96K +</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="widgets1">
-                                <div class="icon">
-                                    <i class="icon-heart text-warning font-30"></i>
-                                </div>
-                                <div class="details">
-                                    <h6 class="mb-0 font600">Total Likes</h6>
-                                    <span class="mb-0">6,270</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="widgets1">
-                                <div class="icon">
-                                    <i class="icon-handbag text-danger font-30"></i>
-                                </div>
-                                <div class="details">
-                                    <h6 class="mb-0 font600">Delivered</h6>
-                                    <span class="mb-0">720 Delivered</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="widgets1">
-                                <div class="icon">
-                                    <i class="icon-user text-primary font-30"></i>
-                                </div>
-                                <div class="details">
-                                    <h6 class="mb-0 font600">Jobs</h6>
-                                    <span class="mb-0">614</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">Followers</h3>
-                            <div class="card-options">
-                                <a href="#" class="card-options-collapse" data-toggle="card-collapse"><i
-                                        class="fe fe-chevron-up"></i></a>
-                                <a href="#" class="card-options-remove" data-toggle="card-remove"><i
-                                        class="fe fe-x"></i></a>
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <ul class="right_chat list-unstyled mb-0">
-                                <li class="online">
-                                    <a href="javascript:void(0);">
-                                        <div class="media">
-                                            <img class="media-object " src="../assets/images/xs/avatar4.jpg"
-                                                alt="">
-                                            <div class="media-body">
-                                                <span class="name">Donald Gardner</span>
-                                                <span class="message">Designer, Blogger</span>
-                                                <span class="badge badge-outline status"></span>
-                                            </div>
-                                        </div>
-                                    </a>
-                                </li>
-                                <li class="offline">
-                                    <a href="javascript:void(0);">
-                                        <div class="media">
-                                            <img class="media-object " src="../assets/images/xs/avatar1.jpg"
-                                                alt="">
-                                            <div class="media-body">
-                                                <span class="name">Nancy Flanary</span>
-                                                <span class="message">Art director, Movie Cut</span>
-                                                <span class="badge badge-outline status"></span>
-                                            </div>
-                                        </div>
-                                    </a>
-                                </li>
-                                <li class="online">
-                                    <a href="javascript:void(0);">
-                                        <div class="media">
-                                            <img class="media-object " src="../assets/images/xs/avatar3.jpg"
-                                                alt="">
-                                            <div class="media-body">
-                                                <span class="name">Phillip Smith</span>
-                                                <span class="message">Writter, Mag Editor</span>
-                                                <span class="badge badge-outline status"></span>
-                                            </div>
-                                        </div>
-                                    </a>
-                                </li>
-                                <li class="online">
-                                    <a href="javascript:void(0);">
-                                        <div class="media">
-                                            <img class="media-object " src="../assets/images/xs/avatar4.jpg"
-                                                alt="">
-                                            <div class="media-body">
-                                                <span class="name">Donald Gardner</span>
-                                                <span class="message">Designer, Blogger</span>
-                                                <span class="badge badge-outline status"></span>
-                                            </div>
-                                        </div>
-                                    </a>
-                                </li>
-                                <li class="offline">
-                                    <a href="javascript:void(0);">
-                                        <div class="media">
-                                            <img class="media-object " src="../assets/images/xs/avatar1.jpg"
-                                                alt="">
-                                            <div class="media-body">
-                                                <span class="name">Nancy Flanary</span>
-                                                <span class="message">Art director, Movie Cut</span>
-                                                <span class="badge badge-outline status"></span>
-                                            </div>
-                                        </div>
-                                    </a>
-                                </li>
-                                <li class="online">
-                                    <a href="javascript:void(0);">
-                                        <div class="media">
-                                            <img class="media-object " src="../assets/images/xs/avatar3.jpg"
-                                                alt="">
-                                            <div class="media-body">
-                                                <span class="name">Phillip Smith</span>
-                                                <span class="message">Writter, Mag Editor</span>
-                                                <span class="badge badge-outline status"></span>
-                                            </div>
-                                        </div>
-                                    </a>
-                                </li>
-                            </ul>
                         </div>
                     </div>
                 </div>
@@ -954,8 +809,7 @@
                                     <div class="form-group">
                                         <label class="form-label">Nomor SK</label>
                                         <input type="text" id="no_sk" name="no_sk"
-                                            class="form-control mt-3 state-valid" value=""
-                                            placeholder="Nomor SK">
+                                            class="form-control mt-3 state-valid" value="" placeholder="Nomor SK">
                                         <small class="text-danger" id="error_no_sk"></small>
 
                                     </div>
@@ -978,8 +832,7 @@
                                     <div class="form-group">
                                         <label class="form-label">SK Penghargaan</label>
                                         <div class="input-group">
-                                            <input type="file" id="media_sk_penghargaan"
-                                                name="media_sk_penghargaan">
+                                            <input type="file" id="media_sk_penghargaan" name="media_sk_penghargaan">
                                             <small class="text-danger" id="error_media_sk_penghargaan"></small>
                                             <a href="" id="download_media_sk_penghargaan">Download</a>
                                         </div>
@@ -1180,11 +1033,11 @@
                 url = "{{ route('diklat.datatable') }}"
                 get_table_diklat(url)
                 $(this).tab('show')
-            }else if (tab_id == 'pills-jabatan-tab') {
+            } else if (tab_id == 'pills-jabatan-tab') {
                 url = "{{ route('riwayat-jabatan.datatable') }}"
                 get_table_jabatan(url)
                 $(this).tab('show')
-            }else if (tab_id == 'pills-tmt-gaji-tab') {
+            } else if (tab_id == 'pills-tmt-gaji-tab') {
 
                 url = "{{ route('tmt-gaji.datatable') }}"
                 pegawai_id = "{{ $pegawai->id }}"
