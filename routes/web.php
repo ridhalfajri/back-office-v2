@@ -176,7 +176,7 @@ Route::middleware('auth')->group(function () {
         // Diklat
         Route::post('/diklat/datatable', [PegawaiDiklatController::class, 'datatable'])->name('diklat.datatable');
         Route::get('/diklat/create/{pegawai_id}', [PegawaiDiklatController::class, 'create'])->name('diklat.create');
-        Route::resource('/diklat', PegawaiDiklatController::class);
+        Route::resource('/diklat', PegawaiDiklatController::class)->except('create');
 
         // TMT Gaji
         Route::post('/tmt-gaji/tmt-gaji-by-id', [PegawaiTmtGajiController::class, 'getTmtGajiById'])->name('tmt-gaji.get-tmt-gaji-by-id');
@@ -191,6 +191,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/riwayat-jabatan/show/{id}', [RiwayatJabatanController::class, 'show'])->name('riwayat-jabatan.show');
         Route::get('/riwayat-jabatan/get-fungsional-umum', [RiwayatJabatanController::class, 'get_fungsional_umum'])->name('riwayat-jabatan.get_fungsional_umum');
         Route::get('/riwayat-jabatan/get-fungsional-tertentu', [RiwayatJabatanController::class, 'get_fungsional_tertentu'])->name('riwayat-jabatan.get_fungsional_tertentu');
+        Route::get('/riwayat-jabatan/get-eselon-satu', [RiwayatJabatanController::class, 'get_eselon_satu'])->name('riwayat-jabatan.get_eselon_satu');
         Route::get('/riwayat-jabatan/get-eselon-dua', [RiwayatJabatanController::class, 'get_eselon_dua'])->name('riwayat-jabatan.get_eselon_dua');
 
         // Pegawai

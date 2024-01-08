@@ -94,7 +94,7 @@
                                 <select class="form-control" id="hirarki_unit_kerja_id" name="hirarki_unit_kerja_id">
                                     <option value="">-- Pilih Unit Kerja --</option>
                                     @foreach ($unit_kerja as $item)
-                                        <option value="{{ $item->child_unit_kerja_id }}">{{ $item->nama }}
+                                        <option value="{{ $item->id }}">{{ $item->nama }}
                                     @endforeach
                                 </select>
                                 <small class="text-danger" id="error_hirarki_unit_kerja_id"></small>
@@ -280,6 +280,48 @@
                 $('#eselon_dua').select2({
                     ajax: {
                         url: "{{ route('riwayat-jabatan.get_eselon_dua') }}",
+                        delay: 500,
+                        dataType: 'json',
+                        minimumInputLength: 3,
+                        data: function (params) {
+                            return {
+                                q: params.term, // search term
+                                page: params.page
+                            };
+                        },
+                        processResults: function (data) {
+                            console.log(data);
+                            return {
+                                results: $.map(data, function(obj) {
+                                    if(obj.id!=0){
+                                    // console.log(obj);
+                                    return { id: obj.id, text: obj.name };
+                                }
+                                    else
+                                        {return {id: obj.id, text: obj.name}}
+                                })
+                            };
+
+                        }
+                    }
+                });
+            }else if($('#tx_tipe_jabatan_id').val() == 1) {
+                $('.remove').remove();
+                $('.remove-child').remove();
+
+                $('.row')
+                .append('<div class="form-group col-md-12 col-lg-12 remove">\
+                            <label class="form-label">Eselon Satu</label>\
+                            <select class="form-control" id="eselon_satu" name="jabatan_id">\
+                                <option value="">-- Pilih Eselon 1 --</option>\
+                            </select>\
+                            <input type="hidden" value="1" name="jenis_jabatan_id" />\
+                            <small class="text-danger" id="error_jabatan_id"></small>\
+                        </div>');
+
+                $('#eselon_satu').select2({
+                    ajax: {
+                        url: "{{ route('riwayat-jabatan.get_eselon_satu') }}",
                         delay: 500,
                         dataType: 'json',
                         minimumInputLength: 3,
