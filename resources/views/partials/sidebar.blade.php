@@ -63,8 +63,8 @@
         <li class="{{ Request::is('grade-tukin*') ? 'active' : '' }}"><a href="{{ route('grade-tukin.index') }}"><i
             class="fa fa-money"></i><span>Info Grade Tukin</span></a>
         </li>
-        <li class="{{ Request::is('grade-tukin*') ? 'active' : '' }}"><a href="{{ route('grade-tukin.index') }}"><i
-            class="fa fa-money"></i><span>Pengajuan PMK</span></a>
+        <li class="{{ Request::is('pengajuan-pmk*') ? 'active' : '' }}"><a href="{{ route('pengajuan-pmk.index') }}"><i
+            class="fa fa-plus"></i><span>Pengajuan PMK</span></a>
         </li>
 
         {{-- ESSELON 2 --}}
