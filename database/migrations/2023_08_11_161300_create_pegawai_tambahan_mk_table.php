@@ -14,11 +14,15 @@ return new class extends Migration
         Schema::create('pegawai_tambahan_mk', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('pegawai_id');
-            $table->string('no_sk',50);
-            $table->date('tanggal_sk');
-            $table->year('tahun_plus');
-            $table->enum('bulan_plus',['01','02','03','04','05','06','07','08','09','10','11','12']);
-            $table->string('pejabat_penetap',50);
+            $table->unsignedInteger('tahun_plus_pengajuan')->default(0);
+            $table->unsignedInteger('bulan_plus_pengajuan')->default(0);
+            $table->string('no_sk',50)->nullable(true);
+            $table->date('tanggal_sk')->nullable(true);
+            $table->unsignedInteger('tahun_plus_disetujui')->nullable(true)->default(null);
+            $table->unsignedInteger('bulan_plus_disetujui')->nullable(true)->default(null);
+            $table->string('pejabat_penetap',50)->nullable(true);
+            $table->tinyInteger('status')->nullable(true);
+            $table->string('tipe_pmk',50)->nullable(true);
             $table->timestamps();
             $table->foreign('pegawai_id')->references('id')->on('pegawai')->onUpdate('cascade')->onDelete('cascade');
         });
