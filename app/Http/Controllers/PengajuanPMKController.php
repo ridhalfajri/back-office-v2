@@ -88,13 +88,13 @@ class PengajuanPMKController extends Controller
         $this->validate($request, [
             'tahun_plus_pengajuan' => ['required'],
             'bulan_plus_pengajuan' => ['required'],
-            'tipe_pmk' => ['required'],
+            'tipe_pengalaman' => ['required'],
             'file_pengajuan_pmk' => ['required', 'file', 'mimes:rar,zip', 'max:51200'],
         ],
         [
             'tahun_plus_pengajuan.required'=>'data tahun plus pengajuan harus diisi!',
             'bulan_plus_pengajuan.required'=>'data bulan plus pengajuan harus diisi!',
-            'tipe_pmk.required'=>'data tipe pmk harus diisi!',
+            'tipe_pengalaman.required'=>'data tipe pmk harus diisi!',
             'file_pengajuan_pmk.mimes' => 'format file sk harus rar/zip!',
             'file_pengajuan_pmk.max' => 'ukuran file terlalu besar (maksimal file 50Mb)!',
             'file_pengajuan_pmk.file' => 'upload data harus berupa file!',
@@ -102,7 +102,8 @@ class PengajuanPMKController extends Controller
 
         try {
             //validasi pegawai_id, golongan_id
-            $cekDataExist = PegawaiTambahanMk::where('pegawai_id',$request->pegawai_id)
+            $cekDataExist = PegawaiTambahanMk::where('pegawai_id',Auth::user()->pegawai_id)
+            ->whereIn('status', array(1, 3))
             ->get();
 
             if($cekDataExist->isNotEmpty()){
@@ -116,8 +117,9 @@ class PengajuanPMKController extends Controller
 
                 $ptm->tahun_plus_pengajuan = $request->tahun_plus_pengajuan;
                 $ptm->bulan_plus_pengajuan = $request->bulan_plus_pengajuan;
-                $ptm->tipe_pmk = $request->tipe_pmk;
+                $ptm->tipe_pengalaman = $request->tipe_pengalaman;
                 $ptm->status = 1;
+                $ptm->keterangan = $request->keterangan;
 
                 $ptm->save();
 
@@ -149,6 +151,11 @@ class PengajuanPMKController extends Controller
         $title = 'Lihat File SK';
 
         $pmk = $pengajuan_pmk;
+
+        $cek_media = $pmk->getMedia("file_sk_pmk")->count();
+        if ($cek_media) {
+            $pmk->file_sk_pmk = $pmk->getMedia("file_sk_pmk")[0]->getUrl();
+        }
 
         $cek_media = $pmk->getMedia("file_pengajuan_pmk")->count();
         if ($cek_media) {

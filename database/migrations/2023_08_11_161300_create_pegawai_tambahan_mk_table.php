@@ -20,9 +20,10 @@ return new class extends Migration
             $table->date('tanggal_sk')->nullable(true);
             $table->unsignedInteger('tahun_plus_disetujui')->nullable(true)->default(null);
             $table->unsignedInteger('bulan_plus_disetujui')->nullable(true)->default(null);
-            $table->string('pejabat_penetap',50)->nullable(true);
+            $table->string('pejabat_penetap',255)->nullable(true);
             $table->tinyInteger('status')->nullable(true);
-            $table->string('tipe_pmk',50)->nullable(true);
+            $table->string('tipe_pengalaman',50)->nullable(true);
+            $table->text('keterangan')->nullable(true);
             $table->timestamps();
             $table->foreign('pegawai_id')->references('id')->on('pegawai')->onUpdate('cascade')->onDelete('cascade');
         });
