@@ -866,6 +866,7 @@
     <script src="{{ asset('assets/js/custom/tmt_gaji.js') }}"></script>
     <script src="{{ asset('assets/js/custom/keluarga.js') }}"></script>
     <script src="{{ asset('assets/js/custom/penghargaan.js') }}"></script>
+    <script src="{{ asset('assets/js/custom/pendidikan.js') }}"></script>
 
 
     <script>

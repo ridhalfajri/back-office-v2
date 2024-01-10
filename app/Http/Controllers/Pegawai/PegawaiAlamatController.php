@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Pegawai;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\PegawaiAlamat;
+use App\Models\PegawaiRiwayatJabatan;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx\Rels;
@@ -82,6 +83,7 @@ class PegawaiAlamatController extends Controller
             $pegawai_alamat->desa_id = $request->desa_id;
             $pegawai_alamat->kode_pos = $request->kode_pos;
             $pegawai_alamat->alamat = $request->alamat;
+            $pegawai_alamat->is_verified = FALSE;
             try {
                 $pegawai_alamat->save();
                 return response()->json(['success' => 'Sukses Mengubah Data']);
@@ -131,5 +133,15 @@ class PegawaiAlamatController extends Controller
             abort(500);
             //throw $th;
         }
+    }
+
+    public function verifikasi_sdmoh($id)
+    {
+        $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->first();
+        $this->authorize('admin_sdmoh', $kabiro);
+        $alamat = PegawaiAlamat::where('id', $id)->first();
+        $alamat->is_verified = TRUE;
+        $alamat->save();
+        return back();
     }
 }

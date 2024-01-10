@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\JenisDiklat;
 use App\Models\Pegawai;
 use App\Models\PegawaiRiwayatDiklat;
+use App\Models\PegawaiRiwayatJabatan;
 use Carbon\Carbon;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
@@ -208,6 +209,7 @@ class PegawaiDiklatController extends Controller
                     $diklat->lokasi = $request->lokasi;
                     $diklat->jam_pelajaran = $request->jam_pelajaran;
                     $diklat->no_sertifikat = $request->no_sertifikat;
+                    $diklat->is_verified = FALSE;
                     $diklat->tanggal_sertifikat = Carbon::parse($diklat->tanggal_sertifikat)->translatedFormat('Y-m-d');
                     $diklat->penyelenggaran = $request->penyelenggaran;
 
@@ -252,7 +254,7 @@ class PegawaiDiklatController extends Controller
     }
     public function datatable(Request $request)
     {
-        $diklat = PegawaiRiwayatDiklat::select('pegawai_riwayat_diklat.id', 'pegawai_id', 'jenis_diklat.nama as nama', 'jenis_diklat_id', 'tanggal_mulai', 'tanggal_akhir', 'penyelenggaran')
+        $diklat = PegawaiRiwayatDiklat::select('pegawai_riwayat_diklat.id', 'pegawai_id', 'jenis_diklat.nama as nama', 'jenis_diklat_id', 'tanggal_mulai', 'tanggal_akhir', 'penyelenggaran', 'is_verified')
             ->join('jenis_diklat', 'pegawai_riwayat_diklat.jenis_diklat_id', '=', 'jenis_diklat.id')
             ->where('pegawai_id', $request->pegawai_id)->orderBy('pegawai_riwayat_diklat.created_at', 'ASC');
         return DataTables::of($diklat)
@@ -266,5 +268,14 @@ class PegawaiDiklatController extends Controller
             })
             ->rawColumns(['aksi'])
             ->make(true);
+    }
+    public function verifikasi_sdmoh($id)
+    {
+        $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->first();
+        $this->authorize('admin_sdmoh', $kabiro);
+        $diklat = PegawaiRiwayatDiklat::where('id', $id)->first();
+        $diklat->is_verified = TRUE;
+        $diklat->save();
+        return back();
     }
 }

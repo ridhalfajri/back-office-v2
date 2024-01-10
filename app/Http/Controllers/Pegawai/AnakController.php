@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\JenisKawin;
 use App\Models\Pegawai;
 use App\Models\PegawaiAnak;
+use App\Models\PegawaiRiwayatJabatan;
 use App\Models\Pendidikan;
 use Carbon\Carbon;
 use Illuminate\Database\QueryException;
@@ -215,6 +216,7 @@ class AnakController extends Controller
                 $anak->status_tunjangan = $request->status_tunjangan;
                 $anak->pendidikan_id = $request->pendidikan_id;
                 $anak->bidang_studi = $request->bidang_studi;
+                $anak->is_verified = FALSE;
                 $anak->save();
                 return response()->json(['success' => 'Anak Berhasil Disimpan']);
             } catch (QueryException $e) {
@@ -244,12 +246,21 @@ class AnakController extends Controller
      */
     public function datatable(Request $request)
     {
-        $anak = PegawaiAnak::select('id', 'nama', 'nik', 'status_tunjangan')
+        $anak = PegawaiAnak::select('id', 'nama', 'nik', 'status_tunjangan', 'is_verified')
             ->where('pegawai_id', $request->pegawai_id)->orderBy('created_at', 'ASC');
         return DataTables::of($anak)
             ->addColumn('no', '')
             ->addColumn('aksi', 'pegawai.keluarga.aksi-anak')
             ->rawColumns(['aksi'])
             ->make(true);
+    }
+    public function verifikasi_sdmoh($id)
+    {
+        $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->first();
+        $this->authorize('admin_sdmoh', $kabiro);
+        $diklat = PegawaiAnak::where('id', $id)->first();
+        $diklat->is_verified = TRUE;
+        $diklat->save();
+        return back();
     }
 }

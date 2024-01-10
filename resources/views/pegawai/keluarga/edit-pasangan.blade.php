@@ -14,7 +14,7 @@
                 <div class="col-md-12">
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-title">Tambah Pasangan</h3>
+                            <h3 class="card-title">Edit Pasangan</h3>
                         </div>
                         <form id="form-edit" action="{{ route('pasangan.update', $pasangan->id) }}" method="POST"
                             autocomplete="off" enctype="multipart/form-data">
@@ -79,9 +79,9 @@
                                         <label class="form-label">PNS</label>
                                         <select class="form-control custom-select" name="is_pns">
                                             <option value="">-- Pilih Status PNS--</option>
-                                            <option value="1" @if ($pasangan->is_pns == 1) selected @endif>Ya
+                                            <option value="1" @if ($pasangan->status_pns == 1) selected @endif>Ya
                                             </option>
-                                            <option value="0" @if ($pasangan->is_pns == 0) selected @endif>Tidak
+                                            <option value="0" @if ($pasangan->status_pns == 0) selected @endif>Tidak
                                             </option>
                                         </select>
                                         <small class="text-danger" id="error_is_pns"></small>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Pegawai;
 
 use App\Http\Controllers\Controller;
 use App\Models\Pegawai;
+use App\Models\PegawaiRiwayatJabatan;
 use App\Models\PegawaiRiwayatPendidikan;
 use App\Models\Pendidikan;
 use App\Models\Propinsi;
@@ -202,6 +203,7 @@ class RiwayatPendidikanController extends Controller
                     $pendidikan->tanggal_ijazah = Carbon::parse($request->tanggal_ijazah)->translatedFormat('Y-m-d');
                     $pendidikan->kode_gelar_depan = $request->kode_gelar_depan;
                     $pendidikan->kode_gelar_belakang = $request->kode_gelar_belakang;
+                    $pendidikan->is_verified = 0;
                     DB::transaction(function () use ($pendidikan, $request) {
                         $pendidikan->save();
                         if ($request->file('media_ijazah')) {
@@ -247,7 +249,7 @@ class RiwayatPendidikanController extends Controller
      */
     public function datatable(Request $request)
     {
-        $pendidikan = PegawaiRiwayatPendidikan::select('pegawai_riwayat_pendidikan.id', 'pendidikan_id', 'pendidikan.nama', 'nama_instansi', 'tanggal_ijazah')
+        $pendidikan = PegawaiRiwayatPendidikan::select('pegawai_riwayat_pendidikan.id', 'pendidikan_id', 'pendidikan.nama', 'nama_instansi', 'tanggal_ijazah', 'is_verified')
             ->join('pendidikan', 'pendidikan.id', '=', 'pegawai_riwayat_pendidikan.pendidikan_id')
             ->where('pegawai_id', $request->pegawai_id)->orderBy('pegawai_riwayat_pendidikan.tanggal_ijazah', 'DESC');
         return DataTables::of($pendidikan)
@@ -261,5 +263,14 @@ class RiwayatPendidikanController extends Controller
             })
             ->rawColumns(['aksi'])
             ->make(true);
+    }
+    public function verifikasi_sdmoh($id)
+    {
+        $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->first();
+        $this->authorize('admin_sdmoh', $kabiro);
+        $diklat = PegawaiRiwayatPendidikan::where('id', $id)->first();
+        $diklat->is_verified = TRUE;
+        $diklat->save();
+        return back();
     }
 }

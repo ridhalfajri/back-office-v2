@@ -105,7 +105,7 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/riwayat-gajiplus', [RiwayatGajiplusController::class, 'datatable'])->name('riwayat-gajiplus.datatable');
     Route::resource('/riwayat-gajiplus', RiwayatGajiplusController::class)->only('index');
-    
+
     Route::post('/pegawai-bpjs-lainnya/datatable', [PegawaiBpjsLainnyaController::class, 'datatable'])->name('pegawai-bpjs-lainnya.datatable');
     Route::resource('/pegawai-bpjs-lainnya', PegawaiBpjsLainnyaController::class);
 
@@ -217,27 +217,35 @@ Route::middleware('auth')->group(function () {
         Route::get('/anak/create/{pegawai_id}', [AnakController::class, 'create'])->name('anak.create');
         Route::post('/anak/datatable', [AnakController::class, 'datatable'])->name('anak.datatable');
         Route::resource('/anak', AnakController::class)->except(['create', 'index']);
+        Route::get('/anak/verifikasi/{id}', [AnakController::class, 'verifikasi_sdmoh'])->name('anak.verifikasi-sdmoh');
+
 
         // pasangan
 
         Route::get('/pasangan/create/{pegawai_id}', [SuamiIstriController::class, 'create'])->name('pasangan.create');
         Route::post('/pasangan/datatable', [SuamiIstriController::class, 'datatable'])->name('pasangan.datatable');
         Route::resource('/pasangan', SuamiIstriController::class)->except(['create', 'index']);
+        Route::get('/pasangan/verifikasi/{id}', [SuamiIstriController::class, 'verifikasi_sdmoh'])->name('pasangan.verifikasi-sdmoh');
+
         // Pendidikan
 
         Route::get('/pendidikan/create/{pegawai_id}', [RiwayatPendidikanController::class, 'create'])->name('pendidikan.create');
         Route::post('/pendidikan/datatable', [RiwayatPendidikanController::class, 'datatable'])->name('pendidikan.datatable');
         Route::resource('/pendidikan', RiwayatPendidikanController::class)->except(['create', 'index']);
+        Route::get('/pendidikan/verifikasi/{id}', [RiwayatPendidikanController::class, 'verifikasi_sdmoh'])->name('pendidikan.verifikasi-sdmoh');
 
         // Alamat
 
         Route::post('/alamat-by-pegawai', [PegawaiAlamatController::class, 'getAlamatByPegawaiId'])->name('alamat.get-data-by-pegawai-id');
         Route::resource('/alamat', PegawaiAlamatController::class)->only(['store']);
+        Route::get('/alamat/verifikasi/{id}', [PegawaiAlamatController::class, 'verifikasi_sdmoh'])->name('alamat.verifikasi-sdmoh');
 
         // Diklat
         Route::post('/diklat/datatable', [PegawaiDiklatController::class, 'datatable'])->name('diklat.datatable');
         Route::get('/diklat/create/{pegawai_id}', [PegawaiDiklatController::class, 'create'])->name('diklat.create');
         Route::resource('/diklat', PegawaiDiklatController::class)->except('create');
+        Route::get('/diklat/verifikasi/{id}', [PegawaiDiklatController::class, 'verifikasi_sdmoh'])->name('diklat.verifikasi-sdmoh');
+
 
         // TMT Gaji
         Route::post('/tmt-gaji/tmt-gaji-by-id', [PegawaiTmtGajiController::class, 'getTmtGajiById'])->name('tmt-gaji.get-tmt-gaji-by-id');

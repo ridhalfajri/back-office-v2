@@ -79,25 +79,19 @@
         @endif
         @if (auth()->user()->pegawai->jabatan_sekarang->tx_tipe_jabatan_id == 5)
             <li class="g_heading">Kabiro</li>
-
-            <li
-                class="{{ request()->segment(2) == 'pengajuan_masuk_sdmoh' || request()->segment(2) == 'saldo_cuti_pegawai' ? 'active' : '' }}">
-                <a href="javascript:void(0)" class="has-arrow"><i class="icon-doc"></i><span>Cuti Pegawai</span></a>
-                <ul
-                    class="{{ request()->segment(2) == 'pengajuan_masuk_sdmoh' || request()->segment(2) == 'saldo_cuti_pegawai' ? 'active' : '' }}">
-                    <li class="{{ request()->segment(2) == 'pengajuan_masuk_sdmoh' ? 'active' : '' }}"><a
-                            href="{{ route('cuti.pengajuan-masuk-sdmoh') }}">Pengajuan SDMOH</a></li>
-                    <li class="{{ request()->segment(2) == 'saldo_cuti_pegawai' ? 'active' : '' }}"><a
-                            href="{{ route('cuti.saldo-cuti-pegawai') }}">Saldo Cuti Pegawai</a></li>
-                </ul>
-            </li>
+            <li class="{{ request()->segment(2) == 'pengajuan_masuk_sdmoh' ? 'active' : '' }}">
+                <a href="{{ route('cuti.pengajuan-masuk-sdmoh') }}"><i class="icon-users"></i><span>Approval Cuti
+                        Kabiro</span></a>
         @endif
 
         {{-- KABIRO SDMOH --}}
         @if (auth()->user()->pegawai->jabatan_sekarang->tx_tipe_jabatan_id == 5 ||
                 auth()->user()->pegawai->jabatan_sekarang->tx_tipe_jabatan_id == 7)
             <li class="g_heading">Master Data</li>
-
+            <li class="{{ request()->segment(2) == 'saldo_cuti_pegawai' ? 'active' : '' }}">
+                <a href="{{ route('cuti.saldo-cuti-pegawai') }}"><i class="icon-users"></i><span>Saldo Cuti
+                        Pegawai</span></a>
+            </li>
             <li class="{{ request()->segment(1) == 'pegawai' ? 'active' : '' }}">
                 <a href="{{ route('pegawai.index') }}"><i class="icon-users"></i><span>Pegawai</span></a>
             </li>
