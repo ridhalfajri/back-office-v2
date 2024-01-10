@@ -56,23 +56,23 @@
                                         autocomplete="off">
                                 </div>
 
-                                <div class="form-group @error('tipe_pmk')has-error @enderror">
+                                <div class="form-group @error('tipe_pengalaman')has-error @enderror">
                                     <label>Tipe PMK <span class="text-danger"><sup>*</sup></span></label>
-                                    <select id="tipe_pmk" name="tipe_pmk" class="form-control">
+                                    <select id="tipe_pengalaman" name="tipe_pengalaman" class="form-control">
                                         <option value="">--Pilih--</option>
-                                        @if (old('tipe_pmk') == 'Non-Pemerintahan')
+                                        @if (old('tipe_pengalaman') == 'Non-Pemerintahan')
                                             <option value="Non-Pemerintahan" selected>Non-Pemerintahan</option>
                                         @else
                                             <option value="Non-Pemerintahan">Non-Pemerintahan</option>
                                         @endif
 
-                                        @if (old('tipe_pmk') == 'Pemerintahan')
+                                        @if (old('tipe_pengalaman') == 'Pemerintahan')
                                             <option value="Pemerintahan" selected>Pemerintahan</option>
                                         @else
                                             <option value="Pemerintahan">Pemerintahan</option>
                                         @endif
 
-                                        @if (old('tipe_pmk') == 'Non-Pemerintahan dan Pemerintahan')
+                                        @if (old('tipe_pengalaman') == 'Non-Pemerintahan dan Pemerintahan')
                                             <option value="Non-Pemerintahan dan Pemerintahan" selected>Non-Pemerintahan dan Pemerintahan</option>
                                         @else
                                             <option value="Non-Pemerintahan dan Pemerintahan">Non-Pemerintahan dan Pemerintahan</option>
@@ -85,6 +85,13 @@
                                     <input class="form-control fileClass" type="file" id="file_pengajuan_pmk"
                                         name="file_pengajuan_pmk">
                                     <em>Silakan upload file pengajuan pmk (rar/zip max 50Mb)</em>
+                                </div>
+
+                                <div class="form-group @error('keterangan')has-error @enderror">
+                                    <label>Keterangan </label>
+                                    <textarea name="keterangan" id="keterangan" rows="2"
+                                        class="form-control form-control-plaintext" placeholder="Keterangan pengajuan PMK"
+                                        autocomplete="off">{{ old('keterangan') }}</textarea>
                                 </div>
 
                             </div>
@@ -110,7 +117,7 @@
     <script src="{{ asset('assets/plugins/select2/js/select2.min.js') }}"></script>
 
     <script type="text/javascript">
-        $('#tipe_pmk').select2({
+        $('#tipe_pengalaman').select2({
             width: 'resolve'
         });
 

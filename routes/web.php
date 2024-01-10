@@ -42,6 +42,7 @@ use App\Http\Controllers\AturanThrGajiplusController;
 use App\Http\Controllers\PegawaiRiwayatGolonganController;
 use App\Http\Controllers\PegawaiBpjsLainnyaController;
 use App\Http\Controllers\PengajuanPMKController;
+use App\Http\Controllers\PegawaiTambahanMkController;
 use App\Http\Controllers\PegawaiRiwayatUmakController;
 use App\Http\Controllers\PegawaiRiwayatThrController;
 use App\Http\Controllers\PegawaiRiwayatGajiplusController;
@@ -115,6 +116,9 @@ Route::middleware('auth')->group(function () {
     
     Route::post('/pengajuan-pmk/datatable', [PengajuanPMKController::class, 'datatable'])->name('pengajuan-pmk.datatable');
     Route::resource('/pengajuan-pmk', PengajuanPMKController::class)->except('edit', 'update');
+    
+    Route::post('/pegawai-tambahan-mk/datatable', [PegawaiTambahanMkController::class, 'datatable'])->name('pegawai-tambahan-mk.datatable');
+    Route::resource('/pegawai-tambahan-mk', PegawaiTambahanMkController::class)->except('create', 'store');
     //
 
     Route::prefix('presensi')->group(function () {

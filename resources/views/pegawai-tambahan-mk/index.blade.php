@@ -30,27 +30,65 @@
     <div class="row clearfix">
         <div class="col-lg-12">
             <div class="card">
-                <div class="card-header">
+                {{-- <div class="card-header">
                     <h4 class="card-title">
                         <button type="button" class="btn btn-xs btn-primary" id="btn-add"
-                        onclick="window.location.href = '{{ route('pengajuan-pmk.create') }}';">
+                        onclick="window.location.href = '{{ route('pegawai-tambahan-mk.create') }}';">
                         Pengajuan</button>
                     </h4>
+                </div> --}}
+
+                <div class="card-body">
+                    <label class="form-label"><i>Filter Datatable</i></label>
+                    <div class="row clearfix">
+                        <div class="col-12 col-lg-6 col-md-6">
+                            <div class="form-group @error('unitKerja')has-error @enderror">
+                                <label class="form-label">Unit Kerja</label>
+                                <select id="unitKerja" name="unitKerja" class="form-control">
+                                    <option value="">--Pilih--</option>
+                                    @foreach ($dataUnitKerja as $data)
+                                        {{-- @if (old('unitKerja') == $data->id)
+                                        <option value="{{ $data->id }}" selected>{{ $data->nama }}</option>
+                                    @else
+                                        <option value="{{ $data->id }}">{{ $data->nama }}</option>
+                                    @endif --}}
+
+                                        <option value="{{ $data->id }}">{{ $data->nama }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-lg-6 col-md-6">
+                            <div class="form-group @error('status')has-error @enderror">
+                                <label class="form-label">Status</label>
+                                <select id="status" name="status" class="form-control">
+                                    <option value="">--Pilih--</option>
+                                    <option value="1" selected>Pengajuan</option>
+                                    <option value="2">Dibatalkan</option>
+                                    <option value="3">Disetujui</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 
                 <div class="card-body">
-                    <h5 class="box-title" style="text-align: center;"><b>List Pengajuan PMK</b></h5>
+                    <h5 class="box-title" style="text-align: center;"><b>Approval PMK Pegawai</b></h5>
                 
                     <table id="tbl-data"
                     class="table table-hover js-basic-example dataTable table_custom spacing5">
                     <thead>
                         <tr>
                             <th class="font-weight-bold text-dark" style="width: 5%">No</th>
-                            <th class="font-weight-bold text-dark">Tahun Plus<br>Pengajuan</th>
-                            <th class="font-weight-bold text-dark">Bulan Plus<br>Pengajuan</th>
+                            <th class="font-weight-bold text-dark">Nama Pegawai</th>
+                            <th class="font-weight-bold text-dark">NIP</th>
+                            <th class="font-weight-bold text-dark">Unit Kerja</th>
                             <th class="font-weight-bold text-dark">Tahun Plus<br>Disetujui</th>
                             <th class="font-weight-bold text-dark">Bulan Plus<br>Disetujui</th>
                             {{-- <th class="font-weight-bold text-dark">File SK</th> --}}
+                            <th class="font-weight-bold text-dark">No SK</th>
+                            <th class="font-weight-bold text-dark">Tanggal SK</th>
                             <th class="font-weight-bold text-dark">Tipe Pengalaman</th>
                             <th class="font-weight-bold text-dark">Status</th>
                             <th class="font-weight-bold text-dark">Aksi</th>
@@ -59,11 +97,14 @@
                     <tfoot>
                         <tr>
                             <th class="font-weight-bold text-dark" style="width: 5%">No</th>
-                            <th class="font-weight-bold text-dark">Tahun Plus<br>Pengajuan</th>
-                            <th class="font-weight-bold text-dark">Bulan Plus<br>Pengajuan</th>
+                            <th class="font-weight-bold text-dark">Nama Pegawai</th>
+                            <th class="font-weight-bold text-dark">NIP</th>
+                            <th class="font-weight-bold text-dark">Unit Kerja</th>
                             <th class="font-weight-bold text-dark">Tahun Plus<br>Disetujui</th>
                             <th class="font-weight-bold text-dark">Bulan Plus<br>Disetujui</th>
                             {{-- <th class="font-weight-bold text-dark">File SK</th> --}}
+                            <th class="font-weight-bold text-dark">No SK</th>
+                            <th class="font-weight-bold text-dark">Tanggal SK</th>
                             <th class="font-weight-bold text-dark">Tipe Pengalaman</th>
                             <th class="font-weight-bold text-dark">Status</th>
                             <th class="font-weight-bold text-dark">Aksi</th>
@@ -94,13 +135,13 @@
         let table;
 
         $(function() {
-            // $('#unitKerja').select2({
-            //     width: 'resolve'
-            // });
+            $('#unitKerja').select2({
+                width: 'resolve'
+            });
 
-            // $('#isAktif').select2({
-            //     width: 'resolve'
-            // });
+            $('#status').select2({
+                width: 'resolve'
+            });
 
 
             table = $('#tbl-data').DataTable({
@@ -116,16 +157,16 @@
                 info: true,
                 autoWidth: false,
                 ajax: {
-                    url: '{{ route('pengajuan-pmk.datatable') }}',
+                    url: '{{ route('pegawai-tambahan-mk.datatable') }}',
                     type: 'POST',
                     headers: {
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
                     },
-                    // data: function(d) {
-                    //     //untuk on change datatable
-                    //     d.unitKerja = $('#unitKerja').val();
-                    //     d.isAktif = $('#isAktif').val();
-                    // }
+                    data: function(d) {
+                        //untuk on change datatable
+                        d.unitKerja = $('#unitKerja').val();
+                        d.status = $('#status').val();
+                    }
                 },
                 columns: [{
                         data: 'no',
@@ -133,40 +174,43 @@
                         class: 'text-center'
                     },
                     {
-                        data: 'tahun_plus_pengajuan',
-                        name: 'tahun_plus_pengajuan',
+                        data: 'nama_pegawai',
+                        name: 'nama_pegawai',
                         class: 'text-center'
                     },
                     {
-                        data: 'bulan_plus_pengajuan',
-                        name: 'bulan_plus_pengajuan',
+                        data: 'nip',
+                        name: 'p.nip',
+                        class: 'text-center'
+                    },
+                    {
+                        data: 'singkatan_unit_kerja',
+                        name: 'uk.singkatan',
                         class: 'text-center'
                     },
                     {
                         data: 'tahun_plus_disetujui',
-                        name: 'tahun_plus_disetujui',
+                        name: 'ptm.tahun_plus_disetujui',
                         class: 'text-center'
                     },
                     {
                         data: 'bulan_plus_disetujui',
-                        name: 'bulan_plus_disetujui',
+                        name: 'ptm.bulan_plus_disetujui',
                         class: 'text-center'
                     },
-                    // {
-                    //     data: 'file_pengajuan_pmk',
-                    //     name: 'file_pengajuan_pmk',
-                    //     class: 'text-center'
-                    //     render: function(data, type, row) {
-                    //         if (type === 'display' && null !==data) {
-                    //             return '<a href="//{{'data'}}" file target="blank">Download</a>';
-                    //         } else {
-                    //             return null;
-                    //         }
-                    //     }
-                    // },
+                    {
+                        data: 'no_sk',
+                        name: 'ptm.no_sk',
+                        class: 'text-center'
+                    },
+                    {
+                        data: 'tanggal_sk',
+                        name: 'ptm.tanggal_sk',
+                        class: 'text-center'
+                    },
                     {
                         data: 'tipe_pengalaman',
-                        name: 'tipe_pengalaman',
+                        name: 'ptm.tipe_pengalaman',
                         class: 'text-center'
                     },
                     {
@@ -202,15 +246,15 @@
             });
 
             //untuk on change
-            // $('#unitKerja').change(function(e) {
-            //     e.preventDefault();
-            //     table.ajax.reload();
-            // });
+            $('#unitKerja').change(function(e) {
+                e.preventDefault();
+                table.ajax.reload();
+            });
 
-            // $('#isAktif').change(function(e) {
-            //     e.preventDefault();
-            //     table.ajax.reload();
-            // });
+            $('#status').change(function(e) {
+                e.preventDefault();
+                table.ajax.reload();
+            });
 
             $('#tbl-data').delegate('button.delete', 'click', function(e) {
                 e.preventDefault();
@@ -219,7 +263,7 @@
 
                 swal({
                     title: 'Konfirmasi!',
-                    text: 'Apakah anda yakin ingin menghapus data ini?',
+                    text: 'Apakah anda yakin ingin membatalkan data ini?',
                     type: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#dc3545',
@@ -231,7 +275,7 @@
                     if (isConfirm) {
                         delete_data(that.data('id')).then(function(hasil) {
                             if (hasil.status.error == true) {
-                                toastr['error']('Data Pengajuan PMK gagal di hapus!');
+                                toastr['error']('Data Pengajuan PMK gagal dibatalkan!');
                             } else {
                                 table.ajax.reload();
                                 toastr['success'](hasil.status.message);
@@ -241,7 +285,7 @@
                         })
 
                     } else {
-                        swal('Informasi', 'Hapus data dibatalkan', 'error');
+                        swal('Informasi', 'Membatalkan data dibatalkan', 'error');
                     }
                 });
             });
@@ -251,7 +295,7 @@
     function delete_data(id) {
             return new Promise(function(resolve, reject) {
                 $.ajax({
-                    url: "{{ url('pengajuan-pmk') }}/" + id,
+                    url: "{{ url('pegawai-tambahan-mk') }}/" + id,
                     method: 'POST',
                     headers: {
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'

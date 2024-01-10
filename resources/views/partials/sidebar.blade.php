@@ -179,6 +179,10 @@
             <li class="{{ request()->segment(2) == 'pre-tubel' ? 'active' : '' }}">
                 <a href="{{ route('pre-tubel.index') }}"><i class="fa fa-graduation-cap"></i>Tugas belajar</span></a>
             </li>
+
+            <li class="{{ Request::is('pegawai-tambahan-mk*') ? 'active' : '' }}"><a
+                href="{{ route('pegawai-tambahan-mk.index') }}"><i
+                class="fa fa-plus"></i><span>Approval PMK Pegawai</span></a></li>
         @endif
 
     </ul>
