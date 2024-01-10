@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\PegawaiRiwayatJabatan;
 use App\Models\PegawaiTambahanMk;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -22,6 +23,9 @@ class PegawaiTambahanMkController extends Controller
     */
     public function index()
     {            
+        $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
+        $this->authorize('admin_sdmoh', $kabiro);
+
         $title = 'Approval PMK Pegawai';
 
         $dataUnitKerja = DB::table('unit_kerja')
@@ -88,6 +92,9 @@ class PegawaiTambahanMkController extends Controller
 
     public function show(PegawaiTambahanMk $pegawai_tambahan_mk)
     {
+        $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
+        $this->authorize('admin_sdmoh', $kabiro);
+
         $title = 'Lihat File Pengajuan PMK Pegawai';
 
         $pmk = $pegawai_tambahan_mk;
@@ -107,6 +114,9 @@ class PegawaiTambahanMkController extends Controller
 
     public function edit(PegawaiTambahanMk $pegawai_tambahan_mk)
     {               
+        $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
+        $this->authorize('admin_sdmoh', $kabiro);
+
         $title = 'Setujui PMK Pegawai';
         
         $pegawai = DB::table('pegawai_tambahan_mk as ptm')
@@ -138,6 +148,9 @@ class PegawaiTambahanMkController extends Controller
 
     public function update(Request $request, PegawaiTambahanMk $pegawai_tambahan_mk)
     {  
+        $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
+        $this->authorize('admin_sdmoh', $kabiro);
+
         DB::beginTransaction();
 
         $this->validate($request, [
@@ -200,6 +213,9 @@ class PegawaiTambahanMkController extends Controller
     */        
     public function destroy(PegawaiTambahanMk $pegawai_tambahan_mk)
     {           
+        $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
+        $this->authorize('admin_sdmoh', $kabiro);
+        
         DB::beginTransaction();
         try {
             $pegawai_tambahan_mk->tahun_plus_disetujui = null;

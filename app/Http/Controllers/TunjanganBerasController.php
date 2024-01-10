@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\PegawaiRiwayatJabatan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
@@ -21,6 +22,9 @@ class TunjanganBerasController extends Controller
     */
     public function index()
     {            
+        $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
+        $this->authorize('admin_sdmoh', $kabiro);
+
         $title = 'Tunjangan Beras';
 
         return view('tunjangan-beras.index', compact('title'));
@@ -67,6 +71,9 @@ class TunjanganBerasController extends Controller
     */
     public function create()
     {            
+        $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
+        $this->authorize('admin_sdmoh', $kabiro);
+
         $title = 'Buat Tunjangan Beras';
 
         return view('tunjangan-beras.create', compact('title'));
@@ -80,6 +87,9 @@ class TunjanganBerasController extends Controller
     */
     public function store(Request $request)
     {
+        $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
+        $this->authorize('admin_sdmoh', $kabiro);
+
         DB::beginTransaction();
 
         $this->validate($request, [
@@ -143,6 +153,9 @@ class TunjanganBerasController extends Controller
 
     public function edit(TunjanganBeras $tunjangan_bera)
     {               
+        $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
+        $this->authorize('admin_sdmoh', $kabiro);
+
         $title = 'Ubah Tunjangan Beras';
 
         $tb = $tunjangan_bera;
@@ -152,6 +165,9 @@ class TunjanganBerasController extends Controller
 
     public function update(Request $request, TunjanganBeras $tunjangan_bera)
     {  
+        $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
+        $this->authorize('admin_sdmoh', $kabiro);
+
         DB::beginTransaction();
 
         $this->validate($request, [
@@ -221,6 +237,9 @@ class TunjanganBerasController extends Controller
     */        
     public function destroy(TunjanganBeras $tunjangan_bera)
     {           
+        $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
+        $this->authorize('admin_sdmoh', $kabiro);
+        
         DB::beginTransaction();
         try {
             $tunjangan_bera->delete();

@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Validator;
 use Yajra\Datatables\Datatables;
 use Intervention\Image\Facades\Image;
 use App\Models\AturanThrGajiplus;
+use App\Models\PegawaiRiwayatJabatan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -21,6 +22,9 @@ class AturanThrGajiplusController extends Controller
     */
     public function index()
     {            
+        $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
+        $this->authorize('admin_sdmoh', $kabiro);
+
         $title = 'Aturan THR dan Gaji-13';
 
         return view('aturan-thr-gajiplus.index', compact('title'));
@@ -72,6 +76,9 @@ class AturanThrGajiplusController extends Controller
     */
     public function create()
     {            
+        $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
+        $this->authorize('admin_sdmoh', $kabiro);
+
         $title = 'Buat Aturan THR dan Gaji-13';
 
         return view('aturan-thr-gajiplus.create', compact('title'));
@@ -85,6 +92,9 @@ class AturanThrGajiplusController extends Controller
     */
     public function store(Request $request)
     {
+        $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
+        $this->authorize('admin_sdmoh', $kabiro);
+
         DB::beginTransaction();
 
         $this->validate($request, [
@@ -147,6 +157,9 @@ class AturanThrGajiplusController extends Controller
 
     public function edit(AturanThrGajiplus $aturan_thr_gajiplu)
     {               
+        $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
+        $this->authorize('admin_sdmoh', $kabiro);
+
         $title = 'Ubah Aturan THR dan Gaji-13';
 
         $atg = $aturan_thr_gajiplu;
@@ -156,6 +169,9 @@ class AturanThrGajiplusController extends Controller
 
     public function update(Request $request, AturanThrGajiplus $aturan_thr_gajiplu)
     {  
+        $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
+        $this->authorize('admin_sdmoh', $kabiro);
+
         DB::beginTransaction();
 
         $this->validate($request, [
@@ -224,6 +240,9 @@ class AturanThrGajiplusController extends Controller
     */        
     public function destroy(AturanThrGajiplus $aturan_thr_gajiplu)
     {           
+        $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
+        $this->authorize('admin_sdmoh', $kabiro);
+        
         DB::beginTransaction();
         try {
             $aturan_thr_gajiplu->delete();

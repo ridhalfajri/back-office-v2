@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\PegawaiRiwayatJabatan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
@@ -21,6 +22,9 @@ class TukinController extends Controller
     */
     public function index()
     {            
+        $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
+        $this->authorize('admin_sdmoh', $kabiro);
+
         $title = 'Grade Tukin';
 
         return view('tukin.index', compact('title'));
@@ -48,6 +52,9 @@ class TukinController extends Controller
     */
     public function create()
     {            
+        $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
+        $this->authorize('admin_sdmoh', $kabiro);
+
         $title = 'Buat Grade Tukin';
 
         return view('tukin.create', compact('title'));
@@ -61,6 +68,9 @@ class TukinController extends Controller
     */
     public function store(Request $request)
     {
+        $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
+        $this->authorize('admin_sdmoh', $kabiro);
+
         DB::beginTransaction();
 
         $this->validate($request, [
@@ -118,6 +128,8 @@ class TukinController extends Controller
     public function show(Tukin $tukin)
     {
         //
+        $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
+        $this->authorize('admin_sdmoh', $kabiro);
     }
 
     /**
@@ -128,6 +140,9 @@ class TukinController extends Controller
     */
     public function edit(Tukin $tukin)
     {               
+        $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
+        $this->authorize('admin_sdmoh', $kabiro);
+
         $title = 'Ubah Grade Tukin';
 
         $tukin = $tukin;
@@ -144,6 +159,9 @@ class TukinController extends Controller
     */
     public function update(Request $request, Tukin $tukin)
     {  
+        $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
+        $this->authorize('admin_sdmoh', $kabiro);
+
         DB::beginTransaction();
 
         $this->validate($request, [
@@ -200,6 +218,9 @@ class TukinController extends Controller
     */        
     public function destroy(Tukin $tukin)
     {           
+        $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
+        $this->authorize('admin_sdmoh', $kabiro);
+        
         DB::beginTransaction();
         try {
             //$profisiensiMSampelUp->deleted_by = Auth::user()->username;;

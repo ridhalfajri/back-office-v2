@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Validator;
 use Yajra\Datatables\Datatables;
 use Intervention\Image\Facades\Image;
 use App\Models\PegawaiRiwayatGolongan;
+use App\Models\PegawaiRiwayatJabatan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -21,6 +22,9 @@ class PegawaiRiwayatGolonganController extends Controller
     */
     public function index()
     {            
+        $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
+        $this->authorize('admin_sdmoh', $kabiro);
+
         $title = 'Riwayat Golongan Pegawai';
 
         $dataUnitKerja = DB::table('unit_kerja')
@@ -95,6 +99,9 @@ class PegawaiRiwayatGolonganController extends Controller
     */
     public function create()
     {            
+        $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
+        $this->authorize('admin_sdmoh', $kabiro);
+
         $title = 'Buat Riwayat Golongan Pegawai';
 
         //nama pegawai
@@ -129,6 +136,9 @@ class PegawaiRiwayatGolonganController extends Controller
     */
     public function store(Request $request)
     {
+        $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
+        $this->authorize('admin_sdmoh', $kabiro);
+
         DB::beginTransaction();
 
         $this->validate($request, [
@@ -209,6 +219,9 @@ class PegawaiRiwayatGolonganController extends Controller
 
     public function edit(PegawaiRiwayatGolongan $pegawai_riwayat_golongan)
     {               
+        $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
+        $this->authorize('admin_sdmoh', $kabiro);
+        
         $title = 'Ubah Riwayat Golongan Pegawai';
 
         $prg = $pegawai_riwayat_golongan;
@@ -244,6 +257,9 @@ class PegawaiRiwayatGolonganController extends Controller
 
     public function update(Request $request, PegawaiRiwayatGolongan $pegawai_riwayat_golongan)
     {  
+        $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
+        $this->authorize('admin_sdmoh', $kabiro);
+
         DB::beginTransaction();
 
         $this->validate($request, [
@@ -331,6 +347,9 @@ class PegawaiRiwayatGolonganController extends Controller
     */        
     public function destroy(PegawaiRiwayatGolongan $pegawai_riwayat_golongan)
     {           
+        $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
+        $this->authorize('admin_sdmoh', $kabiro);
+        
         DB::beginTransaction();
         try {
             $pegawai_riwayat_golongan->delete();

@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Validator;
 use Yajra\Datatables\Datatables;
 use Intervention\Image\Facades\Image;
 use App\Models\PegawaiRiwayatGolongan;
+use App\Models\PegawaiRiwayatJabatan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -22,6 +23,9 @@ class PegawaiBpjsLainnyaController extends Controller
     */
     public function index()
     {            
+        $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
+        $this->authorize('admin_sdmoh', $kabiro);
+
         $title = 'Tambahan BPJS Pegawai';
 
         $dataUnitKerja = DB::table('unit_kerja')
@@ -94,6 +98,9 @@ class PegawaiBpjsLainnyaController extends Controller
     */
     public function create()
     {            
+        $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
+        $this->authorize('admin_sdmoh', $kabiro);
+
         $title = 'Buat Tambahan BPJS Pegawai';
 
         //nama pegawai
@@ -123,6 +130,9 @@ class PegawaiBpjsLainnyaController extends Controller
     */
     public function store(Request $request)
     {
+        $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
+        $this->authorize('admin_sdmoh', $kabiro);
+
         DB::beginTransaction();
 
         $this->validate($request, [
@@ -205,6 +215,9 @@ class PegawaiBpjsLainnyaController extends Controller
 
     public function edit(PegawaiBpjsLainnya $pegawai_bpjs_lainnya)
     {               
+        $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
+        $this->authorize('admin_sdmoh', $kabiro);
+
         $title = 'Ubah Tambahan BPJS Pegawai';
 
         $pbl = $pegawai_bpjs_lainnya;
@@ -235,6 +248,9 @@ class PegawaiBpjsLainnyaController extends Controller
 
     public function update(Request $request, PegawaiBpjsLainnya $pegawai_bpjs_lainnya)
     {  
+        $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
+        $this->authorize('admin_sdmoh', $kabiro);
+
         DB::beginTransaction();
 
         $this->validate($request, [
@@ -324,6 +340,9 @@ class PegawaiBpjsLainnyaController extends Controller
     */        
     public function destroy(PegawaiBpjsLainnya $pegawai_bpjs_lainnya)
     {           
+        $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
+        $this->authorize('admin_sdmoh', $kabiro);
+        
         DB::beginTransaction();
         try {
             $pegawai_bpjs_lainnya->delete();

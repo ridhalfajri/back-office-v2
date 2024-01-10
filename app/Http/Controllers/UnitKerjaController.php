@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\PegawaiRiwayatJabatan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
@@ -21,6 +22,9 @@ class UnitKerjaController extends Controller
     */
     public function index()
     {            
+        $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
+        $this->authorize('admin_sdmoh', $kabiro);
+        
         $title = 'Unit Kerja';
 
         return view('unit-kerja.index', compact('title'));
@@ -49,6 +53,9 @@ class UnitKerjaController extends Controller
     */
     public function create()
     {            
+        $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
+        $this->authorize('admin_sdmoh', $kabiro);
+
         $title = 'Buat Unit Kerja';
 
         $jenisUnit = DB::table('jenis_unit_kerja')
@@ -66,6 +73,9 @@ class UnitKerjaController extends Controller
     */
     public function store(Request $request)
     {
+        $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
+        $this->authorize('admin_sdmoh', $kabiro);
+
         DB::beginTransaction();
 
         $this->validate($request, [
@@ -126,6 +136,8 @@ class UnitKerjaController extends Controller
     public function show(UnitKerja $unitKerja)
     {
         //
+        $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
+        $this->authorize('admin_sdmoh', $kabiro);
     }
 
     /**
@@ -136,6 +148,9 @@ class UnitKerjaController extends Controller
     */
     public function edit(UnitKerja $unitKerja)
     {               
+        $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
+        $this->authorize('admin_sdmoh', $kabiro);
+
         $title = 'Ubah Unit Kerja';
 
         $unit = $unitKerja;
@@ -156,6 +171,9 @@ class UnitKerjaController extends Controller
     */
     public function update(Request $request, UnitKerja $unitKerja)
     {  
+        $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
+        $this->authorize('admin_sdmoh', $kabiro);
+
         DB::beginTransaction();
 
         $this->validate($request, [
@@ -214,6 +232,9 @@ class UnitKerjaController extends Controller
     */        
     public function destroy(UnitKerja $unitKerja)
     {           
+        $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
+        $this->authorize('admin_sdmoh', $kabiro);
+        
         DB::beginTransaction();
         try {
             //$profisiensiMSampelUp->deleted_by = Auth::user()->username;
