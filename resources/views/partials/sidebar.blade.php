@@ -80,6 +80,8 @@
                         Staff</span></a>
             </li>
         @endif
+
+        {{-- KABIRO SDMOH --}}
         @if (auth()->user()->pegawai->jabatan_sekarang->tx_tipe_jabatan_id == 5)
             <li class="g_heading">Kabiro</li>
 
@@ -96,9 +98,49 @@
             </li>
         @endif
 
-        {{-- KABIRO SDMOH --}}
+        {{-- KABIRO SDMOH dan ADMIN SDM --}}
         @if (auth()->user()->pegawai->jabatan_sekarang->tx_tipe_jabatan_id == 5 ||
                 auth()->user()->pegawai->jabatan_sekarang->tx_tipe_jabatan_id == 7)
+            {{-- TRANSAKSI     --}}
+            <li class="g_heading">Transaksi</li>
+
+            <li class="{{ request()->segment(1) == 'presensi-pegawai' ? 'active' : '' }}">
+                <a href="{{ route('presensi-pegawai') }}"><i class="fa fa-clock-o"></i><span>Presensi
+                        Pegawai</span></a>
+            </li>
+            <li class="{{ Request::is('kalkulasi*') ? 'active' : '' }}">
+                <a href="javascript:void(0)" class="has-arrow"><i class="fa fa-money"></i><span>Kalkulasi</span></a>
+                <ul class="sub-menu js__content">
+                    <li class="{{ Request::is('kalkulasi/pegawai-riwayat-umak*') ? 'active' : '' }}">
+                        <a href="{{ route('pegawai-riwayat-umak.index') }}">Uang Makan Pegawai</a>
+                    </li>
+
+                    <li class="{{ Request::is('kalkulasi/pegawai-riwayat-thr*') ? 'active' : '' }}">
+                        <a href="{{ route('pegawai-riwayat-thr.index') }}">THR Pegawai</a>
+                    </li>
+
+                    <li class="{{ Request::is('kalkulasi/pegawai-riwayat-gajiplus*') ? 'active' : '' }}">
+                        <a href="{{ route('pegawai-riwayat-gajiplus.index') }}">Gaji-13 Pegawai</a>
+                    </li>
+                </ul>
+            </li>
+            <li class="{{ request()->segment(1) == 'penghasilan' ? 'active' : '' }}"><a
+                    href="{{ route('penghasilan.index') }}"><i
+                        class="fa fa-credit-card"></i><span>Penghasilan</span></a>
+            </li>
+            <li class="{{ Request::is('pegawai-riwayat-golongan*') ? 'active' : '' }}"><a
+                    href="{{ route('pegawai-riwayat-golongan.index') }}"><i
+                        class="fa fa-credit-card"></i><span>Riwayat
+                        Golongan Pegawai</span></a></li>
+            <li class="{{ request()->segment(2) == 'pre-tubel' ? 'active' : '' }}">
+                <a href="{{ route('pre-tubel.index') }}"><i class="fa fa-graduation-cap"></i>Tugas belajar</span></a>
+            </li>
+
+            <li class="{{ Request::is('pegawai-tambahan-mk*') ? 'active' : '' }}"><a
+                href="{{ route('pegawai-tambahan-mk.index') }}"><i
+                class="fa fa-plus"></i><span>Approval PMK Pegawai</span></a></li>
+            
+            {{-- MASTER     --}}
             <li class="g_heading">Master Data</li>
 
             <li class="{{ request()->segment(1) == 'pegawai' ? 'active' : '' }}">
@@ -137,44 +179,6 @@
 
             <li><a href="{{ route('jabatan-unit-kerja.index') }}"><i class="fa fa-snowflake-o"></i><span>Jabatan Unit
                         Kerja</span></a></li>
-
-            <li class="g_heading">Transaksi</li>
-
-            <li class="{{ request()->segment(1) == 'presensi-pegawai' ? 'active' : '' }}">
-                <a href="{{ route('presensi-pegawai') }}"><i class="fa fa-clock-o"></i><span>Presensi
-                        Pegawai</span></a>
-            </li>
-            <li class="{{ Request::is('kalkulasi*') ? 'active' : '' }}">
-                <a href="javascript:void(0)" class="has-arrow"><i class="fa fa-money"></i><span>Kalkulasi</span></a>
-                <ul class="sub-menu js__content">
-                    <li class="{{ Request::is('kalkulasi/pegawai-riwayat-umak*') ? 'active' : '' }}">
-                        <a href="{{ route('pegawai-riwayat-umak.index') }}">Uang Makan Pegawai</a>
-                    </li>
-
-                    <li class="{{ Request::is('kalkulasi/pegawai-riwayat-thr*') ? 'active' : '' }}">
-                        <a href="{{ route('pegawai-riwayat-thr.index') }}">THR Pegawai</a>
-                    </li>
-
-                    <li class="{{ Request::is('kalkulasi/pegawai-riwayat-gajiplus*') ? 'active' : '' }}">
-                        <a href="{{ route('pegawai-riwayat-gajiplus.index') }}">Gaji-13 Pegawai</a>
-                    </li>
-                </ul>
-            </li>
-            <li class="{{ request()->segment(1) == 'penghasilan' ? 'active' : '' }}"><a
-                    href="{{ route('penghasilan.index') }}"><i
-                        class="fa fa-credit-card"></i><span>Penghasilan</span></a>
-            </li>
-            <li class="{{ Request::is('pegawai-riwayat-golongan*') ? 'active' : '' }}"><a
-                    href="{{ route('pegawai-riwayat-golongan.index') }}"><i
-                        class="fa fa-credit-card"></i><span>Riwayat
-                        Golongan Pegawai</span></a></li>
-            <li class="{{ request()->segment(2) == 'pre-tubel' ? 'active' : '' }}">
-                <a href="{{ route('pre-tubel.index') }}"><i class="fa fa-graduation-cap"></i>Tugas belajar</span></a>
-            </li>
-
-            <li class="{{ Request::is('pegawai-tambahan-mk*') ? 'active' : '' }}"><a
-                href="{{ route('pegawai-tambahan-mk.index') }}"><i
-                class="fa fa-plus"></i><span>Approval PMK Pegawai</span></a></li>
         @endif
 
     </ul>
