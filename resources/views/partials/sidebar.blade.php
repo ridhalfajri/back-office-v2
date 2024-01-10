@@ -56,11 +56,11 @@
 
             </ul>
         </li>
-        <li class="{{ Request::is('grade-tukin*') ? 'active' : '' }}"><a href="{{ route('grade-tukin.index') }}"><i
-                    class="fa fa-money"></i><span>Info Grade Tukin</span></a>
-        </li>
         <li class="{{ Request::is('pengajuan-pmk*') ? 'active' : '' }}"><a href="{{ route('pengajuan-pmk.index') }}"><i
             class="fa fa-plus"></i><span>Pengajuan PMK</span></a>
+        </li>
+        <li class="{{ Request::is('grade-tukin*') ? 'active' : '' }}"><a href="{{ route('grade-tukin.index') }}"><i
+                    class="fa fa-money"></i><span>Info Grade Tukin</span></a>
         </li>
 
         {{-- ESSELON 2 --}}
@@ -104,29 +104,21 @@
             <li class="{{ request()->segment(1) == 'pegawai' ? 'active' : '' }}">
                 <a href="{{ route('pegawai.index') }}"><i class="icon-users"></i><span>Pegawai</span></a>
             </li>
+            <li class="{{ Request::is('master/status-pegawai*') ? 'active' : '' }}"><a
+                href="{{ route('status-pegawai.index') }}"><i class="icon-users"></i><span>Status Pegawai</span></a></li>
+            <li class="{{ Request::is('master/unit-kerja*') ? 'active' : '' }}"><a
+                href="{{ route('unit-kerja.index') }}"><i class="icon-users"></i><span>Unit Kerja</span></a></li>
             <li class="{{ Request::is('pegawai-bpjs-lainnya*') ? 'active' : '' }}"><a
                     href="{{ route('pegawai-bpjs-lainnya.index') }}"><i class="fa fa-credit-card"></i><span>Tambahan
                         BPJS Pegawai</span></a></li>
-
-            <li class="{{ Request::is('master*') ? 'active' : '' }}">
-                <a href="javascript:void(0)" class="has-arrow"><i class="icon-doc"></i><span>Master</span></a>
-                <ul class="sub-menu js__content">
-                    <li class="{{ Request::is('master/tukin*') ? 'active' : '' }}"><a
-                            href="{{ route('tukin.index') }}">Grade Tukin</a></li>
-                    <li class="{{ Request::is('master/uang-makan*') ? 'active' : '' }}"><a
-                            href="{{ route('uang-makan.index') }}">Uang Makan</a></li>
-                    <li class="{{ Request::is('master/unit-kerja*') ? 'active' : '' }}"><a
-                            href="{{ route('unit-kerja.index') }}">Unit Kerja</a></li>
-                    <li class="{{ Request::is('master/status-pegawai*') ? 'active' : '' }}"><a
-                            href="{{ route('status-pegawai.index') }}">Status Pegawai</a></li>
-                    <li class="{{ Request::is('master/tunjangan-beras*') ? 'active' : '' }}"><a
-                            href="{{ route('tunjangan-beras.index') }}">Tunjangan Beras</a></li>
-                    <li class="{{ Request::is('master/aturan-thr-gajiplus*') ? 'active' : '' }}"><a
-                            href="{{ route('aturan-thr-gajiplus.index') }}">Aturan THR dan Gaji-13</a></li>
-                    {{-- <li class="{{ Request::is('master/ruang-rapat*') ? 'active' : '' }}"><a
-                        href="{{ route('ruang-rapat.index') }}">Ruang Rapat</a></li> --}}
-                </ul>
-            </li>
+            <li class="{{ Request::is('master/tukin*') ? 'active' : '' }}"><a
+                href="{{ route('tukin.index') }}"><i class="fa fa-money"></i><span>Grade Tukin</span></a></li>
+            <li class="{{ Request::is('master/uang-makan*') ? 'active' : '' }}"><a
+                href="{{ route('uang-makan.index') }}"><i class="fa fa-money"></i><span>Uang Makan</span></a></li>
+            <li class="{{ Request::is('master/tunjangan-beras*') ? 'active' : '' }}"><a
+                href="{{ route('tunjangan-beras.index') }}"><i class="fa fa-money"></i><span>Tunjangan Beras</span></a></li>
+            <li class="{{ Request::is('master/aturan-thr-gajiplus*') ? 'active' : '' }}"><a
+                href="{{ route('aturan-thr-gajiplus.index') }}"><i class="fa fa-money"></i><span>Aturan THR dan Gaji-13</span></a></li>
 
             <li><a href="{{ route('gaji.index') }}"><i class="fa fa-money"></i><span>Gaji Pegawai</span></a></li>
             <li><a href="{{ route('jabatan-tukin.index') }}"><i class="fa fa-money"></i><span>Tunjangan
