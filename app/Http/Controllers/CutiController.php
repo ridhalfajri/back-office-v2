@@ -19,6 +19,7 @@ use DateTime;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use SplFileInfo;
 use Yajra\DataTables\Facades\DataTables;
@@ -561,7 +562,7 @@ class CutiController extends Controller
     public function pengajuan_masuk_sdmoh()
     {
         $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->first();
-        $this->authorize('kabiro', $kabiro);
+        $this->authorize('spesial_kabiro', $kabiro);
         $unit_kerja = UnitKerja::select('id', 'nama')->limit(22)->get();
         $status_cuti = StatusCuti::select('id', 'status')->get();
         $title = "Acc Atasan Langsung";
@@ -603,7 +604,7 @@ class CutiController extends Controller
     public function detail_pengajuan_masuk_sdmoh($id)
     {
         $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->first();
-        $this->authorize('kabiro', $kabiro);
+        $this->authorize('spesial_kabiro', $kabiro);
 
         $cuti = PegawaiCuti::where('id', $id)->first();
         $cuti->tanggal_awal_cuti = Carbon::parse($cuti->tanggal_awal_cuti)->translatedFormat('d-m-Y');
@@ -710,6 +711,7 @@ class CutiController extends Controller
             DB::commit();
             return response()->json(['success' => 'cuti berhasil di terima']);
         } catch (QueryException $qe) {
+            Log::error($qe);
             DB::rollBack();
 
             return response()->json(['errors' => ['connection' => 'terjadi kesalahan koneksi']]);
@@ -719,7 +721,7 @@ class CutiController extends Controller
     public function saldo_cuti_pegawai()
     {
         $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->first();
-        $this->authorize('kabiro', $kabiro);
+        $this->authorize('admin_sdmoh', $kabiro);
         $title = 'Saldo Cuti Pegawai';
         $unit_kerja = UnitKerja::select('id', 'nama')->limit(22)->get();
         return view('cuti.saldo-cuti-pegawai', compact('title', 'unit_kerja'));

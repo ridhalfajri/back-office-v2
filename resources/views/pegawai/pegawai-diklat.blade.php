@@ -26,6 +26,7 @@
                                 <th>Jenis Diklat</th>
                                 <th>Tanggal Mulai</th>
                                 <th>Instansi</th>
+                                <th>Verifikasi</th>
                                 <th>Aksi</th>
                             </tr>
                         </thead>
@@ -35,6 +36,7 @@
                                 <th>Jenis Diklat</th>
                                 <th>Tanggal Mulai</th>
                                 <th>Instansi</th>
+                                <th>Verikasi</th>
                                 <th>Aksi</th>
                             </tr>
                         </tfoot>

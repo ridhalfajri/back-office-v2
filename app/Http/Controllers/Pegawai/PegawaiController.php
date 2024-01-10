@@ -29,7 +29,7 @@ class PegawaiController extends Controller
     public function index()
     {
         $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->first();
-        $this->authorize('kabiro', $kabiro);
+        $this->authorize('admin_sdmoh', $kabiro);
         $unit_kerja = UnitKerja::select('id', 'nama')->limit(22)->get();
         $title = "Pegawai";
         $esselon = false;
@@ -39,7 +39,7 @@ class PegawaiController extends Controller
     public function index_esselon()
     {
         // $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->first();
-        // $this->authorize('kabiro', $kabiro);
+        // $this->authorize('admin_sdmoh', $kabiro);
         $atasan_langsung = PegawaiRiwayatJabatan::select('pegawai_id')->whereIn('tx_tipe_jabatan_id', [2, 5])->where('pegawai_id', auth()->user()->pegawai_id)->first();
         $this->authorize('atasan_langsung', $atasan_langsung);
         $riwayat_jabatan = PegawaiRiwayatJabatan::where('pegawai_id', auth()->user()->pegawai_id)->where('is_now', 1)->get();

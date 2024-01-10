@@ -21,27 +21,27 @@ use App\Exports\DataExportPru;
 class PegawaiRiwayatUmakController extends Controller
 {
     /**
-    * Display a listing of the resource.
-    *
-    * @return \Illuminate\Http\Response
-    */
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index()
-    {            
+    {
         $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
-        $this->authorize('kabiro', $kabiro);
+        $this->authorize('admin_sdmoh', $kabiro);
 
         $title = 'Riwayat Uang Makan Pegawai';
-        
+
         $dataUnitKerja = DB::table('unit_kerja')
-        ->select('*')
-        ->whereIn('jenis_unit_kerja_id', array(1, 2, 3))
-        ->get();
+            ->select('*')
+            ->whereIn('jenis_unit_kerja_id', array(1, 2, 3))
+            ->get();
 
         return view('perhitungan-umak.pegawai-riwayat-umak', compact('title', 'dataUnitKerja'));
     }
-    
+
     public function datatable(Request $request)
-    {        
+    {
         $bulan = $request->bulan;
         $tahun = $request->tahun;
         $unitKerja = $request->unitKerja;
@@ -49,34 +49,40 @@ class PegawaiRiwayatUmakController extends Controller
         //dd($request);
 
         $data = [];
-        if('' != $bulan && '' != $tahun){ 
-            $data = PegawaiRiwayatUmak::select('p.nama_depan', 'p.nama_belakang', 'p.nip', 'um.nominal',
-            'pegawai_riwayat_umak.jumlah_hari_masuk', 'pegawai_riwayat_umak.total', 'pegawai_riwayat_umak.is_double',
-            'pegawai_riwayat_umak.bulan', 'pegawai_riwayat_umak.tahun', 'uk.nama as unit_kerja')
-            ->join('pegawai as p','p.id','=','pegawai_riwayat_umak.pegawai_id')
-            //->join('pegawai_riwayat_jabatan as prj', 'prj.pegawai_id', '=', 'pegawai_riwayat_umak.pegawai_id')
-            ->join('pegawai_riwayat_jabatan as prj', function ($join) {
-                $join->on('prj.pegawai_id','=','pegawai_riwayat_umak.pegawai_id')
-                    ->where('prj.is_now','=',1)
-                    ;
-            })
-            ->join('jabatan_unit_kerja as juk', 'juk.id', '=', 'prj.jabatan_unit_kerja_id')
-            ->join('hirarki_unit_kerja as huk', 'huk.id', '=', 'juk.hirarki_unit_kerja_id')
-            ->leftJoin('unit_kerja as uk', 'uk.id', '=', 'huk.child_unit_kerja_id')
-            ->join('pegawai_riwayat_golongan as prg', function ($join) {
-                $join->on('prg.pegawai_id','=','p.id')
-                    ->where('prg.is_active','=',1)
-                    ;
-            })
-            ->leftJoin('uang_makan as um','um.golongan_id','=','prg.golongan_id')
-            //
-            ->where('pegawai_riwayat_umak.bulan', '=', $bulan)
-            ->where('pegawai_riwayat_umak.tahun', '=', $tahun)
-            ->orderBy('uk.id','asc')
-            ->orderBy('p.nama_depan','asc')
-            ;
+        if ('' != $bulan && '' != $tahun) {
+            $data = PegawaiRiwayatUmak::select(
+                'p.nama_depan',
+                'p.nama_belakang',
+                'p.nip',
+                'um.nominal',
+                'pegawai_riwayat_umak.jumlah_hari_masuk',
+                'pegawai_riwayat_umak.total',
+                'pegawai_riwayat_umak.is_double',
+                'pegawai_riwayat_umak.bulan',
+                'pegawai_riwayat_umak.tahun',
+                'uk.nama as unit_kerja'
+            )
+                ->join('pegawai as p', 'p.id', '=', 'pegawai_riwayat_umak.pegawai_id')
+                //->join('pegawai_riwayat_jabatan as prj', 'prj.pegawai_id', '=', 'pegawai_riwayat_umak.pegawai_id')
+                ->join('pegawai_riwayat_jabatan as prj', function ($join) {
+                    $join->on('prj.pegawai_id', '=', 'pegawai_riwayat_umak.pegawai_id')
+                        ->where('prj.is_now', '=', 1);
+                })
+                ->join('jabatan_unit_kerja as juk', 'juk.id', '=', 'prj.jabatan_unit_kerja_id')
+                ->join('hirarki_unit_kerja as huk', 'huk.id', '=', 'juk.hirarki_unit_kerja_id')
+                ->leftJoin('unit_kerja as uk', 'uk.id', '=', 'huk.child_unit_kerja_id')
+                ->join('pegawai_riwayat_golongan as prg', function ($join) {
+                    $join->on('prg.pegawai_id', '=', 'p.id')
+                        ->where('prg.is_active', '=', 1);
+                })
+                ->leftJoin('uang_makan as um', 'um.golongan_id', '=', 'prg.golongan_id')
+                //
+                ->where('pegawai_riwayat_umak.bulan', '=', $bulan)
+                ->where('pegawai_riwayat_umak.tahun', '=', $tahun)
+                ->orderBy('uk.id', 'asc')
+                ->orderBy('p.nama_depan', 'asc');
 
-            if(null != $unitKerja || '' != $unitKerja){
+            if (null != $unitKerja || '' != $unitKerja) {
                 $data->where('uk.id', '=', $unitKerja);
             }
         }
@@ -84,49 +90,49 @@ class PegawaiRiwayatUmakController extends Controller
         return Datatables::of($data)
             ->addColumn('no', '')
             ->addColumn('jumlah_hari', function ($data) {
-                return $data->jumlah_hari_masuk.' hari';
+                return $data->jumlah_hari_masuk . ' hari';
             })
             ->addColumn('nama_pegawai', function ($data) {
-                return $data->nama_depan.' '.$data->nama_belakang;
+                return $data->nama_depan . ' ' . $data->nama_belakang;
             })
             ->addColumn('periode', function ($data) {
-                if($data->bulan == '01'){
+                if ($data->bulan == '01') {
                     return 'Jan - ' . $data->tahun;
                 }
-                if($data->bulan == '02'){
+                if ($data->bulan == '02') {
                     return 'Feb - ' . $data->tahun;
                 }
-                if($data->bulan == '03'){
+                if ($data->bulan == '03') {
                     return 'Mar - ' . $data->tahun;
                 }
-                if($data->bulan == '04'){
+                if ($data->bulan == '04') {
                     return 'Apr - ' . $data->tahun;
                 }
-                if($data->bulan == '05'){
+                if ($data->bulan == '05') {
                     return 'Mei - ' . $data->tahun;
                 }
-                if($data->bulan == '06'){
+                if ($data->bulan == '06') {
                     return 'Jun - ' . $data->tahun;
                 }
-                if($data->bulan == '07'){
+                if ($data->bulan == '07') {
                     return 'Jul - ' . $data->tahun;
                 }
-                if($data->bulan == '08'){
+                if ($data->bulan == '08') {
                     return 'Agt - ' . $data->tahun;
                 }
-                if($data->bulan == '09'){
+                if ($data->bulan == '09') {
                     return 'Sept - ' . $data->tahun;
                 }
-                if($data->bulan == '10'){
+                if ($data->bulan == '10') {
                     return 'Okt - ' . $data->tahun;
                 }
-                if($data->bulan == '11'){
+                if ($data->bulan == '11') {
                     return 'Nov - ' . $data->tahun;
                 }
-                if($data->bulan == '12' && $data->is_double == 'N'){
+                if ($data->bulan == '12' && $data->is_double == 'N') {
                     return 'Des - ' . $data->tahun;
                 }
-                if($data->bulan == '12' && $data->is_double == 'Y'){
+                if ($data->bulan == '12' && $data->is_double == 'Y') {
                     return 'Des (2) - ' . $data->tahun;
                 }
             })
@@ -135,15 +141,15 @@ class PegawaiRiwayatUmakController extends Controller
     }
 
     /**
-    * Store a newly created resource in storage.
-    *
-    * @param  \Illuminate\Http\Request  $request
-    * @return \Illuminate\Http\Response
-    */
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function kalkulasiUmak(Request $request)
     {
         $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
-        $this->authorize('kabiro', $kabiro);
+        $this->authorize('admin_sdmoh', $kabiro);
 
         $splitTanggal = explode(" - ", $request->tanggal);
         $tanggalMulaiSplit = $splitTanggal[0];
@@ -155,39 +161,39 @@ class PegawaiRiwayatUmakController extends Controller
 
         //dd($waktuPlusSatuBulan);
         $bulan = Carbon::parse($tanggalAkhirSplit)->translatedFormat('m');
-        
+
         $bulanKeDb = null;
-        if($bulan == '01'){
+        if ($bulan == '01') {
             $bulanKeDb = '02';
         }
-        if($bulan == '02'){
+        if ($bulan == '02') {
             $bulanKeDb = '03';
         }
-        if($bulan == '03'){
+        if ($bulan == '03') {
             $bulanKeDb = '04';
         }
-        if($bulan == '04'){
+        if ($bulan == '04') {
             $bulanKeDb = '05';
         }
-        if($bulan == '05'){
+        if ($bulan == '05') {
             $bulanKeDb = '06';
         }
-        if($bulan == '06'){
+        if ($bulan == '06') {
             $bulanKeDb = '07';
         }
-        if($bulan == '07'){
+        if ($bulan == '07') {
             $bulanKeDb = '08';
         }
-        if($bulan == '08'){
+        if ($bulan == '08') {
             $bulanKeDb = '09';
         }
-        if($bulan == '09'){
+        if ($bulan == '09') {
             $bulanKeDb = '10';
         }
-        if($bulan == '10'){
+        if ($bulan == '10') {
             $bulanKeDb = '11';
         }
-        if($bulan == '11'){
+        if ($bulan == '11') {
             $bulanKeDb = '12';
         }
 
@@ -197,10 +203,12 @@ class PegawaiRiwayatUmakController extends Controller
 
         //kalo tgl awal dan akhir desember
         $isDouble = 'N';
-        if('12' == Carbon::parse($tanggalMulaiSplit)->translatedFormat('m')
-            && '12' == Carbon::parse($tanggalAkhirSplit)->translatedFormat('m')){
-                $bulanKeDb = Carbon::parse($tanggalAkhirSplit)->translatedFormat('m'); //'12'
-                $isDouble = 'Y';
+        if (
+            '12' == Carbon::parse($tanggalMulaiSplit)->translatedFormat('m')
+            && '12' == Carbon::parse($tanggalAkhirSplit)->translatedFormat('m')
+        ) {
+            $bulanKeDb = Carbon::parse($tanggalAkhirSplit)->translatedFormat('m'); //'12'
+            $isDouble = 'Y';
         }
 
         DB::beginTransaction();
@@ -210,75 +218,75 @@ class PegawaiRiwayatUmakController extends Controller
             //02, 03, 04, 05, 06, 07, 08, 09, 10, 11
             $firstDayOfMonth = date('Y-m-01', strtotime($tanggalMulaiFormat));
             $lastDayOfMonth = date('Y-m-t', strtotime($tanggalMulaiFormat));
-            if($bulan == '02' || $bulan == '03' || $bulan == '04' || $bulan == '05' || $bulan == '06'
-            || $bulan == '07' || $bulan == '08' || $bulan == '09' || $bulan == '10' || $bulan == '11'){
-                if(($tanggalMulaiFormat != $firstDayOfMonth) || ($tanggalAkhirFormat != $lastDayOfMonth)){
+            if (
+                $bulan == '02' || $bulan == '03' || $bulan == '04' || $bulan == '05' || $bulan == '06'
+                || $bulan == '07' || $bulan == '08' || $bulan == '09' || $bulan == '10' || $bulan == '11'
+            ) {
+                if (($tanggalMulaiFormat != $firstDayOfMonth) || ($tanggalAkhirFormat != $lastDayOfMonth)) {
                     // session()->flash('message', 'Tanggal awal dan tanggal akhir yang dipilih tidak dalam 1 bulan!');
                     // return redirect()->back();
 
                     return response()->json(['errors' => 'Tanggal awal dan tanggal akhir yang dipilih tidak dalam 1 bulan!']);
                 }
             }
-            
+
             //looping data pegawai
             $listPegawai = DB::table('pegawai as p')
-            ->select('p.id', 'p.no_enroll')
-            ->leftJoin('status_pegawai as sp', function ($join) {
-                $join->on('sp.id','=','p.status_pegawai_id')
-                    ->whereIn('sp.nama', array('PNS', 'CPNS', 'PPPK'))
-                    ;
-            })
-            ->where('status_dinas', 1)
-            ->whereNull('tanggal_berhenti')
-            ->whereNull('tanggal_wafat')
-            //untuk test, data pegawai_riwayat_golongan harus ada!
-            //->where('p.id','=',498)
-            ->get();
+                ->select('p.id', 'p.no_enroll')
+                ->leftJoin('status_pegawai as sp', function ($join) {
+                    $join->on('sp.id', '=', 'p.status_pegawai_id')
+                        ->whereIn('sp.nama', array('PNS', 'CPNS', 'PPPK'));
+                })
+                ->where('status_dinas', 1)
+                ->whereNull('tanggal_berhenti')
+                ->whereNull('tanggal_wafat')
+                //untuk test, data pegawai_riwayat_golongan harus ada!
+                //->where('p.id','=',498)
+                ->get();
 
             //cek list ada atau tidak
-            if($listPegawai->isNotEmpty()){
+            if ($listPegawai->isNotEmpty()) {
                 $pegawaiId = null;
                 $jumlahHariMasuk = null;
                 $uangMakanId = null;
                 $nominalUangMakan = null;
                 $totalUangMakan = null;
 
-                foreach($listPegawai as $dataPegawai){
+                foreach ($listPegawai as $dataPegawai) {
                     //
                     $pegawaiId = $dataPegawai->id;
 
                     //
                     $jumlahHariMasuk = DB::table('presensi')
-                    ->select('tanggal_presensi')
-                    ->whereBetween('tanggal_presensi', [$tanggalMulaiFormat, $tanggalAkhirFormat])
-                    ->where('no_enroll','=',$dataPegawai->no_enroll)
-                    ->where('status_kehadiran','=','HADIR')
-                    // ->where(function($query) {
-                    //     $query->whereRaw('jam_masuk != null')
-                    //         ->orWhereRaw('jam_pulang != null')
-                    //         ->orWhere('jam_pulang','!=','00:00:00')
-                    //         ->orWhere('jam_masuk','!=','00:00:00')
-                    //         ;
-                    // })
-                    ->count();
+                        ->select('tanggal_presensi')
+                        ->whereBetween('tanggal_presensi', [$tanggalMulaiFormat, $tanggalAkhirFormat])
+                        ->where('no_enroll', '=', $dataPegawai->no_enroll)
+                        ->where('status_kehadiran', '=', 'HADIR')
+                        // ->where(function($query) {
+                        //     $query->whereRaw('jam_masuk != null')
+                        //         ->orWhereRaw('jam_pulang != null')
+                        //         ->orWhere('jam_pulang','!=','00:00:00')
+                        //         ->orWhere('jam_masuk','!=','00:00:00')
+                        //         ;
+                        // })
+                        ->count();
 
                     $umakPegawai = DB::table('uang_makan as um')
-                    ->select('um.id', 'um.nominal')
-                    ->join('pegawai_riwayat_golongan as prg', function ($join) use ($pegawaiId) {
-                        $join->on('prg.golongan_id','=','um.golongan_id')
-                            ->where('prg.is_active','=',1)
-                            ->where('prg.pegawai_id','=',$pegawaiId)
-                            ;
-                    })
-                    ->first();
+                        ->select('um.id', 'um.nominal')
+                        ->join('pegawai_riwayat_golongan as prg', function ($join) use ($pegawaiId) {
+                            $join->on('prg.golongan_id', '=', 'um.golongan_id')
+                                ->where('prg.is_active', '=', 1)
+                                ->where('prg.pegawai_id', '=', $pegawaiId);
+                        })
+                        ->first();
 
-                    if(null != $umakPegawai){
+                    if (null != $umakPegawai) {
                         //
                         $uangMakanId = $umakPegawai->id;
                         $nominalUangMakan = $umakPegawai->nominal;
 
                         //
-                        $totalUangMakan = $nominalUangMakan*$jumlahHariMasuk;
+                        $totalUangMakan = $nominalUangMakan * $jumlahHariMasuk;
                     } else {
                         // session()->flash('message', 'Ada pegawai yang datanya belum ada di tabel pegawai_riwayat_golongan!');
                         // return redirect()->back();
@@ -290,52 +298,52 @@ class PegawaiRiwayatUmakController extends Controller
 
                     //cek ke tabel pegawai_riwayat_umak ada data tidak
                     $cekDataPru = null;
-                    
-                    if($isDouble == 'Y'){
+
+                    if ($isDouble == 'Y') {
                         $cekDataPru = DB::table('pegawai_riwayat_umak')
-                        ->select('*')
-                        ->where('pegawai_id','=',$pegawaiId)
-                        ->where('bulan','=',$bulanKeDb)
-                        ->where('tahun','=',$tahun)
-                        ->where('is_double', '=', 'Y')
-                        ->get();
-                    }else{
+                            ->select('*')
+                            ->where('pegawai_id', '=', $pegawaiId)
+                            ->where('bulan', '=', $bulanKeDb)
+                            ->where('tahun', '=', $tahun)
+                            ->where('is_double', '=', 'Y')
+                            ->get();
+                    } else {
                         $cekDataPru = DB::table('pegawai_riwayat_umak')
-                        ->select('*')
-                        ->where('pegawai_id','=',$pegawaiId)
-                        ->where('bulan','=',$bulanKeDb)
-                        ->where('tahun','=',$tahun)
-                        ->where('is_double', '=', 'N')
-                        ->get();
+                            ->select('*')
+                            ->where('pegawai_id', '=', $pegawaiId)
+                            ->where('bulan', '=', $bulanKeDb)
+                            ->where('tahun', '=', $tahun)
+                            ->where('is_double', '=', 'N')
+                            ->get();
                     }
 
-                    if($cekDataPru->isNotEmpty()){
-                        if($isDouble == 'Y'){
+                    if ($cekDataPru->isNotEmpty()) {
+                        if ($isDouble == 'Y') {
                             //update
                             DB::table('pegawai_riwayat_umak')
-                            ->where('pegawai_id', $pegawaiId)
-                            ->where('bulan', $bulanKeDb)
-                            ->where('tahun', $tahun)
-                            ->where('is_double', '=', 'Y')
-                            ->update([
-                                'uang_makan_id' => $uangMakanId,
-                                'jumlah_hari_masuk' => $jumlahHariMasuk,
-                                'total' => $totalUangMakan,
-                                'updated_at' => now(),
-                            ]);
-                        }else{
+                                ->where('pegawai_id', $pegawaiId)
+                                ->where('bulan', $bulanKeDb)
+                                ->where('tahun', $tahun)
+                                ->where('is_double', '=', 'Y')
+                                ->update([
+                                    'uang_makan_id' => $uangMakanId,
+                                    'jumlah_hari_masuk' => $jumlahHariMasuk,
+                                    'total' => $totalUangMakan,
+                                    'updated_at' => now(),
+                                ]);
+                        } else {
                             //update
                             DB::table('pegawai_riwayat_umak')
-                            ->where('pegawai_id', $pegawaiId)
-                            ->where('bulan', $bulanKeDb)
-                            ->where('tahun', $tahun)
-                            ->where('is_double', '=', 'N')
-                            ->update([
-                                'uang_makan_id' => $uangMakanId,
-                                'jumlah_hari_masuk' => $jumlahHariMasuk,
-                                'total' => $totalUangMakan,
-                                'updated_at' => now(),
-                            ]);
+                                ->where('pegawai_id', $pegawaiId)
+                                ->where('bulan', $bulanKeDb)
+                                ->where('tahun', $tahun)
+                                ->where('is_double', '=', 'N')
+                                ->update([
+                                    'uang_makan_id' => $uangMakanId,
+                                    'jumlah_hari_masuk' => $jumlahHariMasuk,
+                                    'total' => $totalUangMakan,
+                                    'updated_at' => now(),
+                                ]);
                         }
                     } else {
                         //insert
@@ -365,7 +373,7 @@ class PegawaiRiwayatUmakController extends Controller
             //return redirect()->back();
             return response()->json(['success' => 'Berhasil kalkulasi uang makan pegawai']);
 
-            
+
             // return redirect()->route('pegawai-riwayat-umak.index')
             //     ->with('success', 'Data Pegawai Riwayat Uang Makan berhasil di-insert!');
         } catch (\Exception $e) {
@@ -380,18 +388,17 @@ class PegawaiRiwayatUmakController extends Controller
 
             // return redirect()->route('pegawai-riwayat-umak.index')
             //         ->with('error', 'Error saat Proses Data Pegawai Riwayat Uang Makan!');
-        }  
-        
+        }
     }
 
     public function exportToExcel($bulan, $tahun)
     {
         try {
             $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
-            $this->authorize('kabiro', $kabiro);
-            
-            $fileName = 'Riwayat_Uang_Makan_Pegawai'.'_'.$tahun.'_'.$bulan.'.xlsx';
-            
+            $this->authorize('admin_sdmoh', $kabiro);
+
+            $fileName = 'Riwayat_Uang_Makan_Pegawai' . '_' . $tahun . '_' . $bulan . '.xlsx';
+
             $unitKerja = null;
             return Excel::download(new DataExportPru($bulan, $tahun, $unitKerja), $fileName);
         } catch (\Exception $e) {
@@ -403,15 +410,15 @@ class PegawaiRiwayatUmakController extends Controller
     {
         try {
             $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
-            $this->authorize('kabiro', $kabiro);
-            
+            $this->authorize('admin_sdmoh', $kabiro);
+
             $fileName = null;
-            if(null != $unitKerjaId || '' != $unitKerjaId){
+            if (null != $unitKerjaId || '' != $unitKerjaId) {
                 $namaUker = DB::table('unit_kerja')
-                ->select('nama', 'singkatan')
-                ->where('id','=',$unitKerjaId)
-                ->first();
-                $fileName = 'Riwayat_Uang_Makan_Pegawai_'.$namaUker->singkatan.'_'.$tahun.'_'.$bulan.'.xlsx';
+                    ->select('nama', 'singkatan')
+                    ->where('id', '=', $unitKerjaId)
+                    ->first();
+                $fileName = 'Riwayat_Uang_Makan_Pegawai_' . $namaUker->singkatan . '_' . $tahun . '_' . $bulan . '.xlsx';
             }
 
             return Excel::download(new DataExportPru($bulan, $tahun, $unitKerjaId), $fileName);
@@ -419,5 +426,4 @@ class PegawaiRiwayatUmakController extends Controller
             Log::error($e->getMessage(), ['Export data excel gagal di method exportToExcelDua pada PegawaiRiwayatUmakController!']);
         }
     }
-
 }

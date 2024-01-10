@@ -31,7 +31,7 @@ class PegawaiRiwayatThpController extends Controller
     public function index()
     {
         $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
-        $this->authorize('kabiro', $kabiro);
+        $this->authorize('admin_sdmoh', $kabiro);
         $title = 'Pegawai';
         $unit_kerja = UnitKerja::select('id', 'nama')->limit(22)->get();
         return view('penghasilan.index', compact('title', 'unit_kerja'));
@@ -269,7 +269,7 @@ class PegawaiRiwayatThpController extends Controller
     public function generate_tukin(Request $request)
     {
         $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
-        $this->authorize('kabiro', $kabiro);
+        $this->authorize('admin_sdmoh', $kabiro);
 
         $split_tanggal = explode(" - ", $request->tanggal);
         $tanggal_mulai = $split_tanggal[0];
