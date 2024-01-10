@@ -22,7 +22,7 @@ class PegawaiBpjsLainnyaController extends Controller
     */
     public function index()
     {            
-        $title = 'Pegawai BPJS Lainnya';
+        $title = 'Tambahan BPJS Pegawai';
 
         $dataUnitKerja = DB::table('unit_kerja')
         ->select('*')
