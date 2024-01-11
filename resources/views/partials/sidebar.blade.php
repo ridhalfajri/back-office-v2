@@ -59,6 +59,9 @@
         <li class="{{ Request::is('pengajuan-pmk*') ? 'active' : '' }}"><a href="{{ route('pengajuan-pmk.index') }}"><i
             class="fa fa-plus"></i><span>Pengajuan PMK</span></a>
         </li>
+        {{-- <li class="{{ Request::is('pengajuan-tambahan-bpjs*') ? 'active' : '' }}"><a href="{{ route('pengajuan-tambahan-bpjs.index') }}"><i
+            class="fa fa-id-card"></i><span>Pengajuan Tambahan BPJS</span></a>
+        </li> --}}
         <li class="{{ Request::is('grade-tukin*') ? 'active' : '' }}"><a href="{{ route('grade-tukin.index') }}"><i
                     class="fa fa-money"></i><span>Info Grade Tukin</span></a>
         </li>
@@ -92,56 +95,7 @@
         {{-- KABIRO SDMOH dan ADMIN SDM --}}
         @if (auth()->user()->pegawai->jabatan_sekarang->tx_tipe_jabatan_id == 5 ||
                 auth()->user()->pegawai->jabatan_sekarang->tx_tipe_jabatan_id == 7)
-            <li class="g_heading">Master Data</li>
-            <li class="{{ request()->segment(2) == 'saldo_cuti_pegawai' ? 'active' : '' }}">
-                <a href="{{ route('cuti.saldo-cuti-pegawai') }}"><i class="icon-users"></i><span>Saldo Cuti
-                        Pegawai</span></a>
-            </li>
-            <li class="{{ request()->segment(1) == 'pegawai' ? 'active' : '' }}">
-                <a href="{{ route('pegawai.index') }}"><i class="icon-users"></i><span>Pegawai</span></a>
-            </li>
-            <li class="{{ Request::is('pegawai-bpjs-lainnya*') ? 'active' : '' }}"><a
-                    href="{{ route('pegawai-bpjs-lainnya.index') }}"><i class="fa fa-credit-card"></i><span>Tambahan
-                        BPJS Pegawai</span></a></li>
-
-            <li class="{{ Request::is('master*') ? 'active' : '' }}">
-                <a href="javascript:void(0)" class="has-arrow"><i class="icon-doc"></i><span>Master</span></a>
-                <ul class="sub-menu js__content">
-                    <li class="{{ Request::is('master/tukin*') ? 'active' : '' }}"><a
-                            href="{{ route('tukin.index') }}">Grade Tukin</a></li>
-                    <li class="{{ Request::is('master/uang-makan*') ? 'active' : '' }}"><a
-                            href="{{ route('uang-makan.index') }}">Uang Makan</a></li>
-                    <li class="{{ Request::is('master/unit-kerja*') ? 'active' : '' }}"><a
-                            href="{{ route('unit-kerja.index') }}">Unit Kerja</a></li>
-                    <li class="{{ Request::is('master/status-pegawai*') ? 'active' : '' }}"><a
-                            href="{{ route('status-pegawai.index') }}">Status Pegawai</a></li>
-                    <li class="{{ Request::is('master/tunjangan-beras*') ? 'active' : '' }}"><a
-                            href="{{ route('tunjangan-beras.index') }}">Tunjangan Beras</a></li>
-                    <li class="{{ Request::is('master/aturan-thr-gajiplus*') ? 'active' : '' }}"><a
-                            href="{{ route('aturan-thr-gajiplus.index') }}">Aturan THR dan Gaji-13</a></li>
-                    {{-- <li class="{{ Request::is('master/ruang-rapat*') ? 'active' : '' }}"><a
-                        href="{{ route('ruang-rapat.index') }}">Ruang Rapat</a></li> --}}
-                </ul>
-            </li>
-
-            <li><a href="{{ route('gaji.index') }}"><i class="fa fa-money"></i><span>Gaji Pegawai</span></a></li>
-            <li><a href="{{ route('jabatan-tukin.index') }}"><i class="fa fa-money"></i><span>Tunjangan
-                        Kinerja</span></a>
-            </li>
-
-
-            <li class="{{ request()->segment(2) == 'pre-jam-kerja' ? 'active' : '' }}">
-                <a href="{{ route('pre-jam-kerja.index') }}"><i class="fa fa-cogs"></i>Pengaturan Jam
-                    Kerja</span></a>
-            </li>
-
-            <li class="{{ request()->segment(2) == 'hari-libur' ? 'active' : '' }}">
-                <a href="{{ route('hari-libur.index') }}"><i class="fa fa-cogs"></i>Daftar Hari Libur</span></a>
-            </li>
-
-            <li><a href="{{ route('jabatan-unit-kerja.index') }}"><i class="fa fa-snowflake-o"></i><span>Jabatan Unit
-                        Kerja</span></a></li>
-
+            {{-- TRANSAKSI --}}
             <li class="g_heading">Transaksi</li>
 
             <li class="{{ request()->segment(1) == 'presensi-pegawai' ? 'active' : '' }}">
@@ -182,7 +136,10 @@
             
             {{-- MASTER     --}}
             <li class="g_heading">Master Data</li>
-
+            <li class="{{ request()->segment(2) == 'saldo_cuti_pegawai' ? 'active' : '' }}">
+                <a href="{{ route('cuti.saldo-cuti-pegawai') }}"><i class="icon-users"></i><span>Saldo Cuti
+                        Pegawai</span></a>
+            </li>
             <li class="{{ request()->segment(1) == 'pegawai' ? 'active' : '' }}">
                 <a href="{{ route('pegawai.index') }}"><i class="icon-users"></i><span>Pegawai</span></a>
             </li>
