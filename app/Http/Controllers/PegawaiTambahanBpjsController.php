@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\PegawaiBpjsLainnya;
 use App\Models\PegawaiRiwayatJabatan;
 use App\Models\PegawaiTambahanMk;
 use Illuminate\Http\Request;
@@ -14,7 +15,7 @@ use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
-class PegawaiTambahanMkController extends Controller
+class PegawaiTambahanBpjsController extends Controller
 {
     /**
     * Display a listing of the resource.
@@ -26,14 +27,14 @@ class PegawaiTambahanMkController extends Controller
         $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
         $this->authorize('admin_sdmoh', $kabiro);
 
-        $title = 'Approval PMK Pegawai';
+        $title = 'Approval Tambahan BPJS Pegawai';
 
         $dataUnitKerja = DB::table('unit_kerja')
         ->select('*')
         ->whereIn('jenis_unit_kerja_id', array(1, 2, 3))
         ->get();
 
-        return view('pegawai-tambahan-mk.index', compact('title', 'dataUnitKerja'));
+        return view('pegawai-tambahan-bpjs.index', compact('title', 'dataUnitKerja'));
     }
      
     public function datatable(Request $request)
@@ -41,7 +42,7 @@ class PegawaiTambahanMkController extends Controller
         $unitKerja = $request->unitKerja;
         $status = $request->status;
 
-        $data = DB::table('pegawai_tambahan_mk as ptm')
+        $data = DB::table('pegawai_bpjs_lainnya as ptm')
         ->select('ptm.*', 'p.nama_depan', 'p.nama_belakang', 'p.nip',
         'uk.nama as unit_kerja', 'uk.singkatan as singkatan_unit_kerja')
         ->join('pegawai as p','p.id','=','ptm.pegawai_id')
@@ -85,41 +86,41 @@ class PegawaiTambahanMkController extends Controller
                 }
             })
 
-            ->addColumn('aksi', 'pegawai-tambahan-mk.aksi')
+            ->addColumn('aksi', 'pegawai-tambahan-bpjs.aksi')
             ->rawColumns(['aksi'])
             ->make(true);
     }
 
-    public function show(PegawaiTambahanMk $pegawai_tambahan_mk)
+    public function show(PegawaiBpjsLainnya $pegawai_tambahan_bpj)
     {
         $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
         $this->authorize('admin_sdmoh', $kabiro);
 
         $title = 'Lihat File';
 
-        $pmk = $pegawai_tambahan_mk;
+        $bpjs = $pegawai_tambahan_bpj;
 
-        $cek_media = $pmk->getMedia("file_pengajuan_pmk")->count();
+        $cek_media = $bpjs->getMedia("file_pengajuan_bpjs")->count();
         if ($cek_media) {
-            $pmk->file_pengajuan_pmk = $pmk->getMedia("file_pengajuan_pmk")[0]->getUrl();
+            $bpjs->file_pengajuan_bpjs = $bpjs->getMedia("file_pengajuan_bpjs")[0]->getUrl();
         }
 
-        $cek_media = $pmk->getMedia("file_sk_pmk")->count();
+        $cek_media = $bpjs->getMedia("file_kartu_bpjs")->count();
         if ($cek_media) {
-            $pmk->file_sk_pmk = $pmk->getMedia("file_sk_pmk")[0]->getUrl();
+            $bpjs->file_kartu_bpjs = $bpjs->getMedia("file_kartu_bpjs")[0]->getUrl();
         }
 
-        return view('pegawai-tambahan-mk.show', compact('title', 'pmk'));
+        return view('pegawai-tambahan-bpjs.show', compact('title', 'bpjs'));
     }
 
-    public function edit(PegawaiTambahanMk $pegawai_tambahan_mk)
+    public function edit(PegawaiBpjsLainnya $pegawai_tambahan_bpj)
     {               
         $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
         $this->authorize('admin_sdmoh', $kabiro);
 
-        $title = 'Setujui PMK Pegawai';
+        $title = 'Setujui Tambahan BPJS Pegawai';
         
-        $pegawai = DB::table('pegawai_tambahan_mk as ptm')
+        $pegawai = DB::table('pegawai_bpjs_lainnya as ptm')
         ->select('ptm.*', 'p.nama_depan', 'p.nama_belakang', 'p.nip',
         'uk.nama as unit_kerja', 'uk.singkatan as singkatan_unit_kerja')
         ->join('pegawai as p','p.id','=','ptm.pegawai_id')
@@ -132,21 +133,21 @@ class PegawaiTambahanMkController extends Controller
             ->join('jabatan_unit_kerja as juk', 'juk.id', '=', 'prj.jabatan_unit_kerja_id')
             ->join('hirarki_unit_kerja as huk', 'huk.id', '=', 'juk.hirarki_unit_kerja_id')
             ->leftJoin('unit_kerja as uk', 'uk.id', '=', 'huk.child_unit_kerja_id')
-            ->where('ptm.pegawai_id', '=', $pegawai_tambahan_mk->pegawai_id)
+            ->where('ptm.pegawai_id', '=', $pegawai_tambahan_bpj->pegawai_id)
             ->first()
             ;
 
-        $pmk = $pegawai_tambahan_mk;
+        $bpjs = $pegawai_tambahan_bpj;
 
-        $cek_media = $pmk->getMedia("file_sk_pmk")->count();
+        $cek_media = $bpjs->getMedia("file_kartu_bpjs")->count();
         if ($cek_media) {
-            $pmk->file_sk_pmk = $pmk->getMedia("file_sk_pmk")[0]->getUrl();
+            $bpjs->file_kartu_bpjs = $bpjs->getMedia("file_kartu_bpjs")[0]->getUrl();
         }
 
-        return view('pegawai-tambahan-mk.edit', compact('title','pmk', 'pegawai'));
+        return view('pegawai-tambahan-bpjs.edit', compact('title','bpjs', 'pegawai'));
     }
 
-    public function update(Request $request, PegawaiTambahanMk $pegawai_tambahan_mk)
+    public function update(Request $request, PegawaiBpjsLainnya $pegawai_tambahan_bpj)
     {  
         $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
         $this->authorize('admin_sdmoh', $kabiro);
@@ -154,49 +155,35 @@ class PegawaiTambahanMkController extends Controller
         DB::beginTransaction();
 
         $this->validate($request, [
-            'tahun_plus_disetujui' => ['required'],
-            'bulan_plus_disetujui' => ['required'],
-            'tanggal_sk' => ['required'],
-            'no_sk' => ['required'],
-            'pejabat_penetap' => ['required'],
-            'file_sk_pmk' => ['required', 'file', 'mimes:pdf,doc,docx', 'max:2048'],
+            'file_kartu_bpjs' => ['required', 'file', 'mimes:pdf,doc,docx', 'max:2048'],
         ],
         [
-            'tahun_plus_disetujui.required'=>'data tahun plus disetujui harus diisi!',
-            'bulan_plus_disetujui.required'=>'data bulan plus disetujui harus diisi!',
-            'tanggal_sk.required'=>'data tanggal sk harus diisi!',
-            'no_sk.required'=>'data no sk harus diisi!',
-            'pejabat_penetap.required'=>'data pejabat penetap harus diisi!',
-            'file_sk_pmk.mimes' => 'format file sk harus pdf/doc/docx!',
-            'file_sk_pmk.max' => 'ukuran file terlalu besar (maksimal file 2Mb)!',
-            'file_sk_pmk.file' => 'upload data harus berupa file!',
+            'file_kartu_bpjs.mimes' => 'format file sk harus pdf/doc/docx!',
+            'file_kartu_bpjs.max' => 'ukuran file terlalu besar (maksimal file 2Mb)!',
+            'file_kartu_bpjs.file' => 'upload data harus berupa file!',
         ]);
 
         try {
             //update
-            $pegawai_tambahan_mk->tahun_plus_disetujui = $request->tahun_plus_disetujui;
-            $pegawai_tambahan_mk->bulan_plus_disetujui = $request->bulan_plus_disetujui;
-            $pegawai_tambahan_mk->tanggal_sk = $request->tanggal_sk;
-            $pegawai_tambahan_mk->no_sk = $request->no_sk;
-            $pegawai_tambahan_mk->pejabat_penetap = $request->pejabat_penetap;
-            $pegawai_tambahan_mk->status = 3;
+            $pegawai_tambahan_bpj->status = 3;
+            $pegawai_tambahan_bpj->is_active = 1;
 
-            $pegawai_tambahan_mk->update();
+            $pegawai_tambahan_bpj->update();
 
-            if ($request->file('file_sk_pmk')) {
-                $pegawai_tambahan_mk->clearMediaCollection('file_sk_pmk');
-                $pegawai_tambahan_mk->addMediaFromRequest('file_sk_pmk')->toMediaCollection('file_sk_pmk');
+            if ($request->file('file_kartu_bpjs')) {
+                $pegawai_tambahan_bpj->clearMediaCollection('file_kartu_bpjs');
+                $pegawai_tambahan_bpj->addMediaFromRequest('file_kartu_bpjs')->toMediaCollection('file_kartu_bpjs');
             }
 
             DB::commit();
-            Log::info('Data berhasil di-update di method update pada PegawaiTambahanMkController!');
+            Log::info('Data berhasil di-update di method update pada PegawaiTambahanBpjsController!');
 
-            return redirect()->route('pegawai-tambahan-mk.index')
-                ->with('success', 'Data Persetujuan PMK Pegawai berhasil diupdate');
+            return redirect()->route('pegawai-tambahan-bpjs.index')
+                ->with('success', 'Data Persetujuan Tambahan BPJS Pegawai berhasil diupdate');
         } catch (\Exception $e) {
             //throw $th;
             DB::rollback();
-            Log::error($e->getMessage(), ['Data gagal di-update di method update pada PegawaiTambahanMkController!']);
+            Log::error($e->getMessage(), ['Data gagal di-update di method update pada PegawaiTambahanBpjsController!']);
 
             session()->flash('message', 'Error saat proses data!');
 
@@ -211,44 +198,40 @@ class PegawaiTambahanMkController extends Controller
     * @param  \App\Models\Models\PegawaiTambahanMk  $bidangProfisiensi
     * @return \Illuminate\Http\Response
     */        
-    public function destroy(PegawaiTambahanMk $pegawai_tambahan_mk)
+    public function destroy(PegawaiBpjsLainnya $pegawai_tambahan_bpj)
     {           
         $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
         $this->authorize('admin_sdmoh', $kabiro);
         
         DB::beginTransaction();
         try {
-            $pegawai_tambahan_mk->tahun_plus_disetujui = null;
-            $pegawai_tambahan_mk->bulan_plus_disetujui = null;
-            $pegawai_tambahan_mk->tanggal_sk = null;
-            $pegawai_tambahan_mk->no_sk = null;
-            $pegawai_tambahan_mk->pejabat_penetap = null;
-            $pegawai_tambahan_mk->status = 2;
+            $pegawai_tambahan_bpj->status = 2;
+            $pegawai_tambahan_bpj->is_active = 0;
 
-            $pegawai_tambahan_mk->update();
+            $pegawai_tambahan_bpj->update();
 
-            $pegawai_tambahan_mk->clearMediaCollection('file_sk_pmk');
+            $pegawai_tambahan_bpj->clearMediaCollection('file_kartu_bpjs');
 
             $response['status'] = [
                 'code' => 200,
-                'message' => 'Data Pengajuan PMK berhasil dibatalkan!',
+                'message' => 'Data Pengajuan Tambahan BPJS berhasil dibatalkan!',
                 'error' => false,
                 'error_message' => ''
             ];
 
             DB::commit();
-            Log::info('Data berhasil di-delete di method destroy pada PegawaiTambahanMkController!');
+            Log::info('Data berhasil di-delete di method destroy pada PegawaiTambahanBpjsController!');
 
             return response()->json($response, 200);
         } catch (\Exception $e) {
             $response['status'] = [
                 'code' => 200,
-                'message' => 'Data Pengajuan PMK gagal dibatalkan!',
+                'message' => 'Data Pengajuan Tambahan BPJS gagal dibatalkan!',
                 'error' => true,
-                'error_message' => 'Data Pengajuan PMK gagal dibatalkan!'
+                'error_message' => 'Data Pengajuan Tambahan BPJS gagal dibatalkan!'
             ];
 
-            Log::error($e->getMessage(), ['Data gagal di-hapus di method destroy pada PegawaiTambahanMkController!']);
+            Log::error($e->getMessage(), ['Data gagal di-hapus di method destroy pada PegawaiTambahanBpjsController!']);
             DB::rollback();
 
             return response()->json($response, 200);

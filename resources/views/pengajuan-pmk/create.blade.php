@@ -85,6 +85,8 @@
                                     <input class="form-control fileClass" type="file" id="file_pengajuan_pmk"
                                         name="file_pengajuan_pmk">
                                     <em>Silakan upload file pengajuan pmk (rar/zip max 50Mb)</em>
+                                    <br>
+                                    <em>Format nama file: Pengajuan-PMK_'nama'_'nip'_'unit kerja'</em>
                                 </div>
 
                                 <div class="form-group @error('keterangan')has-error @enderror">

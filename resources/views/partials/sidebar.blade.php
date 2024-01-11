@@ -59,9 +59,9 @@
         <li class="{{ Request::is('pengajuan-pmk*') ? 'active' : '' }}"><a href="{{ route('pengajuan-pmk.index') }}"><i
             class="fa fa-plus"></i><span>Pengajuan PMK</span></a>
         </li>
-        {{-- <li class="{{ Request::is('pengajuan-tambahan-bpjs*') ? 'active' : '' }}"><a href="{{ route('pengajuan-tambahan-bpjs.index') }}"><i
+        <li class="{{ Request::is('pengajuan-tambahan-bpjs*') ? 'active' : '' }}"><a href="{{ route('pengajuan-tambahan-bpjs.index') }}"><i
             class="fa fa-id-card"></i><span>Pengajuan Tambahan BPJS</span></a>
-        </li> --}}
+        </li>
         <li class="{{ Request::is('grade-tukin*') ? 'active' : '' }}"><a href="{{ route('grade-tukin.index') }}"><i
                     class="fa fa-money"></i><span>Info Grade Tukin</span></a>
         </li>
@@ -133,6 +133,9 @@
             <li class="{{ Request::is('pegawai-tambahan-mk*') ? 'active' : '' }}"><a
                 href="{{ route('pegawai-tambahan-mk.index') }}"><i
                 class="fa fa-plus"></i><span>Approval PMK Pegawai</span></a></li>
+            <li class="{{ Request::is('pegawai-tambahan-bpjs*') ? 'active' : '' }}"><a
+                href="{{ route('pegawai-tambahan-bpjs.index') }}"><i
+                class="fa fa-id-card"></i><span>Approval Tambahan BPJS Pegawai</span></a></li>
             
             {{-- MASTER     --}}
             <li class="g_heading">Master Data</li>
@@ -147,9 +150,9 @@
                 href="{{ route('status-pegawai.index') }}"><i class="icon-users"></i><span>Status Pegawai</span></a></li>
             <li class="{{ Request::is('master/unit-kerja*') ? 'active' : '' }}"><a
                 href="{{ route('unit-kerja.index') }}"><i class="icon-users"></i><span>Unit Kerja</span></a></li>
-            <li class="{{ Request::is('pegawai-bpjs-lainnya*') ? 'active' : '' }}"><a
+            {{-- <li class="{{ Request::is('pegawai-bpjs-lainnya*') ? 'active' : '' }}"><a
                     href="{{ route('pegawai-bpjs-lainnya.index') }}"><i class="fa fa-credit-card"></i><span>Tambahan
-                        BPJS Pegawai</span></a></li>
+                        BPJS Pegawai</span></a></li> --}}
             <li class="{{ Request::is('master/tukin*') ? 'active' : '' }}"><a
                 href="{{ route('tukin.index') }}"><i class="fa fa-money"></i><span>Grade Tukin</span></a></li>
             <li class="{{ Request::is('master/uang-makan*') ? 'active' : '' }}"><a

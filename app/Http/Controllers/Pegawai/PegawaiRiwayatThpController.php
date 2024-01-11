@@ -366,8 +366,18 @@ class PegawaiRiwayatThpController extends Controller
                 //* POTONGAN BPJS LAINNYA
                 //? BAGAIMANA MENGELOLA BPJS LAINNYA?
                 $bpjs_lainnya = PegawaiBpjsLainnya::where('pegawai_id', $pegawai->id)
-                    ->where('is_active', true)
-                    ->first();
+                ->where('status', '=', 3)
+                ->select(
+                    DB::raw('SUM(pegawai_bpjs_lainnya.total_mertua) as total_mertua'),
+                    DB::raw('SUM(pegawai_bpjs_lainnya.total_orang_tua) as total_orang_tua'),
+                    DB::raw('SUM(pegawai_bpjs_lainnya.total_kelebihan_anak) as total_kelebihan_anak')
+                )
+                ->first();
+
+                //dikomen indrawan dulu
+                // $bpjs_lainnya = PegawaiBpjsLainnya::where('pegawai_id', $pegawai->id)
+                //     ->where('is_active', true)
+                //     ->first();
                 if ($bpjs_lainnya != null) {
                     $count_bpjs_lainnya = $bpjs_lainnya->total_mertua + $bpjs_lainnya->total_orang_tua + $bpjs_lainnya->total_kelebihan_anak;
                     $POTONGAN_BPJS_LAINNYA = $count_bpjs_lainnya * 0.01 * $SUM_THP;

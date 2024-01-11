@@ -43,6 +43,8 @@ use App\Http\Controllers\PegawaiRiwayatGolonganController;
 use App\Http\Controllers\PegawaiBpjsLainnyaController;
 use App\Http\Controllers\PengajuanPMKController;
 use App\Http\Controllers\PegawaiTambahanMkController;
+use App\Http\Controllers\PengajuanTambahanBpjsController;
+use App\Http\Controllers\PegawaiTambahanBpjsController;
 use App\Http\Controllers\PegawaiRiwayatUmakController;
 use App\Http\Controllers\PegawaiRiwayatThrController;
 use App\Http\Controllers\PegawaiRiwayatGajiplusController;
@@ -108,8 +110,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/riwayat-gajiplus', [RiwayatGajiplusController::class, 'datatable'])->name('riwayat-gajiplus.datatable');
     Route::resource('/riwayat-gajiplus', RiwayatGajiplusController::class)->only('index');
 
-    Route::post('/pegawai-bpjs-lainnya/datatable', [PegawaiBpjsLainnyaController::class, 'datatable'])->name('pegawai-bpjs-lainnya.datatable');
-    Route::resource('/pegawai-bpjs-lainnya', PegawaiBpjsLainnyaController::class);
+    //indrawan
+    // Route::post('/pegawai-bpjs-lainnya/datatable', [PegawaiBpjsLainnyaController::class, 'datatable'])->name('pegawai-bpjs-lainnya.datatable');
+    // Route::resource('/pegawai-bpjs-lainnya', PegawaiBpjsLainnyaController::class);
 
     Route::post('/pesan-ruang-rapat/datatable', [PesanRuangRapatController::class, 'datatable'])->name('pesan-ruang-rapat.datatable');
     Route::resource('/pesan-ruang-rapat', PesanRuangRapatController::class)->except('edit', 'update');
@@ -119,6 +122,12 @@ Route::middleware('auth')->group(function () {
     
     Route::post('/pegawai-tambahan-mk/datatable', [PegawaiTambahanMkController::class, 'datatable'])->name('pegawai-tambahan-mk.datatable');
     Route::resource('/pegawai-tambahan-mk', PegawaiTambahanMkController::class)->except('create', 'store');
+    
+    Route::post('/pengajuan-tambahan-bpjs/datatable', [PengajuanTambahanBpjsController::class, 'datatable'])->name('pengajuan-tambahan-bpjs.datatable');
+    Route::resource('/pengajuan-tambahan-bpjs', PengajuanTambahanBpjsController::class)->except('edit', 'update');
+
+    Route::post('/pegawai-tambahan-bpjs/datatable', [PegawaiTambahanBpjsController::class, 'datatable'])->name('pegawai-tambahan-bpjs.datatable');
+    Route::resource('/pegawai-tambahan-bpjs', PegawaiTambahanBpjsController::class)->except('create', 'store');
     //
 
     Route::prefix('presensi')->group(function () {

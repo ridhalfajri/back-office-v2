@@ -148,7 +148,7 @@ class PengajuanPMKController extends Controller
 
     public function show(PegawaiTambahanMk $pengajuan_pmk)
     {
-        $title = 'Lihat File SK';
+        $title = 'Lihat File';
 
         $pmk = $pengajuan_pmk;
 

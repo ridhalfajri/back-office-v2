@@ -74,7 +74,7 @@
                 </div>
                 
                 <div class="card-body">
-                    <h5 class="box-title" style="text-align: center;"><b>List Approval PMK Pegawai</b></h5>
+                    <h5 class="box-title" style="text-align: center;"><b>List Approval Tambahan BPJS Pegawai</b></h5>
                 
                     <table id="tbl-data"
                     class="table table-hover js-basic-example dataTable table_custom spacing5">
@@ -84,12 +84,9 @@
                             <th class="font-weight-bold text-dark">Nama Pegawai</th>
                             <th class="font-weight-bold text-dark">NIP</th>
                             <th class="font-weight-bold text-dark">Unit Kerja</th>
-                            <th class="font-weight-bold text-dark">Tahun Plus<br>Disetujui</th>
-                            <th class="font-weight-bold text-dark">Bulan Plus<br>Disetujui</th>
-                            {{-- <th class="font-weight-bold text-dark">File SK</th> --}}
-                            <th class="font-weight-bold text-dark">No SK</th>
-                            <th class="font-weight-bold text-dark">Tanggal SK</th>
-                            <th class="font-weight-bold text-dark">Tipe Pengalaman</th>
+                            <th class="font-weight-bold text-dark">Total Pengajuan<br>Orang Tua</th>
+                            <th class="font-weight-bold text-dark">Total Pengajuan<br>Mertua</th>
+                            <th class="font-weight-bold text-dark">Total Pengajuan<br>Anak</th>
                             <th class="font-weight-bold text-dark">Status</th>
                             <th class="font-weight-bold text-dark">Aksi</th>
                         </tr>
@@ -100,12 +97,9 @@
                             <th class="font-weight-bold text-dark">Nama Pegawai</th>
                             <th class="font-weight-bold text-dark">NIP</th>
                             <th class="font-weight-bold text-dark">Unit Kerja</th>
-                            <th class="font-weight-bold text-dark">Tahun Plus<br>Disetujui</th>
-                            <th class="font-weight-bold text-dark">Bulan Plus<br>Disetujui</th>
-                            {{-- <th class="font-weight-bold text-dark">File SK</th> --}}
-                            <th class="font-weight-bold text-dark">No SK</th>
-                            <th class="font-weight-bold text-dark">Tanggal SK</th>
-                            <th class="font-weight-bold text-dark">Tipe Pengalaman</th>
+                            <th class="font-weight-bold text-dark">Total Pengajuan<br>Orang Tua</th>
+                            <th class="font-weight-bold text-dark">Total Pengajuan<br>Mertua</th>
+                            <th class="font-weight-bold text-dark">Total Pengajuan<br>Anak</th>
                             <th class="font-weight-bold text-dark">Status</th>
                             <th class="font-weight-bold text-dark">Aksi</th>
                         </tr>
@@ -157,7 +151,7 @@
                 info: true,
                 autoWidth: false,
                 ajax: {
-                    url: '{{ route('pegawai-tambahan-mk.datatable') }}',
+                    url: '{{ route('pegawai-tambahan-bpjs.datatable') }}',
                     type: 'POST',
                     headers: {
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
@@ -189,28 +183,18 @@
                         class: 'text-center'
                     },
                     {
-                        data: 'tahun_plus_disetujui',
-                        name: 'ptm.tahun_plus_disetujui',
+                        data: 'total_orang_tua',
+                        name: 'ptm.total_orang_tua',
                         class: 'text-center'
                     },
                     {
-                        data: 'bulan_plus_disetujui',
-                        name: 'ptm.bulan_plus_disetujui',
+                        data: 'total_mertua',
+                        name: 'ptm.total_mertua',
                         class: 'text-center'
                     },
                     {
-                        data: 'no_sk',
-                        name: 'ptm.no_sk',
-                        class: 'text-center'
-                    },
-                    {
-                        data: 'tanggal_sk',
-                        name: 'ptm.tanggal_sk',
-                        class: 'text-center'
-                    },
-                    {
-                        data: 'tipe_pengalaman',
-                        name: 'ptm.tipe_pengalaman',
+                        data: 'total_kelebihan_anak',
+                        name: 'ptm.total_kelebihan_anak',
                         class: 'text-center'
                     },
                     {
@@ -275,7 +259,7 @@
                     if (isConfirm) {
                         delete_data(that.data('id')).then(function(hasil) {
                             if (hasil.status.error == true) {
-                                toastr['error']('Data Pengajuan PMK gagal dibatalkan!');
+                                toastr['error']('Data Pengajuan Tambahan BPJS gagal dibatalkan!');
                             } else {
                                 table.ajax.reload();
                                 toastr['success'](hasil.status.message);
@@ -295,7 +279,7 @@
     function delete_data(id) {
             return new Promise(function(resolve, reject) {
                 $.ajax({
-                    url: "{{ url('pegawai-tambahan-mk') }}/" + id,
+                    url: "{{ url('pegawai-tambahan-bpjs') }}/" + id,
                     method: 'POST',
                     headers: {
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
@@ -307,7 +291,7 @@
                 }).done(function(hasil) {
                     resolve(hasil);
                 }).fail(function() {
-                    reject('Gagal membatalkan data Pengajuan PMK!');
+                    reject('Gagal membatalkan data Pengajuan Tambahan BPJS Pegawai!');
                 })
             })
         }
