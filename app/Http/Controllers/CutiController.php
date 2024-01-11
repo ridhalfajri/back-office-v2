@@ -422,7 +422,7 @@ class CutiController extends Controller
 
     public function pengajuan_masuk()
     {
-        $atasan_langsung = PegawaiRiwayatJabatan::select('pegawai_id')->whereIn('tx_tipe_jabatan_id', [2, 5])->where('pegawai_id', auth()->user()->pegawai_id)->first();
+        $atasan_langsung = PegawaiRiwayatJabatan::select('pegawai_id')->whereIn('tx_tipe_jabatan_id', [1, 2, 5])->where('pegawai_id', auth()->user()->pegawai_id)->first();
         $this->authorize('atasan_langsung', $atasan_langsung);
         $riwayat_jabatan = PegawaiRiwayatJabatan::where('pegawai_id', auth()->user()->pegawai_id)->where('is_now', 1)->get();
         if ($riwayat_jabatan[0]->tx_tipe_jabatan_id == 1) {
@@ -481,7 +481,7 @@ class CutiController extends Controller
     }
     public function detail_pengajuan_masuk($id)
     {
-        $atasan_langsung = PegawaiRiwayatJabatan::select('pegawai_id')->whereIn('tx_tipe_jabatan_id', [2, 5])->where('pegawai_id', auth()->user()->pegawai_id)->first();
+        $atasan_langsung = PegawaiRiwayatJabatan::select('pegawai_id')->whereIn('tx_tipe_jabatan_id', [1, 2, 5])->where('pegawai_id', auth()->user()->pegawai_id)->first();
         $this->authorize('atasan_langsung', $atasan_langsung);
         $cuti = PegawaiCuti::where('id', $id)->first();
         $cuti->tanggal_awal_cuti = Carbon::parse($cuti->tanggal_awal_cuti)->translatedFormat('d-m-Y');

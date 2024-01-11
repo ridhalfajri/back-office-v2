@@ -85,6 +85,15 @@
             </li>
         @endif
 
+        {{-- ESSELON 1 --}}
+
+        @if (auth()->user()->pegawai->jabatan_sekarang->tx_tipe_jabatan_id == 1)
+            <li class="g_heading">Esselon I</li>
+            <li class="{{ request()->segment(2) == 'pengajuan_masuk' ? 'active' : '' }}"><a
+                    href="{{ route('cuti.pengajuan-masuk') }}"><i class="icon-call-end"></i><span>Pengajuan
+                        Cuti</span></a></li>
+        @endif
+
         {{-- KABIRO SDMOH --}}
         @if (auth()->user()->pegawai->jabatan_sekarang->tx_tipe_jabatan_id == 5)
             <li class="g_heading">Kabiro</li>
