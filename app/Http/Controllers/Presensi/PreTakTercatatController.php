@@ -362,8 +362,9 @@ class PreTakTercatatController extends Controller
     public function edit(PreTakTercatat $preTakTercatat)
     {
         $title = 'Ubah Pengajuan Presensi Tidak Tercatat';
+        $pegawai = PegawaiHelper::getPegawaiData(auth()->user()->pegawai->id);
 
-        return view('presensi.pre-tak-tercatat.edit', compact('title','preTakTercatat'));
+        return view('presensi.pre-tak-tercatat.edit', compact('title','preTakTercatat','pegawai'));
     }
 
     /**
@@ -377,22 +378,15 @@ class PreTakTercatatController extends Controller
     {
         try {
             $this->validate($request, [
-				'no_enroll' => 'required',
 				'tanggal_pengajuan' => 'required',
-				'tanggal_approved' => 'required',
 				'jenis' => 'required',
 				'jam_perubahan' => 'required',
-				'atasan_approval_id' => 'required',
-				'status' => 'required',
             ]);
 
-			$preTakTercatat->no_enroll = $request->no_enroll;
 			$preTakTercatat->tanggal_pengajuan = $request->tanggal_pengajuan;
-			$preTakTercatat->tanggal_approved = $request->tanggal_approved;
 			$preTakTercatat->jenis = $request->jenis;
 			$preTakTercatat->jam_perubahan = $request->jam_perubahan;
-			$preTakTercatat->atasan_approval_id = $request->atasan_approval_id;
-			$preTakTercatat->status = $request->status;
+			$preTakTercatat->status = 1;
             $preTakTercatat->save();
 
             return redirect()->route('pre-tak-tercatat.index')

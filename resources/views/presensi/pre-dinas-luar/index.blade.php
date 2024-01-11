@@ -175,6 +175,8 @@
 						<th colspan="2" class="text-center">Tanggal Dinas</th>
 						<th rowspan="2">nama kegiatan</th>
 						<th rowspan="2">lokasi</th>
+                        <th rowspan="2">Surat Tugas</th>
+                        <th rowspan="2">Referensi</th>
                         <th rowspan="2">status approval</th>
 						<th rowspan="2">status aktif</th>
                         <th rowspan="2" style="width: 40px">aksi</th>
@@ -193,6 +195,8 @@
                         <th>Sampai Tanggal</th>
                         <th>nama kegiatan</th>
                         <th>lokasi</th>
+                        <th>Surat Tugas</th>
+                        <th>Referensi</th>
 						<th>status approval</th>
                         <th>status aktif</th>
                         <th style="width: 40px">aksi</th>
@@ -314,6 +318,33 @@
                     data: 'lokasi',
                     name: 'lokasi',
                     class: 'align-middle'
+                },
+                {
+                    data: 'file_st',
+                    name: 'file_st',
+                    render: function(data, type, row) {
+                        if (data){
+                            return '<a href="'+data+'" target="_blank">Surat Tugas</a>';
+                        }
+                        else
+                        {
+                            return '';
+                        }
+                    },
+                    class: 'align-middle',
+                },
+                {
+                    data: 'file_ref',
+                    name: 'file_ref',
+                    render: function(data, type, row) {
+                        if (data){
+                            return '<a href="'+data+'" target="_blank">Referensi</a>';
+                        }else
+                        {
+                            return '';
+                        }
+                    },
+                    class: 'align-middle',
                 },
                 {
                     data: 'status',

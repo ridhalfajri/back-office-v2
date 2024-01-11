@@ -19,52 +19,162 @@
     <div class="section-body">
         <div class="card">
             <div class="card-body">
-                <div class="card-content">
+                <div class="student-info">
+
                     <form class="needs-validation" id="preIjinForm" method="post"  action="{{ route('pre-ijin.update',$preIjin->id) }}"  accept-charset="utf-8" novalidate>
                         @csrf
                         @method('PUT')
+                        @php
+                            $jabatan = '';
+                            $unitkerja = '';
+                        @endphp
 
-                        <div class="row clearfix">
-                            <div class="col-12 col-lg-12 col-md-12">
-                                <div class="form-group  @error('no_enroll') has-error @enderror">
-                                    <label>No Enroll<span class="text-danger"><sup>*</sup></span></label>
-                                    <input class="form-control" type="number" id="no_enroll" name = "no_enroll" value = "{{ old('no_enroll') ?? $preIjin->no_enroll }}" placeholder="No Enroll" autocomplete="off"/>
-                                    @error('no_enroll')
-                                        <small class="text-danger">{{ $message }}</small>
-                                    @enderror
+                        @foreach ($pegawai as $data)
+                            @if($data->is_plt == 1)
+                                @if($jabatan == '')
+                                    @php
+                                        $jabatan = $data->nama_jabatan;
+                                    @endphp
+                                @else
+                                    @php
+                                        $jabatan = $jabatan . ' / '. $data->nama_jabatan;
+                                    @endphp
+                                @endif
+                            @else
+                                @if($jabatan == '')
+                                    @php
+                                        $jabatan = $data->nama_jabatan ;
+                                    @endphp
+                                @else
+                                    @php
+                                        $jabatan = $jabatan .' / '. $data->nama_jabatan;
+                                    @endphp
+                                @endif
+                            @endif
+
+                            @if($unitkerja == '')
+                                    @php
+                                        $unitkerja = $data->nama_unit_kerja;
+                                    @endphp
+                                @else
+                                    @php
+                                        $unitkerja = $unitkerja . ' / ' . $data->nama_unit_kerja;
+                                    @endphp
+                                @endif
+
+                        @endforeach
+
+                        @foreach ($pegawai as $data)
+
+                            <div class="row rowdata">
+                                <div class="col-sm-2">
+                                    <strong>NIP</strong>
+                                </div>
+                                <div class="col-sm-4">
+                                    : {{ $data->nip }}
+                                </div>
+
+                                <div class="col-sm-2">
+                                    <strong>Pangkat</strong>
+                                </div>
+                                <div class="col-sm-4">
+                                    : {{ $data->nama_pangkat }}
                                 </div>
                             </div>
-                        </div>
+
+                            <div class="row rowdata">
+                                <div class="col-sm-2">
+                                    <strong>Nama Pegawai</strong>
+                                </div>
+                                <div class="col-sm-4">
+                                    : {{ $data->nama_depan . ' ' . $data->nama_belakang }}
+                                </div>
+
+                                <div class="col-sm-2">
+                                    <strong>Nama Golongan</strong>
+                                </div>
+                                <div class="col-sm-4">
+                                    : {{ $data->nama_golongan }}
+                                </div>
+                            </div>
+
+                            <div class="row rowdata">
+                                <div class="col-sm-2">
+                                    <strong>Tempat & Tanggal Lahir</strong>
+                                </div>
+                                <div class="col-sm-4">
+                                    : {{ $data->tempat_lahir }}, {{ \Carbon\Carbon::parse($data->tanggal_lahir)->format('d/m/Y') }}
+                                </div>
+
+                                <div class="col-sm-2">
+                                    <strong>Jenis Jabatan</strong>
+                                </div>
+                                <div class="col-sm-4">
+                                    : {{ $data->jenis_jabatan }}
+                                </div>
+
+                            </div>
+
+                            <div class="row rowdata">
+                                <div class="col-sm-2">
+                                    <strong>Unit Kerja</strong>
+                                </div>
+                                <div class="col-sm-4">
+                                    : {{ $unitkerja  }}
+                                </div>
+
+                                <div class="col-sm-2">
+                                    <strong>Nama Jabatan</strong>
+                                </div>
+                                <div class="col-sm-4">
+                                    : {{ $jabatan }}
+                                </div>
+                            </div>
+                            @break
+                        @endforeach
 
                         <div class="row clearfix">
-                            <div class="col-12 col-lg-12 col-md-12">
-                                <div class="form-group  @error('jenis_ijin') has-error @enderror">
-                                    <label>Jenis Ijin<span class="text-danger"><sup>*</sup></span></label>
-                                    <input class="form-control" type="number" id="jenis_ijin" name = "jenis_ijin" value = "{{ old('jenis_ijin') ?? $preIjin->jenis_ijin }}" placeholder="Jenis Ijin" autocomplete="off"/>
+                            <div class="col-sm-2">
+                                <strong>Jenis Ijin  <span class="text-danger"><sup>*</sup></span></strong>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="form-group @error('jenis_ijin') has-error @enderror">
+                                    <select class="form-control btn" id="jenis_ijin" name="jenis_ijin" required>
+                                        <option value="" selected disabled>Pilih Jenis Ijin</option>
+                                        <option value="1" {{ (old('jenis_ijin') == 1 || $preIjin->jenis_ijin == 1 ) ? 'selected' : '' }}> Ijin Datang Terlambat</option>
+                                        <option value="2" {{ (old('jenis_ijin') == 2  || $preIjin->jenis_ijin == 2 )  ? 'selected' : '' }}> Ijin Pulang Awal</option>
+                                        <option value="3" {{ (old('jenis_ijin') == 3  || $preIjin->jenis_ijin == 3 )  ? 'selected' : '' }}> Ijin Datang Terlambat dan Pulang Awal</option>
+                                    </select>
+                                    <div class="invalid-feedback">
+                                        Silakan Pilih Jenis Ijin
+                                    </div>
                                     @error('jenis_ijin')
                                         <small class="text-danger">{{ $message }}</small>
                                     @enderror
                                 </div>
                             </div>
-                        </div>
 
-                        <div class="row clearfix">
-                            <div class="col-12 col-lg-12 col-md-12">
-                                <div class="form-group  @error('tanggal') has-error @enderror">
-                                    <label>Tanggal<span class="text-danger"><sup>*</sup></span></label>
-                                    <input class="form-control"id="tanggal" name = "tanggal" value = "{{ old('tanggal') ?? $preIjin->tanggal }}" placeholder="Tanggal" autocomplete="off"/>
+                            <div class="col-sm-2">
+                                <strong>Tanggal <span class="text-danger"><sup>*</sup></span></strong>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="form-group @error('tanggal') has-error @enderror">
+                                    <input class="form-control" type="date" id="tanggal" name = "tanggal" value="{{ old('tanggal') ?? $preIjin->tanggal }}" autocomplete="off" required/>
                                     @error('tanggal')
                                         <small class="text-danger">{{ $message }}</small>
                                     @enderror
                                 </div>
                             </div>
+
                         </div>
 
                         <div class="row clearfix">
-                            <div class="col-12 col-lg-12 col-md-12">
-                                <div class="form-group  @error('keterangan') has-error @enderror">
-                                    <label>Keterangan<span class="text-danger"><sup>*</sup></span></label>
-                                    <input class="form-control"id="keterangan" name = "keterangan" value = "{{ old('keterangan') ?? $preIjin->keterangan }}"maxlength = "65535" placeholder="Keterangan" autocomplete="off"/>
+                            <div class="col-sm-2">
+                                <strong>Keterangan/Alasan <span class="text-danger"><sup>*</sup></span></strong>
+                            </div>
+                            <div class="col-10 col-lg-10 col-md-10">
+                                <div class="form-group @error('keterangan') has-error @enderror">
+                                    <textarea class="form-control" id="keterangan" name = "keterangan"maxlength = "65535" placeholder="Keterangan" autocomplete="off" required>{{ old('keterangan') ?? $preIjin->keterangan }}</textarea>
                                     @error('keterangan')
                                         <small class="text-danger">{{ $message }}</small>
                                     @enderror
@@ -72,22 +182,13 @@
                             </div>
                         </div>
 
-                        <div class="row clearfix">
-                            <div class="col-12 col-lg-12 col-md-12">
-                                <div class="form-group  @error('status') has-error @enderror">
-                                    <label>Status<span class="text-danger"><sup>*</sup></span></label>
-                                    <input class="form-control" type="number" id="status" name = "status" value = "{{ old('status') ?? $preIjin->status }}" placeholder="Status" autocomplete="off"/>
-                                    @error('status')
-                                        <small class="text-danger">{{ $message }}</small>
-                                    @enderror
-                                </div>
-                            </div>
+                        <div class="row rowdata">
                         </div>
 
                         <button type="submit" class="btn btn-primary btn-sm waves-effect waves-light"><i class="fa fa-check-square" aria-hidden="true"></i> Simpan Perubahan</button>
                     </form>
-                </div>
 
+                </div>
             </div>
         </div>
     </div>

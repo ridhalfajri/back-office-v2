@@ -58,7 +58,7 @@
                         <th>No.</th>
 						<th>tanggal pengajuan</th>
                         <th>jam</th>
-                        <th>Presensi</th>
+                        <th>Jenis Presensi</th>
 						<th>status</th>
                          <th style="width: 40px">aksi</th>
                     </tr>
@@ -69,7 +69,7 @@
                         <th>No.</th>
 						<th>tanggal pengajuan</th>
                         <th>jam</th>
-                        <th>Presensi</th>
+                        <th>Jenis Presensi</th>
 						<th>status</th>
                          <th style="width: 40px">aksi</th>
                     </tr>

@@ -11,10 +11,11 @@ use Illuminate\Support\Facades\Log;
 use App\Models\PreDinasLuar;
 use App\Models\Pegawai;
 use App\Helpers\PegawaiHelper;
+use Barryvdh\Debugbar\Facades\Debugbar as FacadesDebugbar;
 use Carbon\Carbon;
 use SplFileInfo;
 use Yajra\DataTables\Facades\DataTables;
-
+use Spatie\MediaLibrary;
 class PreDinasLuarController extends Controller
 {
     /**
@@ -76,7 +77,25 @@ class PreDinasLuarController extends Controller
                 $query->whereRaw("DATE_FORMAT(tanggal_dinas_akhir, '%d %M %Y') like ?", ["%$keyword%"]);
 
             })
+            ->addColumn('file_st', function ($row) {
+                $mediaItem = $row->getMedia('media_st_dinas_luar')->first();
+                // Check if the media item exists
+                if ($mediaItem) {
+                    // Get the URL of the media item
+                    $mediaUrl = $mediaItem->getUrl();
+                    return $mediaUrl;
+                }
+            })
+            ->addColumn('file_ref', function ($row) {
 
+                $mediaItem = $row->getMedia('media_ref_dinas_luar')->first();
+                // Check if the media item exists
+                if ($mediaItem) {
+                    // Get the URL of the media item
+                    $mediaUrl = $mediaItem->getUrl();
+                    return $mediaUrl;
+                }
+            })
             ->addColumn('aksi', function ($row) {
 
                 if ($row->status_approve == 1){
@@ -260,12 +279,12 @@ class PreDinasLuarController extends Controller
             }
 
             return redirect()->route('pre-dinas-luar.index')
-            ->with('success', 'Data presensi tidak tercatat berhasil disimpan');
+            ->with('success', 'Data dinas luar berhasil disimpan');
         }catch (QueryException $e) {
             $msg = 'Error : ' . class_basename(get_class($this)) . ' Method : ' . __FUNCTION__ . ' msg : ' . $e->getMessage();
             Log::error($msg);
             return redirect()->route('pre-dinas-luar.index')
-            ->with('error', 'Simpan data presensi tidak tercatat gagal, Err: ' . $msg);
+            ->with('error', 'Simpan data dinas luar gagal, Err: ' . $msg);
         }
 
     }
@@ -328,9 +347,9 @@ class PreDinasLuarController extends Controller
     */
     public function edit(PreDinasLuar $preDinasLuar)
     {
-        $title = 'Ubah Data Pre Tak Tercatat';
-
-        return view('presensi.pre-dinas-luar.edit', compact('title','PreDinasLuar'));
+        $title = 'Ubah Data Pengajuan Dinas Luar';
+        $pegawai = PegawaiHelper::getPegawaiData(auth()->user()->pegawai->id);
+        return view('presensi.pre-dinas-luar.edit', compact('title','preDinasLuar','pegawai'));
     }
 
     /**
@@ -343,32 +362,52 @@ class PreDinasLuarController extends Controller
     public function update(Request $request,PreDinasLuar $preDinasLuar)
     {
         try {
+
             $this->validate($request, [
-				'no_enroll' => 'required',
-				'tanggal_dinas_awal' => 'required',
-				'tanggal_approved' => 'required',
-				'jenis' => 'required',
-				'jam_perubahan' => 'required',
-				'atasan_approval_id' => 'required',
-				'status' => 'required',
+				'nama_kegiatan' => 'required',
+				'lokasi' => 'required',
+                'tanggal_dinas' => 'required',
+                'media_st_dinas_luar' => 'required',
             ]);
 
-			$preDinasLuar->no_enroll = $request->no_enroll;
-			$preDinasLuar->tanggal_dinas_awal = $request->tanggal_dinas_awal;
-			$preDinasLuar->tanggal_approved = $request->tanggal_approved;
-			$preDinasLuar->jenis = $request->jenis;
-			$preDinasLuar->jam_perubahan = $request->jam_perubahan;
-			$preDinasLuar->atasan_approval_id = $request->atasan_approval_id;
-			$preDinasLuar->status = $request->status;
+            $dateRange = explode(' - ',  $request->tanggal_dinas);
+            $tanggalAwal = explode('-', $dateRange[0]);
+            $tanggalAkhir = explode('-', $dateRange[1]);
+
+			$preDinasLuar->nama_kegiatan = $request->nama_kegiatan;
+			$preDinasLuar->lokasi = $request->lokasi;
+            $preDinasLuar->tanggal_dinas_awal = $tanggalAwal[2] . '-' . $tanggalAwal[1] . '-' . $tanggalAwal[0];
+            $preDinasLuar->tanggal_dinas_akhir = $tanggalAkhir[2] . '-' . $tanggalAkhir[1] . '-' . $tanggalAkhir[0];
+			$preDinasLuar->status_approve = 1;
+			$preDinasLuar->is_active = 'Y';
             $preDinasLuar->save();
 
+            // Retrieve the media item associated with the model and the collection name
+            $stFile = $preDinasLuar->getMedia('media_st_dinas_luar')->first();
+            if ($stFile) {
+                $stFile->delete();
+            }
+
+            $refFile = $preDinasLuar->getMedia('media_ref_dinas_luar')->first();
+            if ($refFile) {
+                $refFile->delete();
+            }
+
+            if ($request->media_st_dinas_luar) {
+                $preDinasLuar->addMediaFromRequest('media_st_dinas_luar')->toMediaCollection('media_st_dinas_luar');
+            }
+
+            if ($request->media_ref_dinas_luar) {
+                $preDinasLuar->addMediaFromRequest('media_ref_dinas_luar')->toMediaCollection('media_ref_dinas_luar');
+            }
+
             return redirect()->route('pre-dinas-luar.index')
-            ->with('success', 'Data Pre Tak Tercatat berhasil diupdate');
+            ->with('success', 'Data dinas luar berhasil diupdate');
         } catch (QueryException $e) {
             $msg = 'Error : ' . class_basename(get_class($this)) . ' Method : ' . __FUNCTION__ . ' msg : ' . $e->getMessage();
             Log::error($msg);
             return redirect()->route('pre-dinas-luar.index')
-            ->with('error', 'Ubah data Pre Tak Tercatat gagal, Err: ' . $msg);
+            ->with('error', 'Ubah data dinas luar gagal, Err: ' . $msg);
         }
     }
 

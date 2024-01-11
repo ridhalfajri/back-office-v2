@@ -2,6 +2,9 @@
 @push('style')
     <link rel="stylesheet" href="{{ asset('assets/plugins/sweetalert/sweetalert.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/plugins/select2-4.0.13/dist/css/select2.min.css') }}">
+    {{-- DateRange --}}
+    <link rel="stylesheet" href="{{ asset('assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker3.min.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/plugins/daterangepicker/daterangepicker.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/css/ijin.css') }}">
 @endpush
 
@@ -9,7 +12,7 @@
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="/"><i class="fa fa-home"></i></a></li>
-            <li class="breadcrumb-item"><a href="{{ route('pre-tak-tercatat.index') }}">Riwayat Presensi Tidak Tercatat</a></li>
+            <li class="breadcrumb-item"><a href="{{ route('pre-dinas-luar.index') }}">Riwayat Dinas Luar</a></li>
             <li class="breadcrumb-item active" aria-current="page">{{ $title }}</li>
         </ol>
     </nav>
@@ -21,7 +24,7 @@
             <div class="card-body">
                 <div class="bg-white">
                     <div class="btn-group btn-breadcrumb">
-                         <h3>Form Pengajuan Presensi Tidak Tercatat</h3>
+                         <h3>Ubah Data Pengajuan Dinas Luar</h3>
                     </div>
                 </div>
             </div>
@@ -29,8 +32,9 @@
             <div class="card-body">
                 <div class="student-info">
 
-                    <form class="needs-validation" id="preIjinForm" method="post"  action="{{ route('pre-tak-tercatat.store') }}" enctype="multipart/form-data" accept-charset="utf-8" novalidate>
+                    <form class="needs-validation" id="preForm" method="post"  action="{{ route('pre-dinas-luar.update',$preDinasLuar->id) }}" enctype="multipart/form-data"  accept-charset="utf-8" novalidate>
                         @csrf
+                        @method('PUT')
 
                         @php
                             $jabatan = '';
@@ -138,37 +142,17 @@
                                     : {{ $jabatan }}
                                 </div>
                             </div>
-
                             @break
                         @endforeach
 
-                        <div class="row clearfix">
+                        <div class="row">
                             <div class="col-sm-2">
-                                <strong>Jenis Presensi <span class="text-danger"><sup>*</sup></span></strong>
+                                <strong>Nama Kegiatan <span class="text-danger"><sup>*</sup></span></strong>
                             </div>
-                            <div class="col-sm-4">
-                                <div class="form-group @error('jenis') has-error @enderror">
-                                    <select class="form-control btn" id="jenis" name="jenis" required>
-                                        <option value="" selected disabled>Pilih Presensi</option>
-                                        <option value="1" {{ old('jenis') == 1 ? 'selected' : '' }}> Jam Masuk</option>
-                                        <option value="2" {{ old('jenis') == 2 ? 'selected' : '' }}> Jam Pulang</option>
-                                    </select>
-                                    <div class="invalid-feedback">
-                                        Silakan Pilih Jenis Presensi Yang Tidak Tercatat
-                                    </div>
-                                    @error('jenis')
-                                        <small class="text-danger">{{ $message }}</small>
-                                    @enderror
-                                </div>
-                            </div>
-
-                            <div class="col-sm-2">
-                                <strong>Tanggal <span class="text-danger"><sup>*</sup></span></strong>
-                            </div>
-                            <div class="col-sm-4">
-                                <div class="form-group @error('tanggal_pengajuan') has-error @enderror">
-                                    <input class="form-control" type="date" id="tanggal_pengajuan" name = "tanggal_pengajuan" value="{{ old('tanggal_pengajuan') }}" autocomplete="off" required/>
-                                    @error('tanggal_pengajuan')
+                            <div class="col-sm-10">
+                                <div class="form-group @error('nama_kegiatan') has-error @enderror">
+                                    <input class="form-control" type="text" name="nama_kegiatan" id="nama_kegiatan" value="{{ old('nama_kegiatan') ?? $preDinasLuar->nama_kegiatan }}" required>
+                                    @error('nama_kegiatan')
                                         <small class="text-danger">{{ $message }}</small>
                                     @enderror
                                 </div>
@@ -177,44 +161,27 @@
 
                         <div class="row clearfix">
                             <div class="col-sm-2">
-                                <strong>Jam <span class="text-danger"><sup>*</sup></span></strong>
+                                <strong>Lokasi <span class="text-danger"><sup>*</sup></span></strong>
                             </div>
-                            <div class="col-sm-4">
-                                <div class="form-group @error('jam_perubahan') has-error @enderror">
-                                    <input class="form-control" type="time" id="jam_perubahan" name = "jam_perubahan" value="{{ old('jam_perubahan') }}" autocomplete="off" required/>
-                                    @error('jam_perubahan')
+                            <div class="col-sm-10">
+                                <div class="form-group @error('lokasi') has-error @enderror">
+                                    <input class="form-control" type="text" name="lokasi" id="lokasi" value="{{ old('lokasi') ?? $preDinasLuar->lokasi }}" required>
+                                    @error('lokasi')
                                         <small class="text-danger">{{ $message }}</small>
                                     @enderror
                                 </div>
                             </div>
                         </div>
 
-                        <div class="row clearfix">
-                            <div class="col-sm-2">
-                                <strong>Unggah Tangkapan Layar Daftar Presensi <span class="text-danger"><sup>*</sup></span></strong>
-                            </div>
-                            <div class="col-sm-4">
-                                <div class="form-group @error('media_data_presensi') has-error @enderror">
-                                    <input type="file" name="file" id="media_data_presensi" accept="image/*,.pdf, .doc, .docx" required>
-                                    <div class="invalid-feedback">
-                                        Silakan Upload File Yang Berisi Tangkapan Layar Daftar Presensi
-                                    </div>
-                                    @error('media_data_presensi')
-                                        <small class="text-danger">{{ $message }}</small>
-                                    @enderror
-                                </div>
-                            </div>
 
+                        <div class="row">
                             <div class="col-sm-2">
-                                <strong>Unggah Tangkapan Layar Logbook<span class="text-danger"><sup>*</sup></span></strong>
+                                <strong>Tanggal Dinas Luar <span class="text-danger"><sup>*</sup></span></strong>
                             </div>
-                            <div class="col-sm-4">
-                                <div class="form-group @error('media_presensi_logbook') has-error @enderror">
-                                    <input type="file" name="file" id="media_presensi_logbook" accept="image/*,.pdf, .doc, .docx" required>
-                                    <div class="invalid-feedback">
-                                        Silakan Upload File Yang Berisi Tangkapan Layar Logbook
-                                    </div>
-                                    @error('media_presensi_logbook')
+                            <div class="col-sm-10">
+                                <div class="form-group @error('tanggal_dinas') has-error @enderror">
+                                    <input class="form-control input-daterange-datepicker" type="text" name="tanggal_dinas" id="tanggal_dinas" value="{{ old('tanggal_dinas') ?? $preDinasLuar->tanggal_dinas }}" required>
+                                    @error('tanggal_dinas')
                                         <small class="text-danger">{{ $message }}</small>
                                     @enderror
                                 </div>
@@ -222,6 +189,35 @@
                         </div>
 
                         <div class="row rowdata">
+                            <div class="col-sm-2">
+                                <strong>Unggah Surat Tugas (ST)  <span class="text-danger"><sup>*</sup></span></strong>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="form-group @error('media_st_dinas_luar') has-error @enderror">
+                                    <input type="file" name="media_st_dinas_luar" id="media_st_dinas_luar" accept="image/*,.pdf, .doc, .docx" required>
+                                    <div class="invalid-feedback">
+                                        Silakan Upload File Yang Berisi Tangkapan Layar Daftar Presensi
+                                    </div>
+                                    @error('media_st_dinas_luar')
+                                        <small class="text-danger">{{ $message }}</small>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="col-sm-2">
+                                <strong>Unggah Dokumen Referensi (Optional)</strong>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="form-group @error('media_ref_dinas_luar') has-error @enderror">
+                                    <input type="file" name="media_ref_dinas_luar" id="media_ref_dinas_luar" accept="image/*,.pdf, .doc, .docx">
+                                    <div class="invalid-feedback">
+                                        Silakan Upload File Dokumen Referensi Seperti Nota Dinas atau Undangan
+                                    </div>
+                                    @error('media_ref_dinas_luar')
+                                        <small class="text-danger">{{ $message }}</small>
+                                    @enderror
+                                </div>
+                            </div>
                         </div>
 
                         <button type="submit" class="btn btn-primary btn-sm waves-effect waves-light"><i class="fa fa-check-square" aria-hidden="true"></i> Simpan</button>
@@ -243,6 +239,12 @@
 @push('script')
     <script src="{{ asset('assets/plugins/sweetalert/sweetalert.min.js') }}"></script>
     <script src="{{ asset('assets/plugins/select2-4.0.13/dist/js/select2.min.js') }}"></script>
+    {{-- DateRange --}}
+    <script src="{{ asset('assets/plugins/daterangepicker/moment.js') }}"></script>
+    <script src="{{ asset('assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
+    <script src="{{ asset('assets/plugins/daterangepicker/daterangepicker.js') }}"></script>
+
+
     <script>
         (function () {
           'use strict'
@@ -287,6 +289,17 @@
                 width: '100%',
             });
         });
+
+        $('.input-daterange-datepicker').daterangepicker({
+            buttonClasses: ['btn', 'btn-sm'],
+            applyClass: 'btn-primary',
+            cancelClass: 'btn-secondary',
+            locale: {
+                format: 'DD-MM-YYYY'
+            },
+            autoApply: false
+        });
+
     </script>
 
 @endpush
