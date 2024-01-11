@@ -11,6 +11,7 @@ use App\Models\Presensi;
 use App\Models\PreJamKerja;
 use App\Models\PrePotonganTukin;
 use App\Models\PegawaiRiwayatJabatan;
+use App\Models\PreDinasLuar;
 use App\Models\PreTubel;
 use Barryvdh\Debugbar\Facades\Debugbar;
 
@@ -64,7 +65,7 @@ class PresensiHelper {
     }
 
     //=======================================
-    public static function get_DataPresensiHadir($dateAwal, $dateAkhir) {
+    public static function get_DataPresensiHadirRoutine($dateAwal, $dateAkhir) {
 
         //Jalankan Function ini pada cronjob setiap sehari sekali
 
@@ -511,7 +512,6 @@ class PresensiHelper {
 
                 $dayOfWeekIndex = Carbon::parse($tglPresensi)->format('N');
 
-
                 if ($dayOfWeekIndex==5){
                     //Master Jam Kerja Hari Jum'at
                     $MasterJamMasuk = Carbon::parse($jamKerja->jam_masuk_khusus)->format('H:i:s');
@@ -867,19 +867,35 @@ class PresensiHelper {
         return $retValue;
     }
 
-    public function CronJobRun(){
+    public static function CronJobRun(){
         try {
             self::fnc_CheckAbsenRoutine();
-        } catch (\Throwable $th) {
+        }
+        catch (\Throwable $th) {
+            Log::error('(2) Error cronJob fnc_CheckAbsenRoutine :' . $th->getMessage() . "\n=> Pegawai No_Enroll:" . "\n=======================================" );
+        }
+
+        //=============================
+        // Get Presensi DB Hadir
+        //=============================
+
+        try {
+            $date = now()->format('Y-m-d ');
+            self::get_DataPresensiHadirRoutine($date,$date);
+        }
+        catch (\Throwable $th) {
+            Log::error('(2) Error cronJob get_DataPresensiHadirRoutine :' . $th->getMessage() . "\n=> Pegawai No_Enroll:" . "\n=======================================" );
         }
 
         try {
            self::fnc_CheckHariLiburRoutine();
-        } catch (\Throwable $th) {
+        }
+        catch (\Throwable $th) {
+            Log::error('(3) Error cronJob fnc_CheckHariLiburRoutine :' . $th->getMessage() . "\n=> Pegawai No_Enroll:" . "\n=======================================" );
         }
     }
 
-    //Jalankan per jam 11 malam atau manual
+    //Jalankan per jam 12 malam atau manual
     public static function fnc_CheckAbsenRoutine(){
         //disini check pegawai aktif yang tidak melakukan Presensi kemarin jalankan function ini setipa pergantian hari jam 00:00:01 (jam dua belas malam lewat satu detik)
 
@@ -968,13 +984,35 @@ class PresensiHelper {
                         $presensi->kelebihan_jam ="00:00:00";
                         $presensi->nominal_potongan = 0;
                     }else{
-                        $presensi->status_kehadiran = 'ALPHA';
-                        $presensi->kekurangan_jam ="07:30:00";
-                        $presensi->kelebihan_jam ="00:00:00";
-                        $presensi->nominal_potongan = self::_hitung_potongan($pegawaiItem, $presensi->kekurangan_jam, $presensi->status_kehadiran);
+                        //===========================
+                        //Check Apakah ada Tubel
+                        //===========================
+
+                        $dinasLuar = PreDinasLuar::where('tanggal_awal','>=',$tglPresensiKemarin)
+                                ->where('tanggal_akhir','<=',$tglPresensiKemarin)->get();
+                        if ($dinasLuar){
+                            $presensi->status_kehadiran = 'DINAS LUAR';
+                            $presensi->kekurangan_jam ="00:00:00";
+                            $presensi->kelebihan_jam ="00:00:00";
+                            $presensi->nominal_potongan = 0;
+                        }
+                        else{
+                            $tubel = PreTubel::where('tanggal_awal','>=',$tglPresensiKemarin)
+                                ->where('tanggal_akhir','<=',$tglPresensiKemarin)->get();
+
+                            if ($tubel){
+                                $presensi->status_kehadiran = 'TUGAS BELAJAR';
+                                $presensi->kekurangan_jam ="00:00:00";
+                                $presensi->kelebihan_jam ="00:00:00";
+                                $presensi->nominal_potongan = 0;
+                            }else{
+                                $presensi->status_kehadiran = 'ALPHA';
+                                $presensi->kekurangan_jam ="07:30:00";
+                                $presensi->kelebihan_jam ="00:00:00";
+                                $presensi->nominal_potongan = self::_hitung_potongan($pegawaiItem, $presensi->kekurangan_jam, $presensi->status_kehadiran);
+                            }
+                        }
                     }
-
-
 
                     $presensi->keterangan = '-';
                     $presensi->save();
@@ -985,8 +1023,6 @@ class PresensiHelper {
 
             }
         }
-
-
     }
 
     //Jalankan setiap pergantian tanggal atau jam 00:00:01
@@ -1048,6 +1084,65 @@ class PresensiHelper {
         }
 
     }
+
+    // public static function fnc_CheckDLRoutine(){
+    //     //disini check pegawai aktif yang tidak melakukan Presensi kemarin jalankan function ini setipa pergantian hari jam 00:00:01 (jam dua belas malam lewat satu detik)
+
+    //     $dateNow = now(); // Assuming dateNow is the current date
+    //     //Tanggal
+    //     $tglPresensi = Carbon::parse($dateNow)->format('Y-m-d');
+
+    //     $HariLibur = PreDinasLuar::where('tanggal','=',$tglPresensi)->where('is_libur','=',1)->get();
+
+    //     $pegawai = PegawaiHelper::getPegawaiDataActiveAll();
+
+    //     $jamKerja = PreJamKerja::Where('is_active','Y')->first();
+
+
+    //     $dayOfWeekIndex = Carbon::parse($tglPresensi)->format('N');
+
+    //     foreach ($HariLibur as $harilibur) {
+    //         foreach ($pegawai as $pegawaiItem) {
+    //             try {
+    //                 //get Presensi
+    //                 $presensi = Presensi::whereDate('tanggal_presensi',  $tglPresensi)->Where('no_enroll',$pegawaiItem->no_enroll)->first();
+
+    //                 if (!$presensi)
+    //                 {
+    //                     // 2. masukkan ke presensi jika libur
+    //                     $presensi = new Presensi();
+    //                     $presensi->no_enroll = $pegawaiItem->no_enroll;
+    //                     $presensi->jam_kerja_id = $jamKerja->id;
+    //                     $presensi->tanggal_presensi = $tglPresensi;
+
+    //                     // Jam Masuk
+    //                     $presensi->jam_masuk = '00:00:00';
+    //                     //Jam Pulang
+    //                     $presensi->jam_pulang = '00:00:00';
+
+    //                     //default is_ijin adalah 0
+    //                     $presensi->is_ijin = 0;
+    //                     $presensi->is_jk_normal = $jamKerja->is_jk_normal;
+
+    //                     //Hari libur
+    //                     $presensi->status_kehadiran = 'LIBUR';
+    //                     $presensi->kekurangan_jam ="00:00:00";
+    //                     $presensi->kelebihan_jam ="00:00:00";
+
+    //                     $presensi->nominal_potongan = 0;
+    //                     $presensi->keterangan = '';
+
+    //                     $presensi->save();
+
+    //                 }
+
+    //             } catch (\Throwable $th) {
+
+    //             }
+    //         }
+    //     }
+
+    // }
 
     //* KALKULASI POTONGAN TUNJANGAN KINERJA
     public static function _hitung_potongan($pegawai, $kekurangan_jam, $statusKehadiran)
