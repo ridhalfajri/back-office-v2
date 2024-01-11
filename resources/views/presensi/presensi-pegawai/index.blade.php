@@ -24,6 +24,7 @@
         .hidden {
             display: none !important;
         }
+
     </style>
 
 
@@ -86,7 +87,8 @@
                            @endif
 
                            @foreach ($hirarkiUnitKerja as $index => $data)
-                                <option value="{{ $data->id }}" {{ ($index === 0 && !old('hirarki_unit_kerja_id')) || old('hirarki_unit_kerja_id') == $data->id ? 'selected' : '' }}>
+                           {{-- <option value="{{ $data->id }}" {{ ($index === 0 && !old('hirarki_unit_kerja_id')) || old('hirarki_unit_kerja_id') == $data->id ? 'selected' : '' }}> --}}
+                               <option value="{{ $data->id }}" {{ old('hirarki_unit_kerja_id') == $data->id ? 'selected' : '' }}>
                                     {{ $data->nama_unit_kerja}}
                                 </option>
                             @endforeach
@@ -102,10 +104,7 @@
                     <button class="btn btn-primary" id="btnShowData"><i class="fa fa-search" aria-hidden="true"></i> Cari Data</button>
                 </div>
                 <div class="col-6">
-                    <form method="POST" action="{{ route('presensi-pegawai.getdatapresensipegawai') }}">
-                        @csrf <!-- CSRF protection -->
-                        <button class="btn btn-primary" type="submit"><i class="fa fa-refresh" aria-hidden="true"></i> Syncronize Data Presensi</button>
-                    </form>
+                    <button class="btn btn-success" id="btnGetDataPresensi"><i class="fa fa-refresh" aria-hidden="true"></i> Syncronize Data Presensi</button>
                 </div>
             </div>
 
@@ -116,6 +115,7 @@
             <div id="exportButtonsContainer">
             </div>
             <br>
+            <div id="wait-icon"><i class="fa fa-spinner fa-spin" style="font-size:30px;color:red"></i><strong style="font-size: 200%"> Mohon tunggu...</strong></div>
             <div class="table-responsive mb-4">
                 <table id="tbl-data" class="table table-hover dataTable table-striped table-bordered display">
                     <thead>
@@ -177,22 +177,12 @@
 
 <script src="{{ asset('assets/plugins/jquery-validation/jquery.validate.js') }}"></script>
 <script src="{{ asset('assets/plugins/jquery/jquery.min.js') }}"></script>
-
-{{-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.0/jquery.validate.js"></script> --}}
-
-<script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
-<script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
-
-<!-- DataTables Buttons JS -->
-<script src="https://cdn.datatables.net/buttons/2.0.1/js/dataTables.buttons.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.0.1/js/buttons.html5.min.js"></script>
-<!-- Additional Buttons JS (copy, csv, pdf, print) -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.0.1/js/buttons.print.min.js"></script>
-
-<script src="https://cdn.datatables.net/buttons/1.0.3/js/dataTables.buttons.min.js"></script>
+<script src="{{ asset('assets/plugins/datatable/jquery.dataTables.min.js') }}"></script>
+<script src="{{ asset('assets/plugins/datatable/buttons/dataTables.buttons.min.js') }}"></script>
+<script src="{{ asset('assets/plugins/datatable/buttons/buttons.html5.min.js') }}"></script>
+<script src="{{ asset('assets/plugins/datatable/JSZip/jszip.min.js') }}"></script>
+<script src="{{ asset('assets/plugins/datatable/buttons/buttons.print.min.js') }}"></script>
+<script src="{{ asset('assets/plugins/datatable/buttons/buttons.bootstrap4.min.js') }}"></script>
 <script src="/vendor/datatables/buttons.server-side.js"></script>
 
 {{-- <script src="{{ asset('vendor/datatables/buttons.server-side.js') }}"></script> --}}
@@ -252,7 +242,6 @@
         });
 
         $('#btnShowData').on('click', function() {
-
             // Check if DataTable is already initialized on the table
             if ($.fn.DataTable.isDataTable('#tbl-data')) {
                 // DataTable is already initialized, destroy it
@@ -264,7 +253,6 @@
             var selectedPegawaiId = document.getElementById('pegawai_id').value;
             var selectedHirarkiUnitKerjaId = document.getElementById('hirarki_unit_kerja_id').value;
             btnExport = 0;
-
             table = $('#tbl-data').DataTable({
                 processing: true,
                 destroy: true,
@@ -279,18 +267,29 @@
                 autoWidth: false,
                 dom: 'lBfrtip', // Include length menu (l) along with buttons (Bfrtip)
                 buttons: [
-                    'copy', 'csv', 'excel', 'pdf', 'print'
-                ],
-                lengthMenu: [10, 50, 100, 500, 1000, 10000,1000000, -1], // Include "All" option for page length
-                // dom: 'Bfrtip',
-                buttons: [
-                    {
-                        extend: 'excel',
+                        {extend: 'excelHtml5',
+                        title: 'Data Presensi Tanggal : ' + dateAwal +' - ' + dateAkhir,
+                        text:'<i class="fa fa-table fainfo" aria-hidden="true" >Test</i>',
+                        titleAttr: 'Export Excel',
+                        "oSelectorOpts": {filter: 'applied', order: 'current'},
                         exportOptions: {
-                            columns: ':visible:not(:eq(0))'
-                        }
-                    },
-                ],
+                                columns: [ 1, 2, 3, 4, 5, 6, 7],
+                                modifier: {
+                                page: 'all'
+                                },
+                                    format: {
+                                        header: function ( data, columnIdx ) {
+                                            if(columnIdx==1){
+                                            return 'Tanggal Presensi';
+                                            }
+                                            else{
+                                            return data;
+                                            }
+                                        }
+                                    }
+                            }
+                }],
+                lengthMenu: [10, 50, 100, 500, 1000, 10000,1000000],
                 ajax: {
                     url: '{{ route('presensi-pegawai.datatablepresensi') }}',
                     type: 'GET',
@@ -320,30 +319,33 @@
                     },
                     {
                         data: 'nama_jabatan',
-                        name: 'nama_jabatan'
+                        name: 'z.nama_jabatan'
                     },
                     {
                         data: 'nama_unit_kerja',
-                        name: 'nama_unit_kerja'
+                        name: 'y.nama_unit_kerja'
                     },
                     {
                         data: 'tanggal_presensi',
-                        name: 'tanggal_presensi',
+                        name: 'o.tanggal_presensi',
                     },
                     {
                         data: 'jam_masuk',
-                        name: 'jam_masuk',
+                        name: 'o.jam_masuk',
                     },
                     {
                         data: 'jam_pulang',
-                        name: 'jam_pulang',
+                        name: 'o.jam_pulang',
                     },
                     {
                         data: 'kekurangan_jam',
-                        name: 'kekurangan_jam',
+                        name: 'o.kekurangan_jam',
                         className: 'text-center',
                         render: function(data, type, row) {
                             switch (data) {
+                                case null:
+                                    return '';
+                                    break;
                                 case "00:00:00":
                                     return '<strong>' + data + '</strong>';
                                     break;
@@ -355,10 +357,13 @@
                     },
                     {
                         data: 'kelebihan_jam',
-                        name: 'kelebihan_jam',
+                        name: 'o.kelebihan_jam',
                         className: 'text-center',
                         render: function(data, type, row) {
                             switch (data) {
+                                case null:
+                                    return '';
+                                    break;
                                 case "00:00:00":
                                     return '<strong>' + data + '</strong>';
                                     break;
@@ -370,15 +375,15 @@
                     },
                     {
                         data: 'nominal_potongan',
-                        name: 'nominal_potongan',
+                        name: 'o.nominal_potongan',
                     },
                     {
                         data: 'status_kehadiran',
-                        name: 'status_kehadiran',
+                        name: 'o.status_kehadiran',
                     },
                     {
                         data: 'keterangan',
-                        name: 'keterangan',
+                        name: 'o.keterangan',
                     },
                 ],
                 columnDefs: [{
@@ -389,24 +394,16 @@
                 order: [
                     [1, 'asc']
                 ],
+                language: {
+                    processing: "<span class='fa fa-spinner fa-spin fa-spin' style='font-size:30px;color:red'></span><strong style='font-size: 140%'> Mohon Tunggu..</strong>"
+                },
                 drawCallback: function(settings) {
-                    // Check if the draw event was triggered by the page length change
-                    console.log('Mulai Page length change');
-                    console.log(settings.iDraw);
-
-                    // if (settings.iDraw === 1) {
-                        console.log('Page length change finished');
-
-                        // Check if the current page length is -1
-                        if (btnExport == 1) {
-                            btnExport = 0;
-                        //     console.log('Triggering Excel export');
-                        //     // Trigger the Excel export button click after draw is finished
-                            $('.buttons-excel').click();
-                            table.page.len(10).draw();
-
-                        }
-                    // }
+                    // Check if the current page length is -1
+                    if (btnExport == 1) {
+                        btnExport = 0;
+                        $('.buttons-excel').click();
+                        table.page.len(10).draw();
+                    }
                 }
             });
 
@@ -417,30 +414,18 @@
                 });
             }).draw();
 
-
-            $('.buttons-excel').addClass('hidden');
-
              // Add a custom button to export all data
              new $.fn.dataTable.Buttons(table, {
                 buttons: [{
-                    text: 'Export To Excel',
+                    text: '<i class="fa fa-file-excel-o btn-success"></i> Ekspor Data',
                     action: function () {
-                        console.log('Triggering change lenght');
                         btnExport = 1;
-                        // Temporarily set page length to -1 for export
                         table.page.len(1000000).draw();
-
-                        // Trigger the Excel export button click
-                        // $('.buttons-excel').click();
-
-                        // Restore the original page length after export
-                        // table.page.len(10).draw();
                     }
                 }]
             });
 
-            // Add the custom button to the DataTable
-            // table.buttons(1, null).container().appendTo(table.table().container());
+
             $('#exportButtonsContainer').append(table.buttons(1, null).container());
 
             new $.fn.dataTable.Buttons(table, {

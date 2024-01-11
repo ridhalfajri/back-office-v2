@@ -86,6 +86,14 @@ class PresensiPegawaiController extends Controller
                 $query->whereRaw("DATE_FORMAT(tanggal_presensi, '%W, %d %M %Y') like ?", ["%$keyword%"]);
 
             })
+            ->filterColumn('status_kehadiran', function ($query, $keyword) {
+                // Custom filter logic for nominal_potongan column
+                $query->whereRaw('status_kehadiran like ?', ["%{$keyword}%"]);
+            })
+            ->filterColumn('keterangan', function ($query, $keyword) {
+                // Custom filter logic for nominal_potongan column
+                $query->whereRaw('keterangan like ?', ["%{$keyword}%"]);
+            })
 
             ->make(true);
         }
@@ -221,6 +229,10 @@ class PresensiPegawaiController extends Controller
                 $nom =  (float)$row->nominal_potongan;
                 return "Rp " . number_format($nom, 0, ',', '.');
             })
+            ->filterColumn('o.nominal_potongan', function ($query, $keyword) {
+                // Custom filter logic for nominal_potongan column
+                $query->whereRaw('CONVERT(nominal_potongan, UNSIGNED) like ?', ["%{$keyword}%"]);
+            })
             ->editColumn('tanggal_presensi', function ($row) {
                 // Set the locale to Indonesian
                 DB::statement('SET lc_time_names = "id_ID"');
@@ -229,12 +241,21 @@ class PresensiPegawaiController extends Controller
 
                 return $formattedDate;
             })
-            ->filterColumn('tanggal_presensi', function ($query, $keyword) {
+            ->filterColumn('o.tanggal_presensi', function ($query, $keyword) {
                 // Set the locale to Indonesian
                 DB::statement('SET lc_time_names = "id_ID"');
                 $query->whereRaw("DATE_FORMAT(tanggal_presensi, '%W, %d %M %Y') like ?", ["%$keyword%"]);
 
             })
+            ->filterColumn('o.status_kehadiran', function ($query, $keyword) {
+                // Custom filter logic for nominal_potongan column
+                $query->whereRaw('status_kehadiran like ?', ["%{$keyword}%"]);
+            })
+            ->filterColumn('o.keterangan', function ($query, $keyword) {
+                // Custom filter logic for nominal_potongan column
+                $query->whereRaw('keterangan like ?', ["%{$keyword}%"]);
+            })
+
             ->make(true);
         }
 

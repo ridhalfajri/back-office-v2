@@ -5,7 +5,7 @@
 <link rel="stylesheet" href="{{ asset('assets/plugins/datatable/dataTables.bootstrap4.min.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/plugins/datatable/fixedeader/dataTables.fixedcolumns.bootstrap4.min.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/plugins/datatable/fixedeader/dataTables.fixedheader.bootstrap4.min.css') }}">
-
+<link rel="stylesheet" href="{{ asset('assets/css/ijin.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/plugins/sweetalert/sweetalert.css') }}">
 <!-- Toastr -->
 <link rel="stylesheet" href="{{ asset('assets/plugins/toastr/toastr.css') }}">
@@ -27,7 +27,10 @@
     <div class="section-body">
     <div class="card">
         <div class="card-body">
-            <!-- /.dropdown js__dropdown -->
+            <div id="exportButtonsContainer">
+            </div>
+            <br>
+
             <table id="tbl-data" class="table table-striped table-bordered display" style="width:100%">
                 <thead>
                     <tr>
@@ -69,11 +72,22 @@
 <script src="{{ asset('assets/bundles/dataTables.bundle.js') }}"></script>
 <script src="{{ asset('assets/js/table/datatable.js') }}"></script>
 <script src="{{ asset('assets/plugins/toastr/toastr.min.js') }}" type="text/javascript"></script>
+<script src="{{ asset('assets/plugins/jquery-validation/jquery.validate.js') }}"></script>
+<script src="{{ asset('assets/plugins/jquery/jquery.min.js') }}"></script>
+
+<script src="{{ asset('assets/plugins/datatable/jquery.dataTables.min.js') }}"></script>
+<script src="{{ asset('assets/plugins/datatable/buttons/dataTables.buttons.min.js') }}"></script>
+<script src="{{ asset('assets/plugins/datatable/buttons/buttons.html5.min.js') }}"></script>
+<script src="{{ asset('assets/plugins/datatable/JSZip/jszip.min.js') }}"></script>
+<script src="{{ asset('assets/plugins/datatable/buttons/buttons.print.min.js') }}"></script>
+<script src="{{ asset('assets/plugins/datatable/buttons/buttons.bootstrap4.min.js') }}"></script>
+
 
 <script type="text/javascript">
     "use strict"
-
     let table;
+    let btnExport = 0;
+    $.noConflict();
 
     $(function() {
         toastr.options = {
@@ -98,6 +112,7 @@
         @if(session('success'))
             toastr['success']('{{ session("success") }}');
         @endif
+        btnExport = 0;
 
         table = $('#tbl-data').DataTable({
             processing: true,
@@ -110,6 +125,30 @@
             ordering: true,
             info: true,
             autoWidth: false,
+            dom: 'lBfrtip', // Include length menu (l) along with buttons (Bfrtip)
+            buttons: [
+                    {extend: 'excelHtml5',
+                    title: 'Data Tugas Belajar Pegawai',
+                    text:'<i class="fa fa-table fainfo" aria-hidden="true" >Test</i>',
+                    titleAttr: 'Export Excel',
+                    "oSelectorOpts": {filter: 'applied', order: 'current'},
+                    exportOptions: {
+                            modifier: {
+                            page: 'all'
+                            },
+                                format: {
+                                    header: function ( data, columnIdx ) {
+                                        if(columnIdx==1){
+                                        return 'Tanggal Presensi';
+                                        }
+                                        else{
+                                        return data;
+                                        }
+                                    }
+                                }
+                        }
+            }],
+            lengthMenu: [10, 50, 100, 500, 1000, 10000,1000000],
             ajax: {
                 url: '{{ route("pre-tubel.datatable") }}',
                 type: 'POST',
@@ -167,8 +206,32 @@
             }],
             order: [
                 [1, 'asc']
-            ]
+            ],
+            language: {
+                processing: "<span class='fa fa-spinner fa-spin fa-spin' style='font-size:30px;color:red'></span><strong style='font-size: 140%'> Mohon Tunggu..</strong>"
+            },
+            drawCallback: function(settings) {
+                // Check if the current page length is -1
+                if (btnExport == 1) {
+                    btnExport = 0;
+                    $('.buttons-excel').click();
+                    table.page.len(10).draw();
+                }
+            }
         });
+
+        new $.fn.dataTable.Buttons(table, {
+            buttons: [{
+                text: '<i class="fa fa-file-excel-o btn-success"></i> Ekspor Data',
+                action: function () {
+                    btnExport = 1;
+                    table.page.len(1000000).draw();
+                }
+            }]
+        });
+
+        // Add the custom button to the DataTable
+        $('#exportButtonsContainer').append(table.buttons(1, null).container());
 
         table.on('draw.dt', function() {
             var info = table.page.info();
