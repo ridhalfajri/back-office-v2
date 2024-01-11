@@ -5,14 +5,13 @@
 @endpush
 
 @push('breadcrumb')
-        <div class="breadcrumb">
-            <a href="/" class="btn btn-link"><i class="fa fa-home"></i> Home</a>
-            <div class="btn">></div>
-            <a href="/presensi/pre-tak-tercatat" class="btn btn-link"><i class="fa fa-list"></i> PreTakTercatat</a>
-            <div class="btn">></div>
-            <a href="#" class="btn btn-link"><i class="fa fa-pensil"></i> Ubah Data PreTakTercatat</a>
-            {{-- <a href="/" class="btn btn-outline-danger"><i class="fa fa-chevron-circle-left"></i> Kembali</a> --}}
-        </div>
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/"><i class="fa fa-home"></i></a></li>
+            <li class="breadcrumb-item"><a href="{{ route('pre-tak-tercatat.index') }}">Riwayat Presensi Tidak Tercatat</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ $title }}</li>
+        </ol>
+    </nav>
 @endpush
 
 @section('content')

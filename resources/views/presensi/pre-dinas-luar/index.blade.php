@@ -16,11 +16,13 @@
 @endpush
 
 @push('breadcrumb')
-        <div class="breadcrumb">
-            <a href="/" class="btn btn-link"><i class="fa fa-home"></i> Home</a>
-            <div class="btn">></div>
-            <a href="{{ route('pre-ijin.index') }}" class="btn btn-link"><i class="fa fa-list"></i> Dinas Luar</a>
-        </div>
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/"><i class="fa fa-home"></i></a></li>
+            <li class="breadcrumb-item"><a href="#">Dinas Luar</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ $title }}</li>
+        </ol>
+    </nav>
 @endpush
 
 @section('content')
@@ -270,7 +272,7 @@
                     titleAttr: 'Export Excel',
                     "oSelectorOpts": {filter: 'applied', order: 'current'},
                     exportOptions: {
-                        columns: [ 1, 2, 3, 4, 5, 6],
+                            columns: [ 1, 2, 3, 4, 5, 6],
                             modifier: {
                             page: 'all'
                             },

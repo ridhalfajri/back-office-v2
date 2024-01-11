@@ -216,7 +216,7 @@ class PreTakTercatatController extends Controller
     {
         $totalKuota = PegawaiHelper::getKuotaIjin();
         if ($totalKuota<3){
-            $title = 'Pengajuan Ijin Kehadiran Karena Presensi Tidak Tercatat';
+            $title = 'Pengajuan Presensi Tidak Tercatat';
             $pegawai = PegawaiHelper::getPegawaiData(auth()->user()->pegawai->id);
             return view('presensi.pre-tak-tercatat.create', compact('title','pegawai'));
         }else{
@@ -361,7 +361,7 @@ class PreTakTercatatController extends Controller
     */
     public function edit(PreTakTercatat $preTakTercatat)
     {
-        $title = 'Ubah Data Pre Tak Tercatat';
+        $title = 'Ubah Pengajuan Presensi Tidak Tercatat';
 
         return view('presensi.pre-tak-tercatat.edit', compact('title','preTakTercatat'));
     }
@@ -396,13 +396,13 @@ class PreTakTercatatController extends Controller
             $preTakTercatat->save();
 
             return redirect()->route('pre-tak-tercatat.index')
-            ->with('success', 'Data Pre Tak Tercatat berhasil diupdate');
+            ->with('success', 'Data Presensi Tidak Tercatat berhasil diupdate');
         } catch (QueryException $e) {
             $msg = 'Error : ' . class_basename(get_class($this)) . ' Method : ' . __FUNCTION__ . ' msg : ' . $e->getMessage();
             Log::error($msg);
             $msg = $e->getMessage();
             return redirect()->route('pre-tak-tercatat.index')
-            ->with('error', 'Ubah data Pre Tak Tercatat gagal, Err: ' . $msg);
+            ->with('error', 'Ubah data Presensi Tidak Tercatat gagal, Err: ' . $msg);
         }
     }
 

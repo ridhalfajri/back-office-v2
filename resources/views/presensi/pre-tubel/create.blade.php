@@ -10,15 +10,13 @@
 @endpush
 
 @push('breadcrumb')
-        <div class="breadcrumb">
-            <a href="/" class="btn btn-link"><i class="fa fa-home"></i> Home</a>
-            <div class="btn">></div>
-            <a href="/presensi/pre-tubel" class="btn btn-link"><i class="fa fa-list"></i> Tugas Belajar</a>
-            <div class="btn">></div>
-            <a href="#" class="btn btn-link"><i class="fa fa-pencil"></i> Input Data Tugas Belajar</a>
-            {{-- <a href="/gaji" class="btn btn-outline-danger"><i class="fa fa-chevron-circle-left"></i> Kembali</a> --}}
-
-        </div>
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/"><i class="fa fa-home"></i></a></li>
+            <li class="breadcrumb-item"><a href="{{ route('pre-tubel.index') }}">Riwayat Tugas Belajar</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ $title }}</li>
+        </ol>
+    </nav>
 @endpush
 
 @section('content')

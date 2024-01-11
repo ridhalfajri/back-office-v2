@@ -232,7 +232,7 @@ class PreIjinController extends Controller
     */
     public function create()
     {
-        $title = 'Pengajuan Ijin';
+        $title = 'Pengisian Form Pengajuan Ijin';
 
         $totalKuota = PegawaiHelper::getKuotaIjin();
         if ($totalKuota<3){

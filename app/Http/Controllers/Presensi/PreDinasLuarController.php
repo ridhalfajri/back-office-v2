@@ -273,7 +273,7 @@ class PreDinasLuarController extends Controller
     public function persetujuan()
     {
 
-        $title = 'Persetujuan Presensi Tidak Tercatat';
+        $title = 'Persetujuan Pengajuan Dinas Luar';
         $pegawai = PegawaiHelper::getPegawaiData(auth()->user()->pegawai->id);
 
         return view('presensi.pre-dinas-luar.persetujuan', compact('title','pegawai'));

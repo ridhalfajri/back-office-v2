@@ -49,7 +49,7 @@ class PreJamKerjaController extends Controller
     */
     public function create()
     {
-        $title = 'Tambah Jam Kerja Baru';
+        $title = 'Input Jam Kerja Baru';
 
         return view('presensi.pre-jam-kerja.create', compact('title'));
     }
@@ -118,7 +118,7 @@ class PreJamKerjaController extends Controller
     */
     public function edit(PreJamKerja $preJamKerja)
     {
-        $title = 'Ubah Data Pre Jam Kerja';
+        $title = 'Ubah Jam Kerja';
 
         return view('presensi.pre-jam-kerja.edit', compact('title','preJamKerja'));
     }

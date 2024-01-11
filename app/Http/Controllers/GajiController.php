@@ -37,7 +37,7 @@ class GajiController extends Controller
      */
     public function index()
     {
-        $title = 'Master Data Gaji';
+        $title = 'List Data Gaji Pegawai';
         // $data = Gaji::select('gaji.id as id','gaji.masa_kerja as masa_kerja', 'gaji.nominal as nominal', 'golongan.nama as golongan')->join('golongan', 'golongan.id', '=', 'gaji.golongan_id')
         // ->get();
         // dd(($data));
@@ -102,7 +102,7 @@ class GajiController extends Controller
      */
     public function create()
     {
-        $title = 'Tambah Data Gaji Baru';
+        $title = 'Input Gaji Baru';
         $golongan = Golongan::select('id', 'nama','nama_pangkat')->orderBy('nama', 'asc')->get();
         return view('gaji.create', compact('title','golongan'));
     }

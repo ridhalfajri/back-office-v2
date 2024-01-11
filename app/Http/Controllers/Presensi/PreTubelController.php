@@ -112,7 +112,7 @@ class PreTubelController extends Controller
     */
     public function create()
     {
-        $title = 'Tambah Data Tugas Belajar';
+        $title = 'Input Data Tugas Belajar';
         $pegawai = Pegawai::all();
         return view('presensi.pre-tubel.create', compact('title','pegawai'));
     }
@@ -179,7 +179,7 @@ class PreTubelController extends Controller
     */
     public function edit(PreTubel $preTubel)
     {
-        $title = 'Ubah Data Pre Tubel';
+        $title = 'Ubah Data Tugas Belajar';
 
         return view('presensi.pre-tubel.edit', compact('title','preTubel'));
     }

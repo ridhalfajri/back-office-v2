@@ -12,14 +12,13 @@
 @endpush
 
 @push('breadcrumb')
-    <div class="breadcrumb">
-        <a href="/" class="btn btn-link"><i class="fa fa-home"></i> Home</a>
-        <a class="btn btn-link">></a>
-        <a href="/gaji" class="btn btn-link"><i class="fa fa-list"></i> Gaji</a>
-        {{-- <a class="btn btn-link">></a>
-        <a href="/gaji/create" class="btn btn-outline-primary"><i class="fa fa-plus"></i> Gaji Baru</a> --}}
-        {{-- <a href="/gaji" class="btn btn-outline-danger"><i class="fa fa-chevron-circle-left"></i> Kembali</a> --}}
-    </div>
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/"><i class="fa fa-home"></i></a></li>
+        <li class="breadcrumb-item"><a href="{{ route('gaji.index') }}">Gaji Pegawai</a></li>
+        <li class="breadcrumb-item active" aria-current="page">{{ $title }}</li>
+    </ol>
+</nav>
 @endpush
 
 @section('content')

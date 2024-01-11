@@ -155,7 +155,7 @@ class JabatanTukinController extends Controller
     */
     public function create()
     {
-        $title = 'Tambah Data Tunjangan Kinerja Jabatan';
+        $title = 'Input Data Tunjangan Kinerja Jabatan';
         $jenisJabatan = JenisJabatan::where('nama', 'not like', '%Jabatan Rangkap%')->get();
         $tukin = Tukin::select('id', 'grade', DB::raw("REPLACE(FORMAT(nominal, 0), ',', '.') as nominal"))->get();
 
@@ -233,7 +233,7 @@ class JabatanTukinController extends Controller
     public function edit(JabatanTukin $jabatanTukin)
     {
 
-        $title = 'Ubah Data Jabatan Tukin';
+        $title = 'Ubah Data Tunjangan Kinerja Jabatan';
         $jenisJabatan = JenisJabatan::where('nama', 'not like', '%Jabatan Rangkap%')->get();
         $tukin = Tukin::select('id', 'grade', DB::raw("REPLACE(FORMAT(nominal, 0), ',', '.') as nominal"))->get();
         if ( $jabatanTukin->jenis_jabatan_id == 1) {

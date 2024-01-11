@@ -5,12 +5,13 @@
 @endpush
 
 @push('breadcrumb')
-    <div class="btn-group btn-breadcrumb">
-        <a href="/" class="btn btn-light"><i class="fa fa-home"></i></a>
-        <a href="/gaji" class="btn btn-light"><i class="fa fa-list"></i> Gaji</a>
-        <a href="#" class="btn btn-light"><i class="fa fa-plus"></i> Ubah Data Gaji</a>
-        {{-- <a href="/gaji" class="btn btn-outline-danger"><i class="fa fa-chevron-circle-left"></i> Kembali</a> --}}
-    </div>
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/"><i class="fa fa-home"></i></a></li>
+        <li class="breadcrumb-item"><a href="{{ route('gaji.index') }}">Gaji Pegawai</a></li>
+        <li class="breadcrumb-item active" aria-current="page">{{ $title }}</li>
+    </ol>
+</nav>
 @endpush
 
 @section('content')
