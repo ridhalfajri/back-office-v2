@@ -7,7 +7,7 @@ use App\Models\JenisKawin;
 use App\Models\Pegawai;
 use App\Models\PegawaiAnak;
 use App\Models\PegawaiRiwayatJabatan;
-use App\Models\Pendidikan;
+use App\Models\TingkatPendidikan;
 use Carbon\Carbon;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
@@ -32,7 +32,7 @@ class AnakController extends Controller
     {
         $title = "Anak";
         $pegawai = Pegawai::select('id', 'nama_depan', 'nama_belakang')->where('id', $pegawai_id)->first();
-        $pendidikan = Pendidikan::select('id', 'nama')->get();
+        $pendidikan = TingkatPendidikan::select('id', 'nama')->get();
         $jenis_kawin = JenisKawin::select('id', 'nama')->get();
         return view('pegawai.keluarga.create-anak', compact('title', 'pegawai', 'pendidikan', 'jenis_kawin'));
     }
@@ -153,7 +153,7 @@ class AnakController extends Controller
             'status_tunjangan',
         )->where('id', $id)->first();
         $anak->tanggal_lahir = Carbon::parse($anak->tanggal_lahir)->translatedFormat('d-m-Y');
-        $pendidikan = Pendidikan::select('id', 'nama')->get();
+        $pendidikan = TingkatPendidikan::select('id', 'nama')->get();
         $jenis_kawin = JenisKawin::select('id', 'nama')->get();
         return view('pegawai.keluarga.edit-anak', compact('title', 'anak', 'pendidikan', 'jenis_kawin'));
     }

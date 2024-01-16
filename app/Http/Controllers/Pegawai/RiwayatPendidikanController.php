@@ -6,8 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Pegawai;
 use App\Models\PegawaiRiwayatJabatan;
 use App\Models\PegawaiRiwayatPendidikan;
-use App\Models\Pendidikan;
-use App\Models\Propinsi;
+use App\Models\TingkatPendidikan;
 use Carbon\Carbon;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
@@ -31,7 +30,7 @@ class RiwayatPendidikanController extends Controller
     public function create($id)
     {
         $title = "Riwayat Pendidikan";
-        $pendidikan = Pendidikan::select('id', 'nama')->get();
+        $pendidikan = TingkatPendidikan::select('id', 'nama')->get();
         $pegawai = Pegawai::select('id', 'nama_depan', 'nama_belakang')->where('id', $id)->first();
         return view('pegawai.pendidikan.create', compact('pendidikan', 'title', 'pegawai'));
     }
@@ -138,7 +137,7 @@ class RiwayatPendidikanController extends Controller
             ->where('id', $id)
             ->first();
         $pendidikan->tanggal_ijazah = Carbon::parse($pendidikan->tanggal_ijazah)->translatedFormat('d-m-Y');
-        $m_pendidikan = Pendidikan::select('id', 'nama')->get();
+        $m_pendidikan = TingkatPendidikan::select('id', 'nama')->get();
         $pendidikan->media_ijazah = $pendidikan->getMedia("media_ijazah")[0];
 
         return view('pegawai.pendidikan.edit', compact('title', 'pendidikan', 'm_pendidikan'));
@@ -250,7 +249,7 @@ class RiwayatPendidikanController extends Controller
     public function datatable(Request $request)
     {
         $pendidikan = PegawaiRiwayatPendidikan::select('pegawai_riwayat_pendidikan.id', 'pendidikan_id', 'pendidikan.nama', 'nama_instansi', 'tanggal_ijazah', 'is_verified')
-            ->join('pendidikan', 'pendidikan.id', '=', 'pegawai_riwayat_pendidikan.pendidikan_id')
+            ->join('tingkat_pendidikan AS pendidikan', 'pendidikan.id', '=', 'pegawai_riwayat_pendidikan.pendidikan_id')
             ->where('pegawai_id', $request->pegawai_id)->orderBy('pegawai_riwayat_pendidikan.tanggal_ijazah', 'DESC');
         return DataTables::of($pendidikan)
             ->addColumn('no', '')
