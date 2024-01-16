@@ -99,7 +99,7 @@
                                                 </td>
                                             </tr>
                                             <tr class="bg-light">
-                                                <td class="text-center">8</td>
+                                                <td class="text-center">9</td>
                                                 <td>
                                                     <p class="font600 mb-1">Potongan BPJS</p>
                                                 </td>
@@ -108,7 +108,7 @@
                                                 </td>
                                             </tr>
                                             <tr class="bg-light">
-                                                <td class="text-center">8</td>
+                                                <td class="text-center">10</td>
                                                 <td>
                                                     <p class="font600 mb-1">Potongan BPJS Lainnya</p>
                                                 </td>
@@ -117,7 +117,7 @@
                                                 </td>
                                             </tr>
                                             <tr class="bg-light">
-                                                <td class="text-center">8</td>
+                                                <td class="text-center">11</td>
                                                 <td>
                                                     <p class="font600 mb-1">Potongan Pajak</p>
                                                 </td>
@@ -126,7 +126,7 @@
                                                 </td>
                                             </tr>
                                             <tr class="bg-light">
-                                                <td class="text-center">8</td>
+                                                <td class="text-center">12</td>
                                                 <td>
                                                     <p class="font600 mb-1">Potongan Tapera</p>
                                                 </td>

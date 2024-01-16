@@ -53,7 +53,12 @@
                 </div>
             </div>
         </div>
+
         <div class="auth_right">
+            <img src="../assets/images/rino.png" class="img-fluid" />
+        </div>
+
+        {{-- <div class="auth_right">
             <div class="carousel slide" data-ride="carousel" data-interval="3000">
                 <div class="carousel-inner">
                     <div class="carousel-item active">
@@ -79,7 +84,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> --}}
     </div>
 
     <script src="{{ asset('assets/bundles/lib.vendor.bundle.js') }}"></script>

@@ -46,6 +46,20 @@ const get_table_pasangan = (url, pegawai_id) => {
                 },
             },
             {
+                data: "is_verified",
+                name: "is_verified",
+                render: function (data, type, row) {
+                    switch (data) {
+                        case 1:
+                            return '<span class="badge badge-pill badge-success">Sukses</span>';
+                            break;
+                        case 0:
+                            return '<span class="badge badge-pill badge-dark">Belum</span>';
+                            break;
+                    }
+                },
+            },
+            {
                 data: "aksi",
                 name: "aksi",
                 class: "text-center actions",
@@ -120,6 +134,20 @@ const get_table_anak = (url, pegawai_id) => {
                     return data
                         ? '<span class="badge badge-success">Aktif</span>'
                         : '<span class="badge badge-danger">Non Aktif</span>';
+                },
+            },
+            {
+                data: "is_verified",
+                name: "is_verified",
+                render: function (data, type, row) {
+                    switch (data) {
+                        case 1:
+                            return '<span class="badge badge-pill badge-success">Sukses</span>';
+                            break;
+                        case 0:
+                            return '<span class="badge badge-pill badge-dark">Belum</span>';
+                            break;
+                    }
                 },
             },
             {

@@ -26,6 +26,7 @@
                                 <th>Nama</th>
                                 <th>Nik</th>
                                 <th>Tunjangan</th>
+                                <th>Verifikasi</th>
                                 <th>Aksi</th>
                             </tr>
                         </thead>
@@ -35,6 +36,7 @@
                                 <th>Nama</th>
                                 <th>Nik</th>
                                 <th>Tunjangan</th>
+                                <th>Verifikasi</th>
                                 <th>Aksi</th>
                             </tr>
                         </tfoot>
@@ -75,6 +77,7 @@
                                 <th>Nama</th>
                                 <th>Nik</th>
                                 <th>Tunjangan</th>
+                                <th>Verifikas</th>
                                 <th>Aksi</th>
                             </tr>
                         </thead>
@@ -84,6 +87,7 @@
                                 <th>Nama</th>
                                 <th>Nik</th>
                                 <th>Tunjangan</th>
+                                <th>Verifikasi</th>
                                 <th>Aksi</th>
                             </tr>
                         </tfoot>

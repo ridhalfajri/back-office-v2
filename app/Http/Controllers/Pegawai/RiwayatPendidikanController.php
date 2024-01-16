@@ -4,9 +4,9 @@ namespace App\Http\Controllers\Pegawai;
 
 use App\Http\Controllers\Controller;
 use App\Models\Pegawai;
+use App\Models\PegawaiRiwayatJabatan;
 use App\Models\PegawaiRiwayatPendidikan;
-use App\Models\Pendidikan;
-use App\Models\Propinsi;
+use App\Models\TingkatPendidikan;
 use Carbon\Carbon;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
@@ -30,7 +30,7 @@ class RiwayatPendidikanController extends Controller
     public function create($id)
     {
         $title = "Riwayat Pendidikan";
-        $pendidikan = Pendidikan::select('id', 'nama')->get();
+        $pendidikan = TingkatPendidikan::select('id', 'nama')->get();
         $pegawai = Pegawai::select('id', 'nama_depan', 'nama_belakang')->where('id', $id)->first();
         return view('pegawai.pendidikan.create', compact('pendidikan', 'title', 'pegawai'));
     }
@@ -137,7 +137,7 @@ class RiwayatPendidikanController extends Controller
             ->where('id', $id)
             ->first();
         $pendidikan->tanggal_ijazah = Carbon::parse($pendidikan->tanggal_ijazah)->translatedFormat('d-m-Y');
-        $m_pendidikan = Pendidikan::select('id', 'nama')->get();
+        $m_pendidikan = TingkatPendidikan::select('id', 'nama')->get();
         $pendidikan->media_ijazah = $pendidikan->getMedia("media_ijazah")[0];
 
         return view('pegawai.pendidikan.edit', compact('title', 'pendidikan', 'm_pendidikan'));
@@ -202,6 +202,7 @@ class RiwayatPendidikanController extends Controller
                     $pendidikan->tanggal_ijazah = Carbon::parse($request->tanggal_ijazah)->translatedFormat('Y-m-d');
                     $pendidikan->kode_gelar_depan = $request->kode_gelar_depan;
                     $pendidikan->kode_gelar_belakang = $request->kode_gelar_belakang;
+                    $pendidikan->is_verified = 0;
                     DB::transaction(function () use ($pendidikan, $request) {
                         $pendidikan->save();
                         if ($request->file('media_ijazah')) {
@@ -247,8 +248,8 @@ class RiwayatPendidikanController extends Controller
      */
     public function datatable(Request $request)
     {
-        $pendidikan = PegawaiRiwayatPendidikan::select('pegawai_riwayat_pendidikan.id', 'pendidikan_id', 'pendidikan.nama', 'nama_instansi', 'tanggal_ijazah')
-            ->join('pendidikan', 'pendidikan.id', '=', 'pegawai_riwayat_pendidikan.pendidikan_id')
+        $pendidikan = PegawaiRiwayatPendidikan::select('pegawai_riwayat_pendidikan.id', 'pendidikan_id', 'pendidikan.nama', 'nama_instansi', 'tanggal_ijazah', 'is_verified')
+            ->join('tingkat_pendidikan AS pendidikan', 'pendidikan.id', '=', 'pegawai_riwayat_pendidikan.pendidikan_id')
             ->where('pegawai_id', $request->pegawai_id)->orderBy('pegawai_riwayat_pendidikan.tanggal_ijazah', 'DESC');
         return DataTables::of($pendidikan)
             ->addColumn('no', '')
@@ -261,5 +262,14 @@ class RiwayatPendidikanController extends Controller
             })
             ->rawColumns(['aksi'])
             ->make(true);
+    }
+    public function verifikasi_sdmoh($id)
+    {
+        $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->first();
+        $this->authorize('admin_sdmoh', $kabiro);
+        $diklat = PegawaiRiwayatPendidikan::where('id', $id)->first();
+        $diklat->is_verified = TRUE;
+        $diklat->save();
+        return back();
     }
 }

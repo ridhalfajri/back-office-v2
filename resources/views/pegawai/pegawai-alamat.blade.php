@@ -61,6 +61,40 @@
                             <textarea rows="3" class="form-control" disabled="" placeholder="Alamat Lengkap"> {{ $alamat_domisili->alamat }}</textarea>
                         </div>
                     </div>
+                    @if (auth()->user()->pegawai->jabatan_sekarang->tx_tipe_jabatan_id == 7 ||
+                            auth()->user()->pegawai->jabatan_sekarang->tx_tipe_jabatan_id == 5)
+                        @if ($alamat_domisili->is_verified)
+                            <div class="col-md-12">
+                                <div class="form-group mb-0">
+                                    <label class="form-label">Verifikasi Alamat</label>
+                                    <button class="btn btn-success btn-sm" type="button" disabled>Sukses</button>
+                                </div>
+                            </div>
+                        @else
+                            <div class="col-md-12">
+                                <div class="form-group mb-0">
+                                    <label class="form-label">Verifikasi Alamat</label>
+                                    <a href="{{ route('alamat.verifikasi-sdmoh', $alamat_domisili->id) }}"
+                                        class="btn btn-primary btn-sm">Verifikasi</a>
+                                </div>
+                            </div>
+                        @endif
+                    @else
+                        <div class="col-md-3">
+
+                            <div class="form-group">
+                                <label class="form-label">Verifikasi Alamat</label>
+                                @if ($alamat_domisili->is_verified)
+                                    <input type="text" class="form-control" disabled="" placeholder="Kode Pos"
+                                        value="Telah Diverifikasi SDMOH" style="background-color: #00eb0c">
+                                @else
+                                    <input type="text" class="form-control" disabled="" placeholder="Kode Pos"
+                                        value="Menunggu Verifikasi SDMOH" style="background-color: #ffd91c">
+                                @endif
+
+                            </div>
+                        </div>
+                    @endif
                 </div>
             </div>
         @endif
@@ -128,6 +162,40 @@
                             <textarea rows="3" class="form-control" disabled="" placeholder="Alamat Lengkap"> {{ $alamat_asal->alamat }}</textarea>
                         </div>
                     </div>
+                    @if (auth()->user()->pegawai->jabatan_sekarang->tx_tipe_jabatan_id == 7 ||
+                            auth()->user()->pegawai->jabatan_sekarang->tx_tipe_jabatan_id == 5)
+                        @if ($alamat_asal->is_verified)
+                            <div class="col-md-12">
+                                <div class="form-group mb-0">
+                                    <label class="form-label">Verifikasi Alamat</label>
+                                    <button class="btn btn-success btn-sm" type="button" disabled>Sukses</button>
+                                </div>
+                            </div>
+                        @else
+                            <div class="col-md-12">
+                                <div class="form-group mb-0">
+                                    <label class="form-label">Verifikasi Alamat</label>
+                                    <a href="{{ route('alamat.verifikasi-sdmoh', $alamat_asal->id) }}"
+                                        class="btn btn-primary btn-sm">Verifikasi</a>
+                                </div>
+                            </div>
+                        @endif
+                    @else
+                        <div class="col-md-3">
+
+                            <div class="form-group">
+                                <label class="form-label">Verifikasi Alamat</label>
+                                @if ($alamat_asal->is_verified)
+                                    <input type="text" class="form-control" disabled="" placeholder="Kode Pos"
+                                        value="Telah Diverifikasi SDMOH" style="background-color: #00eb0c">
+                                @else
+                                    <input type="text" class="form-control" disabled="" placeholder="Kode Pos"
+                                        value="Menunggu Verifikasi SDMOH" style="background-color: #ffd91c">
+                                @endif
+
+                            </div>
+                        </div>
+                    @endif
                 </div>
             </div>
         @endif

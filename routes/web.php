@@ -36,9 +36,24 @@ use App\Http\Controllers\StatusPegawaiController;
 use App\Http\Controllers\ThpController;
 use App\Http\Controllers\UnitKerjaController;
 use App\Http\Controllers\TukinController;
+use App\Http\Controllers\GradeTukinController;
+use App\Http\Controllers\TunjanganBerasController;
+use App\Http\Controllers\AturanThrGajiplusController;
 use App\Http\Controllers\PegawaiRiwayatGolonganController;
+use App\Http\Controllers\PegawaiBpjsLainnyaController;
+use App\Http\Controllers\PengajuanPMKController;
+use App\Http\Controllers\PegawaiTambahanMkController;
+use App\Http\Controllers\PengajuanTambahanBpjsController;
+use App\Http\Controllers\PegawaiTambahanBpjsController;
 use App\Http\Controllers\PegawaiRiwayatUmakController;
-use App\Models\PegawaiPengajuanMk;
+
+use App\Http\Controllers\PegawaiRiwayatThrController;
+use App\Http\Controllers\PegawaiRiwayatGajiplusController;
+use App\Http\Controllers\RiwayatGajiplusController;
+use App\Http\Controllers\RiwayatThrController;
+use App\Http\Controllers\RuangRapatController;
+use App\Http\Controllers\PesanRuangRapatController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -83,6 +98,39 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/presensi/pre-dinas-luar/konfirmasi', [PreDinasLuarController::class, 'konfirmasi'])->name('pre-dinas-luar.konfirmasi');
     Route::get('/presensi/pre-dinas-luar/persetujuan', [PreDinasLuarController::class, 'persetujuan'])->name('pre-dinas-luar.persetujuan');
+
+    //indrawan
+    Route::post('/pegawai-riwayat-golongan/datatable', [PegawaiRiwayatGolonganController::class, 'datatable'])->name('pegawai-riwayat-golongan.datatable');
+    Route::resource('/pegawai-riwayat-golongan', PegawaiRiwayatGolonganController::class);
+
+    Route::post('/grade-tukin', [GradeTukinController::class, 'datatable'])->name('grade-tukin.datatable');
+    Route::resource('/grade-tukin', GradeTukinController::class)->only('index');
+
+    Route::post('/riwayat-thr', [RiwayatThrController::class, 'datatable'])->name('riwayat-thr.datatable');
+    Route::resource('/riwayat-thr', RiwayatThrController::class)->only('index');
+
+    Route::post('/riwayat-gajiplus', [RiwayatGajiplusController::class, 'datatable'])->name('riwayat-gajiplus.datatable');
+    Route::resource('/riwayat-gajiplus', RiwayatGajiplusController::class)->only('index');
+
+    //indrawan
+    // Route::post('/pegawai-bpjs-lainnya/datatable', [PegawaiBpjsLainnyaController::class, 'datatable'])->name('pegawai-bpjs-lainnya.datatable');
+    // Route::resource('/pegawai-bpjs-lainnya', PegawaiBpjsLainnyaController::class);
+
+    Route::post('/pesan-ruang-rapat/datatable', [PesanRuangRapatController::class, 'datatable'])->name('pesan-ruang-rapat.datatable');
+    Route::resource('/pesan-ruang-rapat', PesanRuangRapatController::class)->except('edit', 'update');
+    
+    Route::post('/pengajuan-pmk/datatable', [PengajuanPMKController::class, 'datatable'])->name('pengajuan-pmk.datatable');
+    Route::resource('/pengajuan-pmk', PengajuanPMKController::class)->except('edit', 'update');
+    
+    Route::post('/pegawai-tambahan-mk/datatable', [PegawaiTambahanMkController::class, 'datatable'])->name('pegawai-tambahan-mk.datatable');
+    Route::resource('/pegawai-tambahan-mk', PegawaiTambahanMkController::class)->except('create', 'store');
+    
+    Route::post('/pengajuan-tambahan-bpjs/datatable', [PengajuanTambahanBpjsController::class, 'datatable'])->name('pengajuan-tambahan-bpjs.datatable');
+    Route::resource('/pengajuan-tambahan-bpjs', PengajuanTambahanBpjsController::class)->except('edit', 'update');
+
+    Route::post('/pegawai-tambahan-bpjs/datatable', [PegawaiTambahanBpjsController::class, 'datatable'])->name('pegawai-tambahan-bpjs.datatable');
+    Route::resource('/pegawai-tambahan-bpjs', PegawaiTambahanBpjsController::class)->except('create', 'store');
+    //
 
     Route::prefix('presensi')->group(function () {
 
@@ -132,6 +180,20 @@ Route::middleware('auth')->group(function () {
         Route::post('/pegawai-riwayat-umak/datatable', [PegawaiRiwayatUmakController::class, 'datatable'])->name('pegawai-riwayat-umak.datatable');
         Route::post('/pegawai-riwayat-umak/kalkulasi-umak', [PegawaiRiwayatUmakController::class, 'kalkulasiUmak'])->name('pegawai-riwayat-umak.kalkulasi-umak');
         Route::resource('/pegawai-riwayat-umak', PegawaiRiwayatUmakController::class)->only(['index']);
+
+        //thr
+        Route::get('/export-to-excel/thr/{tahun}', [PegawaiRiwayatThrController::class, 'exportToExcel'])->name('pegawai-riwayat-thr.export-excel-thr');
+        Route::get('/export-to-excel/thr/{tahun}/{unitKerjaId}', [PegawaiRiwayatThrController::class, 'exportToExcelDua'])->name('pegawai-riwayat-thr.export-excel-thr-dua');
+        Route::post('/pegawai-riwayat-thr/datatable', [PegawaiRiwayatThrController::class, 'datatable'])->name('pegawai-riwayat-thr.datatable');
+        Route::post('/pegawai-riwayat-thr/kalkulasi-thr', [PegawaiRiwayatThrController::class, 'kalkulasiThr'])->name('pegawai-riwayat-thr.kalkulasi-thr');
+        Route::resource('/pegawai-riwayat-thr', PegawaiRiwayatThrController::class)->only(['index']);
+
+        //gaji 13
+        Route::get('/export-to-excel/gajiplus/{tahun}', [PegawaiRiwayatGajiplusController::class, 'exportToExcel'])->name('pegawai-riwayat-gajiplus.export-excel-gajiplus');
+        Route::get('/export-to-excel/gajiplus/{tahun}/{unitKerjaId}', [PegawaiRiwayatGajiplusController::class, 'exportToExcelDua'])->name('pegawai-riwayat-gajiplus.export-excel-gajiplus-dua');
+        Route::post('/pegawai-riwayat-gajiplus/datatable', [PegawaiRiwayatGajiplusController::class, 'datatable'])->name('pegawai-riwayat-gajiplus.datatable');
+        Route::post('/pegawai-riwayat-gajiplus/kalkulasi-gajiplus', [PegawaiRiwayatGajiplusController::class, 'kalkulasiGajiplus'])->name('pegawai-riwayat-gajiplus.kalkulasi-gajiplus');
+        Route::resource('/pegawai-riwayat-gajiplus', PegawaiRiwayatGajiplusController::class)->only(['index']);
     });
 
     //master data
@@ -149,8 +211,14 @@ Route::middleware('auth')->group(function () {
         Route::post('/tukin/datatable', [TukinController::class, 'datatable'])->name('tukin.datatable');
         Route::resource('/tukin', TukinController::class);
 
-        Route::post('/pegawai-riwayat-golongan/datatable', [PegawaiRiwayatGolonganController::class, 'datatable'])->name('pegawai-riwayat-golongan.datatable');
-        Route::resource('/pegawai-riwayat-golongan', PegawaiRiwayatGolonganController::class);
+        Route::post('/tunjangan-beras/datatable', [TunjanganBerasController::class, 'datatable'])->name('tunjangan-beras.datatable');
+        Route::resource('/tunjangan-beras', TunjanganBerasController::class);
+
+        Route::post('/aturan-thr-gajiplus/datatable', [AturanThrGajiplusController::class, 'datatable'])->name('aturan-thr-gajiplus.datatable');
+        Route::resource('/aturan-thr-gajiplus', AturanThrGajiplusController::class);
+
+        Route::post('/ruang-rapat/datatable', [RuangRapatController::class, 'datatable'])->name('ruang-rapat.datatable');
+        Route::resource('/ruang-rapat', RuangRapatController::class);
         //
     });
 
@@ -169,27 +237,35 @@ Route::middleware('auth')->group(function () {
         Route::get('/anak/create/{pegawai_id}', [AnakController::class, 'create'])->name('anak.create');
         Route::post('/anak/datatable', [AnakController::class, 'datatable'])->name('anak.datatable');
         Route::resource('/anak', AnakController::class)->except(['create', 'index']);
+        Route::get('/anak/verifikasi/{id}', [AnakController::class, 'verifikasi_sdmoh'])->name('anak.verifikasi-sdmoh');
+
 
         // pasangan
 
         Route::get('/pasangan/create/{pegawai_id}', [SuamiIstriController::class, 'create'])->name('pasangan.create');
         Route::post('/pasangan/datatable', [SuamiIstriController::class, 'datatable'])->name('pasangan.datatable');
         Route::resource('/pasangan', SuamiIstriController::class)->except(['create', 'index']);
+        Route::get('/pasangan/verifikasi/{id}', [SuamiIstriController::class, 'verifikasi_sdmoh'])->name('pasangan.verifikasi-sdmoh');
+
         // Pendidikan
 
         Route::get('/pendidikan/create/{pegawai_id}', [RiwayatPendidikanController::class, 'create'])->name('pendidikan.create');
         Route::post('/pendidikan/datatable', [RiwayatPendidikanController::class, 'datatable'])->name('pendidikan.datatable');
         Route::resource('/pendidikan', RiwayatPendidikanController::class)->except(['create', 'index']);
+        Route::get('/pendidikan/verifikasi/{id}', [RiwayatPendidikanController::class, 'verifikasi_sdmoh'])->name('pendidikan.verifikasi-sdmoh');
 
         // Alamat
 
         Route::post('/alamat-by-pegawai', [PegawaiAlamatController::class, 'getAlamatByPegawaiId'])->name('alamat.get-data-by-pegawai-id');
         Route::resource('/alamat', PegawaiAlamatController::class)->only(['store']);
+        Route::get('/alamat/verifikasi/{id}', [PegawaiAlamatController::class, 'verifikasi_sdmoh'])->name('alamat.verifikasi-sdmoh');
 
         // Diklat
         Route::post('/diklat/datatable', [PegawaiDiklatController::class, 'datatable'])->name('diklat.datatable');
         Route::get('/diklat/create/{pegawai_id}', [PegawaiDiklatController::class, 'create'])->name('diklat.create');
         Route::resource('/diklat', PegawaiDiklatController::class)->except('create');
+        Route::get('/diklat/verifikasi/{id}', [PegawaiDiklatController::class, 'verifikasi_sdmoh'])->name('diklat.verifikasi-sdmoh');
+
 
         // TMT Gaji
         Route::post('/tmt-gaji/tmt-gaji-by-id', [PegawaiTmtGajiController::class, 'getTmtGajiById'])->name('tmt-gaji.get-tmt-gaji-by-id');
@@ -204,6 +280,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/riwayat-jabatan/show/{id}', [RiwayatJabatanController::class, 'show'])->name('riwayat-jabatan.show');
         Route::get('/riwayat-jabatan/get-fungsional-umum', [RiwayatJabatanController::class, 'get_fungsional_umum'])->name('riwayat-jabatan.get_fungsional_umum');
         Route::get('/riwayat-jabatan/get-fungsional-tertentu', [RiwayatJabatanController::class, 'get_fungsional_tertentu'])->name('riwayat-jabatan.get_fungsional_tertentu');
+        Route::get('/riwayat-jabatan/get-eselon-satu', [RiwayatJabatanController::class, 'get_eselon_satu'])->name('riwayat-jabatan.get_eselon_satu');
         Route::get('/riwayat-jabatan/get-eselon-dua', [RiwayatJabatanController::class, 'get_eselon_dua'])->name('riwayat-jabatan.get_eselon_dua');
 
         // Pegawai
@@ -268,6 +345,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/', [PegawaiRiwayatThpController::class, 'index'])->name('penghasilan.index');
         Route::get('/show/gaji/{id}', [PegawaiRiwayatThpController::class, 'gaji_detail'])->name('penghasilan.gaji-detail');
         Route::get('/show/tukin/{id}', [PegawaiRiwayatThpController::class, 'tukin_detail'])->name('penghasilan.tukin-detail');
+        Route::get('/show/umak/{id}', [PegawaiRiwayatThpController::class, 'umak_detail'])->name('penghasilan.umak-detail');
         Route::get('/show/{id}', [PegawaiRiwayatThpController::class, 'show'])->name('penghasilan.show');
         Route::post('/datatable', [PegawaiRiwayatThpController::class, 'datatable'])->name('penghasilan.datatable');
         Route::post('/datatable_show', [PegawaiRiwayatThpController::class, 'datatable_show'])->name('penghasilan.datatable_show');
@@ -278,6 +356,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/esselon2/penghasilan/show/{id}', [PegawaiRiwayatThpController::class, 'show_esselon'])->name('penghasilan.show-esselon');
     Route::get('/esselon2/penghasilan/show/gaji/{id}', [PegawaiRiwayatThpController::class, 'gaji_detail_esselon'])->name('penghasilan.gaji-detail-esselon');
     Route::get('/esselon2/penghasilan/show/tukin/{id}', [PegawaiRiwayatThpController::class, 'tukin_detail_esselon'])->name('penghasilan.tukin-detail-esselon');
+    Route::get('/esselon2/penghasilan/show/umak/{id}', [PegawaiRiwayatThpController::class, 'umak_detail_esselon'])->name('penghasilan.umak-detail-esselon');
 });
 
 
