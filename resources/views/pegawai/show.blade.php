@@ -51,7 +51,7 @@
                         <li class="nav-item">
 
                             <a class="nav-link" id="pills-jabatan-tab" data-toggle="pill"
-                                href="{{ route('riwayat-jabatan.show', $pegawai->id) }}" role="tab" aria-controls="pills-jabatan" aria-selected="true">Jabatan</a>
+                                href="#pills-jabatan" role="tab" aria-controls="pills-jabatan" aria-selected="true">Jabatan</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" id="pills-diklat-tab" data-toggle="pill" href="#pills-diklat" role="tab"
@@ -1185,7 +1185,6 @@
                 get_table_jabatan(url)
                 $(this).tab('show')
             }else if (tab_id == 'pills-tmt-gaji-tab') {
-
                 url = "{{ route('tmt-gaji.datatable') }}"
                 pegawai_id = "{{ $pegawai->id }}"
                 get_table_tmt_gaji(url, pegawai_id)
