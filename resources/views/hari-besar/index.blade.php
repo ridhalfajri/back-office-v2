@@ -13,18 +13,27 @@
 @endpush
 
 @push('breadcrumb')
-        <div class="breadcrumb">
-            <a href="/" class="btn btn-link"><i class="fa fa-home"></i> Home</a>
-            <div class="btn">></div>
-            <a href="{{ route('hari-besar.index') }}" class="btn btn-link"><i class="fa fa-list"></i> Hari Besar</a>
-            <div class="btn">></div>
-            <a href="/presensi/hari-besar/create" class="btn btn-link"><i class="fa fa-plus"></i> Hari Besar Baru</a>
-        </div>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/"><i class="fa fa-home"></i></a></li>
+                <li class="breadcrumb-item"><a href="#"> Hari Besar</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ $title }}</li>
+            </ol>
+        </nav>
+
 @endpush
 
 @section('content')
     <div class="section-body">
     <div class="card">
+        <div class="card-header">
+            <h4 class="card-title">
+                <button type="button" class="btn btn-xs btn-primary" id="btn-add" onclick="window.location.href='{{ route("hari-besar.create") }}'">
+                    <i class="fa fa-plus"> Hari Besar Baru</i>
+                </button>
+            </h4>
+        </div>
+
         <div class="card-body">
             <!-- /.dropdown js__dropdown -->
             <table id="tbl-data" class="table table-striped table-bordered display" style="width:100%">
