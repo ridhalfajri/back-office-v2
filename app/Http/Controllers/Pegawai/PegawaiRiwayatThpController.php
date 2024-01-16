@@ -12,10 +12,13 @@ use App\Models\PegawaiAnak;
 use App\Models\PegawaiBpjsLainnya;
 use App\Models\PegawaiRiwayatJabatan;
 use App\Models\PegawaiRiwayatThp;
+use App\Models\PegawaiRiwayatUmak;
 use App\Models\PegawaiSuamiIstri;
 use App\Models\PegawaiTmtGaji;
 use App\Models\PrePotonganTukin;
 use App\Models\Presensi;
+use App\Models\PreTubel;
+use App\Models\TunjanganBeras;
 use App\Models\UnitKerja;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -28,7 +31,7 @@ class PegawaiRiwayatThpController extends Controller
     public function index()
     {
         $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
-        $this->authorize('kabiro', $kabiro);
+        $this->authorize('admin_sdmoh', $kabiro);
         $title = 'Pegawai';
         $unit_kerja = UnitKerja::select('id', 'nama')->limit(22)->get();
         return view('penghasilan.index', compact('title', 'unit_kerja'));
@@ -67,7 +70,12 @@ class PegawaiRiwayatThpController extends Controller
     }
     public function datatable_show(Request $request)
     {
-        $pegawai = PegawaiRiwayatThp::select('pegawai_riwayat_thp.*', 'pegawai_riwayat_thp.id AS id_thp', 'pegawai_riwayat_umak.total', 'pegawai_riwayat_umak.id AS id_umak')
+        $pegawai = PegawaiRiwayatThp::select(
+            'pegawai_riwayat_thp.*',
+            'pegawai_riwayat_thp.id AS id_thp',
+            'pegawai_riwayat_umak.id AS id_umak',
+            DB::raw('SUM(pegawai_riwayat_umak.total) as total')
+        )
             ->leftJoin('pegawai_riwayat_umak', function ($join) {
                 // $join->on(DB::raw('pegawai_riwayat_umak.bulan COLLATE utf8mb4_unicode_ci'), '=', DB::raw('pegawai_riwayat_thp.bulan COLLATE utf8mb4_unicode_ci'))
                 //     ->where(DB::raw('pegawai_riwayat_umak.tahun COLLATE utf8mb4_unicode_ci'), '=', DB::raw('pegawai_riwayat_thp.tahun COLLATE utf8mb4_unicode_ci'))
@@ -147,8 +155,9 @@ class PegawaiRiwayatThpController extends Controller
 
     public function gaji_detail($id)
     {
-        $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
-        $this->authorize('kabiro', $kabiro);
+        $pegawai = PegawaiRiwayatThp::where('id', $id)->select('pegawai_id')->first();
+        $cek_pegawai = Pegawai::where('id', $pegawai->pegawai_id)->first();
+        $this->authorize('personal', $cek_pegawai);
         $title = 'Gaji';
         $gaji = PegawaiRiwayatThp::where('pegawai_riwayat_thp.id', $id)
             ->select(
@@ -181,8 +190,9 @@ class PegawaiRiwayatThpController extends Controller
     }
     public function tukin_detail($id)
     {
-        $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
-        $this->authorize('kabiro', $kabiro);
+        $pegawai = PegawaiRiwayatThp::where('id', $id)->select('pegawai_id')->first();
+        $cek_pegawai = Pegawai::where('id', $pegawai->pegawai_id)->first();
+        $this->authorize('personal', $cek_pegawai);
 
         $title = "Tukin Detail";
         $tukin = PegawaiRiwayatThp::where('pegawai_riwayat_thp.id', $id)->select('tunjangan_kinerja', 'potongan_tukin', 'bulan', 'tahun', 'p.nama_depan', 'p.nama_belakang', 'p.nip', 'p.email_kantor')
@@ -196,10 +206,70 @@ class PegawaiRiwayatThpController extends Controller
 
         return view('penghasilan.tukin-detail', compact('title', 'tukin'));
     }
+
+    //indrawan
+    public function umak_detail($id)
+    {
+        $pegawai = PegawaiRiwayatUmak::where('id', $id)->select('pegawai_id')->first();
+        $cek_pegawai = Pegawai::where('id', $pegawai->pegawai_id)->first();
+        $this->authorize('personal', $cek_pegawai);
+        //where('pegawai_riwayat_umak.id', $id)
+        $title = "Uang Makan Detail";
+
+        //cek period
+        $cekPeriodUmak = PegawaiRiwayatUmak::where('id', $id)->first();
+
+        //cek double/tidak
+        $rowUmak = PegawaiRiwayatUmak::where('bulan', $cekPeriodUmak->bulan)
+            ->where('tahun', $cekPeriodUmak->tahun)
+            ->count();
+
+        $umak = [];
+        if ($rowUmak == 1) {
+            $umak = PegawaiRiwayatUmak::where('pegawai_riwayat_umak.bulan', $cekPeriodUmak->bulan)
+                ->where('pegawai_riwayat_umak.tahun', $cekPeriodUmak->tahun)
+                ->select(
+                    'p.nama_depan',
+                    'p.nama_belakang',
+                    'p.nip',
+                    'p.email_kantor',
+                    'um.nominal',
+                    DB::raw('SUM(pegawai_riwayat_umak.jumlah_hari_masuk) as jumlah_hari_masuk'),
+                    DB::raw('SUM(pegawai_riwayat_umak.total) as total')
+                )
+                ->leftJoin('pegawai AS p', 'p.id', '=', 'pegawai_riwayat_umak.pegawai_id')
+                ->leftJoin('uang_makan AS um', 'um.id', '=', 'pegawai_riwayat_umak.uang_makan_id')
+                ->first();
+        }
+
+        if ($rowUmak == 2) {
+            $umak = PegawaiRiwayatUmak::where('pegawai_riwayat_umak.bulan', $cekPeriodUmak->bulan)
+                ->where('pegawai_riwayat_umak.tahun', $cekPeriodUmak->tahun)
+                ->select(
+                    'p.nama_depan',
+                    'p.nama_belakang',
+                    'p.nip',
+                    'p.email_kantor',
+                    DB::raw('SUM(um.nominal)/2 as nominal'),
+                    DB::raw('SUM(pegawai_riwayat_umak.jumlah_hari_masuk) as jumlah_hari_masuk'),
+                    DB::raw('SUM(pegawai_riwayat_umak.total) as total')
+                )
+                ->leftJoin('pegawai AS p', 'p.id', '=', 'pegawai_riwayat_umak.pegawai_id')
+                ->leftJoin('uang_makan AS um', 'um.id', '=', 'pegawai_riwayat_umak.uang_makan_id')
+                ->first();
+        }
+
+        $monthName = date("F", strtotime("$cekPeriodUmak->tahun-$cekPeriodUmak->bulan-01"));
+        $umak->periode = Carbon::parse($monthName)->translatedFormat('F') . ' - ' . $cekPeriodUmak->tahun;
+
+        return view('penghasilan.umak-detail', compact('title', 'umak'));
+    }
+    //
+
     public function generate_tukin(Request $request)
     {
         $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
-        $this->authorize('kabiro', $kabiro);
+        $this->authorize('admin_sdmoh', $kabiro);
 
         $split_tanggal = explode(" - ", $request->tanggal);
         $tanggal_mulai = $split_tanggal[0];
@@ -210,9 +280,25 @@ class PegawaiRiwayatThpController extends Controller
             return response()->json(['errors' => ['exists' => 'Tukin pada bulan ' . Carbon::parse($waktu)->translatedFormat('F') . ' sudah ada']]);
         }
         try {
+            //validasi tanggal awal 21 dan akhir 20
+            $tglAwal = date('d', strtotime($tanggal_mulai));
+            $tglAkhir = date('d', strtotime($tanggal_akhir));
+            if ($tglAwal != 21 || $tglAkhir != 20) {
+                //keluarkan pop up warning
+                return response()->json(['errors' => ['exists' => 'Tanggal awal tidak 20 atau Tanggal akhir tidak 21!']]);
+            }
 
             //!DATA DUMMY
-            $all_pegawai = Pegawai::where('status_dinas', 1)->where('id', 492)->get();
+            $all_pegawai = Pegawai::where('pegawai.status_dinas', 1)
+                ->select('pegawai.*')
+                ->leftJoin('status_pegawai as sp', function ($join) {
+                    $join->on('sp.id', '=', 'pegawai.status_pegawai_id')
+                        ->whereIn('sp.nama', array('PNS', 'CPNS', 'PPPK'));
+                })
+                ->whereNull('pegawai.tanggal_berhenti')
+                ->whereNull('pegawai.tanggal_wafat')
+                //->where('pegawai.id', 492)
+                ->get();
             // $all_pegawai = Pegawai::where('status_dinas', 1)->get();
             DB::beginTransaction();
             foreach ($all_pegawai as $pegawai) {
@@ -229,18 +315,12 @@ class PegawaiRiwayatThpController extends Controller
                 $TUNJANGAN_ANAK = $this->_tunjangan_anak($NOMINAL_GAJI_POKOK, $count_anak);
 
                 //*TUNJANGAN JABATAN
-
                 $jabatan = PegawaiRiwayatJabatan::where('pegawai_id', $pegawai->id)->where('is_now', true)->where('is_plt', false)->first();
                 $TUNJANGAN_JABATAN = $this->_tunjangan_jabatan($pegawai, $gaji, $jabatan);
 
-                $jabatan_plt = PegawaiRiwayatJabatan::where('pegawai_id', $pegawai->id)->where('is_now', true)->where('is_plt', true)->first();
-                // if ($jabatan_plt != null) {
-                //     $nominal = JabatanStruktural::select('nominal_tunjangan')->where('id', $jabatan_plt->jabatan_unit_kerja->jabatan_tukin->jabatan_id)->first();
-                //     $TUNJANGAN_JABATAN += 0.5 * $nominal;
-                // }
-
                 //* TUNJANGAN KINERJA
                 $TUNJANGAN_KINERJA = $jabatan->jabatan_unit_kerja->jabatan_tukin->tukin->nominal;
+                $jabatan_plt = PegawaiRiwayatJabatan::where('pegawai_id', $pegawai->id)->where('is_now', true)->where('is_plt', true)->first();
                 if ($jabatan_plt != null) {
                     $TUNJANGAN_KINERJA += 0.2 * $jabatan_plt->jabatan_unit_kerja->jabatan_tukin->tukin->nominal;
                 }
@@ -251,7 +331,6 @@ class PegawaiRiwayatThpController extends Controller
                 $TUNJANGAN_BERAS = $this->_tunjangan_beras($pasangan, $count_anak);
 
                 //** JIKA CPNS*/
-
                 if ($pegawai->status_pegawai_id == 4) {
                     $PERSEN_CPNS = 0.8;
 
@@ -262,11 +341,43 @@ class PegawaiRiwayatThpController extends Controller
                     $TUNJANGAN_KINERJA = $PERSEN_CPNS * $TUNJANGAN_KINERJA;
                     $TUNJANGAN_BERAS = $PERSEN_CPNS * $TUNJANGAN_BERAS;
                 }
+
+                //untuk yang tubel
+                $cekTubel = PreTubel::where(function ($query) use ($tanggal_mulai, $tanggal_akhir) {
+                    $query->where('tanggal_awal', '<=', $tanggal_akhir)
+                        ->where('tanggal_akhir', '>=', $tanggal_mulai);
+                })
+                    ->where('is_active', '=', 'Y')
+                    ->where('no_enroll', '=', $pegawai->no_enroll)
+                    ->first();
+                if ($cekTubel != null) {
+                    $PERSEN_TUBEL = 0.8;
+
+                    $NOMINAL_GAJI_POKOK = $PERSEN_TUBEL * $NOMINAL_GAJI_POKOK;
+                    $TUNJANGAN_PASANGAN = $PERSEN_TUBEL * $TUNJANGAN_PASANGAN;
+                    $TUNJANGAN_ANAK = $PERSEN_TUBEL * $TUNJANGAN_ANAK;
+                    $TUNJANGAN_JABATAN = $PERSEN_TUBEL * $TUNJANGAN_JABATAN;
+                    $TUNJANGAN_KINERJA = $PERSEN_TUBEL * $TUNJANGAN_KINERJA;
+                    $TUNJANGAN_BERAS = $PERSEN_TUBEL * $TUNJANGAN_BERAS;
+                }
+
                 $SUM_THP = $NOMINAL_GAJI_POKOK + $TUNJANGAN_PASANGAN + $TUNJANGAN_ANAK + $TUNJANGAN_JABATAN + $TUNJANGAN_KINERJA + $TUNJANGAN_BERAS + $TUNJANGAN_PAJAK;
 
                 //* POTONGAN BPJS LAINNYA
                 //? BAGAIMANA MENGELOLA BPJS LAINNYA?
-                $bpjs_lainnya = PegawaiBpjsLainnya::where('pegawai_id', $pegawai->id)->first();
+                $bpjs_lainnya = PegawaiBpjsLainnya::where('pegawai_id', $pegawai->id)
+                ->where('status', '=', 3)
+                ->select(
+                    DB::raw('SUM(pegawai_bpjs_lainnya.total_mertua) as total_mertua'),
+                    DB::raw('SUM(pegawai_bpjs_lainnya.total_orang_tua) as total_orang_tua'),
+                    DB::raw('SUM(pegawai_bpjs_lainnya.total_kelebihan_anak) as total_kelebihan_anak')
+                )
+                ->first();
+
+                //dikomen indrawan dulu
+                // $bpjs_lainnya = PegawaiBpjsLainnya::where('pegawai_id', $pegawai->id)
+                //     ->where('is_active', true)
+                //     ->first();
                 if ($bpjs_lainnya != null) {
                     $count_bpjs_lainnya = $bpjs_lainnya->total_mertua + $bpjs_lainnya->total_orang_tua + $bpjs_lainnya->total_kelebihan_anak;
                     $POTONGAN_BPJS_LAINNYA = $count_bpjs_lainnya * 0.01 * $SUM_THP;
@@ -375,11 +486,11 @@ class PegawaiRiwayatThpController extends Controller
         } else if ($jabatan->jabatan_unit_kerja->jabatan_tukin->jenis_jabatan_id == 2) {
             //JFT
             $nominal = JabatanFungsional::select('nominal_tunjangan')->where('id', $jabatan->jabatan_unit_kerja->jabatan_tukin->jabatan_id)->first();
-            return $nominal;
+            return $nominal->nominal_tunjangan;
         } else if ($jabatan->jabatan_unit_kerja->jabatan_tukin->jenis_jabatan_id == 1) {
             //STRUKTURAL
             $nominal = JabatanStruktural::select('nominal_tunjangan')->where('id', $jabatan->jabatan_unit_kerja->jabatan_tukin->jabatan_id)->first();
-            return $nominal;
+            return $nominal->nominal_tunjangan;
         } else if ($jabatan->jabatan_unit_kerja->jabatan_tukin->jenis_jabatan_id == 4) {
             //JFU
             return $gaji->gaji->nominal_tunjangan_jabatan;
@@ -387,7 +498,11 @@ class PegawaiRiwayatThpController extends Controller
     }
     protected function _tunjangan_beras($pasangan, $count_anak)
     {
-        $HARGA_BERAS = 72420; // HARUSNYA DIMASUKIN KE DALAM TABEL MASTER HARGA BERAS
+        //$HARGA_BERAS = 72420; // HARUSNYA DIMASUKIN KE DALAM TABEL MASTER HARGA BERAS
+        //
+        $cekTuber = TunjanganBeras::where('is_active', '=', 'Y')
+            ->first();
+
         $keluarga = 1;
         if ($pasangan != null) {
             $keluarga++;
@@ -397,7 +512,8 @@ class PegawaiRiwayatThpController extends Controller
         } else if ($count_anak == 1) {
             $keluarga++;
         }
-        return $keluarga * $HARGA_BERAS;
+        //return $keluarga * $HARGA_BERAS;
+        return $keluarga * $cekTuber->total;
     }
 
     public function index_esselon()
@@ -453,7 +569,12 @@ class PegawaiRiwayatThpController extends Controller
     }
     public function datatable_show_esselon(Request $request)
     {
-        $pegawai = PegawaiRiwayatThp::select('pegawai_riwayat_thp.*', 'pegawai_riwayat_thp.id AS id_thp', 'pegawai_riwayat_umak.total', 'pegawai_riwayat_umak.id AS id_umak')
+        $pegawai = PegawaiRiwayatThp::select(
+            'pegawai_riwayat_thp.*',
+            'pegawai_riwayat_thp.id AS id_thp',
+            'pegawai_riwayat_umak.id AS id_umak',
+            DB::raw('SUM(pegawai_riwayat_umak.total) as total')
+        )
             ->leftJoin('pegawai_riwayat_umak', function ($join) {
                 // $join->on(DB::raw('pegawai_riwayat_umak.bulan COLLATE utf8mb4_unicode_ci'), '=', DB::raw('pegawai_riwayat_thp.bulan COLLATE utf8mb4_unicode_ci'))
                 //     ->where(DB::raw('pegawai_riwayat_umak.tahun COLLATE utf8mb4_unicode_ci'), '=', DB::raw('pegawai_riwayat_thp.tahun COLLATE utf8mb4_unicode_ci'))
@@ -582,4 +703,62 @@ class PegawaiRiwayatThpController extends Controller
 
         return view('penghasilan-esselon2.tukin-detail', compact('title', 'tukin'));
     }
+
+    //indrawan
+    public function umak_detail_esselon($id)
+    {
+        $atasan_langsung = PegawaiRiwayatJabatan::select('pegawai_id')->whereIn('tx_tipe_jabatan_id', [2, 5])->where('pegawai_id', auth()->user()->pegawai_id)->first();
+        $this->authorize('atasan_langsung', $atasan_langsung);
+        //where('pegawai_riwayat_umak.id', $id)
+        $title = "Uang Makan Detail";
+
+        //cek period
+        $cekPeriodUmak = PegawaiRiwayatUmak::where('id', $id)->first();
+
+        //cek double/tidak
+        $rowUmak = PegawaiRiwayatUmak::where('bulan', $cekPeriodUmak->bulan)
+            ->where('tahun', $cekPeriodUmak->tahun)
+            ->count();
+
+        $umak = [];
+        if ($rowUmak == 1) {
+            $umak = PegawaiRiwayatUmak::where('pegawai_riwayat_umak.bulan', $cekPeriodUmak->bulan)
+                ->where('pegawai_riwayat_umak.tahun', $cekPeriodUmak->tahun)
+                ->select(
+                    'p.nama_depan',
+                    'p.nama_belakang',
+                    'p.nip',
+                    'p.email_kantor',
+                    'um.nominal',
+                    DB::raw('SUM(pegawai_riwayat_umak.jumlah_hari_masuk) as jumlah_hari_masuk'),
+                    DB::raw('SUM(pegawai_riwayat_umak.total) as total')
+                )
+                ->leftJoin('pegawai AS p', 'p.id', '=', 'pegawai_riwayat_umak.pegawai_id')
+                ->leftJoin('uang_makan AS um', 'um.id', '=', 'pegawai_riwayat_umak.uang_makan_id')
+                ->first();
+        }
+
+        if ($rowUmak == 2) {
+            $umak = PegawaiRiwayatUmak::where('pegawai_riwayat_umak.bulan', $cekPeriodUmak->bulan)
+                ->where('pegawai_riwayat_umak.tahun', $cekPeriodUmak->tahun)
+                ->select(
+                    'p.nama_depan',
+                    'p.nama_belakang',
+                    'p.nip',
+                    'p.email_kantor',
+                    DB::raw('SUM(um.nominal)/2 as nominal'),
+                    DB::raw('SUM(pegawai_riwayat_umak.jumlah_hari_masuk) as jumlah_hari_masuk'),
+                    DB::raw('SUM(pegawai_riwayat_umak.total) as total')
+                )
+                ->leftJoin('pegawai AS p', 'p.id', '=', 'pegawai_riwayat_umak.pegawai_id')
+                ->leftJoin('uang_makan AS um', 'um.id', '=', 'pegawai_riwayat_umak.uang_makan_id')
+                ->first();
+        }
+
+        $monthName = date("F", strtotime("$cekPeriodUmak->tahun-$cekPeriodUmak->bulan-01"));
+        $umak->periode = Carbon::parse($monthName)->translatedFormat('F') . ' - ' . $cekPeriodUmak->tahun;
+
+        return view('penghasilan-esselon2.umak-detail', compact('title', 'umak'));
+    }
+    //
 }

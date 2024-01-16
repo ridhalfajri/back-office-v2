@@ -262,7 +262,7 @@
     function delete_data(id) {
             return new Promise(function(resolve, reject) {
                 $.ajax({
-                    url: "{{ url('master/pegawai-riwayat-golongan') }}/" + id,
+                    url: "{{ url('pegawai-riwayat-golongan') }}/" + id,
                     method: 'POST',
                     headers: {
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'

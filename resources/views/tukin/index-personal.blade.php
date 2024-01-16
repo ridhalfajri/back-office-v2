@@ -1,0 +1,145 @@
+@extends('template')
+
+@push('style')
+<!-- Plugins css -->
+<link rel="stylesheet" href="{{ asset('assets/plugins/datatable/dataTables.bootstrap4.min.css') }}">
+<link rel="stylesheet"
+    href="{{ asset('assets/plugins/datatable/fixedeader/dataTables.fixedcolumns.bootstrap4.min.css') }}">
+<link rel="stylesheet"
+    href="{{ asset('assets/plugins/datatable/fixedeader/dataTables.fixedheader.bootstrap4.min.css') }}">
+
+    {{-- custom css datatable --}}
+{{-- <link rel="stylesheet" href="{{ asset('assets/plugins/datatable/custom.css') }}"> --}}
+<link rel="stylesheet" href="{{ asset('assets/plugins/sweetalert/sweetalert.css') }}">
+<!-- Toastr -->
+<link rel="stylesheet" href="{{ asset('assets/plugins/toastr/toastr.css') }}">
+
+@endpush
+
+@push('breadcrumb')
+        <ol class="breadcrumb custom-background-color">
+            <li class="breadcrumb-item"><a href="{{ route('dashboard') }}"><i class="fa fa-home"></i></a></li>
+            <!-- <li class="breadcrumb-item"><a href="#">Gaji</a></li>        -->
+            <li class="breadcrumb-item active" aria-current="page">{{ $title }}</li>
+        </ol>
+@endpush
+
+@section('content')
+<div class="container-fluid">
+    <div class="row clearfix">
+        <div class="col-lg-12">
+            <div class="card">
+                {{-- <div class="card-header">
+                    <h4 class="card-title">
+                        <button type="button" class="btn btn-xs btn-primary" id="btn-add"
+                        onclick="window.location.href = '{{ route('tukin.create') }}';">
+                        Tambah</button>
+                    </h4>
+                </div> --}}
+                <div class="card-body">
+                    <h5 class="box-title" style="text-align: center;"><b>List Info Grade Tukin</b></h5>
+                    <table id="tbl-data"
+                    class="table table-hover js-basic-example dataTable table_custom spacing5">
+                    <thead>
+                        <tr>
+                            <th class="font-weight-bold text-dark" style="width: 5%">No</th>
+                            <th class="font-weight-bold text-dark">Grade</th>
+                            <th class="font-weight-bold text-dark">Nominal</th>
+                            {{-- <th class="font-weight-bold text-dark">Aksi</th> --}}
+                        </tr>
+                    </thead>
+                    <tfoot>
+                        <tr>
+                            <th class="font-weight-bold text-dark">No</th>
+                            <th class="font-weight-bold text-dark">Grade</th>
+                            <th class="font-weight-bold text-dark">Nominal</th>
+                            {{-- <th class="font-weight-bold text-dark">Aksi</th> --}}
+                        </tr>
+                    </tfoot>
+                    <tbody>
+                    </tbody>
+                </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection
+
+@push('script')
+<!-- Data Tables -->
+    <script src="{{ asset('assets/bundles/dataTables.bundle.js') }}"></script>
+    <script src="{{ asset('assets/js/table/datatable.js') }}"></script>
+    <script src="{{ asset('assets/plugins/sweetalert/sweetalert.min.js') }}"></script>
+    <script src="{{ asset('assets/plugins/toastr/toastr.min.js') }}"></script>
+
+<script type="text/javascript">
+        "use strict"
+        let table;
+
+        $(function() {
+            table = $('#tbl-data').DataTable({
+                processing: true,
+                destroy: true,
+                serverSide: true,
+                deferRender: true,
+                responsive: true,
+                pageLength: 10,
+                paging: true,
+                searching: true,
+                ordering: true,
+                info: true,
+                autoWidth: false,
+                ajax: {
+                    url: '{{ route('tukin.datatable') }}',
+                    type: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    }
+                },
+                columns: [{
+                        data: 'no',
+                        name: 'no',
+                        class: 'text-center'
+                    },
+                    {
+                        data: 'grade',
+                        name: 'grade',
+                        class: 'text-center'
+                    },
+                    {
+                        data: 'nominal',
+                        name: 'nominal',
+                        class: 'text-center',
+                        render: $.fn.dataTable.render.number('.', ',', 2, 'Rp')
+                    },
+                    // {
+                    //     data: 'aksi',
+                    //     name: 'aksi',
+                    //     class: 'text-center'
+                    // },
+                ],
+                columnDefs: [{
+                    'sortable': false,
+                    'searchable': false,
+                    'targets': [0, -1]
+                }],
+                order: [
+                    [1, 'asc']
+                ]
+            });
+
+            table.on('draw.dt', function() {
+                var info = table.page.info();
+                table.column(0, {
+                    search: 'applied',
+                    order: 'applied',
+                    page: 'applied'
+                }).nodes().each(function(cell, i) {
+                    cell.innerHTML = i + 1 + info.start;
+                });
+            });
+    })
+</script>
+@endpush
+

@@ -7,6 +7,14 @@
             Lihat</a>
         <a href="{{ route('pendidikan.edit', $id) }}" class="dropdown-item"><i class="dropdown-icon fa fa-edit"></i>
             Edit</a>
+        @if ($is_verified != true)
+            @if (auth()->user()->pegawai->jabatan_sekarang->tx_tipe_jabatan_id == 7 ||
+                    auth()->user()->pegawai->jabatan_sekarang->tx_tipe_jabatan_id == 5)
+                <a href="{{ route('pendidikan.verifikasi-sdmoh', $id) }}" class="dropdown-item"><i
+                        class="dropdown-icon fe fe-check"></i>
+                    Verifikasi</a>
+            @endif
+        @endif
         <a href="javascript:void(0)" onclick="delete_pendidikan({{ $id }})" class="dropdown-item"><i
                 class="dropdown-icon fe fe-trash-2"></i>
             Hapus</a>

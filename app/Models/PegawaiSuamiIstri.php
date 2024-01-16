@@ -22,7 +22,7 @@ class PegawaiSuamiIstri extends Model implements HasMedia
     }
     public function pendidikan()
     {
-        return $this->belongsTo(Pendidikan::class);
+        return $this->belongsTo(TingkatPendidikan::class);
     }
     public function jenis_kawin()
     {

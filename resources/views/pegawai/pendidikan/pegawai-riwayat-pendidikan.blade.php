@@ -27,6 +27,7 @@
                                 <th>Pendidikan</th>
                                 <th>Nama Instansi</th>
                                 <th>Tanggal Ijazah</th>
+                                <th>Verifikasi</th>
                                 <th>Aksi</th>
                             </tr>
                         </thead>
@@ -35,6 +36,7 @@
                                 <th>No</th>
                                 <th>Pendidikan</th>
                                 <th>Tanggal Ijazah</th>
+                                <th>Verifikasi</th>
                                 <th>Aksi</th>
                             </tr>
                         </tfoot>

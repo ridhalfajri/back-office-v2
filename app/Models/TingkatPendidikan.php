@@ -16,4 +16,16 @@ class TingkatPendidikan extends Model
     {
         return $this->hasMany(Pendidikan::class);
     }
+    public function pegawai_riwayat_pendidikan()
+    {
+        return $this->hasMany(PegawaiRiwayatPendidikan::class);
+    }
+    public function pegawai_anak()
+    {
+        return $this->hasMany(PegawaiAnak::class);
+    }
+    public function pegawai_suami_istri()
+    {
+        return $this->hasMany(PegawaiSuamiIstri::class);
+    }
 }

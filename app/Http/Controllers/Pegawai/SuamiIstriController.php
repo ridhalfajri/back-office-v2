@@ -5,8 +5,9 @@ namespace App\Http\Controllers\Pegawai;
 use App\Http\Controllers\Controller;
 use App\Models\JenisKawin;
 use App\Models\Pegawai;
+use App\Models\PegawaiRiwayatJabatan;
 use App\Models\PegawaiSuamiIstri;
-use App\Models\Pendidikan;
+use App\Models\TingkatPendidikan;
 use Carbon\Carbon;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
@@ -31,7 +32,7 @@ class SuamiIstriController extends Controller
     {
         $title = "Pasangan";
         $pegawai = Pegawai::select('id', 'nama_depan', 'nama_belakang')->where('id', $pegawai_id)->first();
-        $pendidikan = Pendidikan::select('id', 'nama')->get();
+        $pendidikan = TingkatPendidikan::select('id', 'nama')->get();
         $jenis_kawin = JenisKawin::select('id', 'nama')->get();
         return view('pegawai.keluarga.create-pasangan', compact('title', 'pegawai', 'pendidikan', 'jenis_kawin'));
     }
@@ -107,7 +108,7 @@ class SuamiIstriController extends Controller
             $pasangan->tanggal_lahir = Carbon::parse($request->tanggal_lahir)->translatedFormat('Y-m-d');
             $pasangan->tanggal_kawin = Carbon::parse($request->tanggal_kawin)->translatedFormat('Y-m-d');
             $pasangan->no_kartu = $request->no_kartu;
-            $pasangan->is_pns = $request->is_pns;
+            $pasangan->status_pns = $request->is_pns;
             $pasangan->pendidikan_id = $request->pendidikan_id;
             $pasangan->pekerjaan = $request->pekerjaan;
             $pasangan->status_tunjangan = $request->status_tunjangan;
@@ -147,7 +148,7 @@ class SuamiIstriController extends Controller
                 'tanggal_lahir',
                 'tanggal_kawin',
                 'no_kartu',
-                'is_pns',
+                'status_pns',
                 'pendidikan_id',
                 'pekerjaan',
                 'status_tunjangan',
@@ -165,8 +166,16 @@ class SuamiIstriController extends Controller
             if ($pasangan->tmt_sk_cerai != null) {
                 $pasangan->tmt_sk_cerai = Carbon::parse($pasangan->tmt_sk_cerai)->translatedFormat('d-m-Y');
             }
-            $pasangan->media_buku_nikah = $pasangan->getMedia("media_buku_nikah")[0]->getUrl();
-            $pasangan->media_foto_pasangan = $pasangan->getMedia("media_foto_pasangan")[0]->getUrl();
+            if ($pasangan->hasMedia("media_buku_nikah")) {
+                $pasangan->media_buku_nikah = $pasangan->getMedia("media_buku_nikah")[0]->getUrl();
+            } else {
+                $pasangan->media_buku_nikah = null;
+            }
+            if ($pasangan->hasMedia("media_foto_pasangan")) {
+                $pasangan->media_foto_pasangan = $pasangan->getMedia("media_foto_pasangan")[0]->getUrl();
+            } else {
+                $pasangan->media_foto_pasangan = null;
+            }
             $pasangan->jenis_kawin;
             $pasangan->pendidikan;
             return response()->json(['result' => $pasangan]);
@@ -190,7 +199,7 @@ class SuamiIstriController extends Controller
             'tanggal_lahir',
             'tanggal_kawin',
             'no_kartu',
-            'is_pns',
+            'status_pns',
             'pendidikan_id',
             'pekerjaan',
             'status_tunjangan',
@@ -206,7 +215,7 @@ class SuamiIstriController extends Controller
         }
         $pasangan->media_buku_nikah = $pasangan->getMedia("media_buku_nikah")[0];
         $pasangan->media_foto_pasangan = $pasangan->getMedia("media_foto_pasangan")[0];
-        $pendidikan = Pendidikan::select('id', 'nama')->get();
+        $pendidikan = TingkatPendidikan::select('id', 'nama')->get();
         $jenis_kawin = JenisKawin::select('id', 'nama')->get();
         return view('pegawai.keluarga.edit-pasangan', compact('title', 'pasangan', 'pendidikan', 'jenis_kawin'));
     }
@@ -282,7 +291,7 @@ class SuamiIstriController extends Controller
             $pasangan->tanggal_lahir = Carbon::parse($request->tanggal_lahir)->translatedFormat('Y-m-d');
             $pasangan->tanggal_kawin = Carbon::parse($request->tanggal_kawin)->translatedFormat('Y-m-d');
             $pasangan->no_kartu = $request->no_kartu;
-            $pasangan->is_pns = $request->is_pns;
+            $pasangan->status_pns = $request->is_pns;
             $pasangan->pendidikan_id = $request->pendidikan_id;
             $pasangan->pekerjaan = $request->pekerjaan;
             $pasangan->status_tunjangan = $request->status_tunjangan;
@@ -290,6 +299,7 @@ class SuamiIstriController extends Controller
             $pasangan->tmt_sk_cerai = Carbon::parse($request->tmt_sk_cerai)->translatedFormat('Y-m-d');
             $pasangan->jenis_kawin_id = $request->jenis_kawin_id;
             $pasangan->no_buku_nikah = $request->no_buku_nikah;
+            $pasangan->is_verified = FALSE;
             try {
                 DB::transaction(function () use ($pasangan, $request) {
                     $pasangan->save();
@@ -340,12 +350,21 @@ class SuamiIstriController extends Controller
      */
     public function datatable(Request $request)
     {
-        $pasangan = PegawaiSuamiIstri::select('id', 'nama', 'nik', 'status_tunjangan')
+        $pasangan = PegawaiSuamiIstri::select('id', 'nama', 'nik', 'status_tunjangan', 'is_verified')
             ->where('pegawai_id', $request->pegawai_id)->orderBy('created_at', 'ASC');
         return DataTables::of($pasangan)
             ->addColumn('no', '')
             ->addColumn('aksi', 'pegawai.keluarga.aksi-pasangan')
             ->rawColumns(['aksi'])
             ->make(true);
+    }
+    public function verifikasi_sdmoh($id)
+    {
+        $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->first();
+        $this->authorize('admin_sdmoh', $kabiro);
+        $diklat = PegawaiSuamiIstri::where('id', $id)->first();
+        $diklat->is_verified = TRUE;
+        $diklat->save();
+        return back();
     }
 }

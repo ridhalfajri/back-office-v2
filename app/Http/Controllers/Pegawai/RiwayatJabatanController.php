@@ -72,7 +72,7 @@ class RiwayatJabatanController extends Controller
 
         $unit_kerja = DB::table('unit_kerja as a')
             ->join('hirarki_unit_kerja as b', 'a.id', '=', 'b.child_unit_kerja_id')
-            ->select('a.nama', 'b.child_unit_kerja_id')
+            ->select('a.nama', 'b.id')
             ->get();
 
         return view('riwayat_jabatan.create', compact('title', 'pegawai', 'tx_tipe_jabatan', 'grade_tukin', 'unit_kerja'));
@@ -137,9 +137,9 @@ class RiwayatJabatanController extends Controller
             $pegawai_riwayat_jabatan->jabatan_unit_kerja_id = $jabatan_unit_kerja->id;
             $pegawai_riwayat_jabatan->no_sk = $request->no_sk;
             $pegawai_riwayat_jabatan->no_pelantikan = $request->no_pelantikan;
-            $pegawai_riwayat_jabatan->tanggal_sk = $request->tanggal_sk;
-            $pegawai_riwayat_jabatan->tanggal_pelantikan = $request->tanggal_pelantikan;
-            $pegawai_riwayat_jabatan->tmt_jabatan = $request->tmt_jabatan;
+            $pegawai_riwayat_jabatan->tanggal_sk = Carbon::parse($request->tanggal_sk)->translatedFormat('Y-m-d');
+            $pegawai_riwayat_jabatan->tanggal_pelantikan = Carbon::parse($request->tanggal_pelantikan)->translatedFormat('Y-m-d');
+            $pegawai_riwayat_jabatan->tmt_jabatan = Carbon::parse($request->tmt_jabatan)->translatedFormat('Y-m-d');
             $pegawai_riwayat_jabatan->pejabat_penetap = $request->pejabat_penetap;
             $pegawai_riwayat_jabatan->is_plt = $request->is_plt;
             $pegawai_riwayat_jabatan->is_now = 1;
@@ -220,6 +220,27 @@ class RiwayatJabatanController extends Controller
                 ->select('id', 'nama')
                 ->where('nama', 'like', '%' . $q . '%')
                 ->where('kode_struktural', 2)
+                ->limit(10)
+                ->get();
+
+            foreach ($data as $key => $value) {
+                $new1 = array('id' => $value->id, 'name' => $value->nama);
+                array_push($result, $new1);
+            }
+
+            print(json_encode($result));
+        }
+    }
+
+    public function get_eselon_satu(Request $request)
+    {
+        $q = $request->input('q');
+        $result = [];
+        if (isset($q) && $q != '') {
+            $data = DB::table('jabatan_struktural')
+                ->select('id', 'nama')
+                ->where('nama', 'like', '%' . $q . '%')
+                ->where('kode_struktural', 1)
                 ->limit(10)
                 ->get();
 
