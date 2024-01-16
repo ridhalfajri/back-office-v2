@@ -2,6 +2,9 @@
 @push('style')
     <link rel="stylesheet" href="{{ asset('assets/plugins/sweetalert/sweetalert.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/plugins/select2-4.0.13/dist/css/select2.min.css') }}">
+    {{-- DateRange --}}
+    <link rel="stylesheet" href="{{ asset('assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker3.min.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/plugins/daterangepicker/daterangepicker.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/css/ijin.css') }}">
 @endpush
 
@@ -9,7 +12,7 @@
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="/"><i class="fa fa-home"></i></a></li>
-            <li class="breadcrumb-item"><a href="/presensi/pre-ijin">Riwayat Ijin Kehadiran</a></li>
+            <li class="breadcrumb-item"><a href="{{ route('pre-dinas-luar.index') }}">Riwayat Dinas Luar</a></li>
             <li class="breadcrumb-item active" aria-current="page">{{ $title }}</li>
         </ol>
     </nav>
@@ -21,7 +24,7 @@
             <div class="card-body">
                 <div class="bg-white">
                     <div class="btn-group btn-breadcrumb">
-                         <h3>Form Pengajuan Ijin</h3>
+                         <h3>Ubah Data Pengajuan Dinas Luar</h3>
                     </div>
                 </div>
             </div>
@@ -29,8 +32,9 @@
             <div class="card-body">
                 <div class="student-info">
 
-                    <form class="needs-validation" id="preIjinForm" method="post"  action="{{ route('pre-ijin.store') }}"  accept-charset="utf-8" novalidate>
+                    <form class="needs-validation" id="preForm" method="post"  action="{{ route('pre-dinas-luar.update',$preDinasLuar->id) }}" enctype="multipart/form-data"  accept-charset="utf-8" novalidate>
                         @csrf
+                        @method('PUT')
 
                         @php
                             $jabatan = '';
@@ -141,49 +145,64 @@
                             @break
                         @endforeach
 
-                        <div class="row clearfix">
+                        <div class="row">
                             <div class="col-sm-2">
-                                <strong>Jenis Ijin  <span class="text-danger"><sup>*</sup></span></strong>
+                                <strong>Jenis Dinas<span class="text-danger"><sup>*</sup></span></strong>
                             </div>
-                            <div class="col-sm-4">
-                                <div class="form-group @error('jenis_ijin') has-error @enderror">
-                                    <select class="form-control btn" id="jenis_ijin" name="jenis_ijin" required>
-                                        <option value="" selected disabled>Pilih Jenis Ijin</option>
-                                        <option value="1" {{ old('jenis_ijin') == 1 ? 'selected' : '' }}> Ijin Datang Terlambat</option>
-                                        <option value="2" {{ old('jenis_ijin') == 2 ? 'selected' : '' }}> Ijin Pulang Awal</option>
-                                        <option value="3" {{ old('jenis_ijin') == 3 ? 'selected' : '' }}> Ijin Datang Terlambat dan Pulang Awal</option>
+                            <div class="col-sm-2">
+                                <div class="form-group @error('jenis_dinas') has-error @enderror">
+                                    <select class="form-control" id="jenis_dinas" name="jenis_dinas" required>
+                                        <option value="" selected disabled>Pilih Jenis Dinas</option>
+                                        <option value="DINAS DALAM KOTA" {{ old('jenis_dinas') == "DINAS DALAM KOTA" ||  $preDinasLuar->jenis_dinas == "DINAS DALAM KOTA" ? 'selected' : '' }}> DINAS DALAM KOTA</option>
+                                        <option value="DINAS LUAR KOTA" {{ old('jenis_dinas') == "DINAS LUAR KOTA" ||  $preDinasLuar->jenis_dinas == "DINAS LUAR KOTA" ? 'selected' : '' }}> DINAS LUAR KOTA</option>
                                     </select>
                                     <div class="invalid-feedback">
-                                        Silakan Pilih Jenis Ijin
+                                        Silakan Pilih Jenis Dinas
                                     </div>
-                                    @error('jenis_ijin')
+                                    @error('jenis_dinas')
                                         <small class="text-danger">{{ $message }}</small>
                                     @enderror
                                 </div>
                             </div>
+                        </div>
 
+                        <div class="row">
                             <div class="col-sm-2">
-                                <strong>Tanggal <span class="text-danger"><sup>*</sup></span></strong>
+                                <strong>Nama Kegiatan <span class="text-danger"><sup>*</sup></span></strong>
                             </div>
-                            <div class="col-sm-4">
-                                <div class="form-group @error('tanggal') has-error @enderror">
-                                    <input class="form-control" type="date" id="tanggal" name = "tanggal" value="{{ old('tanggal') }}" placeholder="Tanggal" autocomplete="off" required/>
-                                    @error('tanggal')
+                            <div class="col-sm-10">
+                                <div class="form-group @error('nama_kegiatan') has-error @enderror">
+                                    <input class="form-control" type="text" name="nama_kegiatan" id="nama_kegiatan" value="{{ old('nama_kegiatan') ?? $preDinasLuar->nama_kegiatan }}" required>
+                                    @error('nama_kegiatan')
                                         <small class="text-danger">{{ $message }}</small>
                                     @enderror
                                 </div>
                             </div>
-
                         </div>
 
                         <div class="row clearfix">
                             <div class="col-sm-2">
-                                <strong>Keterangan/Alasan <span class="text-danger"><sup>*</sup></span></strong>
+                                <strong>Lokasi <span class="text-danger"><sup>*</sup></span></strong>
                             </div>
-                            <div class="col-10 col-lg-10 col-md-10">
-                                <div class="form-group @error('keterangan') has-error @enderror">
-                                    <textarea class="form-control" id="keterangan" name = "keterangan"maxlength = "65535" placeholder="Keterangan" autocomplete="off" required>{{ old('keterangan') }}</textarea>
-                                    @error('keterangan')
+                            <div class="col-sm-10">
+                                <div class="form-group @error('lokasi') has-error @enderror">
+                                    <input class="form-control" type="text" name="lokasi" id="lokasi" value="{{ old('lokasi') ?? $preDinasLuar->lokasi }}" required>
+                                    @error('lokasi')
+                                        <small class="text-danger">{{ $message }}</small>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="row">
+                            <div class="col-sm-2">
+                                <strong>Tanggal Dinas Luar <span class="text-danger"><sup>*</sup></span></strong>
+                            </div>
+                            <div class="col-sm-10">
+                                <div class="form-group @error('tanggal_dinas') has-error @enderror">
+                                    <input class="form-control input-daterange-datepicker" type="text" name="tanggal_dinas" id="tanggal_dinas" value="{{ old('tanggal_dinas') ?? $preDinasLuar->tanggal_dinas }}" required>
+                                    @error('tanggal_dinas')
                                         <small class="text-danger">{{ $message }}</small>
                                     @enderror
                                 </div>
@@ -191,6 +210,35 @@
                         </div>
 
                         <div class="row rowdata">
+                            <div class="col-sm-2">
+                                <strong>Unggah Surat Tugas (ST)  <span class="text-danger"><sup>*</sup></span></strong>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="form-group @error('media_st_dinas_luar') has-error @enderror">
+                                    <input type="file" name="media_st_dinas_luar" id="media_st_dinas_luar" accept="image/*,.pdf, .doc, .docx" required>
+                                    <div class="invalid-feedback">
+                                        Silakan Upload File Yang Berisi Tangkapan Layar Daftar Presensi
+                                    </div>
+                                    @error('media_st_dinas_luar')
+                                        <small class="text-danger">{{ $message }}</small>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="col-sm-2">
+                                <strong>Unggah Dokumen Referensi (Optional)</strong>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="form-group @error('media_ref_dinas_luar') has-error @enderror">
+                                    <input type="file" name="media_ref_dinas_luar" id="media_ref_dinas_luar" accept="image/*,.pdf, .doc, .docx">
+                                    <div class="invalid-feedback">
+                                        Silakan Upload File Dokumen Referensi Seperti Nota Dinas atau Undangan
+                                    </div>
+                                    @error('media_ref_dinas_luar')
+                                        <small class="text-danger">{{ $message }}</small>
+                                    @enderror
+                                </div>
+                            </div>
                         </div>
 
                         <button type="submit" class="btn btn-primary btn-sm waves-effect waves-light"><i class="fa fa-check-square" aria-hidden="true"></i> Simpan</button>
@@ -212,6 +260,12 @@
 @push('script')
     <script src="{{ asset('assets/plugins/sweetalert/sweetalert.min.js') }}"></script>
     <script src="{{ asset('assets/plugins/select2-4.0.13/dist/js/select2.min.js') }}"></script>
+    {{-- DateRange --}}
+    <script src="{{ asset('assets/plugins/daterangepicker/moment.js') }}"></script>
+    <script src="{{ asset('assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
+    <script src="{{ asset('assets/plugins/daterangepicker/daterangepicker.js') }}"></script>
+
+
     <script>
         (function () {
           'use strict'
@@ -252,10 +306,21 @@
         })();
 
         $(document).ready(function() {
-            $('#jenis_ijin').select2({
+            $('#jenis').select2({
                 width: '100%',
             });
         });
+
+        $('.input-daterange-datepicker').daterangepicker({
+            buttonClasses: ['btn', 'btn-sm'],
+            applyClass: 'btn-primary',
+            cancelClass: 'btn-secondary',
+            locale: {
+                format: 'DD-MM-YYYY'
+            },
+            autoApply: false
+        });
+
     </script>
 
 @endpush

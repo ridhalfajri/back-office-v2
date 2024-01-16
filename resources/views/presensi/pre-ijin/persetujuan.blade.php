@@ -15,11 +15,13 @@
 @endpush
 
 @push('breadcrumb')
-        <div class="breadcrumb">
-            <a href="/" class="btn btn-link"><i class="fa fa-home"></i> Home</a>
-            <div class="btn">></div>
-            <a href="{{ route('pre-ijin.index') }}" class="btn btn-link"><i class="fa fa-list"></i> Ijin Kehadiran</a>
-        </div>
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/"><i class="fa fa-home"></i></a></li>
+            <li class="breadcrumb-item"><a href="/presensi/pre-ijin">Riwayat Ijin Kehadiran</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ $title }}</li>
+        </ol>
+    </nav>
 @endpush
 
 @section('content')
@@ -289,7 +291,9 @@
 
     $(document).ready(function() {
         table = $('#tbl-data').DataTable();
-        $('#hirarki_unit_kerja_id').select2();
+        $('#hirarki_unit_kerja_id').select2({
+            width: '100%',
+        });
 
         var currentDate = new Date();
         // Set the date to the 1st day of the current month

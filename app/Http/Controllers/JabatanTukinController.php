@@ -13,6 +13,7 @@ use App\Models\Tukin;
 use App\Models\JenisJabatan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use stdClass;
 
 class JabatanTukinController extends Controller
 {
@@ -99,6 +100,16 @@ class JabatanTukinController extends Controller
                             WHEN a.jenis_jabatan_id = 4 THEN f.nama
                             ELSE NULL
                         END AS nama_jabatan
+
+                    '))
+                    ->addSelect(DB::raw('
+                        CASE
+                            WHEN a.jenis_jabatan_id = 1 THEN d.nominal_tunjangan
+                            WHEN a.jenis_jabatan_id = 2 THEN e.nominal_tunjangan
+                            WHEN a.jenis_jabatan_id = 4 THEN 0
+                            ELSE NULL
+                        END AS nominal_tunjangan
+
                     '))
                     ->join('jenis_jabatan as b', 'a.jenis_jabatan_id', '=', 'b.id')
                     ->join('tukin as c', 'a.tukin_id', '=', 'c.id')
@@ -126,7 +137,11 @@ class JabatanTukinController extends Controller
             //     $query->whereRaw("CONCAT('Rp. ', REPLACE(FORMAT(nominal, 0), ',', '.')) like ?", ["%$keyword%"])
             //           ->orWhereRaw("nominal LIKE ?", ["%$keyword%"]);
             // })
-
+            ->editColumn('nominal_tunjangan', function ($row) {
+                // Format the data as needed here
+                $nom =  (float)$row->nominal_tunjangan;
+                return "Rp " . number_format($nom, 0, ',', '.');
+            })
             ->rawColumns(['aksi'])
             ->make(true);
 
@@ -140,7 +155,7 @@ class JabatanTukinController extends Controller
     */
     public function create()
     {
-        $title = 'Tambah Data Tunjangan Kinerja Jabatan';
+        $title = 'Input Data Tunjangan Kinerja Jabatan';
         $jenisJabatan = JenisJabatan::where('nama', 'not like', '%Jabatan Rangkap%')->get();
         $tukin = Tukin::select('id', 'grade', DB::raw("REPLACE(FORMAT(nominal, 0), ',', '.') as nominal"))->get();
 
@@ -161,11 +176,13 @@ class JabatanTukinController extends Controller
                 'jabatan_id' => 'required|unique:jabatan_tukin,jabatan_id,NULL,id,jenis_jabatan_id,'.$request->jenis_jabatan_id.',tukin_id,'.$request->tukin_id,
                 'jenis_jabatan_id' => 'required',
                 'tukin_id' => 'required',
+                'nominal_tunjangan_jabatan' => 'required',
             ], [
-                'jabatan_id.required' => 'Kolom jabatan harus diisi.',
+                'jabatan_id.required' => 'Jabatan harus diisi.',
                 'jabatan_id.unique' => 'Jenis Jabatan, Nama Jabatan dan Tunjangan Kinerja Jabatan sudah ada.',
-                'jenis_jabatan_id.required' => 'Kolom jenis jabatan harus diisi.',
-                'tukin_id.required' => 'Kolom tukin harus diisi.',
+                'jenis_jabatan_id.required' => 'Jenis Jabatan harus diisi.',
+                'tukin_id.required' => 'Tunjangan Kinerja harus diisi.',
+                'nominal_tunjangan_jabatan.required' => 'Nominal Tunjangan Jabatan  harus diisi.',
             ]);
 
             $input = [];
@@ -174,10 +191,22 @@ class JabatanTukinController extends Controller
 			$input['tukin_id'] = $request->tukin_id;
             JabatanTukin::create($input);
 
+            if ( $request->jenis_jabatan_id === "1") {
+                $jabatan = JabatanStruktural::where('id', $request->jabatan_id)->first();
+                $jabatan->nominal_tunjangan =  preg_replace('/[^\d]/', '', $request->nominal_tunjangan_jabatan);
+                $jabatan->save();
+
+            } else if ( $request->jenis_jabatan_id === "2") {
+                $jabatan = JabatanFungsional::where('id', $request->jabatan_id)->first();
+                $jabatan->nominal_tunjangan =  preg_replace('/[^\d]/', '', $request->nominal_tunjangan_jabatan);
+                $jabatan->save();
+            }
+
             return redirect()->route('jabatan-tukin.index')
             ->with('success', 'Data Jabatan Tukin berhasil disimpan');
         }catch (QueryException $e) {
-            $msg = $e->getMessage();
+            $msg = 'Error : ' . class_basename(get_class($this)) . ' Method : ' . __FUNCTION__ . ' msg : ' . $e->getMessage();
+            Log::error($msg);
             return redirect()->route('jabatan-tukin.index')
             ->with('error', 'Simpan data Jabatan Tukin gagal, Err: ' . $msg);
         }
@@ -203,10 +232,22 @@ class JabatanTukinController extends Controller
     */
     public function edit(JabatanTukin $jabatanTukin)
     {
-        $title = 'Ubah Data Jabatan Tukin';
+
+        $title = 'Ubah Data Tunjangan Kinerja Jabatan';
         $jenisJabatan = JenisJabatan::where('nama', 'not like', '%Jabatan Rangkap%')->get();
         $tukin = Tukin::select('id', 'grade', DB::raw("REPLACE(FORMAT(nominal, 0), ',', '.') as nominal"))->get();
-        return view('jabatan-tukin.edit', compact('title','jabatanTukin','jenisJabatan','tukin'));
+        if ( $jabatanTukin->jenis_jabatan_id == 1) {
+            $jabatan = JabatanStruktural::where('id', $jabatanTukin->jabatan_id)->first();
+
+        } else if ( $jabatanTukin->jenis_jabatan_id == 2) {
+            $jabatan = JabatanFungsional::where('id', $jabatanTukin->jabatan_id)->first();
+        }else{
+             // Using stdClass
+            $jabatan = new stdClass();
+            $jabatan->nominal_tunjangan = 0;
+        }
+
+        return view('jabatan-tukin.edit', compact('title','jabatanTukin','jenisJabatan','tukin','jabatan'));
     }
 
     /**
@@ -224,11 +265,13 @@ class JabatanTukinController extends Controller
                 'jabatan_id' => 'required|unique:jabatan_tukin,jabatan_id,'.$request->id.',id,jenis_jabatan_id,'.$request->jenis_jabatan_id.',tukin_id,'.$request->tukin_id,
                 'jenis_jabatan_id' => 'required',
                 'tukin_id' => 'required',
+                'nominal_tunjangan_jabatan' => 'required',
             ], [
-                'jabatan_id.required' => 'Kolom jabatan harus diisi.',
+                'jabatan_id.required' => 'Jabatan harus diisi.',
                 'jabatan_id.unique' => 'Jenis Jabatan, Nama Jabatan dan Tunjangan Kinerja Jabatan sudah ada.',
-                'jenis_jabatan_id.required' => 'Kolom jenis jabatan harus diisi.',
-                'tukin_id.required' => 'Kolom tukin harus diisi.',
+                'jenis_jabatan_id.required' => 'Jenis jabatan harus diisi.',
+                'tukin_id.required' => 'Tunjangan Kinerja harus diisi.',
+                'nominal_tunjangan_jabatan.required' => 'Nominal Tunjangan Jabatan harus diisi.',
             ]);
 
 			$jabatanTukin->jabatan_id = $request->jabatan_id;
@@ -236,12 +279,24 @@ class JabatanTukinController extends Controller
 			$jabatanTukin->tukin_id = $request->tukin_id;
             $jabatanTukin->save();
 
+            if ( $request->jenis_jabatan_id === "1") {
+                $jabatan = JabatanStruktural::where('id', $request->jabatan_id)->first();
+                $jabatan->nominal_tunjangan =  preg_replace('/[^\d]/', '', $request->nominal_tunjangan_jabatan);
+                $jabatan->save();
+
+            } else if ( $request->jenis_jabatan_id === "2") {
+                $jabatan = JabatanFungsional::where('id', $request->jabatan_id)->first();
+                $jabatan->nominal_tunjangan =  preg_replace('/[^\d]/', '', $request->nominal_tunjangan_jabatan);
+                $jabatan->save();
+            }
+
             return redirect()->route('jabatan-tukin.index')
-            ->with('success', 'Data Jabatan Tukin berhasil diupdate');
+            ->with('success', 'Data Tunjangan Kinerja Jabatan berhasil diupdate');
         } catch (QueryException $e) {
-            $msg = $e->getMessage();
+            $msg = 'Error : ' . class_basename(get_class($this)) . ' Method : ' . __FUNCTION__ . ' msg : ' . $e->getMessage();
+            Log::error($msg);
             return redirect()->route('jabatan-tukin.index')
-            ->with('error', 'Ubah data Jabatan Tukin gagal, Err: ' . $msg);
+            ->with('error', 'Ubah data Tunjangan Kinerja Jabatan gagal, Err: ' . $msg);
         }
     }
 

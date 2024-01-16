@@ -15,15 +15,17 @@
 <link rel="stylesheet" href="{{ asset('assets/plugins/toastr/toastr.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/css/ijin.css') }}">
 
+
 @endpush
 
 @push('breadcrumb')
-        <div class="breadcrumb">
-            <a href="/" class="btn btn-link"><i class="fa fa-home"></i> Home</a>
-            <div class="btn">></div>
-            <a href="{{ route('presensiku.index') }}" class="btn btn-link"><i class="fa fa-list"></i> Presensi</a>
-
-        </div>
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/"><i class="fa fa-home"></i></a></li>
+        <li class="breadcrumb-item"><a href="{{ route('presensiku.index') }}">Presensi</a></li>
+        <li class="breadcrumb-item active" aria-current="page">{{ $title }}</li>
+    </ol>
+</nav>
 @endpush
 
 @section('content')
@@ -166,18 +168,21 @@
 
                   <div class="col-6">
                     <button class="btn btn-primary" id="btnShowData"><i class="fa fa-search" aria-hidden="true"></i> Cari Data</button>
+
                   </div>
                   <div class="col-6">
-                    <form method="POST" action="{{ route('presensiku.getdatapresensi') }}">
-                        @csrf <!-- CSRF protection -->
-                        <button class="btn btn-primary" type="submit"><i class="fa fa-refresh" aria-hidden="true"></i> Syncronize Data Presensi</button>
-                    </form>
-
+                        <button class="btn btn-success" id="btnGetDataPresensi"><i class="fa fa-refresh" aria-hidden="true"></i> Syncronize Data Presensi</button>
                   </div>
             </div>
         </div>
 
+
         <div class="card-body">
+
+            <div id="exportButtonsContainer">
+            </div>
+            <br>
+            <div id="wait-icon"><i class="fa fa-spinner fa-spin" style="font-size:30px;color:red"></i><strong style="font-size: 200%"> Mohon tunggu...</strong></div>
             <div class="table-responsive mb-4">
                 <table id="tbl-data" class="table table-hover dataTable table-striped table-bordered display">
                     <thead>
@@ -220,9 +225,23 @@
 <script src="{{ asset('assets/bundles/dataTables.bundle.js') }}"></script>
 <script src="{{ asset('assets/js/table/datatable.js') }}"></script>
 
-<script>
-     let table;
 
+<script src="{{ asset('assets/plugins/jquery-validation/jquery.validate.js') }}"></script>
+<script src="{{ asset('assets/plugins/jquery/jquery.min.js') }}"></script>
+
+<script src="{{ asset('assets/plugins/datatable/jquery.dataTables.min.js') }}"></script>
+<script src="{{ asset('assets/plugins/datatable/buttons/dataTables.buttons.min.js') }}"></script>
+<script src="{{ asset('assets/plugins/datatable/buttons/buttons.html5.min.js') }}"></script>
+<script src="{{ asset('assets/plugins/datatable/JSZip/jszip.min.js') }}"></script>
+<script src="{{ asset('assets/plugins/datatable/buttons/buttons.print.min.js') }}"></script>
+<script src="{{ asset('assets/plugins/datatable/buttons/buttons.bootstrap4.min.js') }}"></script>
+
+<script src="/vendor/datatables/buttons.server-side.js"></script>
+
+<script>
+    let table;
+    let btnExport = 0;
+    $.noConflict();
     $(document).ready(function() {
 
         var currentDate = new Date();
@@ -254,6 +273,28 @@
         });
 
 
+        $('#btnGetDataPresensi').on('click', function() {
+            $('#wait-icon').show();
+            $.ajax({
+                url: '{{ route('presensiku.getdatapresensi') }}',
+                type: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                success: function(response) {
+                    // Handle success here
+                    console.log('Request successful:', response);
+
+                    $('#wait-icon').hide();
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    // Handle error here
+                    console.error('Request failed:', textStatus, errorThrown);
+                    $('#wait-icon').hide();
+                }
+            });
+        });
+
         $('#btnShowData').on('click', function() {
 
             // Check if DataTable is already initialized on the table
@@ -264,7 +305,8 @@
 
             var dateAwal = document.getElementById('date_awal').value;
             var dateAkhir = document.getElementById('date_akhir').value;
-
+            btnExport = 0;
+            var pegawaiDetail = @json(auth()->user()->pegawai->nama . ' NIP : ' . auth()->user()->pegawai->nip);
 
             table = $('#tbl-data').DataTable({
                 processing: true,
@@ -278,6 +320,31 @@
                 ordering: true,
                 info: true,
                 autoWidth: false,
+                dom: 'lBfrtip', // Include length menu (l) along with buttons (Bfrtip)
+                lengthMenu: [10, 50, 100, 500, 1000, 10000,1000000],
+                buttons: [
+                        {extend: 'excelHtml5',
+                        title: 'Data Presensi Pegawai : ' + pegawaiDetail +'  Tanggal : ' + dateAwal +' - ' + dateAkhir,
+                        text:'<i class="fa fa-table fainfo" aria-hidden="true" >Test</i>',
+                        titleAttr: 'Export Excel',
+                        "oSelectorOpts": {filter: 'applied', order: 'current'},
+                        exportOptions: {
+                                columns: [ 1, 2, 3, 4, 5, 6, 7],
+                                modifier: {
+                                    page: 'all'
+                                },
+                                    format: {
+                                        header: function ( data, columnIdx ) {
+                                            if(columnIdx==1){
+                                            return 'Tanggal Presensi';
+                                            }
+                                            else{
+                                            return data;
+                                            }
+                                        }
+                                    }
+                            }
+                }],
                 ajax: {
                     url: '{{ route('presensiku.datatable') }}',
                     type: 'POST',
@@ -310,6 +377,19 @@
                     {
                         data: 'kekurangan_jam',
                         name: 'kekurangan_jam',
+                        render: function(data, type, row) {
+                            switch (data) {
+                                case null:
+                                    return '';
+                                    break;
+                                case "00:00:00":
+                                    return '<strong>' + data + '</strong>';
+                                    break;
+                                default:
+                                    return '<span class="badge badge-pill badge-danger">' + '<strong">' + data + '</strong>' +
+                                        '</span>';
+                            }
+                        }
                     },
                     {
                         data: 'nominal_potongan',
@@ -331,7 +411,18 @@
                 }],
                 order: [
                     [1, 'asc']
-                ]
+                ],
+                language: {
+                    processing: "<span class='fa fa-spinner fa-spin fa-spin' style='font-size:30px;color:red'></span><strong style='font-size: 140%'> Mohon Tunggu..</strong>"
+                },
+                drawCallback: function(settings) {
+                    if (btnExport == 1) {
+                        btnExport = 0;
+                        $('.buttons-excel').click();
+                        table.page.len(10).draw();
+                    }
+
+                }
             });
 
             table.on('draw.dt', function() {
@@ -344,6 +435,28 @@
                     cell.innerHTML = i + 1 + info.start;
                 });
             });
+
+            // Add row numbers to the DataTable
+            table.on('order.dt search.dt', function() {
+                table.column(0, { search: 'applied', order: 'applied' }).nodes().each(function(cell, i) {
+                    cell.innerHTML = i + 1;
+                });
+            }).draw();
+
+             new $.fn.dataTable.Buttons(table, {
+                buttons: [{
+                    text: '<i class="fa fa-file-excel-o btn-success"></i> Ekspor Data',
+                    action: function () {
+                        btnExport = 1;
+                        table.page.len(1000000).draw();
+                    }
+                }]
+            });
+
+            // Add the custom button to the DataTable
+            $('#exportButtonsContainer').append(table.buttons(1, null).container());
+
+
         });
 
         $('#btnSyncData').on('click', function() {

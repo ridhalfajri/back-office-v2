@@ -1,3 +1,31 @@
+
+#wait-icon {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 20px;
+    border-radius: 10px;
+}
+
+/* Assuming your DataTable has a class 'dataTable' */
+.dataTables_wrapper .dt-buttons {
+    text-align: right;
+    visibility: hidden;
+}
+
+/* If you want to adjust the position of individual buttons, you can target them specifically */
+.dataTables_wrapper .dt-buttons .btn {
+    margin-left: 5px; /* Adjust the margin as needed */
+}
+
+#exportButtonsContainer {
+    text-align: right;
+}
+
 .student-info {
     max-width: 100%;
     margin: 20px auto;

@@ -112,7 +112,7 @@ class PreTubelController extends Controller
     */
     public function create()
     {
-        $title = 'Tambah Data Tugas Belajar';
+        $title = 'Input Data Tugas Belajar';
         $pegawai = Pegawai::all();
         return view('presensi.pre-tubel.create', compact('title','pegawai'));
     }
@@ -151,6 +151,8 @@ class PreTubelController extends Controller
             ->with('success', 'Data Pre Tubel berhasil disimpan');
 
         }catch (QueryException $e) {
+            $msg = 'Error : ' . class_basename(get_class($this)) . ' Method : ' . __FUNCTION__ . ' msg : ' . $e->getMessage();
+            Log::error($msg);
             $msg = $e->getMessage();
             return redirect()->route('pre-tubel.index')
             ->with('error', 'Simpan data Pre Tubel gagal, Err: ' . $msg);
@@ -177,7 +179,7 @@ class PreTubelController extends Controller
     */
     public function edit(PreTubel $preTubel)
     {
-        $title = 'Ubah Data Pre Tubel';
+        $title = 'Ubah Data Tugas Belajar';
 
         return view('presensi.pre-tubel.edit', compact('title','preTubel'));
     }
@@ -206,6 +208,8 @@ class PreTubelController extends Controller
             return redirect()->route('pre-tubel.index')
             ->with('success', 'Data Pre Tubel berhasil diupdate');
         } catch (QueryException $e) {
+            $msg = 'Error : ' . class_basename(get_class($this)) . ' Method : ' . __FUNCTION__ . ' msg : ' . $e->getMessage();
+            Log::error($msg);
             $msg = $e->getMessage();
             return redirect()->route('pre-tubel.index')
             ->with('error', 'Ubah data Pre Tubel gagal, Err: ' . $msg);
@@ -227,6 +231,8 @@ class PreTubelController extends Controller
             $msg = "Data berhasil dihapus";
         } catch (QueryException $e) {
             $blnValue = true;
+            $msg = 'Error : ' . class_basename(get_class($this)) . ' Method : ' . __FUNCTION__ . ' msg : ' . $e->getMessage();
+            Log::error($msg);
             $msg = $e->getMessage();
         }
 

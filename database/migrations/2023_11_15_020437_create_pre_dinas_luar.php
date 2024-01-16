@@ -14,14 +14,17 @@ return new class extends Migration
         Schema::create('pre_dinas_luar', function (Blueprint $table) {
             $table->id();
             $table->string('no_enroll', 50)->nullable(true);
+            $table->enum('jenis_dinas',['DINAS DALAM KOTA', 'DINAS LUAR KOTA'])->nullable(false);
             $table->date('tanggal_dinas_awal')->nullable();
             $table->date('tanggal_dinas_akhir')->nullable();
             $table->text('nama_kegiatan')->nullable();
             $table->string('lokasi', 100)->nullable(true);
             $table->tinyInteger('status_approve')->nullable(true); //0 = pengajuan pegawai, 1 = acc atasan, 2 = ditolak atasan
+            $table->enum('is_active',['Y', 'N'])->nullable(false)->default('N');
 
             $table->timestamps();
         });
+
     }
 
     /**

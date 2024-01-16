@@ -216,7 +216,7 @@ class PreTakTercatatController extends Controller
     {
         $totalKuota = PegawaiHelper::getKuotaIjin();
         if ($totalKuota<3){
-            $title = 'Pengajuan Ijin Kehadiran Karena Presensi Tidak Tercatat';
+            $title = 'Pengajuan Presensi Tidak Tercatat';
             $pegawai = PegawaiHelper::getPegawaiData(auth()->user()->pegawai->id);
             return view('presensi.pre-tak-tercatat.create', compact('title','pegawai'));
         }else{
@@ -318,13 +318,16 @@ class PreTakTercatatController extends Controller
             } catch (\Exception $e) {
                 // Handle any exceptions that may occur during the update
                 DB::rollback();
-                Log::error('terjadi kesalahan ketika konfirmasi ijin :' . $e->getMessage());
+                $msg = 'Error : ' . class_basename(get_class($this)) . ' Method : ' . __FUNCTION__ . ' msg : ' . $e->getMessage();
+                Log::error($msg);
                 $msg = $e->getMessage();
             }
 
 
         } catch (QueryException $e) {
             $blnValue = true;
+            $msg = 'Error : ' . class_basename(get_class($this)) . ' Method : ' . __FUNCTION__ . ' msg : ' . $e->getMessage();
+            Log::error($msg);
             $msg = $e->getMessage();
         }
 
@@ -358,9 +361,10 @@ class PreTakTercatatController extends Controller
     */
     public function edit(PreTakTercatat $preTakTercatat)
     {
-        $title = 'Ubah Data Pre Tak Tercatat';
+        $title = 'Ubah Pengajuan Presensi Tidak Tercatat';
+        $pegawai = PegawaiHelper::getPegawaiData(auth()->user()->pegawai->id);
 
-        return view('presensi.pre-tak-tercatat.edit', compact('title','preTakTercatat'));
+        return view('presensi.pre-tak-tercatat.edit', compact('title','preTakTercatat','pegawai'));
     }
 
     /**
@@ -374,30 +378,25 @@ class PreTakTercatatController extends Controller
     {
         try {
             $this->validate($request, [
-				'no_enroll' => 'required',
 				'tanggal_pengajuan' => 'required',
-				'tanggal_approved' => 'required',
 				'jenis' => 'required',
 				'jam_perubahan' => 'required',
-				'atasan_approval_id' => 'required',
-				'status' => 'required',
             ]);
 
-			$preTakTercatat->no_enroll = $request->no_enroll;
 			$preTakTercatat->tanggal_pengajuan = $request->tanggal_pengajuan;
-			$preTakTercatat->tanggal_approved = $request->tanggal_approved;
 			$preTakTercatat->jenis = $request->jenis;
 			$preTakTercatat->jam_perubahan = $request->jam_perubahan;
-			$preTakTercatat->atasan_approval_id = $request->atasan_approval_id;
-			$preTakTercatat->status = $request->status;
+			$preTakTercatat->status = 1;
             $preTakTercatat->save();
 
             return redirect()->route('pre-tak-tercatat.index')
-            ->with('success', 'Data Pre Tak Tercatat berhasil diupdate');
+            ->with('success', 'Data Presensi Tidak Tercatat berhasil diupdate');
         } catch (QueryException $e) {
+            $msg = 'Error : ' . class_basename(get_class($this)) . ' Method : ' . __FUNCTION__ . ' msg : ' . $e->getMessage();
+            Log::error($msg);
             $msg = $e->getMessage();
             return redirect()->route('pre-tak-tercatat.index')
-            ->with('error', 'Ubah data Pre Tak Tercatat gagal, Err: ' . $msg);
+            ->with('error', 'Ubah data Presensi Tidak Tercatat gagal, Err: ' . $msg);
         }
     }
 
@@ -416,6 +415,8 @@ class PreTakTercatatController extends Controller
             $msg = "Data berhasil dihapus";
         } catch (QueryException $e) {
             $blnValue = true;
+            $msg = 'Error : ' . class_basename(get_class($this)) . ' Method : ' . __FUNCTION__ . ' msg : ' . $e->getMessage();
+            Log::error($msg);
             $msg = $e->getMessage();
         }
 

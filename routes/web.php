@@ -46,12 +46,14 @@ use App\Http\Controllers\PegawaiTambahanMkController;
 use App\Http\Controllers\PengajuanTambahanBpjsController;
 use App\Http\Controllers\PegawaiTambahanBpjsController;
 use App\Http\Controllers\PegawaiRiwayatUmakController;
+
 use App\Http\Controllers\PegawaiRiwayatThrController;
 use App\Http\Controllers\PegawaiRiwayatGajiplusController;
 use App\Http\Controllers\RiwayatGajiplusController;
 use App\Http\Controllers\RiwayatThrController;
 use App\Http\Controllers\RuangRapatController;
 use App\Http\Controllers\PesanRuangRapatController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -154,20 +156,21 @@ Route::middleware('auth')->group(function () {
         Route::resource('/pre-jam-kerja', PreJamKerjaController::class);
         Route::post('/pre-jam-kerja/datatable', [PreJamKerjaController::class, 'datatable'])->name('pre-jam-kerja.datatable');
 
-        Route::resource('/hari-libur', HariLiburController::class);
-        Route::post('/hari-libur/datatable', [HariLiburController::class, 'datatable'])->name('hari-libur.datatable');
+        Route::resource('/hari-besar', HariLiburController::class);
+        Route::post('/hari-besar/datatable', [HariLiburController::class, 'datatable'])->name('hari-besar.datatable');
 
         //Presensi
         Route::resource('/presensiku', PresensiPegawaiController::class);
         Route::post('/presensiku/datatable', [PresensiPegawaiController::class, 'datatable'])->name('presensiku.datatable');
         Route::post('/presensiku/getdatapresensi', [PresensiPegawaiController::class, 'getdatapresensi'])->name('presensiku.getdatapresensi');
 
-        Route::post('/presensi-pegawai/getanggotatim', [PresensiPegawaiController::class, 'getAnggotaTim'])->name('presensi-pegawai.getanggotatim');
-
-        Route::get('/presensi-pegawai/',  [PresensiPegawaiController::class, 'dataPresensiPegawai'])->name('presensi-pegawai');
-        Route::post('/presensi-pegawai/datatablepresensi', [PresensiPegawaiController::class, 'datatablePresensi'])->name('presensi-pegawai.datatablepresensi');
-        Route::post('/presensi-pegawai/getdatapresensipegawai', [PresensiPegawaiController::class, 'getdataPresensiPegawai'])->name('presensi-pegawai.getdatapresensipegawai');
     });
+
+    Route::post('/presensi-pegawai/getanggotatim', [PresensiPegawaiController::class, 'getAnggotaTim'])->name('presensi-pegawai.getanggotatim');
+
+    Route::get('/presensi-pegawai/',  [PresensiPegawaiController::class, 'dataPresensiPegawai'])->name('presensi-pegawai');
+    Route::get('/presensi-pegawai/datatablepresensi', [PresensiPegawaiController::class, 'datatablePresensi'])->name('presensi-pegawai.datatablepresensi');
+    Route::post('/presensi-pegawai/getdatapresensipegawai', [PresensiPegawaiController::class, 'getdataPresensiPegawai'])->name('presensi-pegawai.getdatapresensipegawai');
 
     //uang makan
     Route::prefix('kalkulasi')->group(function () {
@@ -292,7 +295,14 @@ Route::middleware('auth')->group(function () {
                 'destroy' => 'pegawai.destroy',
             ]
         ])->parameters(['' => 'id'])->only(['index', 'show', 'edit', 'update']);
+
+
+        //Pengajuan Peninjauan Masa Kerja
+        Route::resource('/pengajuan-mk', PegawaiPengajuanMk::class);
+        Route::post('/pengajuan-mk/datatable', [PegawaiPengajuanMk::class, 'datatable'])->name('pengajuan-mk.datatable');
+
     });
+
     Route::get('/esselon2/pegawai', [PegawaiController::class, 'index_esselon'])->name('pegawai.index-esselon');
     Route::prefix('data')->group(function () {
         Route::post('/penghargaan/get-penghargaan', [PenghargaanController::class, 'get_penghargaan'])->name('gaji.get-penghargaan');

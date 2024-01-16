@@ -16,11 +16,13 @@
 @endpush
 
 @push('breadcrumb')
-        <div class="breadcrumb">
-            <a href="/" class="btn btn-link"><i class="fa fa-home"></i> Home</a>
-            <div class="btn">></div>
-            <a href="{{ route('pre-ijin.index') }}" class="btn btn-link"><i class="fa fa-list"></i> Dinas Luar</a>
-        </div>
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/"><i class="fa fa-home"></i></a></li>
+            <li class="breadcrumb-item"><a href="#">Dinas Luar</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ $title }}</li>
+        </ol>
+    </nav>
 @endpush
 
 @section('content')
@@ -161,7 +163,9 @@
         <div class="card-body">
 
             <h5><strong>Riwayat Dinas Luar<strong></h5>
-
+            <br>
+            <div id="exportButtonsContainer">
+            </div>
             <br>
             <!-- /.dropdown js__dropdown -->
             <table id="tbl-data" class="table table-striped table-bordered display" style="width:100%">
@@ -169,10 +173,13 @@
                     <tr>
                         <th rowspan="2">No.</th>
 						<th colspan="2" class="text-center">Tanggal Dinas</th>
-						<th rowspan="2">nama kegiatan</th>
+						<th rowspan="2">jenis dinas</th>
+                        <th rowspan="2">nama kegiatan</th>
 						<th rowspan="2">lokasi</th>
+                        <th rowspan="2">Surat Tugas</th>
+                        <th rowspan="2">Referensi</th>
                         <th rowspan="2">status approval</th>
-						<th rowspan="2">status aktive</th>
+						<th rowspan="2">status aktif</th>
                         <th rowspan="2" style="width: 40px">aksi</th>
                     </tr>
                     <tr>
@@ -187,10 +194,13 @@
                         <th>No.</th>
                         <th>Dari Tanggal</th>
                         <th>Sampai Tanggal</th>
+                        <th>jenis dinas</th>
                         <th>nama kegiatan</th>
                         <th>lokasi</th>
+                        <th>Surat Tugas</th>
+                        <th>Referensi</th>
 						<th>status approval</th>
-                        <th>status aktive</th>
+                        <th>status aktif</th>
                         <th style="width: 40px">aksi</th>
                     </tr>
                 </tfoot>
@@ -208,12 +218,21 @@
 <script src="{{ asset('assets/bundles/dataTables.bundle.js') }}"></script>
 <script src="{{ asset('assets/js/table/datatable.js') }}"></script>
 <script src="{{ asset('assets/plugins/toastr/toastr.min.js') }}" type="text/javascript"></script>
+<script src="{{ asset('assets/plugins/jquery-validation/jquery.validate.js') }}"></script>
+<script src="{{ asset('assets/plugins/jquery/jquery.min.js') }}"></script>
+
+<script src="{{ asset('assets/plugins/datatable/jquery.dataTables.min.js') }}"></script>
+<script src="{{ asset('assets/plugins/datatable/buttons/dataTables.buttons.min.js') }}"></script>
+<script src="{{ asset('assets/plugins/datatable/buttons/buttons.html5.min.js') }}"></script>
+<script src="{{ asset('assets/plugins/datatable/JSZip/jszip.min.js') }}"></script>
+<script src="{{ asset('assets/plugins/datatable/buttons/buttons.print.min.js') }}"></script>
+<script src="{{ asset('assets/plugins/datatable/buttons/buttons.bootstrap4.min.js') }}"></script>
 
 <script type="text/javascript">
     "use strict"
-
     let table;
-
+    let btnExport = 0;
+    $.noConflict();
     $(function() {
         toastr.options = {
             "closeButton": false,
@@ -237,6 +256,7 @@
         @if(session('success'))
             toastr['success']('{{ session("success") }}');
         @endif
+        btnExport = 0;
 
         table = $('#tbl-data').DataTable({
             processing: true,
@@ -250,6 +270,26 @@
             ordering: true,
             info: true,
             autoWidth: false,
+            dom: 'lBfrtip', // Include length menu (l) along with buttons (Bfrtip)
+            buttons: [
+                    {extend: 'excelHtml5',
+                    title: 'Data Dinas Luar',
+                    text:'<i class="fa fa-table fainfo" aria-hidden="true" >Test</i>',
+                    titleAttr: 'Export Excel',
+                    "oSelectorOpts": {filter: 'applied', order: 'current'},
+                    exportOptions: {
+                            columns: [ 1, 2, 3, 4, 5, 6],
+                            modifier: {
+                            page: 'all'
+                            },
+                                format: {
+                                    header: function ( data, columnIdx ) {
+                                        return data;
+                                    }
+                                }
+                        }
+            }],
+            lengthMenu: [10, 50, 100, 500, 1000, 10000,1000000],
             ajax: {
                 url: '{{ route("pre-dinas-luar.datatable") }}',
                 type: 'POST',
@@ -272,6 +312,11 @@
                     name: 'tanggal_dinas_akhir'
                 },
                 {
+                    data: 'jenis_dinas',
+                    name: 'jenis_dinas',
+                    class: 'align-middle'
+                },
+                {
                     data: 'nama_kegiatan',
                     name: 'nama_kegiatan',
                     class: 'align-middle'
@@ -280,6 +325,33 @@
                     data: 'lokasi',
                     name: 'lokasi',
                     class: 'align-middle'
+                },
+                {
+                    data: 'file_st',
+                    name: 'file_st',
+                    render: function(data, type, row) {
+                        if (data){
+                            return '<a href="'+data+'" target="_blank">Surat Tugas</a>';
+                        }
+                        else
+                        {
+                            return '';
+                        }
+                    },
+                    class: 'align-middle',
+                },
+                {
+                    data: 'file_ref',
+                    name: 'file_ref',
+                    render: function(data, type, row) {
+                        if (data){
+                            return '<a href="'+data+'" target="_blank">Referensi</a>';
+                        }else
+                        {
+                            return '';
+                        }
+                    },
+                    class: 'align-middle',
                 },
                 {
                     data: 'status',
@@ -320,7 +392,18 @@
             }],
             order: [
                 [1, 'asc']
-            ]
+            ],
+            language: {
+                processing: "<span class='fa fa-spinner fa-spin fa-spin' style='font-size:30px;color:red'></span><strong style='font-size: 140%'> Mohon Tunggu..</strong>"
+            },
+            drawCallback: function(settings) {
+                // Check if the current page length is -1
+                if (btnExport == 1) {
+                    btnExport = 0;
+                    $('.buttons-excel').click();
+                    table.page.len(10).draw();
+                }
+            }
         });
 
         table.on('draw.dt', function() {
@@ -333,6 +416,20 @@
                 cell.innerHTML = i + 1 + info.start;
             });
         });
+
+        new $.fn.dataTable.Buttons(table, {
+            buttons: [{
+                text: '<i class="fa fa-file-excel-o btn-success"></i> Ekspor Data',
+                action: function () {
+                    btnExport = 1;
+                    table.page.len(1000000).draw();
+                }
+            }]
+        });
+
+        // Add the custom button to the DataTable
+        $('#exportButtonsContainer').append(table.buttons(1, null).container());
+
 
         $('#tbl-data').delegate('button.delete', 'click', function(e) {
             e.preventDefault();

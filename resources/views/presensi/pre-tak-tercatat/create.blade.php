@@ -6,13 +6,13 @@
 @endpush
 
 @push('breadcrumb')
-        <div class="breadcrumb">
-            <a href="/" class="btn btn-link"><i class="fa fa-home"></i> Home</a>
-            <div class="btn">></div>
-            <a href="{{ route('pre-tak-tercatat.index') }}" class="btn btn-link"><i class="fa fa-list"></i> Riwayat Presensi Tidak Tercatat</a>
-            <div class="btn">></div>
-            <a href="#" class="btn btn-link"><i class="fa fa-pensil"></i> Pengisian Form Pengajuan Ijin</a>
-        </div>
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/"><i class="fa fa-home"></i></a></li>
+            <li class="breadcrumb-item"><a href="{{ route('pre-tak-tercatat.index') }}">Riwayat Presensi Tidak Tercatat</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ $title }}</li>
+        </ol>
+    </nav>
 @endpush
 
 @section('content')
@@ -195,7 +195,7 @@
                             </div>
                             <div class="col-sm-4">
                                 <div class="form-group @error('media_data_presensi') has-error @enderror">
-                                    <input type="file" name="file" id="media_data_presensi" accept="image/*,.pdf, .doc, .docx">
+                                    <input type="file" name="file" id="media_data_presensi" accept="image/*,.pdf, .doc, .docx" required>
                                     <div class="invalid-feedback">
                                         Silakan Upload File Yang Berisi Tangkapan Layar Daftar Presensi
                                     </div>
@@ -210,7 +210,7 @@
                             </div>
                             <div class="col-sm-4">
                                 <div class="form-group @error('media_presensi_logbook') has-error @enderror">
-                                    <input type="file" name="file" id="media_presensi_logbook" accept="image/*,.pdf, .doc, .docx">
+                                    <input type="file" name="file" id="media_presensi_logbook" accept="image/*,.pdf, .doc, .docx" required>
                                     <div class="invalid-feedback">
                                         Silakan Upload File Yang Berisi Tangkapan Layar Logbook
                                     </div>
@@ -283,7 +283,9 @@
         })();
 
         $(document).ready(function() {
-            $('#jenis').select2();
+            $('#jenis').select2({
+                width: '100%',
+            });
         });
     </script>
 

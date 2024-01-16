@@ -5,12 +5,13 @@
 @endpush
 
 @push('breadcrumb')
-    <div class="btn-group btn-breadcrumb">
-        <a href="/" class="btn btn-light"><i class="fa fa-home"></i></a>
-        <a href="/gaji" class="btn btn-light"><i class="fa fa-list"></i> Gaji</a>
-        <a href="#" class="btn btn-light"><i class="fa fa-plus"></i> Ubah Data Gaji</a>
-        {{-- <a href="/gaji" class="btn btn-outline-danger"><i class="fa fa-chevron-circle-left"></i> Kembali</a> --}}
-    </div>
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/"><i class="fa fa-home"></i></a></li>
+        <li class="breadcrumb-item"><a href="{{ route('gaji.index') }}">Gaji Pegawai</a></li>
+        <li class="breadcrumb-item active" aria-current="page">{{ $title }}</li>
+    </ol>
+</nav>
 @endpush
 
 @section('content')
@@ -43,7 +44,7 @@
                             <div class="col-12 col-lg-12 col-md-12">
                                 <div class="form-group  @error('masa_kerja') has-error @enderror">
                                     <label>Masa Kerja<span class="text-danger"><sup>*</sup></span></label>
-                                    <input class="form-control"  id="masa_kerja" name = "masa_kerja" value = "{{ old('masa_kerja') ?? $gaji->masa_kerja }}"" placeholder="Masa Kerja" autocomplete="off"/>
+                                    <input class="form-control"  id="masa_kerja" name = "masa_kerja" value = "{{ old('masa_kerja') ?? $gaji->masa_kerja }}" placeholder="Masa Kerja" autocomplete="off"/>
                                     @error('masa_kerja')
                                         <small class="text-danger">{{ $message }}</small>
                                     @enderror
@@ -55,8 +56,20 @@
                             <div class="col-12 col-lg-12 col-md-12">
                                 <div class="form-group  @error('nominal') has-error @enderror">
                                     <label>Nominal<span class="text-danger"><sup>*</sup></span></label>
-                                    <input class="form-control"  id="nominal" name = "nominal" value = "{{ old('nominal') ?? $gaji->nominal }}"" placeholder="Nominal" autocomplete="off"/>
+                                    <input class="form-control"  id="nominal" name = "nominal" value = "{{ old('nominal') ?? $gaji->nominal }}" placeholder="Nominal" autocomplete="off"/>
                                     @error('nominal')
+                                        <small class="text-danger">{{ $message }}</small>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row clearfix">
+                            <div class="col-12 col-lg-12 col-md-12">
+                                <div class="form-group @error('nominal') has-error @enderror">
+                                    <label>Tunjab Umum<span class="text-danger"><sup>*</sup></span></label>
+                                    <input class="form-control" id="nominal_tunjangan_jabatan" name = "nominal_tunjangan_jabatan" placeholder="Tunjangan Jabatan Umum" autocomplete="off"/>
+                                    @error('nominal_tunjangan_jabatan')
                                         <small class="text-danger">{{ $message }}</small>
                                     @enderror
                                 </div>
@@ -77,6 +90,37 @@
      <script>
         $(document).ready(function() {
             $('#golongan_id').select2();
+
+            var nominal = {!! json_encode(old('nominal') ?? $gaji->nominal) !!};
+            var nominalTunjabUmum = {!! json_encode(old('nominal_tunjangan_jabatan') ?? $gaji->nominal_tunjangan_jabatan) !!};
+
+            document.getElementById("nominal").value = nominal;
+            document.getElementById("nominal_tunjangan_jabatan").value = nominalTunjabUmum;
+
+
+            $("#nominal").on("keyup change", function(e) {
+                // Ambil nilai teks dari input
+                let inputValue =  $("#nominal").val();
+                // Hapus semua karakter non-angka
+                inputValue = inputValue.replace(/\D/g, '');
+                // Format angka menjadi format mata uang Indonesia
+                let formattedValue = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(inputValue);
+                console.log(formattedValue);
+                $("#nominal").val(formattedValue);
+            });
+
+            $("#nominal_tunjangan_jabatan").on("keyup change", function(e) {
+                // Ambil nilai teks dari input
+                let inputValue =  $("#nominal_tunjangan_jabatan").val();
+                // Hapus semua karakter non-angka
+                inputValue = inputValue.replace(/\D/g, '');
+                // Format angka menjadi format mata uang Indonesia
+                let formattedValue = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(inputValue);
+
+                $("#nominal_tunjangan_jabatan").val(formattedValue);
+            });
+
+
         });
         $('#gajiForm').on('submit', function(e) {
             e.preventDefault();

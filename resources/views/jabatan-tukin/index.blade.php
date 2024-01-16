@@ -12,17 +12,25 @@
 @endpush
 
 @push('breadcrumb')
-        <div class="btn-group btn-breadcrumb">
-            <a href="/" class="btn btn-light"><i class="fa fa-home"></i></a>
-            <a href="{{ route('jabatan-tukin.index') }}" class="btn btn-light"><i class="fa fa-list"></i> Tunjangan Kinerja Jabatan</a>
-            <a href="/jabatan-tukin/create" class="btn btn-light"><i class="fa fa-plus"></i> Tunjangan Kinerja Baru</a>
-            {{-- <a href="/" class="btn btn-outline-danger"><i class="fa fa-chevron-circle-left"></i> Kembali</a> --}}
-        </div>
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/"><i class="fa fa-home"></i></a></li>
+        <li class="breadcrumb-item"><a href="{{ route('jabatan-tukin.index') }}">Tunjangan Kinerja Jabatan</a></li>
+        <li class="breadcrumb-item active" aria-current="page">{{ $title }}</li>
+    </ol>
+</nav>
 @endpush
 
 @section('content')
     <div class="section-body">
     <div class="card">
+        <div class="card-header">
+            <h4 class="card-title">
+                <button type="button" class="btn btn-xs btn-primary" id="btn-add" onclick="window.location.href='{{ route("jabatan-tukin.create") }}'">
+                    <i class="fa fa-plus"> Tunjangan Kinerja Jabatan Baru</i>
+                </button>
+            </h4>
+        </div>
         <div class="card-body">
             <!-- /.dropdown js__dropdown -->
             <table id="tbl-data" class="table table-striped table-bordered display" style="width:100%">
@@ -33,7 +41,8 @@
 						<th>Nama Jabatan</th>
                         <th>Grade</th>
                         <th>Nominal</th>
-                         <th style="width: 40px">aksi</th>
+                        <th>Nominal Tunjab</th>
+                        <th style="width: 40px">aksi</th>
                     </tr>
                 </thead>
                 <tbody></tbody>
@@ -44,6 +53,7 @@
 						<th>Nama Jabatan</th>
                         <th>Grade</th>
                         <th>Nominal</th>
+                        <th>Nominal Tunjab</th>
                         <th style="width: 40px">aksi</th>
                     </tr>
                 </tfoot>
@@ -90,6 +100,11 @@
             toastr['success']('{{ session("success") }}');
         @endif
 
+        @if(session('error'))
+            toastr['error']('{{ session("error") }}');
+        @endif
+
+
         table = $('#tbl-data').DataTable({
             processing: true,
             serverSide: true,
@@ -132,6 +147,11 @@
                 {
                     data: 'nominal',
                     name: 'nominal',
+                    class: 'text-center'
+                },
+                {
+                    data: 'nominal_tunjangan',
+                    name: 'nominal_tunjangan',
                     class: 'text-center'
                 },
                 {

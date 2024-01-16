@@ -9,13 +9,13 @@
 @endpush
 
 @push('breadcrumb')
-    <div class="breadcrumb">
-        <a href="/" class="btn btn-link"><i class="fa fa-home"></i> Home</a>
-        <div class="btn">></div>
-            <a href="{{ route('pre-dinas-luar.index') }}" class="btn btn-link"><i class="fa fa-list"></i> Riwayat Dinas Luar</a>
-            <a href="#" class="btn btn-link"><i class="fa fa-pensil"></i> Pengisian Form Pengajuan Ijin</a>
-
-        </div>
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/"><i class="fa fa-home"></i></a></li>
+            <li class="breadcrumb-item"><a href="{{ route('pre-dinas-luar.index') }}">Riwayat Dinas Luar</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ $title }}</li>
+        </ol>
+    </nav>
 @endpush
 
 @section('content')
@@ -143,6 +143,29 @@
                             </div>
                             @break
                         @endforeach
+
+                        <div class="row">
+                            <div class="col-sm-2">
+                                <strong>Jenis Dinas<span class="text-danger"><sup>*</sup></span></strong>
+                            </div>
+
+                            <div class="col-sm-4">
+                                <div class="form-group @error('jenis_dinas') has-error @enderror">
+                                    <select class="form-control" id="jenis_dinas" name="jenis_dinas" required>
+                                        <option value="" selected disabled>Pilih Jenis Dinas</option>
+                                        <option value="DINAS DALAM KOTA" {{ old('jenis_dinas') == "DINAS DALAM KOTA" ? 'selected' : '' }}> DINAS DALAM KOTA</option>
+                                        <option value="DINAS LUAR KOTA" {{ old('jenis_dinas') == "DINAS LUAR KOTA" ? 'selected' : '' }}> DINAS LUAR KOTA</option>
+                                    </select>
+                                    <div class="invalid-feedback">
+                                        Silakan Pilih Jenis Dinas
+                                    </div>
+                                    @error('jenis_dinas')
+                                        <small class="text-danger">{{ $message }}</small>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+
 
                         <div class="row">
                             <div class="col-sm-2">
@@ -284,7 +307,9 @@
         })();
 
         $(document).ready(function() {
-            $('#jenis').select2();
+            $('#jenis').select2({
+                width: '100%',
+            });
         });
 
         $('.input-daterange-datepicker').daterangepicker({

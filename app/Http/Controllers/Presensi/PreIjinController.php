@@ -232,7 +232,7 @@ class PreIjinController extends Controller
     */
     public function create()
     {
-        $title = 'Pengajuan Ijin';
+        $title = 'Pengisian Form Pengajuan Ijin';
 
         $totalKuota = PegawaiHelper::getKuotaIjin();
         if ($totalKuota<3){
@@ -285,15 +285,17 @@ class PreIjinController extends Controller
             } catch (\Exception $e) {
                 // Handle any exceptions that may occur during the update
                 DB::rollback();
-                Log::error('terjadi kesalahan ketika konfirmasi ijin :' . $e->getMessage());
+                $msg = 'Error : ' . class_basename(get_class($this)) . ' Method : ' . __FUNCTION__ . ' msg : ' . $e->getMessage();
+                Log::error($msg);
                 $msg = $e->getMessage();
             }
 
 
         } catch (QueryException $e) {
             $blnValue = true;
+            $msg = 'Error : ' . class_basename(get_class($this)) . ' Method : ' . __FUNCTION__ . ' msg : ' . $e->getMessage();
+            Log::error($msg);
             $msg = $e->getMessage();
-            Log::error('terjadi kesalahan ketika konfirmasi ijin :' . $e->getMessage());
         }
 
         $data = [
@@ -333,12 +335,12 @@ class PreIjinController extends Controller
             PreIjin::create($input);
 
             return redirect()->route('pre-ijin.index')
-            ->with('success', 'Data Pre ijin berhasil disimpan');
+            ->with('success', 'Data ijin kehadiran berhasil disimpan');
         }catch (QueryException $e) {
-            $msg = $e->getMessage();
-            Log::error("error Save Ijin :" . $e->getMessage());
+            $msg = 'Error : ' . class_basename(get_class($this)) . ' Method : ' . __FUNCTION__ . ' msg : ' . $e->getMessage();
+            Log::error($msg);
             return redirect()->route('pre-ijin.index')
-            ->with('error', 'Simpan data Pre ijin gagal, Err: ' . $msg);
+            ->with('error', 'Simpan data ijin kehadiran gagal, Err: ' . $msg);
         }
 
     }
@@ -378,27 +380,26 @@ class PreIjinController extends Controller
     public function update(Request $request,PreIjin $preIjin)
     {
         try {
+
             $this->validate($request, [
-				'no_enroll' => 'required',
 				'jenis_ijin' => 'required',
 				'tanggal' => 'required',
 				'keterangan' => 'required',
-				'status' => 'required',
             ]);
 
-			$preIjin->no_enroll = $request->no_enroll;
+			$preIjin->no_enroll = $preIjin->no_enroll;
 			$preIjin->jenis_ijin = $request->jenis_ijin;
 			$preIjin->tanggal = $request->tanggal;
 			$preIjin->keterangan = $request->keterangan;
-			$preIjin->status = $request->status;
             $preIjin->save();
 
             return redirect()->route('pre-ijin.index')
-            ->with('success', 'Data Pre ijin berhasil diupdate');
+            ->with('success', 'Data ijin kehadiran berhasil diupdate');
         } catch (QueryException $e) {
-            $msg = $e->getMessage();
+            $msg = 'Error : ' . class_basename(get_class($this)) . ' Method : ' . __FUNCTION__ . ' msg : ' . $e->getMessage();
+            Log::error($msg);
             return redirect()->route('pre-ijin.index')
-            ->with('error', 'Ubah data Pre ijin gagal, Err: ' . $msg);
+            ->with('error', 'Ubah data ijin kehadiran gagal, Err: ' . $msg);
         }
     }
 
@@ -419,6 +420,8 @@ class PreIjinController extends Controller
             $msg = "Data berhasil dihapus";
         } catch (QueryException $e) {
             $blnValue = true;
+            $msg = 'Error : ' . class_basename(get_class($this)) . ' Method : ' . __FUNCTION__ . ' msg : ' . $e->getMessage();
+            Log::error($msg);
             $msg = $e->getMessage();
         }
 

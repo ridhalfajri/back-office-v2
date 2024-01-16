@@ -90,11 +90,15 @@ class LdapController extends Controller
                 $data = ldap_get_entries($ldapconn, $result);
                 ldap_close($ldapconn);
 
+                // dd($data);
+
                 if ($data['count'] > 0) {
                     // cek username di backoffice
                     $user = User::where('username', $uid)
                         ->where('is_active', 1)
                         ->first();
+
+                        // dd($user);
 
                     if ($user != NULL) {
                         Auth::login($user);
