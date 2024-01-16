@@ -7,7 +7,7 @@ use App\Models\JenisKawin;
 use App\Models\Pegawai;
 use App\Models\PegawaiRiwayatJabatan;
 use App\Models\PegawaiSuamiIstri;
-use App\Models\Pendidikan;
+use App\Models\TingkatPendidikan;
 use Carbon\Carbon;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
@@ -32,7 +32,7 @@ class SuamiIstriController extends Controller
     {
         $title = "Pasangan";
         $pegawai = Pegawai::select('id', 'nama_depan', 'nama_belakang')->where('id', $pegawai_id)->first();
-        $pendidikan = Pendidikan::select('id', 'nama')->get();
+        $pendidikan = TingkatPendidikan::select('id', 'nama')->get();
         $jenis_kawin = JenisKawin::select('id', 'nama')->get();
         return view('pegawai.keluarga.create-pasangan', compact('title', 'pegawai', 'pendidikan', 'jenis_kawin'));
     }
@@ -166,8 +166,16 @@ class SuamiIstriController extends Controller
             if ($pasangan->tmt_sk_cerai != null) {
                 $pasangan->tmt_sk_cerai = Carbon::parse($pasangan->tmt_sk_cerai)->translatedFormat('d-m-Y');
             }
-            $pasangan->media_buku_nikah = $pasangan->getMedia("media_buku_nikah")[0]->getUrl();
-            $pasangan->media_foto_pasangan = $pasangan->getMedia("media_foto_pasangan")[0]->getUrl();
+            if ($pasangan->hasMedia("media_buku_nikah")) {
+                $pasangan->media_buku_nikah = $pasangan->getMedia("media_buku_nikah")[0]->getUrl();
+            } else {
+                $pasangan->media_buku_nikah = null;
+            }
+            if ($pasangan->hasMedia("media_foto_pasangan")) {
+                $pasangan->media_foto_pasangan = $pasangan->getMedia("media_foto_pasangan")[0]->getUrl();
+            } else {
+                $pasangan->media_foto_pasangan = null;
+            }
             $pasangan->jenis_kawin;
             $pasangan->pendidikan;
             return response()->json(['result' => $pasangan]);
@@ -207,7 +215,7 @@ class SuamiIstriController extends Controller
         }
         $pasangan->media_buku_nikah = $pasangan->getMedia("media_buku_nikah")[0];
         $pasangan->media_foto_pasangan = $pasangan->getMedia("media_foto_pasangan")[0];
-        $pendidikan = Pendidikan::select('id', 'nama')->get();
+        $pendidikan = TingkatPendidikan::select('id', 'nama')->get();
         $jenis_kawin = JenisKawin::select('id', 'nama')->get();
         return view('pegawai.keluarga.edit-pasangan', compact('title', 'pasangan', 'pendidikan', 'jenis_kawin'));
     }
