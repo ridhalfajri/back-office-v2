@@ -173,7 +173,8 @@
                     <tr>
                         <th rowspan="2">No.</th>
 						<th colspan="2" class="text-center">Tanggal Dinas</th>
-						<th rowspan="2">nama kegiatan</th>
+						<th rowspan="2">jenis dinas</th>
+                        <th rowspan="2">nama kegiatan</th>
 						<th rowspan="2">lokasi</th>
                         <th rowspan="2">Surat Tugas</th>
                         <th rowspan="2">Referensi</th>
@@ -193,6 +194,7 @@
                         <th>No.</th>
                         <th>Dari Tanggal</th>
                         <th>Sampai Tanggal</th>
+                        <th>jenis dinas</th>
                         <th>nama kegiatan</th>
                         <th>lokasi</th>
                         <th>Surat Tugas</th>
@@ -308,6 +310,11 @@
                 {
                     data: 'tanggal_dinas_akhir',
                     name: 'tanggal_dinas_akhir'
+                },
+                {
+                    data: 'jenis_dinas',
+                    name: 'jenis_dinas',
+                    class: 'align-middle'
                 },
                 {
                     data: 'nama_kegiatan',

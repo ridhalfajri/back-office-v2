@@ -377,6 +377,19 @@
                     {
                         data: 'kekurangan_jam',
                         name: 'kekurangan_jam',
+                        render: function(data, type, row) {
+                            switch (data) {
+                                case null:
+                                    return '';
+                                    break;
+                                case "00:00:00":
+                                    return '<strong>' + data + '</strong>';
+                                    break;
+                                default:
+                                    return '<span class="badge badge-pill badge-danger">' + '<strong">' + data + '</strong>' +
+                                        '</span>';
+                            }
+                        }
                     },
                     {
                         data: 'nominal_potongan',

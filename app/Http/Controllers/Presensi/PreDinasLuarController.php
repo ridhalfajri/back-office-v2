@@ -34,7 +34,7 @@ class PreDinasLuarController extends Controller
     public function datatable()
     {
 
-        $data = PreDinasLuar::select('pre_dinas_luar.id', 'pre_dinas_luar.no_enroll', 'pre_dinas_luar.tanggal_dinas_awal','pre_dinas_luar.tanggal_dinas_akhir', 'pre_dinas_luar.nama_kegiatan', 'pre_dinas_luar.lokasi','pre_dinas_luar.status_approve', 'pre_dinas_luar.is_active')
+        $data = PreDinasLuar::select('pre_dinas_luar.id', 'pre_dinas_luar.no_enroll', 'pre_dinas_luar.jenis_dinas', 'pre_dinas_luar.tanggal_dinas_awal','pre_dinas_luar.tanggal_dinas_akhir', 'pre_dinas_luar.nama_kegiatan', 'pre_dinas_luar.lokasi','pre_dinas_luar.status_approve', 'pre_dinas_luar.is_active')
                 ->join('pegawai', 'pre_dinas_luar.no_enroll', '=', 'pegawai.no_enroll')
                 ->where('pegawai.id','=',auth()->user()->pegawai->id)
                 ->orderBy('pre_dinas_luar.tanggal_dinas_awal', 'asc')
@@ -117,7 +117,7 @@ class PreDinasLuarController extends Controller
     {
 
         $data = DB::table('pegawai as p')
-                    ->select('s.id','s.tanggal_dinas_awal','s.tanggal_dinas_akhir','s.nama_kegiatan','s.lokasi','s.status_approve','p.id as pegawai_id','p.nip','p.nama_depan','p.nama_belakang','p.tempat_lahir','p.tanggal_lahir','p.email_kantor','p.no_enroll','x.id as jabatan_id','x.jabatan_tukin_id','q.jabatan_unit_kerja_id','z.jenis_jabatan','z.nama_jabatan','z.grade','z.nominal','y.nama_unit_kerja','x.hirarki_unit_kerja_id','y.nama_jenis_unit_kerja','y.nama_parent_unit_kerja','q.is_plt')
+                    ->select('s.id','s.jenis_dinas','s.tanggal_dinas_awal','s.tanggal_dinas_akhir','s.nama_kegiatan','s.lokasi','s.status_approve','p.id as pegawai_id','p.nip','p.nama_depan','p.nama_belakang','p.tempat_lahir','p.tanggal_lahir','p.email_kantor','p.no_enroll','x.id as jabatan_id','x.jabatan_tukin_id','q.jabatan_unit_kerja_id','z.jenis_jabatan','z.nama_jabatan','z.grade','z.nominal','y.nama_unit_kerja','x.hirarki_unit_kerja_id','y.nama_jenis_unit_kerja','y.nama_parent_unit_kerja','q.is_plt')
                     ->join('pegawai_riwayat_jabatan as q', function ($join) {
                         $join->on('p.id', '=', 'q.pegawai_id')->where('q.is_now', '=', 1);
                     })
@@ -249,6 +249,7 @@ class PreDinasLuarController extends Controller
 
         try {
             $this->validate($request, [
+                'jenis_dinas' => 'required',
 				'nama_kegiatan' => 'required',
 				'lokasi' => 'required',
                 'tanggal_dinas' => 'required',
@@ -260,6 +261,8 @@ class PreDinasLuarController extends Controller
             $tanggalAkhir = explode('-', $dateRange[1]);
 
             $preDL =  new PreDinasLuar();
+
+            $preDL->jenis_dinas = $request->jenis_dinas;
 			$preDL->no_enroll = $pegawai->no_enroll;
 			$preDL->tanggal_dinas_awal = $tanggalAwal[2] . '-' . $tanggalAwal[1] . '-' . $tanggalAwal[0];
             $preDL->tanggal_dinas_akhir = $tanggalAkhir[2] . '-' . $tanggalAkhir[1] . '-' . $tanggalAkhir[0];
@@ -364,6 +367,7 @@ class PreDinasLuarController extends Controller
         try {
 
             $this->validate($request, [
+                'jenis_dinas' => 'required',
 				'nama_kegiatan' => 'required',
 				'lokasi' => 'required',
                 'tanggal_dinas' => 'required',
@@ -374,6 +378,7 @@ class PreDinasLuarController extends Controller
             $tanggalAwal = explode('-', $dateRange[0]);
             $tanggalAkhir = explode('-', $dateRange[1]);
 
+            $preDinasLuar->jenis_dinas = $request->jenis_dinas;
 			$preDinasLuar->nama_kegiatan = $request->nama_kegiatan;
 			$preDinasLuar->lokasi = $request->lokasi;
             $preDinasLuar->tanggal_dinas_awal = $tanggalAwal[2] . '-' . $tanggalAwal[1] . '-' . $tanggalAwal[0];

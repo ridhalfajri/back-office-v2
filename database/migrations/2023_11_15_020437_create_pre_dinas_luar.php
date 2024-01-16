@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('pre_dinas_luar', function (Blueprint $table) {
             $table->id();
             $table->string('no_enroll', 50)->nullable(true);
+            $table->enum('jenis_dinas',['DINAS DALAM KOTA', 'DINAS LUAR KOTA'])->nullable(false);
             $table->date('tanggal_dinas_awal')->nullable();
             $table->date('tanggal_dinas_akhir')->nullable();
             $table->text('nama_kegiatan')->nullable();

@@ -147,6 +147,27 @@
 
                         <div class="row">
                             <div class="col-sm-2">
+                                <strong>Jenis Dinas<span class="text-danger"><sup>*</sup></span></strong>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="form-group @error('jenis_dinas') has-error @enderror">
+                                    <select class="form-control" id="jenis_dinas" name="jenis_dinas" required>
+                                        <option value="" selected disabled>Pilih Jenis Dinas</option>
+                                        <option value="DINAS DALAM KOTA" {{ old('jenis_dinas') == "DINAS DALAM KOTA" ||  $preDinasLuar->jenis_dinas == "DINAS DALAM KOTA" ? 'selected' : '' }}> DINAS DALAM KOTA</option>
+                                        <option value="DINAS LUAR KOTA" {{ old('jenis_dinas') == "DINAS LUAR KOTA" ||  $preDinasLuar->jenis_dinas == "DINAS LUAR KOTA" ? 'selected' : '' }}> DINAS LUAR KOTA</option>
+                                    </select>
+                                    <div class="invalid-feedback">
+                                        Silakan Pilih Jenis Dinas
+                                    </div>
+                                    @error('jenis_dinas')
+                                        <small class="text-danger">{{ $message }}</small>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-sm-2">
                                 <strong>Nama Kegiatan <span class="text-danger"><sup>*</sup></span></strong>
                             </div>
                             <div class="col-sm-10">
