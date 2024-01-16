@@ -13,8 +13,6 @@ use App\Models\PrePotonganTukin;
 use App\Models\PegawaiRiwayatJabatan;
 use App\Models\PreDinasLuar;
 use App\Models\PreTubel;
-use Barryvdh\Debugbar\Facades\Debugbar;
-
 use GuzzleHttp\Psr7\Message;
 use Illuminate\Support\Facades\Date;
 use PhpParser\Node\Stmt\TryCatch;
@@ -149,7 +147,6 @@ class PresensiHelper {
                                         if ((empty($presensi->jam_masuk) || $presensi->jam_masuk == "00:00:00") && ($presensi->is_ijin == 1 || $presensi->is_ijin==3)) {
                                             $typePresensi = true;
                                             $blnUpdatePresensi = true;
-                                            Debugbar::info('Ubah ke Jam masuk');
                                         }else{
                                              //Jam Pulang
                                             if (empty($presensi->jam_masuk) || $presensi->jam_masuk == "00:00:00") {
@@ -371,7 +368,7 @@ class PresensiHelper {
                             if ((empty($presensi->jam_masuk) || $presensi->jam_masuk == "00:00:00") && ($presensi->is_ijin == 1 || $presensi->is_ijin==3)) {
                                 $typePresensi = true;
                                 $blnUpdatePresensi = true;
-                                Debugbar::info('Ubah ke Jam masuk');
+
                             }else{
                                  //Jam Pulang
                                 if (empty($presensi->jam_masuk) || $presensi->jam_masuk == "00:00:00") {
