@@ -16,7 +16,6 @@ use Illuminate\Support\Carbon;
 use App\Helpers\PegawaiHelper;
 use stdClass;
 use Yajra\DataTables\Facades\DataTables;
-use \Barryvdh\Debugbar\Facades\Debugbar;
 
 class PresensiPegawaiController extends Controller
 {
