@@ -48,7 +48,7 @@ class PresensiPegawaiController extends Controller
 
     public function datatable(Request $request)
     {
-        Debugbar::addMessage('Test','Info');
+
         $user = Auth::user();
 
         $pegawai = Pegawai::where('id', '=', $user->pegawai_id)->first();
