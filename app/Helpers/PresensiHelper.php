@@ -275,9 +275,9 @@ class PresensiHelper {
     private static function UpdateAdms($id)
     {
         try {
-            // DB::connection('adms')->table('checkinout')
-            // ->where('id', $id)
-            // ->update(['Reserved' => '1']);
+            DB::connection('adms')->table('checkinout')
+            ->where('id', $id)
+            ->update(['Reserved' => '1']);
 
         } catch (\Throwable $th) {
 
@@ -288,6 +288,8 @@ class PresensiHelper {
 
     public static function get_DataPresensi() {
 
+        $OK = 0;
+        $NG = 0;
         $todayDate = now()->format('Y-m-d');
         $todayYear = now()->format('Y');
         $todayMonth = now()->format('m');
@@ -430,9 +432,11 @@ class PresensiHelper {
                             $presensi->save();
                             self::UpdateAdms($row->id);
                             // sleep(2);
+                            $OK++;
 
                         } catch (\Exception $e) {
                             // Handle any exceptions that may occur during the update
+                            $NG++;
                             Log::error('(1) Save Data Presensi and Update ADMS Error :' . $e->getMessage() . "\n=> Pegawai No_Enroll:". $pegawai->no_enroll . "|Nip:". $pegawai->nip . "|Nama:". $pegawai->nama_depan . " " . $pegawai->nama_belakang . "\n" . " Presensi :" . "ID: " . $row->id . ", no_enroll: " . $row->userid . ", tanggal: " . $row->checktime . "\n=======================================" );
                         }
 
@@ -466,14 +470,17 @@ class PresensiHelper {
                                 }
                                 $presensi->save();
                                 self::UpdateAdms($row->id);
+                                $OK++;
 
                             } catch (\Exception $e) {
+                                $NG++;
                                 // Handle any exceptions that may occur during the update
                                 Log::error('(2) Save Data Presensi and Update ADMS Error :' . $e->getMessage() . "\n=> Pegawai No_Enroll:". $pegawai->no_enroll . "|Nip:". $pegawai->nip . "|Nama:". $pegawai->nama_depan . " " . $pegawai->nama_belakang . "\n" . " Presensi :" . "ID: " . $row->id . ", no_enroll: " . $noEnroll . ", tanggal: " . $tglPresensi . '_' . $jamPresensi . "\n=======================================" );
                             }
                         }else{
 
                             self::UpdateAdms($row->id);
+                            $OK++;
                         }
                     }
 
@@ -484,6 +491,7 @@ class PresensiHelper {
 
                 } catch (\Throwable $th) {
                     Log::error("error Get Data-Presensi Finger:" . $th->getMessage() . "\n=======================================" );
+                    $NG++;
                 }
                 //================================================================================================
                 // END Data Presensi
@@ -491,6 +499,8 @@ class PresensiHelper {
             }
 
         }
+
+        return $NG;
 
     }
 

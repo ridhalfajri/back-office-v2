@@ -37,12 +37,17 @@ class PresensiPegawaiController extends Controller
 
     public function getdatapresensi(Request $request)
     {
-        PresensiHelper::get_DataPresensi();
-        $responseData = ['status' => 'success', 'message' => 'Request processed successfully'];
+        $NG = PresensiHelper::get_DataPresensi();
+        if($NG==0){
+            $responseData = ['status' => true, 'message' => 'Sinkronisasi data presensi berhasil'];
+        }else{
+            $responseData = ['status' => false, 'message' => 'Sinkronisasi data presensi selesai, sebagian data tidak berhasil'];
+        }
+
         return response()->json($responseData);
 
-        return redirect()->route('presensiku.index')
-            ->with('success', 'Syncronize Data Presensi berhasil');
+        // return redirect()->route('presensiku.index')
+        //     ->with('success', 'Syncronize Data Presensi berhasil');
     }
 
     public function datatable(Request $request)
@@ -283,9 +288,15 @@ class PresensiPegawaiController extends Controller
 
     public function getdataPresensiPegawai(Request $request)
     {
-        PresensiHelper::get_DataPresensi();
-        return redirect()->route('presensi-pegawai')
-            ->with('success', 'Syncronize Data Presensi berhasil');
+        $NG = PresensiHelper::get_DataPresensi();
+        if($NG==0){
+            $responseData = ['status' => true, 'message' => 'Sinkronisasi data presensi berhasil'];
+        }else{
+            $responseData = ['status' => false, 'message' => 'Sinkronisasi data presensi selesai, sebagian data tidak berhasil'];
+        }
+
+        return response()->json($responseData);
+
     }
 
 
