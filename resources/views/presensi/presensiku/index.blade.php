@@ -242,6 +242,25 @@
     let table;
     let btnExport = 0;
     $.noConflict();
+    toastr.options = {
+            "closeButton": false,
+            "debug": false,
+            "newestOnTop": false,
+            "progressBar": true,
+            "rtl": false,
+            "positionClass": "toast-top-right",
+            "preventDuplicates": false,
+            "onclick": null,
+            "showDuration": 300,
+            "hideDuration": 1000,
+            "timeOut": 5000,
+            "extendedTimeOut": 1000,
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        };
+
     $(document).ready(function() {
 
         var currentDate = new Date();
@@ -283,7 +302,14 @@
                 },
                 success: function(response) {
                     // Handle success here
-                    console.log('Request successful:', response);
+                    if(response.status){
+                        console.log(response.message);
+                        toastr['success'](response.message);
+                        $("#btnShowData").click();
+                    }else{
+                        console.log(response.message);
+                        toastr['warning'](response.message);
+                    }
 
                     $('#wait-icon').hide();
                 },
@@ -459,25 +485,6 @@
 
         });
 
-        $('#btnSyncData').on('click', function() {
-
-            $.ajax({
-                type: "POST",
-                url: "{{ route('presensiku.getdatapresensi') }}",
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                cache: false,
-                success: function(response) {
-                },
-                error: function(data) {
-                    console.log('error : ', data);
-                }
-            });
-
-        });
-
-        $("#btnShowData").click();
 
     });
 </script>

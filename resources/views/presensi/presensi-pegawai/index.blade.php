@@ -191,6 +191,25 @@
     let table;
     let btnExport = 0;
     $.noConflict();
+    toastr.options = {
+            "closeButton": false,
+            "debug": false,
+            "newestOnTop": false,
+            "progressBar": true,
+            "rtl": false,
+            "positionClass": "toast-top-right",
+            "preventDuplicates": false,
+            "onclick": null,
+            "showDuration": 300,
+            "hideDuration": 1000,
+            "timeOut": 5000,
+            "extendedTimeOut": 1000,
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        };
+
     $(document).ready(function() {
 
         var currentDate = new Date();
@@ -445,23 +464,37 @@
 
         });
 
-        $('#btnSyncData').on('click', function() {
 
+        $('#btnGetDataPresensi').on('click', function() {
+            $('#wait-icon').show();
             $.ajax({
-                type: "POST",
                 url: "{{ route('presensi-pegawai.getdatapresensipegawai') }}",
+                type: 'POST',
                 headers: {
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
                 },
-                cache: false,
                 success: function(response) {
+                    // Handle success here
+                    if(response.status){
+                        console.log(response.message);
+                        toastr['success'](response.message);
+                        $("#btnShowData").click();
+                    }else{
+                        console.log(response.message);
+                        toastr['warning'](response.message);
+                    }
+
+
+                    $('#wait-icon').hide();
                 },
-                error: function(data) {
-                    console.log('error : ', data);
+                error: function(jqXHR, textStatus, errorThrown) {
+                    // Handle error here
+                    console.error('Request failed:', textStatus, errorThrown);
+                    $('#wait-icon').hide();
                 }
             });
-
         });
+
 
     });
 </script>
