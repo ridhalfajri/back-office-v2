@@ -126,6 +126,14 @@ return [
         'emergency' => [
             'path' => storage_path('logs/laravel.log'),
         ],
+
+        //Teguh
+        'presensi' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/presensi.log'),
+            'level' => 'debug',
+            'days' => 7,
+        ],
     ],
 
 ];
