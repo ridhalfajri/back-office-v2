@@ -65,6 +65,8 @@ class PresensiHelper {
     //=======================================
     public static function get_DataPresensiHadirRoutine($dateAwal, $dateAkhir) {
 
+        set_time_limit(3600);
+
         //Jalankan Function ini pada cronjob setiap sehari sekali
 
         // Get tanggal,jam_masuk,jam_pulang yang diperbolehkan Presensi Online
@@ -285,8 +287,18 @@ class PresensiHelper {
 
     }
 
+    public static function SaveInfo($info){
+
+        Log::channel('presensi')
+            ->info($info);
+
+    }
 
     public static function get_DataPresensi() {
+
+        set_time_limit(3600);
+
+        self::SaveInfo('Mulai Get data presensi adms');
 
         $OK = 0;
         $NG = 0;
@@ -301,6 +313,8 @@ class PresensiHelper {
             ->where('Reserved', '0')
             ->orderBy('id')
             ->get();
+
+        self::SaveInfo('Get data presensi adms: '. $inOut->count() . ' record');
 
         $jamKerja = PreJamKerja::Where('is_active', 'Y')->first();
 
@@ -430,6 +444,9 @@ class PresensiHelper {
                             }
                             //=======================================
                             $presensi->save();
+
+                            self::SaveInfo('Presensi di Update, No_Enroll:'. $presensi->no_enroll . '|' . $presensi->tanggal_presensi .'|'. $jamPresensi);
+
                             self::UpdateAdms($row->id);
                             // sleep(2);
                             $OK++;
@@ -437,6 +454,8 @@ class PresensiHelper {
                         } catch (\Exception $e) {
                             // Handle any exceptions that may occur during the update
                             $NG++;
+                            self::SaveInfo('Error Update data presensi, No_Enroll:'. $presensi->no_enroll . '|' . $presensi->tanggal_presensi .'|'. $jamPresensi);
+
                             Log::error('(1) Save Data Presensi and Update ADMS Error :' . $e->getMessage() . "\n=> Pegawai No_Enroll:". $pegawai->no_enroll . "|Nip:". $pegawai->nip . "|Nama:". $pegawai->nama_depan . " " . $pegawai->nama_belakang . "\n" . " Presensi :" . "ID: " . $row->id . ", no_enroll: " . $row->userid . ", tanggal: " . $row->checktime . "\n=======================================" );
                         }
 
@@ -469,11 +488,14 @@ class PresensiHelper {
                                     $presensi->status_kehadiran = 'HADIR';
                                 }
                                 $presensi->save();
+                                self::SaveInfo('New Presensi, No_Enroll:'. $presensi->no_enroll . '|' . $presensi->tanggal_presensi .'|'. $jamPresensi);
                                 self::UpdateAdms($row->id);
                                 $OK++;
 
                             } catch (\Exception $e) {
                                 $NG++;
+                                self::SaveInfo('Error Save data presensi, No_Enroll:'. $presensi->no_enroll . '|' . $presensi->tanggal_presensi .'|'. $jamPresensi);
+
                                 // Handle any exceptions that may occur during the update
                                 Log::error('(2) Save Data Presensi and Update ADMS Error :' . $e->getMessage() . "\n=> Pegawai No_Enroll:". $pegawai->no_enroll . "|Nip:". $pegawai->nip . "|Nama:". $pegawai->nama_depan . " " . $pegawai->nama_belakang . "\n" . " Presensi :" . "ID: " . $row->id . ", no_enroll: " . $noEnroll . ", tanggal: " . $tglPresensi . '_' . $jamPresensi . "\n=======================================" );
                             }
@@ -490,15 +512,21 @@ class PresensiHelper {
                     }
 
                 } catch (\Throwable $th) {
+                    self::SaveInfo('error Get Data-Presensi Finger:'. $th->getMessage());
+
                     Log::error("error Get Data-Presensi Finger:" . $th->getMessage() . "\n=======================================" );
                     $NG++;
                 }
                 //================================================================================================
                 // END Data Presensi
                 //================================================================================================
+            }else{
+                self::SaveInfo('Data Pegawai dengan No Enroll :'. $noEnroll .' tidak ditemukan: ');
             }
 
         }
+
+        self::SaveInfo('Selesai Get data presensi adms, Status NG:' . $NG);
 
         return $NG;
 

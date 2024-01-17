@@ -67,8 +67,6 @@ class PresensiPegawaiController extends Controller
                                 ->orderBy('tanggal_presensi', 'asc')
                                 ;
 
-
-
             return Datatables::of($data)
             ->addColumn('no', '')
             ->editColumn('nominal_potongan', function ($row) {
