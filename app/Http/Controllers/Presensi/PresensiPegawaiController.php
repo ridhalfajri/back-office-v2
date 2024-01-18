@@ -31,7 +31,6 @@ class PresensiPegawaiController extends Controller
 
         $pegawai = PegawaiHelper::getPegawaiData(auth()->user()->pegawai->id);
 
-
         return view('presensi.presensiku.index', compact('title','pegawai'));
     }
 

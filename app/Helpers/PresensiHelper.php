@@ -75,7 +75,8 @@ class PresensiHelper {
         $inOut = DB::connection('hadir')->table('v_presensi')
             ->whereYear('tanggal','>=',$dateAwal)
             ->whereMonth('tanggal','<=',$dateAkhir)
-            ->orderBy('id')
+            ->orderBy('tanggal')
+            ->orderBy('jam_masuk')
             ->get();
 
         $jamKerja = PreJamKerja::Where('is_active', 'Y')->first();
@@ -296,9 +297,11 @@ class PresensiHelper {
 
     public static function get_DataPresensi() {
 
-        set_time_limit(3600);
+
 
         self::SaveInfo('Mulai Get data presensi adms');
+
+        set_time_limit(3600);
 
         $OK = 0;
         $NG = 0;
@@ -311,7 +314,7 @@ class PresensiHelper {
             ->whereYear('checktime','=',$todayYear)
             ->whereMonth('checktime','=',$todayMonth)
             ->where('Reserved', '0')
-            ->orderBy('id')
+            ->orderBy('checktime')
             ->get();
 
         self::SaveInfo('Get data presensi adms: '. $inOut->count() . ' record');
