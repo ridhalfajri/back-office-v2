@@ -82,7 +82,7 @@ class JabatanUnitKerjaController extends Controller
     */
     public function create()
     {
-        $title = 'Jabatan Unit Kerja';
+        $title = 'Input Jabatan Unit Kerja Baru';
         $jabatanTukin = DB::table('jabatan_tukin as a')
                 ->select('a.id', 'a.jabatan_id', 'a.jenis_jabatan_id', 'b.nama as jenis_jabatan', 'c.grade', 'c.nominal')
                 ->addSelect(DB::raw('
@@ -172,7 +172,7 @@ class JabatanUnitKerjaController extends Controller
     */
     public function edit(JabatanUnitKerja $jabatanUnitKerja)
     {
-        $title = 'Edit Jabatan Unit Kerja';
+        $title = 'Ubah Jabatan Unit Kerja';
 
         $jabatanTukin = DB::table('jabatan_tukin as a')
         ->select('a.id', 'a.jabatan_id', 'a.jenis_jabatan_id', 'b.nama as jenis_jabatan', 'c.grade', 'c.nominal')
