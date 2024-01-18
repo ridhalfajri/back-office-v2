@@ -31,6 +31,8 @@ use App\Http\Controllers\UnitKerjaController;
 use App\Http\Controllers\TukinController;
 use App\Http\Controllers\PegawaiRiwayatUmakController;
 
+use App\Http\Controllers\RiwayatJabatanAllController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -78,6 +80,10 @@ Route::middleware('auth')->group(function () {
         Route::post('/pegawai-riwayat-umak/kalkulasi-umak', [PegawaiRiwayatUmakController::class, 'kalkulasiUmak'])->name('pegawai-riwayat-umak.kalkulasi-umak');
         Route::resource('/pegawai-riwayat-umak', PegawaiRiwayatUmakController::class)->only(['index']);
     });
+
+    //Riwayat Jabatan All
+    Route::post('/riwayat-jabatan-all/datatable', [RiwayatJabatanAllController::class, 'datatable'])->name('riwayat-jabatan-all.datatable');
+    Route::resource('/riwayat-jabatan-all', RiwayatJabatanAllController::class);
 
     //master data
     Route::prefix('master')->group(function () {

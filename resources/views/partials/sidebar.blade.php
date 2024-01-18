@@ -10,7 +10,7 @@
                     class="icon-bar-chart"></i><span>Penghasilan</span></a></li>
         <li
             class="{{ request()->segment(2) == 'riwayat-jabatan' && request()->segment(1) == auth()->user()->pegawai_id ? 'active' : '' }}">
-            <a href="{{ route('riwayat-jabatan.index') }}"><i class="icon-list"></i><span>Riwayat Jabatan</span></a>
+            <a href="{{ route('riwayat-jabatan-all.index') }}"><i class="icon-list"></i><span>Riwayat Jabatan Pegawai</span></a>
         </li>
         <li
             class="{{ request()->segment(2) == 'riwayat_cuti' || request()->segment(2) == 'saldo_cuti' ? 'active' : '' }}">

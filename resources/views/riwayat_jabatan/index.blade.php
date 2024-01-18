@@ -14,32 +14,24 @@
                 <div class="container-fluid">
                     <div class="row clearfix">
                         <div class="col-lg-12">
-                            {{-- <div class="card">
-                                <div class="card-header">
-                                    <h3 class="card-title font-weight-bold ">DATA PEGAWAI</h3>
-                                </div>
-                                <div class="card-body">
-                                    <div class="row">
-                                        <div class="form-group col-md-3 col-lg-3">
-                                            <label class="form-label">Nama</label>
-                                            <p>#</p>
-                                        </div>
-                                        <div class="form-group col-md-3 col-lg-3">
-                                            <label class="form-label">NIP</label>
-                                            <p>#</p>
-                                        </div>
-                                        <div class="form-group col-md-3 col-lg-3">
-                                            <label class="form-label">Unit Kerja</label>
-                                            <p>#</p>
-                                        </div>
-                                        <div class="form-group col-md-3 col-lg-3">
-                                            <label class="form-label">Jabatan</label>
-                                            <p>#</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div> --}}
                             <div class="table-responsive mb-4">
+                                <table id="tbl-riwayat-jabatan-all"
+                                    class="table table-hover js-basic-example dataTable table_custom spacing5">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 5%" class="font-weight-bold text-dark">No</th>
+                                            <th class="font-weight-bold text-dark">Nama</th>
+                                            <th class="font-weight-bold text-dark">Jabatan</th>
+                                            <th class="font-weight-bold text-dark">Plt</th>
+                                            <th class="font-weight-bold text-dark">Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            {{-- <div class="table-responsive mb-4">
                                 <table id="tbl-riwayat-jabatan"
                                     class="table table-hover js-basic-example dataTable table_custom spacing5">
                                     <thead>
@@ -71,7 +63,7 @@
                                     <tbody>
                                     </tbody>
                                 </table>
-                            </div>
+                            </div> --}}
                         </div>
                     </div>
                 </div>
@@ -79,89 +71,6 @@
         </div>
     </div>
 @endsection
-@push('modal')
-    {{-- Modal Detail Cuti --}}
-    <div class="modal fade" id="modal-detail-cuti" tabindex="-1" role="dialog" aria-labelledby="modalDetailCutiLabel"
-        aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Detail Cuti</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="col-md-12 col-lg-12">
-                        <div class="card">
-                            <div class="card-body">
-                                <div class="form-group">
-                                    <label class="form-label">Jenis Cuti</label>
-                                    <input type="text" id="c_jenis_cuti" disabled=""
-                                        class="form-control mt-3 state-valid" value="">
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Tanggal Awal</label>
-                                    <input type="text" id="c_tanggal_awal_cuti" disabled=""
-                                        class="form-control mt-3 state-valid" value="">
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Tanggal Akhir</label>
-                                    <input type="text" id="c_tanggal_akhir_cuti" disabled=""
-                                        class="form-control mt-3 state-valid" value="">
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Lama Cuti</label>
-                                    <input type="text" id="c_lama_cuti" disabled=""
-                                        class="form-control mt-3 state-valid" value="">
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Alasan</label>
-                                    <input type="text" id="c_alasan" disabled=""
-                                        class="form-control mt-3 state-valid" value="">
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Alamat Cuti</label>
-                                    <input type="text" id="c_alamat_cuti" disabled=""
-                                        class="form-control mt-3 state-valid" value="">
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">No Telp Cuti</label>
-                                    <input type="text" id="c_no_telepon_cuti" disabled=""
-                                        class="form-control mt-3 state-valid" value="">
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Acc Atasan Langsung</label>
-                                    <input type="text" id="c_tanggal_approve_al" disabled=""
-                                        class="form-control mt-3 state-valid" value="">
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Acc Kabiro SDMOH</label>
-                                    <input type="text" id="c_tanggal_approve_akb" disabled=""
-                                        class="form-control mt-3 state-valid" value="">
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Penolakan Cuti</label>
-                                    <input type="text" id="c_tanggal_penolakan_cuti" disabled=""
-                                        class="form-control mt-3 state-valid" value="">
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Keterangan</label>
-                                    <input type="text" id="c_keterangan" disabled=""
-                                        class="form-control mt-3 state-valid" value="">
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Lampiran Pengajuan Cuti</label>
-                                    <a href="#" id="c_media_pengajuan_cuti" class="btn btn-primary">Download</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-@endpush
 @push('script')
     <script src="{{ asset('assets/plugins/sweetalert2/sweetalert2.all.min.js') }}"></script>
     <script src="{{ asset('assets/bundles/dataTables.bundle.js') }}"></script>
@@ -171,7 +80,7 @@
         let table;
 
         $(function() {
-            table = $('#tbl-riwayat-jabatan').DataTable({
+            table = $('#tbl-riwayat-jabatan-all').DataTable({
                 processing: true,
                 destroy: true,
                 serverSide: true,
@@ -184,7 +93,7 @@
                 info: true,
                 autoWidth: false,
                 ajax: {
-                    url: '{{ route('riwayat-jabatan.datatable') }}',
+                    url: '{{ route("riwayat-jabatan-all.datatable") }}',
                     type: 'POST',
                     headers: {
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
@@ -196,59 +105,28 @@
                         class: 'text-center'
                     },
                     {
-                        data: 'tipe_jabatan',
-                        name: 'ttj.tipe_jabatan',
-                        class: 'text-center'
+                        data: 'nama_lengkap',
+                        name: 'nama_lengkap',
+                        class: ''
                     },
                     {
-                        data: 'nama_unit_kerja',
-                        name: 'uk.nama',
-                        class: 'text-center'
-                    },
-                    {
-                        data: 'tanggal_sk',
-                        name: 'tanggal_sk',
-                        class: 'text-center'
-                    },
-                    {
-                        data: 'tanggal_pelantikan',
-                        name: 'tanggal_pelantikan',
-                        class: 'text-center'
-                    },
-                    {
-                        data: 'tmt_jabatan',
-                        name: 'tmt_jabatan',
+                        data: 'nama_jabatan',
+                        name: 'nama_jabatan',
                         class: 'text-center'
                     },
                     {
                         data: 'is_plt',
                         name: 'is_plt',
                         class: 'text-center',
-                        render: function(data, type, row) {
-                            switch (data) {
-                                case 1:
-                                    return '<span class="badge badge-pill badge-primary">YA</span>';
-                                    break;
-                                case 0:
-                                    return '<span class="badge badge-pill badge-dark">TIDAK</span>';
-                                    break;
+                        render :
+                            function(data, type, row) {
+                                if(row.is_plt == 0) {
+                                    return row.is_plt = 'Tidak';
+                                }
+                                else {
+                                    return row.is_plt = 'Ya';
+                                }
                             }
-                        }
-                    },
-                    {
-                        data: 'is_now',
-                        name: 'is_now',
-                        class: 'text-center',
-                        render: function(data, type, row) {
-                            switch (data) {
-                                case 1:
-                                    return '<span class="badge badge-pill badge-success">AKTIF</span>';
-                                    break;
-                                case 0:
-                                    return '<span class="badge badge-pill badge-dark">TIDAK AKTIF</span>';
-                                    break;
-                            }
-                        }
                     },
                     {
                         data: 'aksi',
@@ -277,45 +155,5 @@
                 });
             });
         })
-    </script>
-    <script>
-        const show_cuti = (id) => {
-            $.ajax({
-                url: "/cuti/pengajuan_cuti/" + id,
-                type: "GET",
-                success: function(response) {
-                    console.log(response);
-                    if (response.errors) {
-                        if (response.errors) {
-                            Swal.fire({
-                                title: "Gagal!",
-                                text: response.errors.connection,
-                                icon: "error",
-                                confirmButtonText: "Tutup",
-                            });
-                        }
-                    } else if (response.result) {
-                        const res = response.result
-                        $('#c_jenis_cuti').val(res.jenis)
-                        $('#c_tanggal_awal_cuti').val(res.tanggal_awal_cuti)
-                        $('#c_tanggal_akhir_cuti').val(res.tanggal_akhir_cuti)
-                        $('#c_lama_cuti').val(res.lama_cuti)
-                        $('#c_alasan').val(res.alasan)
-                        $('#c_alamat_cuti').val(res.alamat_cuti)
-                        $('#c_no_telepon_cuti').val(res.no_telepon_cuti)
-                        $('#c_tanggal_approve_al').val(res.tanggal_approve_al)
-                        $('#c_tanggal_approve_akb').val(res.tanggal_approve_akb)
-                        $('#c_tanggal_penolakan_cuti').val(res.tanggal_penolakan_cuti)
-                        $('#c_keterangan').val(res.keterangan)
-                        if (res.media_pengajuan_cuti) {
-                            $("#c_media_pengajuan_cuti").attr(
-                                "href",
-                                "//" + response.result.media_pengajuan_cuti
-                            );
-                        }
-                    }
-                },
-            });
-        }
     </script>
 @endpush
