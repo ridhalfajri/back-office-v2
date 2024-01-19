@@ -151,7 +151,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/riwayat-jabatan/datatable', [RiwayatJabatanController::class, 'datatable'])->name('riwayat-jabatan.datatable');
         Route::get('/riwayat-jabatan/{id}/create', [RiwayatJabatanController::class, 'create'])->name('riwayat-jabatan.create');
         Route::post('/riwayat-jabatan/{id}/store', [RiwayatJabatanController::class, 'store'])->name('riwayat-jabatan.store');
-        Route::get('/riwayat-jabatan/show/{id}', [RiwayatJabatanController::class, 'show'])->name('riwayat-jabatan.show');
+        Route::get('/riwayat-jabatan/{id}/show', [RiwayatJabatanController::class, 'show'])->name('riwayat-jabatan.show');
         Route::get('/riwayat-jabatan/get-fungsional-umum', [RiwayatJabatanController::class, 'get_fungsional_umum'])->name('riwayat-jabatan.get_fungsional_umum');
         Route::get('/riwayat-jabatan/get-fungsional-tertentu', [RiwayatJabatanController::class, 'get_fungsional_tertentu'])->name('riwayat-jabatan.get_fungsional_tertentu');
         Route::get('/riwayat-jabatan/get-eselon-satu', [RiwayatJabatanController::class, 'get_eselon_satu'])->name('riwayat-jabatan.get_eselon_satu');

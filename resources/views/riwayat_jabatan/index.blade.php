@@ -12,6 +12,9 @@
         <div class="container-fluid">
             <div class="section-body  py-4">
                 <div class="container-fluid">
+                    <a href="{{ route('riwayat-jabatan-all.create') }}">
+                        <button class="btn btn-primary mb-4">Tambah Riwayat Jabatan</button>
+                    </a>
                     <div class="row clearfix">
                         <div class="col-lg-12">
                             <div class="table-responsive mb-4">
@@ -22,7 +25,6 @@
                                             <th style="width: 5%" class="font-weight-bold text-dark">No</th>
                                             <th class="font-weight-bold text-dark">Nama</th>
                                             <th class="font-weight-bold text-dark">Jabatan</th>
-                                            <th class="font-weight-bold text-dark">Plt</th>
                                             <th class="font-weight-bold text-dark">Aksi</th>
                                         </tr>
                                     </thead>
@@ -30,40 +32,6 @@
                                     </tbody>
                                 </table>
                             </div>
-
-                            {{-- <div class="table-responsive mb-4">
-                                <table id="tbl-riwayat-jabatan"
-                                    class="table table-hover js-basic-example dataTable table_custom spacing5">
-                                    <thead>
-                                        <tr>
-                                            <th style="width: 5%" class="font-weight-bold text-dark">No</th>
-                                            <th class="font-weight-bold text-dark">Jabatan</th>
-                                            <th class="font-weight-bold text-dark">Unit Kerja</th>
-                                            <th class="font-weight-bold text-dark">Tanggal SK</th>
-                                            <th class="font-weight-bold text-dark">Pelantikan</th>
-                                            <th class="font-weight-bold text-dark">TMT Jabatan</th>
-                                            <th class="font-weight-bold text-dark">PLT</th>
-                                            <th class="font-weight-bold text-dark">Status</th>
-                                            <th class="font-weight-bold text-dark">Aksi</th>
-                                        </tr>
-                                    </thead>
-                                    <tfoot>
-                                        <tr>
-                                            <th style="width: 5%" class="font-weight-bold text-dark">No</th>
-                                            <th class="font-weight-bold text-dark">Jabatan</th>
-                                            <th class="font-weight-bold text-dark">Unit Kerja</th>
-                                            <th class="font-weight-bold text-dark">Tanggal SK</th>
-                                            <th class="font-weight-bold text-dark">Pelantikan</th>
-                                            <th class="font-weight-bold text-dark">TMT Jabatan</th>
-                                            <th class="font-weight-bold text-dark">PLT</th>
-                                            <th class="font-weight-bold text-dark">Status</th>
-                                            <th class="font-weight-bold text-dark">Aksi</th>
-                                        </tr>
-                                    </tfoot>
-                                    <tbody>
-                                    </tbody>
-                                </table>
-                            </div> --}}
                         </div>
                     </div>
                 </div>
@@ -113,20 +81,6 @@
                         data: 'nama_jabatan',
                         name: 'nama_jabatan',
                         class: 'text-center'
-                    },
-                    {
-                        data: 'is_plt',
-                        name: 'is_plt',
-                        class: 'text-center',
-                        render :
-                            function(data, type, row) {
-                                if(row.is_plt == 0) {
-                                    return row.is_plt = 'Tidak';
-                                }
-                                else {
-                                    return row.is_plt = 'Ya';
-                                }
-                            }
                     },
                     {
                         data: 'aksi',
