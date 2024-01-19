@@ -25,6 +25,7 @@
                                             <th style="width: 5%" class="font-weight-bold text-dark">No</th>
                                             <th class="font-weight-bold text-dark">Nama</th>
                                             <th class="font-weight-bold text-dark">Jabatan</th>
+                                            <th class="font-weight-bold text-dark">Unit Kerja</th>
                                             <th class="font-weight-bold text-dark">Aksi</th>
                                         </tr>
                                     </thead>
@@ -80,6 +81,11 @@
                     {
                         data: 'nama_jabatan',
                         name: 'nama_jabatan',
+                        class: 'text-center'
+                    },
+                    {
+                        data: 'nama_unit_kerja',
+                        name: 'nama_unit_kerja',
                         class: 'text-center'
                     },
                     {

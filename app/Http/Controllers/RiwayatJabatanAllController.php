@@ -37,10 +37,20 @@ class RiwayatJabatanAllController extends Controller
                 'p.nama_depan',
                 'p.nama_belakang',
                 'z.nama_jabatan',
+                'y.nama_unit_kerja',
                 DB::raw('CONCAT(p.nama_depan, " ", p.nama_belakang) AS nama_lengkap'),
             )
             ->join('pegawai_riwayat_jabatan AS q', 'p.id', '=', 'q.pegawai_id')
             ->join('jabatan_unit_kerja AS r', 'q.jabatan_unit_kerja_id', '=', 'r.id')
+            ->join(DB::raw('(SELECT a.id, a.child_unit_kerja_id, a.parent_unit_kerja_id, b.nama as nama_unit_kerja, c.nama_jenis_unit_kerja, c.nama_parent_unit_kerja
+                                FROM hirarki_unit_kerja as a
+                                INNER JOIN unit_kerja as b ON a.child_unit_kerja_id = b.id
+                                INNER JOIN (SELECT a.id, a.child_unit_kerja_id, a.parent_unit_kerja_id, c.nama as nama_jenis_unit_kerja, b.nama as nama_parent_unit_kerja
+                                            FROM hirarki_unit_kerja as a
+                                            INNER JOIN unit_kerja as b ON a.parent_unit_kerja_id = b.id
+                                            INNER JOIN jenis_unit_kerja as c ON c.id = b.jenis_unit_kerja_id) as c ON a.id = c.id) as y'), function ($join) {
+                $join->on('r.hirarki_unit_kerja_id', '=', 'y.id');
+            })
             ->join(DB::raw('(SELECT a.id, a.jabatan_id, a.jenis_jabatan_id, b.nama as jenis_jabatan, c.grade, c.nominal,
                                 CASE
                                     WHEN a.jenis_jabatan_id = 1 THEN d.nama
