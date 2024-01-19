@@ -20,14 +20,22 @@
                         @method('POST')
 
                         <div class="row">
-                            <div class="form-group col-sm-6 col-md-6">
+                            <div class="form-group col-md-4 col-lg-4">
+                                <label class="form-label">Nama Pegawai</label>
+                                <select class="form-control" id="pegawai_id" name="pegawai_id">
+                                    <option value="">-- Pilih Pegawai --</option>
+                                </select>
+                                <small class="text-danger" id="error_pegawai_id"></small>
+                            </div>
+
+                            <div class="form-group col-sm-4 col-md-4">
                                 <label class="form-label">Nomor SK</label>
                                 <input type="text" class="form-control" id="no_sk" name="no_sk"
                                     placeholder="Nomor Surat Keputusan">
                                 <small class="text-danger" id="error_no_sk"></small>
                             </div>
 
-                            <div class="form-group col-sm-6 col-md-6">
+                            <div class="form-group col-sm-4 col-md-4">
                                 <label class="form-label">Tanggal SK</label>
                                 <div class="input-group">
                                     <input data-provide="datepicker" id="tanggal_sk" name="tanggal_sk"
@@ -159,6 +167,36 @@
     <script>
         $('#hirarki_unit_kerja_id').select2();
 
+        //Select2 Pegawai
+        $('#pegawai_id').select2({
+            ajax: {
+                url: "{{ route('riwayat-jabatan-all.get_nama_pegawai') }}",
+                delay: 500,
+                dataType: 'json',
+                minimumInputLength: 3,
+                data: function (params) {
+                    return {
+                        q: params.term, // search term
+                        page: params.page
+                    };
+                },
+                processResults: function (data) {
+                    console.log(data);
+                    return {
+                        results: $.map(data, function(obj) {
+                            if(obj.id!=0){
+                            // console.log(obj);
+                            return { id: obj.id, text: obj.name };
+                        }
+                            else
+                                {return {id: obj.id, text: obj.name}}
+                        })
+                    };
+
+                }
+            }
+        });
+
         $('#tx_tipe_jabatan_id').change(function() {
             if($('#tx_tipe_jabatan_id').val() == 6) {
                 $('.remove').remove();
@@ -190,7 +228,7 @@
 
                         $('#fungsional_umum').select2({
                             ajax: {
-                                url: "{{ route('riwayat-jabatan.get_fungsional_umum') }}",
+                                url: "{{ route('riwayat-jabatan-all.get_fungsional_umum') }}",
                                 delay: 500,
                                 dataType: 'json',
                                 minimumInputLength: 3,
@@ -230,7 +268,7 @@
 
                         $('#fungsional_tertentu').select2({
                             ajax: {
-                                url: "{{ route('riwayat-jabatan.get_fungsional_tertentu') }}",
+                                url: "{{ route('riwayat-jabatan-all.get_fungsional_tertentu') }}",
                                 delay: 500,
                                 dataType: 'json',
                                 minimumInputLength: 3,
@@ -277,7 +315,7 @@
 
                 $('#eselon_dua').select2({
                     ajax: {
-                        url: "{{ route('riwayat-jabatan.get_eselon_dua') }}",
+                        url: "{{ route('riwayat-jabatan-all.get_eselon_dua') }}",
                         delay: 500,
                         dataType: 'json',
                         minimumInputLength: 3,
@@ -319,7 +357,7 @@
 
                 $('#eselon_satu').select2({
                     ajax: {
-                        url: "{{ route('riwayat-jabatan.get_eselon_satu') }}",
+                        url: "{{ route('riwayat-jabatan-all.get_eselon_satu') }}",
                         delay: 500,
                         dataType: 'json',
                         minimumInputLength: 3,
@@ -366,6 +404,9 @@
                     if (response.errors) {
                         resetForm()
                         const err = response.errors
+                        if (err.no_sk) {
+                            $('#error_pegawai_id').text(err.pegawai_id)
+                        }
                         if (err.no_sk) {
                             $('#error_no_sk').text(err.no_sk)
                         }
@@ -428,6 +469,7 @@
         });
 
         function resetForm(is_success = false) {
+            $('#error_pegawai_id').text('')
             $('#error_no_sk').text('')
             $('#error_tanggal_sk').text('')
             $('#error_no_pelantikan').text('')

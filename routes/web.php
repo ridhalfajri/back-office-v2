@@ -83,6 +83,11 @@ Route::middleware('auth')->group(function () {
 
     //Riwayat Jabatan All
     Route::post('/riwayat-jabatan-all/datatable', [RiwayatJabatanAllController::class, 'datatable'])->name('riwayat-jabatan-all.datatable');
+    Route::get('/riwayat-jabatan-all/get-nama-pegawai', [RiwayatJabatanAllController::class, 'get_nama_pegawai'])->name('riwayat-jabatan-all.get_nama_pegawai');
+    Route::get('/riwayat-jabatan-all/get-fungsional-umum', [RiwayatJabatanController::class, 'get_fungsional_umum'])->name('riwayat-jabatan-all.get_fungsional_umum');
+    Route::get('/riwayat-jabatan-all/get-fungsional-tertentu', [RiwayatJabatanController::class, 'get_fungsional_tertentu'])->name('riwayat-jabatan-all.get_fungsional_tertentu');
+    Route::get('/riwayat-jabatan-all/get-eselon-satu', [RiwayatJabatanController::class, 'get_eselon_satu'])->name('riwayat-jabatan-all.get_eselon_satu');
+    Route::get('/riwayat-jabatan-all/get-eselon-dua', [RiwayatJabatanController::class, 'get_eselon_dua'])->name('riwayat-jabatan-all.get_eselon_dua');
     Route::resource('/riwayat-jabatan-all', RiwayatJabatanAllController::class);
 
     //master data
@@ -152,10 +157,6 @@ Route::middleware('auth')->group(function () {
         Route::get('/riwayat-jabatan/{id}/create', [RiwayatJabatanController::class, 'create'])->name('riwayat-jabatan.create');
         Route::post('/riwayat-jabatan/{id}/store', [RiwayatJabatanController::class, 'store'])->name('riwayat-jabatan.store');
         Route::get('/riwayat-jabatan/{id}/show', [RiwayatJabatanController::class, 'show'])->name('riwayat-jabatan.show');
-        Route::get('/riwayat-jabatan/get-fungsional-umum', [RiwayatJabatanController::class, 'get_fungsional_umum'])->name('riwayat-jabatan.get_fungsional_umum');
-        Route::get('/riwayat-jabatan/get-fungsional-tertentu', [RiwayatJabatanController::class, 'get_fungsional_tertentu'])->name('riwayat-jabatan.get_fungsional_tertentu');
-        Route::get('/riwayat-jabatan/get-eselon-satu', [RiwayatJabatanController::class, 'get_eselon_satu'])->name('riwayat-jabatan.get_eselon_satu');
-        Route::get('/riwayat-jabatan/get-eselon-dua', [RiwayatJabatanController::class, 'get_eselon_dua'])->name('riwayat-jabatan.get_eselon_dua');
 
         // Pegawai
         Route::post('/datatable', [PegawaiController::class, 'datatable'])->name('pegawai.datatable');
