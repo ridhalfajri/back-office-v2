@@ -49,6 +49,7 @@ use App\Http\Controllers\PegawaiRiwayatUmakController;
 
 use App\Http\Controllers\PegawaiRiwayatThrController;
 use App\Http\Controllers\PegawaiRiwayatGajiplusController;
+use App\Http\Controllers\PegawaiRiwayatJabatanController;
 use App\Http\Controllers\RiwayatGajiplusController;
 use App\Http\Controllers\RiwayatThrController;
 use App\Http\Controllers\RuangRapatController;
@@ -118,13 +119,13 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/pesan-ruang-rapat/datatable', [PesanRuangRapatController::class, 'datatable'])->name('pesan-ruang-rapat.datatable');
     Route::resource('/pesan-ruang-rapat', PesanRuangRapatController::class)->except('edit', 'update');
-    
+
     Route::post('/pengajuan-pmk/datatable', [PengajuanPMKController::class, 'datatable'])->name('pengajuan-pmk.datatable');
     Route::resource('/pengajuan-pmk', PengajuanPMKController::class)->except('edit', 'update');
-    
+
     Route::post('/pegawai-tambahan-mk/datatable', [PegawaiTambahanMkController::class, 'datatable'])->name('pegawai-tambahan-mk.datatable');
     Route::resource('/pegawai-tambahan-mk', PegawaiTambahanMkController::class)->except('create', 'store');
-    
+
     Route::post('/pengajuan-tambahan-bpjs/datatable', [PengajuanTambahanBpjsController::class, 'datatable'])->name('pengajuan-tambahan-bpjs.datatable');
     Route::resource('/pengajuan-tambahan-bpjs', PengajuanTambahanBpjsController::class)->except('edit', 'update');
 
@@ -163,7 +164,6 @@ Route::middleware('auth')->group(function () {
         Route::resource('/presensiku', PresensiPegawaiController::class);
         Route::post('/presensiku/datatable', [PresensiPegawaiController::class, 'datatable'])->name('presensiku.datatable');
         Route::post('/presensiku/getdatapresensi', [PresensiPegawaiController::class, 'getdatapresensi'])->name('presensiku.getdatapresensi');
-
     });
 
     Route::post('/presensi-pegawai/getanggotatim', [PresensiPegawaiController::class, 'getAnggotaTim'])->name('presensi-pegawai.getanggotatim');
@@ -223,6 +223,13 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::prefix('pegawai')->group(function () {
+
+        Route::get('/a-riwayat-jabatan/{pegawai_id}', [PegawaiRiwayatJabatanController::class, 'create'])->name('a-riwayat-jabatan.create');
+        Route::get('/a-riwayat-jabatan/{pegawai_riwayat_jabatan_id}/edit', [PegawaiRiwayatJabatanController::class, 'edit'])->name('a-riwayat-jabatan.edit');
+        Route::post('/a-riwayat-jabatan/get-jabatan-unit-kerja', [PegawaiRiwayatJabatanController::class, 'get_jabatan_unit_kerja'])->name('a-riwayat-jabatan.get-jabatan-unit-kerja');
+        Route::post('/a-riwayat-jabatan/store', [PegawaiRiwayatJabatanController::class, 'store'])->name('a-riwayat-jabatan.store');
+        Route::post('/a-riwayat-jabatan/update', [PegawaiRiwayatJabatanController::class, 'update'])->name('a-riwayat-jabatan.update');
+
 
         // Penghargaan
 
@@ -300,7 +307,6 @@ Route::middleware('auth')->group(function () {
         //Pengajuan Peninjauan Masa Kerja
         Route::resource('/pengajuan-mk', PegawaiPengajuanMk::class);
         Route::post('/pengajuan-mk/datatable', [PegawaiPengajuanMk::class, 'datatable'])->name('pengajuan-mk.datatable');
-
     });
 
     Route::get('/esselon2/pegawai', [PegawaiController::class, 'index_esselon'])->name('pegawai.index-esselon');
