@@ -30,15 +30,30 @@ class TukinController extends Controller
         return view('tukin.index', compact('title'));
     }
      
-    public function datatable(Tukin $tukin)
+    public function datatable(Request $request)
     {        
+        $isAktif = $request->isAktif;
+
         $data = Tukin::select('*')
         ->orderBy('grade','asc');
+
+        if(null != $isAktif || '' != $isAktif){
+            $data->where('is_active', '=', $isAktif);
+        }
 
         //dd($data);
 
         return Datatables::of($data)
             ->addColumn('no', '')
+            ->addColumn('status', function ($data) {
+                if($data->is_active == 'Y'){
+                    return 'Aktif';
+                }
+                if($data->is_active == 'N'){
+                    return 'Tidak Aktif';
+                }
+            })
+
             ->addColumn('aksi', 'tukin.aksi')
             ->rawColumns(['aksi'])
             ->make(true);
@@ -77,17 +92,20 @@ class TukinController extends Controller
             'grade' => ['required', 'integer', 'max:9999'],
             'nominal' => ['required', 'integer', 'max:9999999999'],
             'keterangan' => ['max:255'],
+            'is_active' => ['required'],
         ],
         [
             'grade.required'=>'data grade harus diisi!',
             'grade.integer'=>'data grade harus bilangan bulat positif!',
             'nominal.required'=>'data nominal harus diisi!',
             'nominal.integer'=>'data nominal harus bilangan bulat positif!',
+            'is_active.required'=>'data status harus diisi!',
         ]);
 
         try {
             //validasi nama
             $cekDataExist = Tukin::where('grade',$request->grade)
+            ->where('nominal',$request->nominal)
             ->get();
 
             if($cekDataExist->isNotEmpty()){
@@ -98,6 +116,7 @@ class TukinController extends Controller
                 $request['grade'] = $request->grade;
                 $request['nominal'] = $request->nominal;
                 $request['keterangan'] = $request->keterangan;
+                $request['is_active'] = $request->is_active;
     
                 Tukin::create($request->all());
                 DB::commit();
@@ -168,17 +187,20 @@ class TukinController extends Controller
             'grade' => ['required', 'integer', 'max:9999'],
             'nominal' => ['required', 'integer', 'max:9999999999'],
             'keterangan' => ['max:255'],
+            'is_active' => ['required'],
         ],
         [
             'grade.required'=>'data grade harus diisi!',
             'grade.integer'=>'data grade harus bilangan bulat positif!',
             'nominal.required'=>'data nominal harus diisi!',
             'nominal.integer'=>'data nominal harus bilangan bulat positif!',
+            'is_active.required'=>'data status harus diisi!',
         ]);
 
         try {
             //validasi nama
             $cekDataExist = Tukin::where('grade',$request->grade)
+                ->where('nominal',$request->nominal)
                 ->where('id','!=',$tukin->id)
                 ->get();
 
@@ -190,6 +212,7 @@ class TukinController extends Controller
                 $tukin->grade = $request->grade;
                 $tukin->nominal = $request->nominal;
                 $tukin->keterangan = $request->keterangan;
+                $tukin->is_active = $request->is_active;
                 
                 $tukin->update();
                 DB::commit();

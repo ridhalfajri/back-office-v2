@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedTinyInteger('golongan_id');
             $table->bigInteger('nominal');
+            $table->enum('is_active',['Y', 'N'])->nullable(false)->default('N');
             $table->timestamps();
             $table->foreign('golongan_id')->references('id')->on('golongan')->onUpdate('cascade')->onDelete('cascade');
         });

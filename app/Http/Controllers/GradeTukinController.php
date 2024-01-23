@@ -29,6 +29,7 @@ class GradeTukinController extends Controller
     public function datatable(Tukin $tukin)
     {        
         $data = Tukin::select('*')
+        ->where('is_active','=','Y')
         ->orderBy('grade','asc');
 
         //dd($data);

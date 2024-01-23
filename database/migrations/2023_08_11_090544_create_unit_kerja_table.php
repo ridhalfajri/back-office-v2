@@ -17,6 +17,7 @@ return new class extends Migration
             $table->unsignedTinyInteger('jenis_unit_kerja_id');
             $table->string('singkatan',10)->nullable(true);
             $table->string('keterangan',100)->nullable(true);
+            $table->enum('is_active',['Y', 'N'])->nullable(false)->default('N');
             $table->timestamps();
             $table->foreign('jenis_unit_kerja_id')->references('id')->on('jenis_unit_kerja')->onUpdate('cascade')->onDelete('cascade');
         });
