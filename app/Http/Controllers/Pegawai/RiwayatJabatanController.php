@@ -163,11 +163,11 @@ class RiwayatJabatanController extends Controller
     public function show($id)
     {
         $jabatan = PegawaiRiwayatJabatan::where('id', $id)->first();
+        $jabatan->media_sk_jabatan = $jabatan->getMedia("media_sk_jabatan")[0]->getUrl();
         if ($jabatan == null) {
             abort(404);
         }
         $this->authorize('personal', $jabatan->pegawai);
-
         $title = 'Detail Jabatan';
         return view('riwayat_jabatan.show', compact('title', 'jabatan'));
     }
