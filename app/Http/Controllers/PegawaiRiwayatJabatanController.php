@@ -18,6 +18,9 @@ class PegawaiRiwayatJabatanController extends Controller
 {
     public function create($pegawai_id)
     {
+        $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', TRUE)->first();
+        $this->authorize('admin_sdmoh', $kabiro);
+
         $pegawai = Pegawai::where('id', $pegawai_id)->first();
         $unit_kerja = UnitKerja::select('id', 'nama')->limit(22)->get();
         $jenis_jabatan = JenisJabatan::all();
@@ -28,6 +31,8 @@ class PegawaiRiwayatJabatanController extends Controller
 
     public function store(Request $request)
     {
+        $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', TRUE)->first();
+        $this->authorize('admin_sdmoh', $kabiro);
         $validate = Validator::make(
             $request->all(),
             [
