@@ -36,10 +36,11 @@ class UnitKerjaController extends Controller
 
         $data = UnitKerja::select('unit_kerja.*', 'jenis_unit_kerja.nama as nama_jenis_unit')
         ->join('jenis_unit_kerja','jenis_unit_kerja.id','=','unit_kerja.jenis_unit_kerja_id')
+        ->orderBy('unit_kerja.is_active','asc')
         ->orderBy('unit_kerja.jenis_unit_kerja_id','asc');
 
         if(null != $isAktif || '' != $isAktif){
-            $data->where('is_active', '=', $isAktif);
+            $data->where('unit_kerja.is_active', '=', $isAktif);
         }
 
         //dd($data);

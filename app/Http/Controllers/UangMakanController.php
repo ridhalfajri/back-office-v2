@@ -36,6 +36,7 @@ class UangMakanController extends Controller
 
         $data = UangMakan::select('uang_makan.*', 'golongan.nama as nama_golongan')
         ->join('golongan','golongan.id','=','uang_makan.golongan_id')
+        ->orderBy('uang_makan.is_active','asc')
         ->orderBy('golongan.nama','asc');
 
         //dd($data);

@@ -35,6 +35,7 @@ class StatusPegawaiController extends Controller
         $isAktif = $request->isAktif;
 
         $data = StatusPegawai::select('*')
+        ->orderBy('is_active','asc')
         ->orderBy('id','asc');
 
         if(null != $isAktif || '' != $isAktif){

@@ -35,6 +35,7 @@ class TukinController extends Controller
         $isAktif = $request->isAktif;
 
         $data = Tukin::select('*')
+        ->orderBy('is_active','asc')
         ->orderBy('grade','asc');
 
         if(null != $isAktif || '' != $isAktif){
