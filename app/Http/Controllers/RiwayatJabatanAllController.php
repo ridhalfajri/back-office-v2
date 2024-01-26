@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\JabatanTukin;
 use App\Models\JabatanUnitKerja;
 use App\Models\PegawaiRiwayatJabatan;
+use App\Models\TxHirarkiPegawai;
 use Carbon\Carbon;
 use Illuminate\Database\QueryException;
 
@@ -95,10 +96,8 @@ class RiwayatJabatanAllController extends Controller
         return view('riwayat_jabatan.create', compact('title', 'tx_tipe_jabatan', 'grade_tukin', 'unit_kerja'));
     }
 
-    public function store(Request $request, $id)
+    public function store(Request $request)
     {
-        // dd($request->all());
-
         $validate = Validator::make(
             $request->all(),
             [
@@ -137,6 +136,36 @@ class RiwayatJabatanAllController extends Controller
         if ($validate->fails()) {
             return response()->json(['errors' => $validate->errors()]);
         } else {
+            // Variable untuk mengambil Pimpinan Eselon I (Ka. BSN)
+            $ka_bsn = DB::table('pegawai AS p')
+                ->select('p.id AS ka_bsn_id')
+                ->join('pegawai_riwayat_jabatan AS q', 'p.id', '=', 'q.pegawai_id')
+                ->join('jabatan_unit_kerja AS r', 'q.jabatan_unit_kerja_id', '=', 'r.id')
+                ->join('jabatan_tukin AS s', 'r.jabatan_tukin_id', '=', 's.id')
+                ->join('jabatan_struktural AS t', 's.jabatan_id', '=', 't.id')
+                ->where('t.id', 1)
+                ->first();
+
+            // create atau update TxHirarkiPegawai
+            if ($request->tx_tipe_jabatan_id == 1) { // Case Eselon I
+                TxHirarkiPegawai::updateOrCreate(
+                    ['pegawai_id' => $request->pegawai_id],
+                    ['pegawai_pimpinan_id' => $ka_bsn->ka_bsn_id]
+                );
+            }
+
+            // $pimpinan = DB::table('pegawai AS p')
+            //     ->select(
+            //         'p.id'
+            //     )
+            //     ->join('pegawai_riwayat_jabatan AS q', 'p.id', '=', 'q.pegawai_id')
+            //     ->join('jabatan_unit_kerja AS r', 'q.jabatan_unit_kerja_id', '=', 'r.id')
+            //     ->join('hirarki_unit_kerja AS s', 'r.hirarki_unit_kerja_id', '=', 's.id')
+            //     ->join('unit_kerja AS t', 's.child_unit_kerja_id', '=', 't.id')
+            //     ->where('s.id', $request->hirarki_unit_kerja_id)
+            //     ->where('q.tx_tipe_jabatan_id', 2)
+            //     ->first();
+
             //simpan JabatanTukin
             $jabatan_tukin = new JabatanTukin();
             $jabatan_tukin->jabatan_id = $request->jabatan_id;
@@ -151,6 +180,8 @@ class RiwayatJabatanAllController extends Controller
             $jabatan_unit_kerja->save();
 
             //simpan PegawaiRiwayatJabatan
+            $jabatan_lama = ;
+
             $pegawai_riwayat_jabatan = new PegawaiRiwayatJabatan();
             $pegawai_riwayat_jabatan->pegawai_id = $request->pegawai_id;
             $pegawai_riwayat_jabatan->jabatan_unit_kerja_id = $jabatan_unit_kerja->id;

@@ -51,7 +51,7 @@
                                   <input type="file" id="media_sk_jabatan" name="media_sk_jabatan">
                                   <small class="text-danger" id="error_media_sk_jabatan"></small>
                               </div>
-                          </div>
+                            </div>
 
                             <div class="form-group col-sm-6 col-md-6">
                                 <label class="form-label">Nomor Pelantikan</label>
@@ -341,7 +341,7 @@
                         }
                     }
                 });
-            }else if($('#tx_tipe_jabatan_id').val() == 1) {
+            } else if($('#tx_tipe_jabatan_id').val() == 1) {
                 $('.remove').remove();
                 $('.remove-child').remove();
 
@@ -404,7 +404,7 @@
                     if (response.errors) {
                         resetForm()
                         const err = response.errors
-                        if (err.no_sk) {
+                        if (err.pegawai_id) {
                             $('#error_pegawai_id').text(err.pegawai_id)
                         }
                         if (err.no_sk) {
@@ -484,4 +484,29 @@
             $('#error_media_sk_jabatan').text('')
         }
     </script>
+
+    {{-- Test Cari Pimpinan Unit Kerja untuk simpan data pada tabel tx_hirarki_pegawai --}}
+    {{-- <script>
+        $('#hirarki_unit_kerja_id').change(function() {
+            var data = {
+                'unit_kerja_id': $('#hirarki_unit_kerja_id').val()
+            }
+
+            $.ajax({
+                headers: {
+                    'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                },
+                type: "POST",
+                url: "{{ route('riwayat-jabatan-all.get_pimpinan_unit_kerja') }}",
+                data: data,
+                success: function(response) {
+                    if(response.data === null) {
+                        alert("Unit kerja yang dipilih belum memiliki pimpinan")
+                    } else {
+                        console.log(response.data.nama_lengkap)
+                    }
+                }
+            });
+        });
+    </script> --}}
 @endpush
