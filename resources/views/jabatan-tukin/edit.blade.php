@@ -67,7 +67,7 @@
                         <div class="row clearfix">
                             <div class="col-12 col-lg-12 col-md-12">
                                 <div class="form-group @error('tukin_id') has-error @enderror">
-                                    <label>Grade Tunjangan Kinerja Berdasarkan Jabatan :<span class="text-danger"><sup>*</sup></span></label>
+                                    <label>Grade Tunjangan Kinerja Jabatan :<span class="text-danger"><sup>*</sup></span></label>
                                     <select class="form-control" id="tukin_id" name="tukin_id" required>
                                         <option value="" selected disabled>-- Pilih Tunjangan Kinerja --</option>
                                         @foreach ($tukin as $data)
@@ -84,7 +84,7 @@
                             </div>
                         </div>
 
-                        <div class="row clearfix">
+                        <div class="row clearfix" id="tukin">
                             <div class="col-12 col-lg-12 col-md-12 {{  $jabatanTukin->jenis_jabatan_id ==4 ? 'hidden' :''  }}" id="inputTunjab" name= "inputTunjab">
                                 <div class="form-group @error('nominal') has-error @enderror">
                                     <label>Nominal Tunjangan Jabatan<span class="text-danger"><sup>*</sup></span></label>
@@ -181,6 +181,14 @@
         $('#jenis_jabatan_id').on('change', function(e) {
             e.preventDefault();
             const id = $(this).val();
+            var tukinDiv = document.getElementById('tukin');
+
+            console.log(id);
+            if (id==4){
+                tukinDiv.style.display = 'none';
+            }else{
+                tukinDiv.style.display = 'block';
+            }
             get_jabatan(id)
         });
 

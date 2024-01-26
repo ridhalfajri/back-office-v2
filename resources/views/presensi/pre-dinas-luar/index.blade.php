@@ -470,7 +470,7 @@
         return new Promise(function(resolve, reject) {
             console.log(id);
             $.ajax({
-                url: "{{ url('presensi/pre-ijin') }}/" + id,
+                url: "{{ url('presensi/pre-dinas-luar') }}/" + id,
                 method: 'POST',
                 headers: {
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'

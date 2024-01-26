@@ -217,7 +217,7 @@ class JabatanUnitKerjaController extends Controller
     {
         try {
             $this->validate($request, [
-                'jabatan_tukin_id' => 'required|unique:jabatan_unit_kerja,jabatan_tukin_id,'.$request->jabatan_tukin_id.',id,hirarki_unit_kerja_id,'.$request->hirarki_unit_kerja_id,
+                'jabatan_tukin_id' => 'required|unique:jabatan_unit_kerja,jabatan_tukin_id,'.$jabatanUnitKerja->id.',id,hirarki_unit_kerja_id,'.$request->hirarki_unit_kerja_id,
 				'hirarki_unit_kerja_id' => 'required',
             ]);
 

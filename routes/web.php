@@ -118,13 +118,13 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/pesan-ruang-rapat/datatable', [PesanRuangRapatController::class, 'datatable'])->name('pesan-ruang-rapat.datatable');
     Route::resource('/pesan-ruang-rapat', PesanRuangRapatController::class)->except('edit', 'update');
-    
+
     Route::post('/pengajuan-pmk/datatable', [PengajuanPMKController::class, 'datatable'])->name('pengajuan-pmk.datatable');
     Route::resource('/pengajuan-pmk', PengajuanPMKController::class)->except('edit', 'update');
-    
+
     Route::post('/pegawai-tambahan-mk/datatable', [PegawaiTambahanMkController::class, 'datatable'])->name('pegawai-tambahan-mk.datatable');
     Route::resource('/pegawai-tambahan-mk', PegawaiTambahanMkController::class)->except('create', 'store');
-    
+
     Route::post('/pengajuan-tambahan-bpjs/datatable', [PengajuanTambahanBpjsController::class, 'datatable'])->name('pengajuan-tambahan-bpjs.datatable');
     Route::resource('/pengajuan-tambahan-bpjs', PengajuanTambahanBpjsController::class)->except('edit', 'update');
 
@@ -295,11 +295,6 @@ Route::middleware('auth')->group(function () {
                 'destroy' => 'pegawai.destroy',
             ]
         ])->parameters(['' => 'id'])->only(['index', 'show', 'edit', 'update']);
-
-
-        //Pengajuan Peninjauan Masa Kerja
-        Route::resource('/pengajuan-mk', PegawaiPengajuanMk::class);
-        Route::post('/pengajuan-mk/datatable', [PegawaiPengajuanMk::class, 'datatable'])->name('pengajuan-mk.datatable');
 
     });
 
