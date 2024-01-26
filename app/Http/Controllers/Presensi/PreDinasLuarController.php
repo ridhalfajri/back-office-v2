@@ -16,6 +16,7 @@ use Carbon\Carbon;
 use SplFileInfo;
 use Yajra\DataTables\Facades\DataTables;
 use Spatie\MediaLibrary;
+
 class PreDinasLuarController extends Controller
 {
     /**
@@ -294,30 +295,44 @@ class PreDinasLuarController extends Controller
 
     public function persetujuan()
     {
+        if (auth()->user()->pegawai->jabatan_sekarang->tx_tipe_jabatan_id == 1 ||
+        auth()->user()->pegawai->jabatan_sekarang->tx_tipe_jabatan_id == 2 || auth()->user()->pegawai->jabatan_sekarang->tx_tipe_jabatan_id == 5){
 
-        $title = 'Persetujuan Pengajuan Dinas Luar';
-        $pegawai = PegawaiHelper::getPegawaiData(auth()->user()->pegawai->id);
+            $title = 'Persetujuan Pengajuan Dinas Luar';
+            $pegawai = PegawaiHelper::getPegawaiData(auth()->user()->pegawai->id);
 
-        return view('presensi.pre-dinas-luar.persetujuan', compact('title','pegawai'));
+            return view('presensi.pre-dinas-luar.persetujuan', compact('title','pegawai'));
+        }
+        else{
+            return redirect()->back()->with('warning', 'Terjadi kesalahan!');
+        }
     }
 
     public function konfirmasi(Request $request)
     {
 
-        $preDinasLuar = PreDinasLuar::find($request->id);
-
         $blnValue = false;
         $msg = "";
-        try {
-            $preDinasLuar->status_approve = $request->status;
-            $preDinasLuar->save();
 
-            $msg = "Status pengajuan dinas luar berhasil diubah";
-        } catch (QueryException $e) {
-            $blnValue = true;
-            $msg = 'Error : ' . class_basename(get_class($this)) . ' Method : ' . __FUNCTION__ . ' msg : ' . $e->getMessage();
-            Log::error($msg);
-            $msg = $e->getMessage();
+        if (auth()->user()->pegawai->jabatan_sekarang->tx_tipe_jabatan_id == 1 ||
+        auth()->user()->pegawai->jabatan_sekarang->tx_tipe_jabatan_id == 2 || auth()->user()->pegawai->jabatan_sekarang->tx_tipe_jabatan_id == 5){
+
+            $preDinasLuar = PreDinasLuar::find($request->id);
+
+            try {
+                $preDinasLuar->status_approve = $request->status;
+                $preDinasLuar->save();
+
+                $msg = "Status pengajuan dinas luar berhasil diubah";
+            } catch (QueryException $e) {
+                $blnValue = true;
+                $msg = 'Error : ' . class_basename(get_class($this)) . ' Method : ' . __FUNCTION__ . ' msg : ' . $e->getMessage();
+                Log::error($msg);
+                $msg = $e->getMessage();
+            }
+        }
+        else{
+            $msg = "Terjadi Kesalahan!";
         }
 
         $data = [
@@ -350,9 +365,14 @@ class PreDinasLuarController extends Controller
     */
     public function edit(PreDinasLuar $preDinasLuar)
     {
-        $title = 'Ubah Data Pengajuan Dinas Luar';
-        $pegawai = PegawaiHelper::getPegawaiData(auth()->user()->pegawai->id);
-        return view('presensi.pre-dinas-luar.edit', compact('title','preDinasLuar','pegawai'));
+        if ($preDinasLuar->status==1 && $preDinasLuar->no_enroll==auth()->user()->pegawai->no_enroll ){
+            $title = 'Ubah Data Pengajuan Dinas Luar';
+            $pegawai = PegawaiHelper::getPegawaiData(auth()->user()->pegawai->id);
+            return view('presensi.pre-dinas-luar.edit', compact('title','preDinasLuar','pegawai'));
+        }
+        else{
+            return redirect()->back()->with('warning', 'Terjadi kesalahan!');
+        }
     }
 
     /**
@@ -426,16 +446,23 @@ class PreDinasLuarController extends Controller
     {
         $blnValue = false;
         $msg = "";
-        try {
-            $preDinasLuar->delete();
-            $msg = "Data berhasil dihapus";
-        } catch (QueryException $e) {
-            $blnValue = true;
-            $msg = 'Error : ' . class_basename(get_class($this)) . ' Method : ' . __FUNCTION__ . ' msg : ' . $e->getMessage();
-            Log::error($msg);
-            $msg = $e->getMessage();
-        }
 
+        if ($preDinasLuar->status==1 && $preDinasLuar->no_enroll==auth()->user()->pegawai->no_enroll ){
+
+            try {
+                $preDinasLuar->delete();
+                $msg = "Data berhasil dihapus";
+            } catch (QueryException $e) {
+                $blnValue = true;
+                $msg = 'Error : ' . class_basename(get_class($this)) . ' Method : ' . __FUNCTION__ . ' msg : ' . $e->getMessage();
+                Log::error($msg);
+                $msg = $e->getMessage();
+            }
+        }
+        else
+        {
+            $msg = "Terjadi Kesalahan!";
+        }
         $data = [
             'status' => [
                 'error' => $blnValue ,

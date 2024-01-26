@@ -104,6 +104,7 @@ class PreIjinController extends Controller
 
     public function datatablepersetujuan(Request $request)
     {
+        $this->authorize('preIjinPimpinanAuth');
 
         $data = DB::table('pegawai as p')
                     ->select('s.id','s.jenis_ijin','s.tanggal','s.status','s.keterangan','p.id as pegawai_id','p.nip','p.nama_depan','p.nama_belakang','p.tempat_lahir','p.tanggal_lahir','p.email_kantor','p.no_enroll','x.id as jabatan_id','x.jabatan_tukin_id','q.jabatan_unit_kerja_id','z.jenis_jabatan','z.nama_jabatan','z.grade','z.nominal','y.nama_unit_kerja','x.hirarki_unit_kerja_id','y.nama_jenis_unit_kerja','y.nama_parent_unit_kerja','q.is_plt')
@@ -251,6 +252,7 @@ class PreIjinController extends Controller
     */
     public function persetujuan()
     {
+        $this->authorize('preIjinPimpinanAuth');
 
         if (auth()->user()->pegawai->jabatan_sekarang->tx_tipe_jabatan_id == 1 ||
         auth()->user()->pegawai->jabatan_sekarang->tx_tipe_jabatan_id == 2 || auth()->user()->pegawai->jabatan_sekarang->tx_tipe_jabatan_id == 5){
@@ -268,6 +270,8 @@ class PreIjinController extends Controller
     {
 
         $preIjin = PreIjin::find($request->id);
+
+        $this->authorize('preIjinKonfirmasiPimpinanAuth',$preIjin);
 
         $blnValue = false;
         $msg = "";
@@ -364,10 +368,20 @@ class PreIjinController extends Controller
     */
     public function edit(PreIjin $preIjin)
     {
-        $title = 'Ubah Pengajuan Ijin';
-        $pegawai = PegawaiHelper::getPegawaiData(auth()->user()->pegawai->id);
 
-        return view('presensi.pre-ijin.edit', compact('title','pegawai','preIjin'));
+        $this->authorize('preijinauth', $preIjin);
+
+
+        if ($preIjin->status==1 && $preIjin->no_enroll==auth()->user()->pegawai->no_enroll ){
+            $title = 'Ubah Pengajuan Ijin';
+            $pegawai = PegawaiHelper::getPegawaiData(auth()->user()->pegawai->id);
+
+            return view('presensi.pre-ijin.edit', compact('title','pegawai','preIjin'));
+        }
+        else{
+            return redirect()->back()->with('warning', 'Terjadi kesalahan!');
+        }
+
     }
 
     /**
@@ -381,20 +395,23 @@ class PreIjinController extends Controller
     {
         try {
 
-            $this->validate($request, [
-				'jenis_ijin' => 'required',
-				'tanggal' => 'required',
-				'keterangan' => 'required',
-            ]);
+            $this->authorize('preIjinAuth', $preIjin);
 
-			$preIjin->no_enroll = $preIjin->no_enroll;
-			$preIjin->jenis_ijin = $request->jenis_ijin;
-			$preIjin->tanggal = $request->tanggal;
-			$preIjin->keterangan = $request->keterangan;
-            $preIjin->save();
+                $this->validate($request, [
+                    'jenis_ijin' => 'required',
+                    'tanggal' => 'required',
+                    'keterangan' => 'required',
+                ]);
 
-            return redirect()->route('pre-ijin.index')
-            ->with('success', 'Data ijin kehadiran berhasil diupdate');
+                $preIjin->no_enroll = $preIjin->no_enroll;
+                $preIjin->jenis_ijin = $request->jenis_ijin;
+                $preIjin->tanggal = $request->tanggal;
+                $preIjin->keterangan = $request->keterangan;
+                $preIjin->save();
+
+                return redirect()->route('pre-ijin.index')
+                ->with('success', 'Data ijin kehadiran berhasil diupdate');
+
         } catch (QueryException $e) {
             $msg = 'Error : ' . class_basename(get_class($this)) . ' Method : ' . __FUNCTION__ . ' msg : ' . $e->getMessage();
             Log::error($msg);
@@ -412,18 +429,21 @@ class PreIjinController extends Controller
     public function destroy($id)
     {
         $preIjin = PreIjin::find($id);
-
         $blnValue = false;
         $msg = "";
-        try {
-            $preIjin->delete();
-            $msg = "Data berhasil dihapus";
-        } catch (QueryException $e) {
-            $blnValue = true;
-            $msg = 'Error : ' . class_basename(get_class($this)) . ' Method : ' . __FUNCTION__ . ' msg : ' . $e->getMessage();
-            Log::error($msg);
-            $msg = $e->getMessage();
-        }
+        $this->authorize('preIjinAuth', $preIjin);
+
+
+            try {
+                $preIjin->delete();
+                $msg = "Data berhasil dihapus";
+            } catch (QueryException $e) {
+                $blnValue = true;
+                $msg = 'Error : ' . class_basename(get_class($this)) . ' Method : ' . __FUNCTION__ . ' msg : ' . $e->getMessage();
+                Log::error($msg);
+                $msg = $e->getMessage();
+            }
+
 
         $data = [
             'status' => [

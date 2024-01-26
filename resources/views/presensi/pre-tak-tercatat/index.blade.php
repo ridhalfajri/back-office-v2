@@ -110,19 +110,19 @@
         // Set the date to the 1st day of the current month
         currentDate.setDate(1);
 
-        // Format the date to 'YYYY-MM-DD'
-        var formattedDate = currentDate.toISOString().split('T')[0];
+       // // Format the date to 'YYYY-MM-DD'
+      //  var formattedDate = currentDate.toISOString().split('T')[0];
 
-        document.getElementById('date_awal').value = formattedDate;
+      //  document.getElementById('date_awal').value = formattedDate;
 
         // Get the current date
         var currentDate = new Date();
 
-        // Format the date to 'YYYY-MM-DD'
-        var formattedDate = currentDate.toISOString().split('T')[0];
+      //  // Format the date to 'YYYY-MM-DD'
+      //  var formattedDate = currentDate.toISOString().split('T')[0];
 
-        // Set the default value for the date_akhir input
-        document.getElementById('date_akhir').value = formattedDate;
+      //  // Set the default value for the date_akhir input
+     //   document.getElementById('date_akhir').value = formattedDate;
 
     });
 
@@ -153,6 +153,11 @@
         @if(session('warning'))
             toastr['warning']('{{ session("warning") }}');
         @endif
+
+        @if(session('error'))
+            toastr['error']('{{ session("error") }}');
+        @endif
+
         btnExport = 0;
         var pegawaiDetail = @json(auth()->user()->pegawai->nama . ' NIP : ' . auth()->user()->pegawai->nip);
 
@@ -327,7 +332,7 @@
         return new Promise(function(resolve, reject) {
             console.log(id);
             $.ajax({
-                url: "{{ url('presensi/pre-ijin') }}/" + id,
+                url: "{{ url('presensi/pre-tak-tercatat') }}/" + id,
                 method: 'POST',
                 headers: {
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'

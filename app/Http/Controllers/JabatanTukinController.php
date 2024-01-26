@@ -176,13 +176,13 @@ class JabatanTukinController extends Controller
                 'jabatan_id' => 'required|unique:jabatan_tukin,jabatan_id,NULL,id,jenis_jabatan_id,'.$request->jenis_jabatan_id.',tukin_id,'.$request->tukin_id,
                 'jenis_jabatan_id' => 'required',
                 'tukin_id' => 'required',
-                'nominal_tunjangan_jabatan' => 'required',
+                'nominal_tunjangan_jabatan' => 'required_unless:jenis_jabatan_id,4',
             ], [
                 'jabatan_id.required' => 'Jabatan harus diisi.',
                 'jabatan_id.unique' => 'Jenis Jabatan, Nama Jabatan dan Tunjangan Kinerja Jabatan sudah ada.',
                 'jenis_jabatan_id.required' => 'Jenis Jabatan harus diisi.',
                 'tukin_id.required' => 'Tunjangan Kinerja harus diisi.',
-                'nominal_tunjangan_jabatan.required' => 'Nominal Tunjangan Jabatan  harus diisi.',
+                'nominal_tunjangan_jabatan.required_unless' => 'Nominal Tunjangan Jabatan  harus diisi.',
             ]);
 
             $input = [];
@@ -262,16 +262,16 @@ class JabatanTukinController extends Controller
         try {
 
             $this->validate($request, [
-                'jabatan_id' => 'required|unique:jabatan_tukin,jabatan_id,'.$request->id.',id,jenis_jabatan_id,'.$request->jenis_jabatan_id.',tukin_id,'.$request->tukin_id,
+                'jabatan_id' => 'required|unique:jabatan_tukin,jabatan_id,' .$jabatanTukin->id. ',id,jenis_jabatan_id,' .$request->jenis_jabatan_id. ',tukin_id,' .$request->tukin_id,
                 'jenis_jabatan_id' => 'required',
                 'tukin_id' => 'required',
-                'nominal_tunjangan_jabatan' => 'required',
+                'nominal_tunjangan_jabatan' => 'required_unless:jenis_jabatan_id,4',
             ], [
                 'jabatan_id.required' => 'Jabatan harus diisi.',
                 'jabatan_id.unique' => 'Jenis Jabatan, Nama Jabatan dan Tunjangan Kinerja Jabatan sudah ada.',
                 'jenis_jabatan_id.required' => 'Jenis jabatan harus diisi.',
                 'tukin_id.required' => 'Tunjangan Kinerja harus diisi.',
-                'nominal_tunjangan_jabatan.required' => 'Nominal Tunjangan Jabatan harus diisi.',
+                'nominal_tunjangan_jabatan.required_unless' => 'Nominal Tunjangan Jabatan  harus diisi.',
             ]);
 
 			$jabatanTukin->jabatan_id = $request->jabatan_id;
