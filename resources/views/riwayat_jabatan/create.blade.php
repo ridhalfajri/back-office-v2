@@ -130,7 +130,7 @@
                             
                         </div>
 
-                        <button type="submit" class="btn btn-primary btn-sm waves-effect waves-light"><i class="fa fa-check-square" aria-hidden="true"></i> Simpan Perubahan</button>
+                        <button type="submit" id="tombol-simpan" class="btn btn-primary btn-sm waves-effect waves-light"><i class="fa fa-check-square" aria-hidden="true"></i> Simpan</button>
                     </form>
                 </div>
             </div>
@@ -181,7 +181,6 @@
                     };
                 },
                 processResults: function (data) {
-                    console.log(data);
                     return {
                         results: $.map(data, function(obj) {
                             if(obj.id!=0){
@@ -239,7 +238,6 @@
                                     };
                                 },
                                 processResults: function (data) {
-                                    console.log(data);
                                     return {
                                         results: $.map(data, function(obj) {
                                             if(obj.id!=0){
@@ -279,7 +277,6 @@
                                     };
                                 },
                                 processResults: function (data) {
-                                    console.log(data);
                                     return {
                                         results: $.map(data, function(obj) {
                                             if(obj.id!=0){
@@ -326,7 +323,6 @@
                             };
                         },
                         processResults: function (data) {
-                            console.log(data);
                             return {
                                 results: $.map(data, function(obj) {
                                     if(obj.id!=0){
@@ -368,7 +364,6 @@
                             };
                         },
                         processResults: function (data) {
-                            console.log(data);
                             return {
                                 results: $.map(data, function(obj) {
                                     if(obj.id!=0){
@@ -400,7 +395,6 @@
                 cache: false,
                 processData: false,
                 success: function(response) {
-                    console.log(response);
                     if (response.errors) {
                         resetForm()
                         const err = response.errors
@@ -485,28 +479,40 @@
         }
     </script>
 
-    {{-- Test Cari Pimpinan Unit Kerja untuk simpan data pada tabel tx_hirarki_pegawai --}}
-    {{-- <script>
-        $('#hirarki_unit_kerja_id').change(function() {
-            var data = {
-                'unit_kerja_id': $('#hirarki_unit_kerja_id').val()
-            }
+    {{-- Fungsi Cek Jabatan Eselon I atau Eselon II yang dipilih sudah ada yang menjabat atau belum --}}
+    <script>
+        $(document.body).on("change","#eselon_satu",function(){
+            var data = {'jabatan' : $('#eselon_satu').val()}
 
             $.ajax({
                 headers: {
                     'X-CSRF-TOKEN': "{{ csrf_token() }}"
                 },
                 type: "POST",
-                url: "{{ route('riwayat-jabatan-all.get_pimpinan_unit_kerja') }}",
+                url: "{{ route('riwayat-jabatan-all.cek_jabatan_yang_dipilih') }}",
                 data: data,
                 success: function(response) {
-                    if(response.data === null) {
-                        alert("Unit kerja yang dipilih belum memiliki pimpinan")
-                    } else {
-                        console.log(response.data.nama_lengkap)
+                    if(response.cek_jabatan != null) {
+                        Swal.fire({
+                            title: 'Peringatan!',
+                            text: 'Jabatan yang dipilih sudah terisi!',
+                            icon: 'warning',
+                            confirmButtonText: 'Tutup'
+                        })
+
+                        $('#tombol-simpan').remove()
+                        $('#riwayatJabatanFormCreate').append(
+                            '<label id="label-simpan" class="btn btn-primary btn-sm waves-effect waves-light disabled">Simpan</label>'
+                        )
+                    } else if(response.cek_jabatan === null) {
+                        $('#label-simpan').remove()
+                        $('#tombol-simpan').remove()
+                        $('#riwayatJabatanFormCreate').append(
+                            '<button type="submit" id="tombol-simpan" class="btn btn-primary btn-sm waves-effect waves-light"><i class="fa fa-check-square" aria-hidden="true"></i> Simpan</button>'
+                        )
                     }
                 }
             });
         });
-    </script> --}}
+    </script>
 @endpush

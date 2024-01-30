@@ -84,7 +84,7 @@ Route::middleware('auth')->group(function () {
     //Riwayat Jabatan All
     Route::post('/riwayat-jabatan-all/datatable', [RiwayatJabatanAllController::class, 'datatable'])->name('riwayat-jabatan-all.datatable');
     Route::get('/riwayat-jabatan-all/get-nama-pegawai', [RiwayatJabatanAllController::class, 'get_nama_pegawai'])->name('riwayat-jabatan-all.get_nama_pegawai');
-    // Route::post('/riwayat-jabatan-all/get-pimpinan-unit-kerja', [RiwayatJabatanAllController::class, 'get_pimpinan_unit_kerja'])->name('riwayat-jabatan-all.get_pimpinan_unit_kerja');
+    Route::post('/riwayat-jabatan-all/cek-jabatan-yang-dipilih', [RiwayatJabatanAllController::class, 'cek_jabatan_yang_dipilih'])->name('riwayat-jabatan-all.cek_jabatan_yang_dipilih');
     Route::get('/riwayat-jabatan-all/get-fungsional-umum', [RiwayatJabatanAllController::class, 'get_fungsional_umum'])->name('riwayat-jabatan-all.get_fungsional_umum');
     Route::get('/riwayat-jabatan-all/get-fungsional-tertentu', [RiwayatJabatanAllController::class, 'get_fungsional_tertentu'])->name('riwayat-jabatan-all.get_fungsional_tertentu');
     Route::get('/riwayat-jabatan-all/get-eselon-satu', [RiwayatJabatanAllController::class, 'get_eselon_satu'])->name('riwayat-jabatan-all.get_eselon_satu');

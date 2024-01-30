@@ -316,4 +316,21 @@ class RiwayatJabatanAllController extends Controller
             print(json_encode($result));
         }
     }
+
+    public function cek_jabatan_yang_dipilih(Request $request)
+    {
+        $cek_jabatan = DB::table('pegawai AS p')
+            ->select('p.id')
+            ->join('pegawai_riwayat_jabatan AS q', 'p.id', '=', 'q.pegawai_id')
+            ->join('jabatan_unit_kerja AS r', 'q.jabatan_unit_kerja_id', '=', 'r.id')
+            ->join('jabatan_tukin AS s', 'r.jabatan_tukin_id', '=', 's.id')
+            ->join('jabatan_struktural AS t', 's.jabatan_id', '=', 't.id')
+            ->where('t.id', $request->jabatan)
+            ->where('q.is_now', 1)
+            ->first();
+
+        return response()->json([
+            'cek_jabatan' => $cek_jabatan,
+        ]);
+    }
 }
