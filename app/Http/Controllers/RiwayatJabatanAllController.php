@@ -98,6 +98,8 @@ class RiwayatJabatanAllController extends Controller
 
     public function store(Request $request)
     {
+        // dd($request->all());
+
         $validate = Validator::make(
             $request->all(),
             [
@@ -179,8 +181,11 @@ class RiwayatJabatanAllController extends Controller
             $jabatan_unit_kerja->hirarki_unit_kerja_id = $request->hirarki_unit_kerja_id;
             $jabatan_unit_kerja->save();
 
-            //simpan PegawaiRiwayatJabatan
-            $jabatan_lama = ;
+            //update is_now pada row jabatan lama di PegawaiRiwayatJabatan
+            PegawaiRiwayatJabatan::where('pegawai_id', $request->pegawai_id)
+                ->update([
+                    'is_now' => 0,
+                ]);
 
             $pegawai_riwayat_jabatan = new PegawaiRiwayatJabatan();
             $pegawai_riwayat_jabatan->pegawai_id = $request->pegawai_id;
