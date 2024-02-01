@@ -44,6 +44,7 @@ class PegawaiRiwayatThrController extends Controller
         $dataUnitKerja = DB::table('unit_kerja')
             ->select('*')
             ->whereIn('jenis_unit_kerja_id', array(1, 2, 3))
+            ->where('is_active','Y')
             ->get();
 
         return view('perhitungan-thr.pegawai-riwayat-thr', compact('title', 'dataUnitKerja'));
@@ -81,7 +82,11 @@ class PegawaiRiwayatThrController extends Controller
                 })
                 ->join('jabatan_unit_kerja as juk', 'juk.id', '=', 'prj.jabatan_unit_kerja_id')
                 ->join('hirarki_unit_kerja as huk', 'huk.id', '=', 'juk.hirarki_unit_kerja_id')
-                ->leftJoin('unit_kerja as uk', 'uk.id', '=', 'huk.child_unit_kerja_id')
+                ->leftJoin('unit_kerja as uk', function ($join) {
+                    $join->on('uk.id', '=', 'huk.child_unit_kerja_id')
+                        ->where('uk.is_active','=','Y')
+                        ;
+                })
                 //
                 ->where('pegawai_riwayat_thr.tahun', '=', $tahun)
                 ->orderBy('uk.id', 'asc')
@@ -126,7 +131,9 @@ class PegawaiRiwayatThrController extends Controller
                 ->select('p.*')
                 ->leftJoin('status_pegawai as sp', function ($join) {
                     $join->on('sp.id', '=', 'p.status_pegawai_id')
-                        ->whereIn('sp.nama', array('PNS', 'CPNS', 'PPPK'));
+                        ->whereIn('sp.nama', array('PNS', 'CPNS', 'PPPK'))
+                        ->where('sp.is_active','Y')
+                        ;
                 })
                 ->where('status_dinas', 1)
                 ->whereNull('tanggal_berhenti')

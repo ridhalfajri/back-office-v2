@@ -30,6 +30,7 @@ class PegawaiRiwayatGolonganController extends Controller
         $dataUnitKerja = DB::table('unit_kerja')
         ->select('*')
         ->whereIn('jenis_unit_kerja_id', array(1, 2, 3))
+        ->where('is_active','Y')
         ->get();
 
         return view('pegawai-riwayat-golongan.index', compact('title', 'dataUnitKerja'));
@@ -52,7 +53,11 @@ class PegawaiRiwayatGolonganController extends Controller
             })
             ->join('jabatan_unit_kerja as juk', 'juk.id', '=', 'prj.jabatan_unit_kerja_id')
             ->join('hirarki_unit_kerja as huk', 'huk.id', '=', 'juk.hirarki_unit_kerja_id')
-            ->leftJoin('unit_kerja as uk', 'uk.id', '=', 'huk.child_unit_kerja_id')
+            ->leftJoin('unit_kerja as uk', function ($join) {
+                $join->on('uk.id', '=', 'huk.child_unit_kerja_id')
+                    ->where('uk.is_active','=','Y')
+                    ;
+            })
             //
             //->where('is_active','=',1)
             ->orderBy('uk.id','asc')
@@ -114,7 +119,11 @@ class PegawaiRiwayatGolonganController extends Controller
             })
             ->join('jabatan_unit_kerja as juk', 'juk.id', '=', 'prj.jabatan_unit_kerja_id')
             ->join('hirarki_unit_kerja as huk', 'huk.id', '=', 'juk.hirarki_unit_kerja_id')
-            ->leftJoin('unit_kerja as uk', 'uk.id', '=', 'huk.child_unit_kerja_id')
+            ->leftJoin('unit_kerja as uk', function ($join) {
+                $join->on('uk.id', '=', 'huk.child_unit_kerja_id')
+                    ->where('uk.is_active','=','Y')
+                    ;
+            })
             
             ->orderBy('uk.id','asc')
             ->orderBy('p.nama_depan','asc')
@@ -241,7 +250,11 @@ class PegawaiRiwayatGolonganController extends Controller
         })
         ->join('jabatan_unit_kerja as juk', 'juk.id', '=', 'prj.jabatan_unit_kerja_id')
         ->join('hirarki_unit_kerja as huk', 'huk.id', '=', 'juk.hirarki_unit_kerja_id')
-        ->leftJoin('unit_kerja as uk', 'uk.id', '=', 'huk.child_unit_kerja_id')
+        ->leftJoin('unit_kerja as uk', function ($join) {
+            $join->on('uk.id', '=', 'huk.child_unit_kerja_id')
+                ->where('uk.is_active','=','Y')
+                ;
+        })
         
         ->orderBy('uk.id','asc')
         ->orderBy('p.nama_depan','asc')

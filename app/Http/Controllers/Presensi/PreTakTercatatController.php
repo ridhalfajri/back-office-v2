@@ -15,6 +15,7 @@ use App\Helpers\PegawaiHelper;
 use Carbon\Carbon;
 use SplFileInfo;
 use Yajra\DataTables\Facades\DataTables;
+use Spatie\MediaLibrary;
 
 class PreTakTercatatController extends Controller
 {
@@ -242,23 +243,26 @@ class PreTakTercatatController extends Controller
 				'tanggal_pengajuan' => 'required',
 				'jenis' => 'required',
 				'jam_perubahan' => 'required',
+                'media_data_presensi' => 'required',
+                'media_presensi_logbook' => 'required',
             ]);
 
-            $input = [];
-			$input['no_enroll'] = $pegawai->no_enroll;
-			$input['tanggal_pengajuan'] = $request->tanggal_pengajuan;
-			$input['jenis'] = $request->jenis;
-			$input['jam_perubahan'] = $request->jam_perubahan;
-			$input['status'] = 1;
-            $preDL = PreTakTercatat::create($input);
+            $preTakTercatat =  new PreTakTercatat();
 
+			$preTakTercatat->no_enroll = $pegawai->no_enroll;
+			$preTakTercatat->tanggal_pengajuan = $request->tanggal_pengajuan;
+            $preTakTercatat->jenis  = $request->jenis;
+			$preTakTercatat->jam_perubahan = $request->jam_perubahan;
+            $preTakTercatat->status = 1;
 
-            if ($request->media_presensi_logbook) {
-                $preDL->addMediaFromRequest('media_st_dinas_luar')->toMediaCollection('media_st_dinas_luar');
+            $preTakTercatat->save();
+
+            if ($request->media_data_presensi) {
+                $preTakTercatat->addMediaFromRequest('media_data_presensi')->toMediaCollection('media_data_presensi');
             }
 
             if ($request->media_presensi_logbook) {
-                $preDL->addMediaFromRequest('media_data_presensi')->toMediaCollection('media_data_presensi');
+                $preTakTercatat->addMediaFromRequest('media_presensi_logbook')->toMediaCollection('media_presensi_logbook');
             }
 
             return redirect()->route('pre-tak-tercatat.index')
@@ -273,6 +277,8 @@ class PreTakTercatatController extends Controller
 
     public function persetujuan()
     {
+
+        $this->authorize('preTCPimpinanAuth');
 
         if (auth()->user()->pegawai->jabatan_sekarang->tx_tipe_jabatan_id == 1 ||
         auth()->user()->pegawai->jabatan_sekarang->tx_tipe_jabatan_id == 2 || auth()->user()->pegawai->jabatan_sekarang->tx_tipe_jabatan_id == 5){
@@ -294,6 +300,8 @@ class PreTakTercatatController extends Controller
     {
 
         $preTakTercatat = PreTakTercatat::find($request->id);
+
+        $this->authorize('preTCKonfirmasiPimpinanAuth',$preTakTercatat);
 
         $blnValue = false;
         $msg = "";
@@ -361,6 +369,8 @@ class PreTakTercatatController extends Controller
     */
     public function edit(PreTakTercatat $preTakTercatat)
     {
+        $this->authorize('preTCAuth',$preTakTercatat);
+
         $title = 'Ubah Pengajuan Presensi Tidak Tercatat';
         $pegawai = PegawaiHelper::getPegawaiData(auth()->user()->pegawai->id);
 
@@ -377,10 +387,15 @@ class PreTakTercatatController extends Controller
     public function update(Request $request,PreTakTercatat $preTakTercatat)
     {
         try {
+
+            $this->authorize('preTCAuth',$preTakTercatat);
+
             $this->validate($request, [
 				'tanggal_pengajuan' => 'required',
 				'jenis' => 'required',
 				'jam_perubahan' => 'required',
+                'media_data_presensi' => 'required',
+                'media_presensi_logbook' => 'required',
             ]);
 
 			$preTakTercatat->tanggal_pengajuan = $request->tanggal_pengajuan;
@@ -388,6 +403,25 @@ class PreTakTercatatController extends Controller
 			$preTakTercatat->jam_perubahan = $request->jam_perubahan;
 			$preTakTercatat->status = 1;
             $preTakTercatat->save();
+
+             // Retrieve the media item associated with the model and the collection name
+             $stFile = $preTakTercatat->getMedia('media_data_presensi')->first();
+             if ($stFile) {
+                 $stFile->delete();
+             }
+
+             $refFile = $preTakTercatat->getMedia('media_presensi_logbook')->first();
+             if ($refFile) {
+                 $refFile->delete();
+             }
+
+             if ($request->media_data_presensi) {
+                 $preTakTercatat->addMediaFromRequest('media_data_presensi')->toMediaCollection('media_data_presensi');
+             }
+
+             if ($request->media_presensi_logbook) {
+                 $preTakTercatat->addMediaFromRequest('media_presensi_logbook')->toMediaCollection('media_presensi_logbook');
+             }
 
             return redirect()->route('pre-tak-tercatat.index')
             ->with('success', 'Data Presensi Tidak Tercatat berhasil diupdate');
@@ -408,6 +442,8 @@ class PreTakTercatatController extends Controller
     */
     public function destroy(PreTakTercatat $preTakTercatat)
     {
+        $this->authorize('preTCAuth', $preTakTercatat);
+
         $blnValue = false;
         $msg = "";
         try {

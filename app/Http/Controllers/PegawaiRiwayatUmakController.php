@@ -35,6 +35,7 @@ class PegawaiRiwayatUmakController extends Controller
         $dataUnitKerja = DB::table('unit_kerja')
             ->select('*')
             ->whereIn('jenis_unit_kerja_id', array(1, 2, 3))
+            ->where('is_active','Y')
             ->get();
 
         return view('perhitungan-umak.pegawai-riwayat-umak', compact('title', 'dataUnitKerja'));
@@ -70,12 +71,19 @@ class PegawaiRiwayatUmakController extends Controller
                 })
                 ->join('jabatan_unit_kerja as juk', 'juk.id', '=', 'prj.jabatan_unit_kerja_id')
                 ->join('hirarki_unit_kerja as huk', 'huk.id', '=', 'juk.hirarki_unit_kerja_id')
-                ->leftJoin('unit_kerja as uk', 'uk.id', '=', 'huk.child_unit_kerja_id')
-                ->join('pegawai_riwayat_golongan as prg', function ($join) {
-                    $join->on('prg.pegawai_id', '=', 'p.id')
-                        ->where('prg.is_active', '=', 1);
+                ->leftJoin('unit_kerja as uk', function ($join) {
+                    $join->on('uk.id', '=', 'huk.child_unit_kerja_id')
+                        ->where('uk.is_active','=','Y')
+                        ;
                 })
-                ->leftJoin('uang_makan as um', 'um.golongan_id', '=', 'prg.golongan_id')
+                // ->join('pegawai_riwayat_golongan as prg', function ($join) {
+                //     $join->on('prg.pegawai_id', '=', 'p.id')
+                //         ->where('prg.is_active', '=', 1);
+                // })
+                ->leftJoin('uang_makan as um', function ($join) {
+                    $join->on('um.id','=','pegawai_riwayat_umak.uang_makan_id')
+                        ;
+                })
                 //
                 ->where('pegawai_riwayat_umak.bulan', '=', $bulan)
                 ->where('pegawai_riwayat_umak.tahun', '=', $tahun)
@@ -235,7 +243,9 @@ class PegawaiRiwayatUmakController extends Controller
                 ->select('p.id', 'p.no_enroll')
                 ->leftJoin('status_pegawai as sp', function ($join) {
                     $join->on('sp.id', '=', 'p.status_pegawai_id')
-                        ->whereIn('sp.nama', array('PNS', 'CPNS', 'PPPK'));
+                        ->whereIn('sp.nama', array('PNS', 'CPNS', 'PPPK'))
+                        ->where('sp.is_active','Y')
+                        ;
                 })
                 ->where('status_dinas', 1)
                 ->whereNull('tanggal_berhenti')
@@ -278,6 +288,7 @@ class PegawaiRiwayatUmakController extends Controller
                                 ->where('prg.is_active', '=', 1)
                                 ->where('prg.pegawai_id', '=', $pegawaiId);
                         })
+                        ->where('um.is_active','Y')
                         ->first();
 
                     if (null != $umakPegawai) {

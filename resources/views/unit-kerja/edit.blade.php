@@ -62,7 +62,7 @@
                                 </div>
 
                                 <div class="form-group @error('singkatan')has-error @enderror">
-                                    <label>Singkatan </label>
+                                    <label>Singkatan <span class="text-danger"><sup>*</sup></span></label>
                                     <input type="text" name="singkatan" id="singkatan" value="{{ old('singkatan') ?? $unit->singkatan }}"
                                         class="form-control" maxlength="18" placeholder="Singkatan Unit Kerja"
                                         autocomplete="off">
@@ -75,6 +75,23 @@
                                         autocomplete="off">
                                 </div>
 
+                                <div class="form-group @error('is_active')has-error @enderror">
+                                    <label>Status <span class="text-danger"><sup>*</sup></span></label>
+                                    <select id="is_active" name="is_active" class="form-control">
+                                        <option value="">--Pilih--</option>
+                                        @if ($unit->is_active == 'Y' || old('is_active') == 'Y')
+                                            <option value="Y" selected>Aktif</option>
+                                        @else
+                                            <option value="Y">Aktif</option>
+                                        @endif
+    
+                                        @if ($unit->is_active == 'N' || old('is_active') == 'N')
+                                            <option value="N" selected>Tidak Aktif</option>
+                                        @else
+                                            <option value="N">Tidak Aktif</option>
+                                        @endif
+                                    </select>
+                                </div>
                             </div>
                         </div>
 
@@ -99,6 +116,10 @@
     <script type="text/javascript">
 
         $('#jenis_unit_kerja_id').select2({
+            width: 'resolve'
+        });
+
+        $('#is_active').select2({
             width: 'resolve'
         });
 

@@ -304,9 +304,11 @@ Route::middleware('auth')->group(function () {
         ])->parameters(['' => 'id'])->only(['index', 'show', 'edit', 'update']);
 
 
+
         //Pengajuan Peninjauan Masa Kerja
         Route::resource('/pengajuan-mk', PegawaiPengajuanMk::class);
         Route::post('/pengajuan-mk/datatable', [PegawaiPengajuanMk::class, 'datatable'])->name('pengajuan-mk.datatable');
+
     });
 
     Route::get('/esselon2/pegawai', [PegawaiController::class, 'index_esselon'])->name('pegawai.index-esselon');

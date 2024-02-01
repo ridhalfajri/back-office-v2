@@ -29,7 +29,7 @@
             <div class="card-body">
                 <div class="student-info">
 
-                    <form class="needs-validation" id="preIjinForm" method="post"  action="{{ route('pre-tak-tercatat.store') }}" enctype="multipart/form-data" accept-charset="utf-8" novalidate>
+                    <form class="needs-validation" id="preTakTercatatForm" method="post"  action="{{ route('pre-tak-tercatat.store') }}" enctype="multipart/form-data" accept-charset="utf-8" novalidate>
                         @csrf
 
                         @php
@@ -195,7 +195,7 @@
                             </div>
                             <div class="col-sm-4">
                                 <div class="form-group @error('media_data_presensi') has-error @enderror">
-                                    <input type="file" name="file" id="media_data_presensi" accept="image/*,.pdf, .doc, .docx" required>
+                                    <input type="file" name="media_data_presensi" id="media_data_presensi" accept="image/*,.pdf, .doc, .docx" required>
                                     <div class="invalid-feedback">
                                         Silakan Upload File Yang Berisi Tangkapan Layar Daftar Presensi
                                     </div>
@@ -210,7 +210,7 @@
                             </div>
                             <div class="col-sm-4">
                                 <div class="form-group @error('media_presensi_logbook') has-error @enderror">
-                                    <input type="file" name="file" id="media_presensi_logbook" accept="image/*,.pdf, .doc, .docx" required>
+                                    <input type="file" name="media_presensi_logbook" id="media_presensi_logbook" accept="image/*,.pdf, .doc, .docx" required>
                                     <div class="invalid-feedback">
                                         Silakan Upload File Yang Berisi Tangkapan Layar Logbook
                                     </div>

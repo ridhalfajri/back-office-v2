@@ -30,15 +30,31 @@ class StatusPegawaiController extends Controller
         return view('status-pegawai.index', compact('title'));
     }
      
-    public function datatable(StatusPegawai $statusPegawai)
+    public function datatable(Request $request)
     {        
+        $isAktif = $request->isAktif;
+
         $data = StatusPegawai::select('*')
+        ->orderBy('is_active','asc')
         ->orderBy('id','asc');
+
+        if(null != $isAktif || '' != $isAktif){
+            $data->where('is_active', '=', $isAktif);
+        }
 
         //dd($data);
 
         return Datatables::of($data)
             ->addColumn('no', '')
+            ->addColumn('status', function ($data) {
+                if($data->is_active == 'Y'){
+                    return 'Aktif';
+                }
+                if($data->is_active == 'N'){
+                    return 'Tidak Aktif';
+                }
+            })
+            
             ->addColumn('aksi', 'status-pegawai.aksi')
             ->rawColumns(['aksi'])
             ->make(true);
@@ -75,9 +91,11 @@ class StatusPegawaiController extends Controller
 
         $this->validate($request, [
             'nama' => ['required', 'string', 'max:30'],
+            'is_active' => ['required'],
         ],
         [
             'nama.required'=>'data nama status pegawai harus diisi!',
+            'is_active.required'=>'data status aktif harus diisi!',
         ]);
 
         try {
@@ -91,6 +109,7 @@ class StatusPegawaiController extends Controller
                 return redirect()->back();
             } else {
                 $request['nama'] = $request->nama;
+                $request['is_active'] = $request->is_active;
     
                 StatusPegawai::create($request->all());
                 DB::commit();
@@ -159,9 +178,11 @@ class StatusPegawaiController extends Controller
 
         $this->validate($request, [
             'nama' => ['required', 'string', 'max:30'],
+            'is_active' => ['required'],
         ],
         [
             'nama.required'=>'data golongan harus diisi!',
+            'is_active.required'=>'data status aktif harus diisi!',
         ]);
 
         try {
@@ -176,6 +197,7 @@ class StatusPegawaiController extends Controller
                 return redirect()->back();
             } else {
                 $statusPegawai->nama = $request->nama;
+                $statusPegawai->is_active = $request->is_active;
                 
                 $statusPegawai->update();
                 DB::commit();

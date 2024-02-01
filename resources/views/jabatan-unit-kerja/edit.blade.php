@@ -5,17 +5,18 @@
 @endpush
 
 @push('breadcrumb')
-        <div class="btn-group btn-breadcrumb">
-            <a href="/" class="btn btn-light"><i class="fa fa-home"></i></a>
-            <a href="/jabatan-unit-kerja" class="btn btn-light"><i class="fa fa-list"></i> JabatanUnitKerja</a>
-            <a href="#" class="btn btn-light"><i class="fa fa-pensil"></i> Ubah Data JabatanUnitKerja</a>
-            {{-- <a href="/" class="btn btn-outline-danger"><i class="fa fa-chevron-circle-left"></i> Kembali</a> --}}
-        </div>
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/"><i class="fa fa-home"></i></a></li>
+        <li class="breadcrumb-item"><a href="{{ route('jabatan-unit-kerja.index') }}">Jabatan Unit Kerja</a></li>
+        <li class="breadcrumb-item active" aria-current="page">{{ $title }}</li>
+    </ol>
+</nav>
 @endpush
 
 @section('content')
     <div class="section-body">
-        <div class="card">
+        <div class="card col-6">
             <div class="card-body">
                 <div class="card-content">
                     <form class="needs-validation" id="jabatanUnitKerjaForm" method="post"  action="{{ route('jabatan-unit-kerja.update',$jabatanUnitKerja->id) }}"  accept-charset="utf-8" novalidate>
