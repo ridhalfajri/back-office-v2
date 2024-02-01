@@ -49,6 +49,7 @@ use App\Http\Controllers\PegawaiRiwayatUmakController;
 
 use App\Http\Controllers\PegawaiRiwayatThrController;
 use App\Http\Controllers\PegawaiRiwayatGajiplusController;
+use App\Http\Controllers\PegawaiRiwayatJabatanController;
 use App\Http\Controllers\RiwayatGajiplusController;
 use App\Http\Controllers\RiwayatThrController;
 use App\Http\Controllers\RuangRapatController;
@@ -163,7 +164,6 @@ Route::middleware('auth')->group(function () {
         Route::resource('/presensiku', PresensiPegawaiController::class);
         Route::post('/presensiku/datatable', [PresensiPegawaiController::class, 'datatable'])->name('presensiku.datatable');
         Route::post('/presensiku/getdatapresensi', [PresensiPegawaiController::class, 'getdatapresensi'])->name('presensiku.getdatapresensi');
-
     });
 
     Route::post('/presensi-pegawai/getanggotatim', [PresensiPegawaiController::class, 'getAnggotaTim'])->name('presensi-pegawai.getanggotatim');
@@ -223,6 +223,13 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::prefix('pegawai')->group(function () {
+
+        Route::get('/a-riwayat-jabatan/{pegawai_id}', [PegawaiRiwayatJabatanController::class, 'create'])->name('a-riwayat-jabatan.create');
+        Route::get('/a-riwayat-jabatan/{pegawai_riwayat_jabatan_id}/edit', [PegawaiRiwayatJabatanController::class, 'edit'])->name('a-riwayat-jabatan.edit');
+        Route::post('/a-riwayat-jabatan/get-jabatan-unit-kerja', [PegawaiRiwayatJabatanController::class, 'get_jabatan_unit_kerja'])->name('a-riwayat-jabatan.get-jabatan-unit-kerja');
+        Route::post('/a-riwayat-jabatan/store', [PegawaiRiwayatJabatanController::class, 'store'])->name('a-riwayat-jabatan.store');
+        Route::post('/a-riwayat-jabatan/update', [PegawaiRiwayatJabatanController::class, 'update'])->name('a-riwayat-jabatan.update');
+
 
         // Penghargaan
 
@@ -295,6 +302,12 @@ Route::middleware('auth')->group(function () {
                 'destroy' => 'pegawai.destroy',
             ]
         ])->parameters(['' => 'id'])->only(['index', 'show', 'edit', 'update']);
+
+
+
+        //Pengajuan Peninjauan Masa Kerja
+        Route::resource('/pengajuan-mk', PegawaiPengajuanMk::class);
+        Route::post('/pengajuan-mk/datatable', [PegawaiPengajuanMk::class, 'datatable'])->name('pengajuan-mk.datatable');
 
     });
 

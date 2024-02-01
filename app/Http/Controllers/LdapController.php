@@ -100,6 +100,9 @@ class LdapController extends Controller
                         Auth::login($user);
                         $jabatan_definitif = PegawaiRiwayatJabatan::select('jabatan_unit_kerja_id', 'tx_tipe_jabatan_id')->where('is_now', 1)->where('is_plt', 0)->where('pegawai_id', $user->pegawai_id)->first();
                         $jabatan_plt = PegawaiRiwayatJabatan::select('jabatan_unit_kerja_id', 'tx_tipe_jabatan_id')->where('is_now', 1)->where('is_plt', 1)->where('pegawai_id', $user->pegawai_id)->first();
+                        if ($jabatan_definitif == null) {
+                            return response()->json(['errors' => 'jabatan anda belum aktif, silahkan hubungi pihak yang berwenang']);
+                        }
                         $request->session()->put('jabatan_definitif', $jabatan_definitif);
                         $request->session()->put('jabatan_plt', $jabatan_plt);
                         $request->session()->regenerate();

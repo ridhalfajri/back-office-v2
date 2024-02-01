@@ -137,7 +137,7 @@ class PegawaiAlamatController extends Controller
 
     public function verifikasi_sdmoh($id)
     {
-        $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->first();
+        $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', TRUE)->first();
         $this->authorize('admin_sdmoh', $kabiro);
         $alamat = PegawaiAlamat::where('id', $id)->first();
         $alamat->is_verified = TRUE;

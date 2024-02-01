@@ -7,7 +7,7 @@
             <div class="item-action dropdown ml-2">
                 <a href="javascript:void(0)" data-toggle="dropdown"><i class="fe fe-more-vertical"></i></a>
                 <div class="dropdown-menu dropdown-menu-right">
-                    <a href="{{ route('riwayat-jabatan.create', $pegawai->id) }}" class="dropdown-item"><i
+                    <a href="{{ route('a-riwayat-jabatan.create', $pegawai->id) }}" class="dropdown-item"><i
                             class="dropdown-icon fa fa-edit"></i>
                         Tambah</a>
                 </div>
@@ -19,7 +19,8 @@
         <div class="row clearfix">
             <div class="col-lg-12">
                 <div class="table-responsive mb-4">
-                    <table id="tbl-riwayat-jabatan" class="table table-hover js-basic-example dataTable table_custom spacing5">
+                    <table id="tbl-riwayat-jabatan"
+                        class="table table-hover js-basic-example dataTable table_custom spacing5">
                         <thead>
                             <tr>
                                 <th style="width: 5%" class="font-weight-bold text-dark">No</th>
