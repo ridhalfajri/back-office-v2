@@ -57,7 +57,7 @@
             </ul>
         </li>
         <li class="{{ Request::is('pengajuan-pmk*') ? 'active' : '' }}"><a
-                href="{{ route('pengajuan-pmk.index') }}"><i class="icon-plus"></i><span>Pengajuan PMK</span></a>
+            href="{{ route('pengajuan-pmk.index') }}"><i class="icon-plus"></i><span>Pengajuan Tambahan Masa Kerja</span></a>
         </li>
         <li class="{{ Request::is('pengajuan-tambahan-bpjs*') ? 'active' : '' }}"><a
                 href="{{ route('pengajuan-tambahan-bpjs.index') }}"><i class="icon-list"></i><span>Pengajuan
@@ -144,8 +144,8 @@
             </li>
 
             <li class="{{ Request::is('pegawai-tambahan-mk*') ? 'active' : '' }}"><a
-                    href="{{ route('pegawai-tambahan-mk.index') }}"><i class="icon-note"></i><span>Approval PMK
-                        Pegawai</span></a></li>
+                href="{{ route('pegawai-tambahan-mk.index') }}"><i class="icon-note"></i><span>Approval Tambahan Masa Kerja
+                    Pegawai</span></a></li>
             <li class="{{ Request::is('pegawai-tambahan-bpjs*') ? 'active' : '' }}"><a
                     href="{{ route('pegawai-tambahan-bpjs.index') }}"><i class="icon-umbrella"></i><span>Approval
                         Tambahan BPJS Pegawai</span></a></li>

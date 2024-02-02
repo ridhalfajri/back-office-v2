@@ -26,7 +26,7 @@ class PegawaiTambahanMkController extends Controller
         $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
         $this->authorize('admin_sdmoh', $kabiro);
 
-        $title = 'Approval PMK Pegawai';
+        $title = 'Approval Tambahan Masa Kerja Pegawai';
 
         $dataUnitKerja = DB::table('unit_kerja')
         ->select('*')
@@ -122,7 +122,7 @@ class PegawaiTambahanMkController extends Controller
         $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
         $this->authorize('admin_sdmoh', $kabiro);
 
-        $title = 'Setujui PMK Pegawai';
+        $title = 'Setujui Tambahan Masa Kerja Pegawai';
         
         $pegawai = DB::table('pegawai_tambahan_mk as ptm')
         ->select('ptm.*', 'p.nama_depan', 'p.nama_belakang', 'p.nip',

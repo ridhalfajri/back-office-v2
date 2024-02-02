@@ -22,7 +22,7 @@ class PengajuanPMKController extends Controller
     */
     public function index()
     {            
-        $title = 'Pengajuan PMK';
+        $title = 'Pengajuan Tambahan Masa Kerja';
 
         return view('pengajuan-pmk.index', compact('title'));
     }
@@ -70,7 +70,7 @@ class PengajuanPMKController extends Controller
     */
     public function create()
     {            
-        $title = 'Buat Pengajuan PMK';
+        $title = 'Buat Pengajuan Tambahan Masa Kerja';
 
         return view('pengajuan-pmk.create', compact('title'));
     }

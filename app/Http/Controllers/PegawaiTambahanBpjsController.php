@@ -164,11 +164,11 @@ class PegawaiTambahanBpjsController extends Controller
         DB::beginTransaction();
 
         $this->validate($request, [
-            'file_kartu_bpjs' => ['required', 'file', 'mimes:pdf,doc,docx', 'max:2048'],
+            'file_kartu_bpjs' => ['required', 'file', 'mimes:pdf,doc,docx,rar,zip', 'max:20480'],
         ],
         [
-            'file_kartu_bpjs.mimes' => 'format file sk harus pdf/doc/docx!',
-            'file_kartu_bpjs.max' => 'ukuran file terlalu besar (maksimal file 2Mb)!',
+            'file_kartu_bpjs.mimes' => 'format file sk harus pdf/doc/docx/rar/zip!',
+            'file_kartu_bpjs.max' => 'ukuran file terlalu besar (maksimal file 20Mb)!',
             'file_kartu_bpjs.file' => 'upload data harus berupa file!',
         ]);
 
