@@ -306,8 +306,8 @@ Route::middleware('auth')->group(function () {
 
 
         //Pengajuan Peninjauan Masa Kerja
-        Route::resource('/pengajuan-mk', PegawaiPengajuanMk::class);
-        Route::post('/pengajuan-mk/datatable', [PegawaiPengajuanMk::class, 'datatable'])->name('pengajuan-mk.datatable');
+        //Route::resource('/pengajuan-mk', PegawaiPengajuanMk::class);
+        //Route::post('/pengajuan-mk/datatable', [PegawaiPengajuanMk::class, 'datatable'])->name('pengajuan-mk.datatable');
 
     });
 
