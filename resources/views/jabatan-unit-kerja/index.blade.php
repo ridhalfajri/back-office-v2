@@ -27,7 +27,7 @@
         <div class="card-header">
             <h4 class="card-title">
                 <button type="button" class="btn btn-xs btn-primary" id="btn-add" onclick="window.location.href='{{ route("jabatan-unit-kerja.create") }}'">
-                    <i class="fa fa-plus"> Tunjangan Kinerja Jabatan Baru</i>
+                    <i class="fa fa-plus"> Jabatan Unit Kerja Baru</i>
                 </button>
             </h4>
         </div>

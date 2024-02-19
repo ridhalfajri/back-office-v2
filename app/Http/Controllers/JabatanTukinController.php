@@ -157,7 +157,7 @@ class JabatanTukinController extends Controller
     {
         $title = 'Input Data Tunjangan Kinerja Jabatan';
         $jenisJabatan = JenisJabatan::where('nama', 'not like', '%Jabatan Rangkap%')->get();
-        $tukin = Tukin::select('id', 'grade', DB::raw("REPLACE(FORMAT(nominal, 0), ',', '.') as nominal"))->get();
+        $tukin = Tukin::select('id', 'grade', DB::raw("REPLACE(FORMAT(nominal, 0), ',', '.') as nominal"))->where('is_active','=','Y')->get();
 
         return view('jabatan-tukin.create', compact('title','jenisJabatan','tukin'));
     }
@@ -235,7 +235,8 @@ class JabatanTukinController extends Controller
 
         $title = 'Ubah Data Tunjangan Kinerja Jabatan';
         $jenisJabatan = JenisJabatan::where('nama', 'not like', '%Jabatan Rangkap%')->get();
-        $tukin = Tukin::select('id', 'grade', DB::raw("REPLACE(FORMAT(nominal, 0), ',', '.') as nominal"))->get();
+        $tukin = Tukin::select('id', 'grade', DB::raw("REPLACE(FORMAT(nominal, 0), ',', '.') as nominal"))->where('is_active','=','Y')->get();
+
         if ( $jabatanTukin->jenis_jabatan_id == 1) {
             $jabatan = JabatanStruktural::where('id', $jabatanTukin->jabatan_id)->first();
 
