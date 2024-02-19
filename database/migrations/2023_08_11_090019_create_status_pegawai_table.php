@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('status_pegawai', function (Blueprint $table) {
             $table->tinyIncrements('id');
             $table->string('nama',30);
+            $table->enum('is_active',['Y', 'N'])->nullable(false)->default('N');
             $table->timestamps();
         });
     }

@@ -39,7 +39,11 @@ class DataExportPrt implements FromCollection, WithHeadings
             })
             ->join('jabatan_unit_kerja as juk', 'juk.id', '=', 'prj.jabatan_unit_kerja_id')
             ->join('hirarki_unit_kerja as huk', 'huk.id', '=', 'juk.hirarki_unit_kerja_id')
-            ->leftJoin('unit_kerja as uk', 'uk.id', '=', 'huk.child_unit_kerja_id')
+            ->leftJoin('unit_kerja as uk', function ($join) {
+                $join->on('uk.id', '=', 'huk.child_unit_kerja_id')
+                    ->where('uk.is_active','=','Y')
+                    ;
+            })
             //
             ->where('pegawai_riwayat_thr.tahun', '=', $this->tahun)
             ->orderBy('uk.id','asc')

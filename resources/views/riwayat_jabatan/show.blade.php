@@ -67,6 +67,10 @@
                             <p>TIDAK AKTIF</p>
                         @endif
                     </div>
+                    <div class="form-group">
+                        <label class="form-label">File SK</label>
+                        <a href="{{ $jabatan->media_sk_jabatan }}" id="" class="btn btn-primary">Download</a>
+                    </div>
                 </div>
             </div>
         </div>

@@ -37,15 +37,24 @@
         <div id="header_top" class="header_top">
             <div class="container">
                 <div class="hleft">
-                    <a class="header-brand" href="{{ route('pegawai.show', auth()->user()->pegawai_id) }}"><img
-                            src="{{ asset('rino.png') }}" alt=""></a>
-                </div>
-                <div class="hright">
                     <div class="dropdown">
                         <a href="javascript:void(0)" class="nav-link icon menu_toggle"><i
-                                class="fa  fa-align-left"></i></a>
+                                class="fa fa-align-left"></i></a>
                     </div>
+
+                    {{-- <a class="header-brand" href="{{ route('pegawai.show', auth()->user()->pegawai_id) }}">
+                        <img  alt=""> 
+                        <i class="fa fa-dashboard brand-logo"></i></a>
+                    </a>--}}
+
+                    <a href="{{ route('pegawai.show', auth()->user()->pegawai_id) }}" class="nav-link user_btn">
+                        <img class="avatar" src="{{ asset('logo-user.png') }}"
+                        alt="" data-toggle="tooltip"
+                        data-placement="right" title="Profil Saya"/></a>
                 </div>
+                {{-- <div class="hright">
+                   
+                </div> --}}
             </div>
         </div>
         <div id="left-sidebar" class="sidebar ">

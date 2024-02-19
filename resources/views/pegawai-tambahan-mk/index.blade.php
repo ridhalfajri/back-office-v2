@@ -74,7 +74,7 @@
                 </div>
                 
                 <div class="card-body">
-                    <h5 class="box-title" style="text-align: center;"><b>List Approval PMK Pegawai</b></h5>
+                    <h5 class="box-title" style="text-align: center;"><b>List Approval Tambahan Masa Kerja Pegawai</b></h5>
                 
                     <table id="tbl-data"
                     class="table table-hover js-basic-example dataTable table_custom spacing5">

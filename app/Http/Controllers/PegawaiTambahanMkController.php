@@ -26,11 +26,12 @@ class PegawaiTambahanMkController extends Controller
         $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
         $this->authorize('admin_sdmoh', $kabiro);
 
-        $title = 'Approval PMK Pegawai';
+        $title = 'Approval Tambahan Masa Kerja Pegawai';
 
         $dataUnitKerja = DB::table('unit_kerja')
         ->select('*')
         ->whereIn('jenis_unit_kerja_id', array(1, 2, 3))
+        ->where('is_active','Y')
         ->get();
 
         return view('pegawai-tambahan-mk.index', compact('title', 'dataUnitKerja'));
@@ -53,7 +54,11 @@ class PegawaiTambahanMkController extends Controller
             })
             ->join('jabatan_unit_kerja as juk', 'juk.id', '=', 'prj.jabatan_unit_kerja_id')
             ->join('hirarki_unit_kerja as huk', 'huk.id', '=', 'juk.hirarki_unit_kerja_id')
-            ->leftJoin('unit_kerja as uk', 'uk.id', '=', 'huk.child_unit_kerja_id')
+            ->leftJoin('unit_kerja as uk', function ($join) {
+                $join->on('uk.id', '=', 'huk.child_unit_kerja_id')
+                    ->where('uk.is_active','=','Y')
+                    ;
+            })
             ->orderBy('uk.id','asc')
             ->orderBy('p.nama_depan','asc')
             ;
@@ -117,7 +122,7 @@ class PegawaiTambahanMkController extends Controller
         $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
         $this->authorize('admin_sdmoh', $kabiro);
 
-        $title = 'Setujui PMK Pegawai';
+        $title = 'Setujui Tambahan Masa Kerja Pegawai';
         
         $pegawai = DB::table('pegawai_tambahan_mk as ptm')
         ->select('ptm.*', 'p.nama_depan', 'p.nama_belakang', 'p.nip',
@@ -131,7 +136,11 @@ class PegawaiTambahanMkController extends Controller
             })
             ->join('jabatan_unit_kerja as juk', 'juk.id', '=', 'prj.jabatan_unit_kerja_id')
             ->join('hirarki_unit_kerja as huk', 'huk.id', '=', 'juk.hirarki_unit_kerja_id')
-            ->leftJoin('unit_kerja as uk', 'uk.id', '=', 'huk.child_unit_kerja_id')
+            ->leftJoin('unit_kerja as uk', function ($join) {
+                $join->on('uk.id', '=', 'huk.child_unit_kerja_id')
+                    ->where('uk.is_active','=','Y')
+                    ;
+            })
             ->where('ptm.pegawai_id', '=', $pegawai_tambahan_mk->pegawai_id)
             ->first()
             ;

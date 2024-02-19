@@ -30,16 +30,32 @@ class UnitKerjaController extends Controller
         return view('unit-kerja.index', compact('title'));
     }
      
-    public function datatable(UnitKerja $unitKerja)
+    public function datatable(Request $request)
     {        
+        $isAktif = $request->isAktif;
+
         $data = UnitKerja::select('unit_kerja.*', 'jenis_unit_kerja.nama as nama_jenis_unit')
         ->join('jenis_unit_kerja','jenis_unit_kerja.id','=','unit_kerja.jenis_unit_kerja_id')
+        ->orderBy('unit_kerja.is_active','asc')
         ->orderBy('unit_kerja.jenis_unit_kerja_id','asc');
+
+        if(null != $isAktif || '' != $isAktif){
+            $data->where('unit_kerja.is_active', '=', $isAktif);
+        }
 
         //dd($data);
 
         return Datatables::of($data)
             ->addColumn('no', '')
+            ->addColumn('status', function ($data) {
+                if($data->is_active == 'Y'){
+                    return 'Aktif';
+                }
+                if($data->is_active == 'N'){
+                    return 'Tidak Aktif';
+                }
+            })
+
             ->addColumn('aksi', 'unit-kerja.aksi')
             ->rawColumns(['aksi'])
             ->make(true);
@@ -81,14 +97,17 @@ class UnitKerjaController extends Controller
         $this->validate($request, [
             'nama' => ['required', 'string', 'min:1', 'max:255'],
             'jenis_unit_kerja_id' => ['required', 'integer', 'min:1', 'max:999'],
-            'singkatan' => ['max:18'],
+            'singkatan' => ['required','string','max:18'],
             'keterangan' => ['max:100'],
+            'is_active' => ['required'],
         ],
         [
             'nama.required'=>'data golongan harus diisi!',
             'nama.string'=>'data golongan harus tipe string!',
             'jenis_unit_kerja_id.required'=>'data jenis unit kerja harus diisi!',
             'jenis_unit_kerja_id.integer'=>'data jenis unit kerja harus bilangan bulat positif!',
+            'singkatan.required'=>'data singkatan unit kerja harus diisi!',
+            'is_active.required'=>'data status harus diisi!',
         ]);
 
         try {
@@ -106,6 +125,7 @@ class UnitKerjaController extends Controller
                 $request['jenis_unit_kerja_id'] = $request->jenis_unit_kerja_id;
                 $request['singkatan'] = $request->singkatan;
                 $request['keterangan'] = $request->keterangan;
+                $request['is_active'] = $request->is_active;
     
                 UnitKerja::create($request->all());
                 DB::commit();
@@ -179,14 +199,17 @@ class UnitKerjaController extends Controller
         $this->validate($request, [
             'nama' => ['required', 'string', 'min:1', 'max:255'],
             'jenis_unit_kerja_id' => ['required', 'integer', 'min:1', 'max:999'],
-            'singkatan' => ['max:18'],
+            'singkatan' => ['required','string','max:18'],
             'keterangan' => ['max:100'],
+            'is_active' => ['required'],
         ],
         [
             'nama.required'=>'data golongan harus diisi!',
             'nama.string'=>'data golongan harus tipe string!',
             'jenis_unit_kerja_id.required'=>'data jenis unit kerja harus diisi!',
             'jenis_unit_kerja_id.integer'=>'data jenis unit kerja harus bilangan bulat positif!',
+            'singkatan.required'=>'data singkatan unit kerja harus diisi!',
+            'is_active.required'=>'data status harus diisi!',
         ]);
 
         try {
@@ -204,6 +227,7 @@ class UnitKerjaController extends Controller
                 $unitKerja->jenis_unit_kerja_id = $request->jenis_unit_kerja_id;
                 $unitKerja->singkatan = $request->singkatan;
                 $unitKerja->keterangan = $request->keterangan;
+                $unitKerja->is_active = $request->is_active;
                 
                 $unitKerja->update();
                 DB::commit();

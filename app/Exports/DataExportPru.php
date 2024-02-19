@@ -39,13 +39,21 @@ class DataExportPru implements FromCollection, WithHeadings
             })
             ->join('jabatan_unit_kerja as juk', 'juk.id', '=', 'prj.jabatan_unit_kerja_id')
             ->join('hirarki_unit_kerja as huk', 'huk.id', '=', 'juk.hirarki_unit_kerja_id')
-            ->leftJoin('unit_kerja as uk', 'uk.id', '=', 'huk.child_unit_kerja_id')
-            ->join('pegawai_riwayat_golongan as prg', function ($join) {
-                $join->on('prg.pegawai_id','=','p.id')
-                    ->where('prg.is_active','=',1)
+            ->leftJoin('unit_kerja as uk', function ($join) {
+                $join->on('uk.id', '=', 'huk.child_unit_kerja_id')
+                    ->where('uk.is_active','=','Y')
                     ;
             })
-            ->leftJoin('uang_makan as um','um.golongan_id','=','prg.golongan_id')
+            // ->join('pegawai_riwayat_golongan as prg', function ($join) {
+            //     $join->on('prg.pegawai_id','=','p.id')
+            //         ->where('prg.is_active','=',1)
+            //         ;
+            // })
+            //->leftJoin('uang_makan as um','um.golongan_id','=','prg.golongan_id')
+            ->leftJoin('uang_makan as um', function ($join) {
+                $join->on('um.id','=','pegawai_riwayat_umak.uang_makan_id')
+                    ;
+            })
             
             ->where('pegawai_riwayat_umak.bulan', '=', $this->bulan)
             ->where('pegawai_riwayat_umak.tahun', '=', $this->tahun)

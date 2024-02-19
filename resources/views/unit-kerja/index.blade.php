@@ -13,6 +13,9 @@
 <link rel="stylesheet" href="{{ asset('assets/plugins/sweetalert/sweetalert.css') }}">
 <!-- Toastr -->
 <link rel="stylesheet" href="{{ asset('assets/plugins/toastr/toastr.css') }}">
+<!-- Select2 -->
+<link rel="stylesheet" href="{{ asset('assets/plugins/select2/css/select2.min.css') }}">
+
 @endpush
 
 @push('breadcrumb')
@@ -35,6 +38,23 @@
                         Tambah</button>
                     </h4>
                 </div>
+
+                <div class="card-body">
+                    {{-- <label class="form-label"><i>Filter Datatable</i></label> --}}
+                    <div class="row clearfix">
+                        <div class="col-12 col-lg-6 col-md-6">
+                            <div class="form-group @error('isAktif')has-error @enderror">
+                                <label class="form-label">Status</label>
+                                <select id="isAktif" name="isAktif" class="form-control">
+                                    <option value="">--Pilih--</option>
+                                    <option value="Y">Aktif</option>
+                                    <option value="N">Tidak Aktif</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="card-body">
                     <h5 class="box-title" style="text-align: center;"><b>List Master Unit Kerja</b></h5>
                     <table id="tbl-data"
@@ -45,6 +65,7 @@
                             <th class="font-weight-bold text-dark">Unit Kerja</th>
                             <th class="font-weight-bold text-dark">Jenis<br>Unit Kerja</th>
                             <th class="font-weight-bold text-dark">Singkatan</th>
+                            <th class="font-weight-bold text-dark">Status</th>
                             {{-- <th class="font-weight-bold text-dark">Keterangan</th> --}}
                             <th class="font-weight-bold text-dark">Aksi</th>
                         </tr>
@@ -55,6 +76,7 @@
                             <th class="font-weight-bold text-dark">Unit Kerja</th>
                             <th class="font-weight-bold text-dark">Jenis<br>Unit Kerja</th>
                             <th class="font-weight-bold text-dark">Singkatan</th>
+                            <th class="font-weight-bold text-dark">Status</th>
                             {{-- <th class="font-weight-bold text-dark">Keterangan</th> --}}
                             <th class="font-weight-bold text-dark">Aksi</th>
                         </tr>
@@ -76,10 +98,16 @@
     <script src="{{ asset('assets/js/table/datatable.js') }}"></script>
     <script src="{{ asset('assets/plugins/sweetalert/sweetalert.min.js') }}"></script>
     <script src="{{ asset('assets/plugins/toastr/toastr.min.js') }}"></script>
+    <!-- Select2 -->
+    <script src="{{ asset('assets/plugins/select2/js/select2.min.js') }}"></script>
    
     <script type="text/javascript">
         "use strict"
         let table;
+
+        $('#isAktif').select2({
+                width: 'resolve'
+            });
 
         $(function() {
             table = $('#tbl-data').DataTable({
@@ -99,6 +127,10 @@
                     type: 'POST',
                     headers: {
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    data: function(d) {
+                        //untuk on change datatable
+                        d.isAktif = $('#isAktif').val();
                     }
                 },
                 columns: [{
@@ -127,6 +159,11 @@
                     //     class: 'text-center'
                     // },
                     {
+                        data: 'status',
+                        name: 'status',
+                        class: 'text-center'
+                    },
+                    {
                         data: 'aksi',
                         name: 'aksi',
                         class: 'text-center'
@@ -151,6 +188,12 @@
                 }).nodes().each(function(cell, i) {
                     cell.innerHTML = i + 1 + info.start;
                 });
+            });
+
+            //untuk on change
+            $('#isAktif').change(function(e) {
+                e.preventDefault();
+                table.ajax.reload();
             });
 
             $('#tbl-data').delegate('button.delete', 'click', function(e) {

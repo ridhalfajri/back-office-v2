@@ -6,6 +6,7 @@ use App\Models\Siasn\SiasnPnsDataUtama;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Spatie\MediaLibrary\HasMedia;
@@ -125,6 +126,15 @@ class Pegawai extends Model implements HasMedia
     }
     public function jabatan_sekarang()
     {
+        // $pegawai = PegawaiRiwayatJabatan::where('is_now', TRUE)->count();
+        // if ($pegawai > 1){
+        //     return $this->hasOne(PegawaiRiwayatJabatan::class)->where('is_now', 1)->where('');
+
+        // }
         return $this->hasOne(PegawaiRiwayatJabatan::class)->where('is_now', 1);
+    }
+    public function jabatan_kabiro()
+    {
+        return $this->hasOne(PegawaiRiwayatJabatan::class)->where('is_now', 1)->where('tx_tipe_jabatan_id', 5);
     }
 }

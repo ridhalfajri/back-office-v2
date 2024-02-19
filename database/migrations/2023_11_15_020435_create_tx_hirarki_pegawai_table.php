@@ -15,9 +15,11 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('pegawai_id');
             $table->unsignedBigInteger('pegawai_pimpinan_id');
+            $table->integerIncrements('unit_kerja_id');
             $table->timestamps();
             $table->foreign('pegawai_id')->references('id')->on('pegawai')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('pegawai_pimpinan_id')->references('id')->on('pegawai')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreign('unit_kerja_id')->references('id')->on('unit_kerja')->onUpdate('cascade')->onDelete('cascade');
         });
     }
 

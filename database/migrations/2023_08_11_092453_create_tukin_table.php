@@ -16,6 +16,7 @@ return new class extends Migration
             $table->tinyInteger('grade');
             $table->bigInteger('nominal');
             $table->string('keterangan')->nullable();
+            $table->enum('is_active',['Y', 'N'])->nullable(false)->default('N');
             $table->timestamps();
         });
     }

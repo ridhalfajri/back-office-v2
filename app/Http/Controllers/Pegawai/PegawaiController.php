@@ -28,7 +28,7 @@ class PegawaiController extends Controller
      */
     public function index()
     {
-        $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->first();
+        $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', TRUE)->first();
         $this->authorize('admin_sdmoh', $kabiro);
         $unit_kerja = UnitKerja::select('id', 'nama')->limit(22)->get();
         $title = "Pegawai";
