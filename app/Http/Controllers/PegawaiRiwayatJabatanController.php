@@ -22,7 +22,7 @@ class PegawaiRiwayatJabatanController extends Controller
         $this->authorize('admin_sdmoh', $kabiro);
 
         $pegawai = Pegawai::where('id', $pegawai_id)->first();
-        $unit_kerja = UnitKerja::select('id', 'nama')->limit(22)->get();
+        $unit_kerja = UnitKerja::select('id', 'nama')->where('is_active', 'Y')->get();
         $jenis_jabatan = JenisJabatan::all();
         $tipe_jabatan = TxTipeJabatan::select('id', 'tipe_jabatan')->get();
         $title = 'Tambah Riwayat Jabatan';
@@ -103,7 +103,7 @@ class PegawaiRiwayatJabatanController extends Controller
                 $prj_pimpinan_lama = PegawaiRiwayatJabatan::where('id', $pimpinan_lama->id_pegawai_riwayat_jabatan)->first();
                 $prj_pimpinan_lama->is_now = FALSE;
 
-                //update PIMPINAN ID SEMUA TIM 
+                //update PIMPINAN ID SEMUA TIM
                 $tim = TxHirarkiPegawai::where('pegawai_pimpinan_id', $pimpinan_lama->pegawai_id);
 
                 //CREATE JABATAN BARU PADA TABEL PEGAWAI RIWAYAT JABATAN
@@ -154,7 +154,7 @@ class PegawaiRiwayatJabatanController extends Controller
                 $pegawai_bersangkutan->pegawai_pimpinan_id = $pimpinan_parent->pegawai_id;
                 $pegawai_bersangkutan->unit_kerja_id = $request->unit_kerja;
 
-                //update PIMPINAN ID SEMUA TIM 
+                //update PIMPINAN ID SEMUA TIM
                 $tim = TxHirarkiPegawai::where('unit_kerja_id', $pegawai_bersangkutan->unit_kerja_id)
                     ->where('pegawai_pimpinan_id', '<>', $pegawai_bersangkutan->pegawai_pimpinan_id);
 
