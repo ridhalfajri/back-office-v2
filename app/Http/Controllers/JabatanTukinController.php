@@ -54,7 +54,70 @@ class JabatanTukinController extends Controller
         }
     }
 
-    public function getjabatan(Request $request)
+    public function getJabatan(Request $request)
+    {
+
+        $nama = $request->input('nama');
+        $jenisJabatanId = $request->jenis_jabatan_id;
+
+
+        if ($jenisJabatanId === "1") {
+            $query = JabatanStruktural::select(['id','nama']);
+        } else if ($jenisJabatanId == "2") {
+            $query = JabatanFungsional::select(['id','nama']);
+        } else
+        // if ($jenisJabatanId == "4")
+         {
+            $query = JabatanFungsionalUmum::select(['id','nama']);
+        }
+
+        if ($nama) {
+            $query->where('nama', 'like', "%$nama%");
+        }
+
+
+        $jabatans = $query->orderBy('nama', 'asc')->paginate(20); // Adjust pagination as needed
+
+        // dd( response()->json([
+        //     'items' => $jabatans->items(),
+        //     'more' => $jabatans->hasMorePages(),
+        // ]));
+
+        return response()->json([
+            'items' => $jabatans->items(),
+            'more' => $jabatans->hasMorePages(),
+        ]);
+
+
+        // var_dump($jenisJabatanId);
+        // dd($jabatan);
+
+        // echo "<option value='' selected disabled>-- Pilih Jabatan --</option>";
+        // foreach ($jabatan as $item) {
+        //     if ($request->jabatan_id != null && $request->jabatan_id == $item->id) {
+        //         echo "<option value='" . $item->id . "' selected>" . $item->nama . "</option>";
+        //     } else {
+        //         echo "<option value='" . $item->id . "'>" . $item->nama . "</option>";
+        //     }
+        // }
+
+        // Format hasil untuk Select2.js
+        // $formattedResults = [];
+        // foreach ($jabatan->items() as $item) {
+        //     $formattedResults[] = [
+        //         'id' => $item->id,
+        //         'text' => $item->nama
+        //     ];
+        // }
+
+        // return response()->json([
+        //     'items' => $formattedResults,
+        //     'more' => $jabatan->hasMorePages(),
+        // ]);
+
+    }
+
+    public function getjabatans(Request $request)
     {
         try {
             $jenisJabatanId = $request->jenis_jabatan_id;
@@ -237,18 +300,24 @@ class JabatanTukinController extends Controller
         $jenisJabatan = JenisJabatan::where('nama', 'not like', '%Jabatan Rangkap%')->get();
         $tukin = Tukin::select('id', 'grade', DB::raw("REPLACE(FORMAT(nominal, 0), ',', '.') as nominal"))->where('is_active','=','Y')->get();
 
+
         if ( $jabatanTukin->jenis_jabatan_id == 1) {
-            $jabatan = JabatanStruktural::where('id', $jabatanTukin->jabatan_id)->first();
+            $jabatan = JabatanStruktural::select(['id','nama'])->where('id', $jabatanTukin->jabatan_id)->first();
+            $jabatanData = JabatanStruktural::select(['id','nama'])->where('id','<', 10)->orWhere('id', $jabatanTukin->jabatan_id)->get();
 
         } else if ( $jabatanTukin->jenis_jabatan_id == 2) {
-            $jabatan = JabatanFungsional::where('id', $jabatanTukin->jabatan_id)->first();
+            $jabatan = JabatanFungsional::select(['id','nama'])->where('id', $jabatanTukin->jabatan_id)->first();
+            $jabatanData = JabatanFungsional::select(['id','nama'])->where('id','<', 10)->orWhere('id', $jabatanTukin->jabatan_id)->get();
         }else{
+            $jabatanData = JabatanFungsionalUmum::select(['id','nama'])->where('id', $jabatanTukin->jabatan_id)->first();
              // Using stdClass
             $jabatan = new stdClass();
+            $jabatan->nama = $jabatanData->nama;
             $jabatan->nominal_tunjangan = 0;
+            $jabatanData = JabatanFungsionalUmum::select(['id', 'nama', DB::raw('0 as nominal_tunjangan')])->where('id', '<', 10)->orWhere('id', $jabatanTukin->jabatan_id)->get();
         }
 
-        return view('jabatan-tukin.edit', compact('title','jabatanTukin','jenisJabatan','tukin','jabatan'));
+        return view('jabatan-tukin.edit', compact('title','jabatanTukin','jenisJabatan','tukin','jabatan','jabatanData'));
     }
 
     /**

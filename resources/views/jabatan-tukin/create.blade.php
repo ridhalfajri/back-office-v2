@@ -151,8 +151,42 @@
 
         $(document).ready(function() {
             $('#jenis_jabatan_id').select2();
-            $('#jabatan_id').select2();
             $('#tukin_id').select2();
+
+            $('#jabatan_id').select2({
+            minimumInputLength: 3,
+            ajax: {
+                url: "{{ route('jabatan-tukin.getjabatan') }}",
+                type: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                dataType: 'json',
+                delay: 250,
+                data: function(params) {
+                    var jenis_jabatan_id = $('#jenis_jabatan_id').val(); // Get value from another element
+                    return {
+                        jenis_jabatan_id: jenis_jabatan_id,
+                        nama: params.term,
+                        page: params.page || 1
+                    };
+                },
+                processResults: function(data) {
+                    return {
+                        results: data.items.map(function(item) {
+                        return {
+                            id: item.id, // Ensure unique ID for Select2
+                            text: item.nama // Customize display text if needed
+                        };
+                        }),
+                        pagination: {
+                        more: data.more
+                        }
+                    };
+                },
+                cache: true
+            }
+        });
 
             var jenis_jabatan_id = {!! json_encode(is_null(old('jenis_jabatan_id')) ? '-' : old('jenis_jabatan_id')) !!};
             var jabatan_id = {!! json_encode(is_null(old('jabatan_id')) ? '-' : old('jabatan_id')) !!};
@@ -187,45 +221,75 @@
             }else{
                 tukinDiv.style.display = 'block';
             }
-            get_jabatan(id)
+            // get_jabatan(id)
         });
 
-        $('#jabatan_id').on('change', function(e) {
-            e.preventDefault();
-            const id = $(this).val();
-        });
 
-        const get_jabatan = (jenis_jabatan_id = null) => {
 
-            $.ajax({
-                type: "POST",
-                url: "{{ route('jabatan-tukin.getjabatan') }}",
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                data: {
-                    jenis_jabatan_id: jenis_jabatan_id
-                },
-                cache: false,
-                success: function(response) {
-                    // Clear existing options
-                    $('#jabatan_id').empty();
-                    // Add default option
-                    $('#jabatan_id').append(response);
-                    // Initialize Select2
-                    $('#jabatan_id').select2();
+        // $('#jabatan_id').on('change', function(e) {
+        //     e.preventDefault();
+        //     const id = $(this).val();
+        // });
 
-                    var oldjabatanId = @json(old('jabatan_id'));
-                    if (oldjabatanId !== null) {
-                        $('#jabatan_id').val(oldjabatanId).trigger('change');
-                    }
+        // const get_jabatan = (jenis_jabatan_id = null) => {
 
-                },
-                error: function(data) {
-                    console.log('error : ', data);
-                }
-            });
-        }
+        //     $('#jabatan_id').select2({
+        //         minimumInputLength: 3, // Tunggu sampai pengguna memasukkan minimal 3 karakter
+        //         ajax: {
+        //             url: "{{ route('jabatan-tukin.getjabatan') }}",
+        //             type: "POST",
+        //             headers: {
+        //                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        //             },
+        //             dataType: 'json',
+        //             delay: 250,
+        //             data: function(params) {
+        //                 return {
+        //                     jenis_jabatan_id: jenis_jabatan_id,
+        //                     nama: params.term
+        //                 };
+        //             },
+        //             processResults: function(data) {
+        //                 return {
+        //                     results: data.items,
+        //                     pagination: {
+        //                         more: data.more
+        //                     }
+        //                 };
+        //             },
+        //             cache: true
+        //         }
+        //     });
+            // $.ajax({
+            //     type: "POST",
+            //     url: "{{ route('jabatan-tukin.getjabatan') }}",
+            //     headers: {
+            //         'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            //     },
+            //     data: {
+            //         jenis_jabatan_id: jenis_jabatan_id,
+            //         nama
+            //     },
+            //     cache: false,
+            //     success: function(response) {
+            //         // Clear existing options
+            //         $('#jabatan_id').empty();
+            //         // Add default option
+            //         $('#jabatan_id').append(response);
+            //         // Initialize Select2
+            //         $('#jabatan_id').select2();
+
+            //         var oldjabatanId = @json(old('jabatan_id'));
+            //         if (oldjabatanId !== null) {
+            //             $('#jabatan_id').val(oldjabatanId).trigger('change');
+            //         }
+
+            //     },
+            //     error: function(data) {
+            //         console.log('error : ', data);
+            //     }
+            // });
+        // }
 
     </script>
 

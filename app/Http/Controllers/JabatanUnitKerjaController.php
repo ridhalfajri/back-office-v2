@@ -114,9 +114,11 @@ class JabatanUnitKerjaController extends Controller
                         FROM db_backoffice.hirarki_unit_kerja a
                         INNER JOIN unit_kerja b ON a.parent_unit_kerja_id = b.id
                         INNER JOIN jenis_unit_kerja c ON c.id = b.jenis_unit_kerja_id) c'), 'a.id', '=', 'c.id')
-            ->where('b.is_active', 'Y')
-            ->orderBy('b.nama', 'asc')
-            ->get();
+
+                ->where('b.is_active','Y')
+                ->orderBy('b.nama', 'asc')
+                ->get();
+
 
         //Get Data Hierarki Unit Kerja
         // $hirarkiUnitKerja = VhirarkiUnitKerja::all();
@@ -206,8 +208,9 @@ class JabatanUnitKerjaController extends Controller
                         FROM db_backoffice.hirarki_unit_kerja a
                         INNER JOIN unit_kerja b ON a.parent_unit_kerja_id = b.id
                         INNER JOIN jenis_unit_kerja c ON c.id = b.jenis_unit_kerja_id) c'), 'a.id', '=', 'c.id')
-            ->orderBy('b.nama', 'asc')
-            ->get();
+                ->where('b.is_active','Y')
+                ->orderBy('b.nama', 'asc')
+                ->get();
 
 
         return view('jabatan-unit-kerja.edit', compact('title', 'jabatanUnitKerja', 'jabatanTukin', 'hirarkiUnitKerja'));
