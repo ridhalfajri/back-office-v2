@@ -32,6 +32,7 @@ class PegawaiTambahanBpjsController extends Controller
         $dataUnitKerja = DB::table('unit_kerja')
         ->select('*')
         ->whereIn('jenis_unit_kerja_id', array(1, 2, 3))
+        ->where('is_active','Y')
         ->get();
 
         return view('pegawai-tambahan-bpjs.index', compact('title', 'dataUnitKerja'));
@@ -54,7 +55,11 @@ class PegawaiTambahanBpjsController extends Controller
             })
             ->join('jabatan_unit_kerja as juk', 'juk.id', '=', 'prj.jabatan_unit_kerja_id')
             ->join('hirarki_unit_kerja as huk', 'huk.id', '=', 'juk.hirarki_unit_kerja_id')
-            ->leftJoin('unit_kerja as uk', 'uk.id', '=', 'huk.child_unit_kerja_id')
+            ->leftJoin('unit_kerja as uk', function ($join) {
+                $join->on('uk.id', '=', 'huk.child_unit_kerja_id')
+                    ->where('uk.is_active','=','Y')
+                    ;
+            })
             ->orderBy('uk.id','asc')
             ->orderBy('p.nama_depan','asc')
             ;
@@ -132,7 +137,11 @@ class PegawaiTambahanBpjsController extends Controller
             })
             ->join('jabatan_unit_kerja as juk', 'juk.id', '=', 'prj.jabatan_unit_kerja_id')
             ->join('hirarki_unit_kerja as huk', 'huk.id', '=', 'juk.hirarki_unit_kerja_id')
-            ->leftJoin('unit_kerja as uk', 'uk.id', '=', 'huk.child_unit_kerja_id')
+            ->leftJoin('unit_kerja as uk', function ($join) {
+                $join->on('uk.id', '=', 'huk.child_unit_kerja_id')
+                    ->where('uk.is_active','=','Y')
+                    ;
+            })
             ->where('ptm.pegawai_id', '=', $pegawai_tambahan_bpj->pegawai_id)
             ->first()
             ;
@@ -155,11 +164,11 @@ class PegawaiTambahanBpjsController extends Controller
         DB::beginTransaction();
 
         $this->validate($request, [
-            'file_kartu_bpjs' => ['required', 'file', 'mimes:pdf,doc,docx', 'max:2048'],
+            'file_kartu_bpjs' => ['required', 'file', 'mimes:pdf,doc,docx,rar,zip', 'max:20480'],
         ],
         [
-            'file_kartu_bpjs.mimes' => 'format file sk harus pdf/doc/docx!',
-            'file_kartu_bpjs.max' => 'ukuran file terlalu besar (maksimal file 2Mb)!',
+            'file_kartu_bpjs.mimes' => 'format file sk harus pdf/doc/docx/rar/zip!',
+            'file_kartu_bpjs.max' => 'ukuran file terlalu besar (maksimal file 20Mb)!',
             'file_kartu_bpjs.file' => 'upload data harus berupa file!',
         ]);
 

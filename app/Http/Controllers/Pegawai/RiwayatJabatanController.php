@@ -29,12 +29,13 @@ class RiwayatJabatanController extends Controller
     {
 
         $riwayat_jabatan = PegawaiRiwayatJabatan::select('pegawai_riwayat_jabatan.id', 'ttj.tipe_jabatan', 'uk.nama AS nama_unit_kerja', 'tanggal_sk', 'tanggal_pelantikan', 'tmt_jabatan', 'is_plt', 'is_now')
-            ->where('pegawai_id', auth()->user()->pegawai_id)
             ->join('tx_tipe_jabatan AS ttj', 'ttj.id', '=', 'pegawai_riwayat_jabatan.tx_tipe_jabatan_id')
             ->join('jabatan_unit_kerja AS juk', 'juk.id', '=', 'pegawai_riwayat_jabatan.jabatan_unit_kerja_id')
             ->join('hirarki_unit_kerja AS huk', 'huk.id', '=', 'juk.hirarki_unit_kerja_id')
             ->join('unit_kerja AS uk', 'uk.id', '=', 'huk.child_unit_kerja_id');
-
+        if ($request->pegawai_id != null) {
+            $riwayat_jabatan = $riwayat_jabatan->where('pegawai_id', $request->pegawai_id);
+        }
         return DataTables::of($riwayat_jabatan)
             ->addColumn('no', '')
             ->addColumn('aksi', 'riwayat_jabatan.aksi')
@@ -162,11 +163,11 @@ class RiwayatJabatanController extends Controller
     public function show($id)
     {
         $jabatan = PegawaiRiwayatJabatan::where('id', $id)->first();
+        $jabatan->media_sk_jabatan = $jabatan->getMedia("media_sk_jabatan")[0]->getUrl();
         if ($jabatan == null) {
             abort(404);
         }
         $this->authorize('personal', $jabatan->pegawai);
-
         $title = 'Detail Jabatan';
         return view('riwayat_jabatan.show', compact('title', 'jabatan'));
     }

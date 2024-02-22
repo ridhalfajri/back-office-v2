@@ -30,16 +30,31 @@ class UangMakanController extends Controller
         return view('uang-makan.index', compact('title'));
     }
      
-    public function datatable(UangMakan $uangMakan)
+    public function datatable(Request $request)
     {        
+        $isAktif = $request->isAktif;
+
         $data = UangMakan::select('uang_makan.*', 'golongan.nama as nama_golongan')
         ->join('golongan','golongan.id','=','uang_makan.golongan_id')
+        ->orderBy('uang_makan.is_active','asc')
         ->orderBy('golongan.nama','asc');
 
         //dd($data);
+        if(null != $isAktif || '' != $isAktif){
+            $data->where('uang_makan.is_active', '=', $isAktif);
+        }
 
         return Datatables::of($data)
             ->addColumn('no', '')
+            ->addColumn('status', function ($data) {
+                if($data->is_active == 'Y'){
+                    return 'Aktif';
+                }
+                if($data->is_active == 'N'){
+                    return 'Tidak Aktif';
+                }
+            })
+
             ->addColumn('aksi', 'uang-makan.aksi')
             ->rawColumns(['aksi'])
             ->make(true);
@@ -80,18 +95,21 @@ class UangMakanController extends Controller
 
         $this->validate($request, [
             'golongan_id' => ['required', 'integer', 'min:1', 'max:999'],
-            'nominal' => ['required', 'integer', 'min:1', 'max:999999999999999']
+            'nominal' => ['required', 'integer', 'min:1', 'max:999999999999999'],
+            'is_active' => ['required'],
         ],
         [
             'golongan_id.required'=>'data golongan harus diisi!',
             'golongan_id.integer'=>'data golongan harus bilangan bulat positif!',
             'nominal.required'=>'data nominal harus diisi!',
             'nominal.integer'=>'data nominal harus bilangan bulat positif!',
+            'is_active.required'=>'data status harus diisi!',
         ]);
 
         try {
             //validasi golongan
             $cekDataExist = UangMakan::where('golongan_id',$request->golongan_id)
+            ->where('nominal',$request->nominal)
             ->get();
 
             if($cekDataExist->isNotEmpty()){
@@ -101,6 +119,7 @@ class UangMakanController extends Controller
             } else {
                 $request['golongan_id'] = $request->golongan_id;
                 $request['nominal'] = $request->nominal;
+                $request['is_active'] = $request->is_active;
     
                 UangMakan::create($request->all());
                 DB::commit();
@@ -173,18 +192,21 @@ class UangMakanController extends Controller
 
         $this->validate($request, [
             'golongan_id' => ['required', 'integer', 'min:1', 'max:999'],
-            'nominal' => ['required', 'integer', 'min:1', 'max:999999999999999']
+            'nominal' => ['required', 'integer', 'min:1', 'max:999999999999999'],
+            'is_active' => ['required'],
         ],
         [
             'golongan_id.required'=>'data golongan harus diisi!',
             'golongan_id.integer'=>'data golongan harus bilangan bulat positif!',
             'nominal.required'=>'data nominal harus diisi!',
             'nominal.integer'=>'data nominal harus bilangan bulat positif!',
+            'is_active.required'=>'data status harus diisi!',
         ]);
 
         try {
             //validasi golongan
             $cekDataExist = UangMakan::where('golongan_id',$request->golongan_id)
+                ->where('nominal',$request->nominal)
                 ->where('id','!=',$uangMakan->id)
                 ->get();
 
@@ -195,6 +217,7 @@ class UangMakanController extends Controller
             } else {
                 $uangMakan->golongan_id = $request->golongan_id;
                 $uangMakan->nominal = $request->nominal;
+                $uangMakan->is_active = $request->is_active;
                 
                 $uangMakan->update();
                 DB::commit();

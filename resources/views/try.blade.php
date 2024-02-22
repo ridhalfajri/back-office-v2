@@ -1,4 +1,4 @@
 @extends('template')
 @section('content')
-    <p>Ridhal</p>
+    <p>Mohon Di Tunggu</p>
 @endsection

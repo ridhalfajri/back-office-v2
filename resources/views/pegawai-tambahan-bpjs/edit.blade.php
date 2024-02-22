@@ -76,7 +76,7 @@
                                     <label>Upload File Kartu BPJS <span class="text-danger"><sup>*</sup></span></label>
                                     <input class="form-control fileClass" type="file" id="file_kartu_bpjs"
                                         name="file_kartu_bpjs">
-                                    <em>Silakan upload file kartu BPJS (pdf/doc/docx max 2Mb)</em>
+                                    <em>Silakan upload file kartu BPJS (pdf/doc/docx/rar/zip max 20Mb)</em>
                                     <br>
                                     @if ($bpjs->file_kartu_bpjs)
                                         <a href="//{{ $bpjs->file_kartu_bpjs }}" target="_blank">Lihat File Kartu BPJS</a>

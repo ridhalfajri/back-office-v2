@@ -561,7 +561,7 @@ class CutiController extends Controller
     }
     public function pengajuan_masuk_sdmoh()
     {
-        $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->first();
+        $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', TRUE)->first();
         $this->authorize('spesial_kabiro', $kabiro);
         $unit_kerja = UnitKerja::select('id', 'nama')->limit(22)->get();
         $status_cuti = StatusCuti::select('id', 'status')->get();
@@ -603,7 +603,7 @@ class CutiController extends Controller
     }
     public function detail_pengajuan_masuk_sdmoh($id)
     {
-        $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->first();
+        $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', TRUE)->first();
         $this->authorize('spesial_kabiro', $kabiro);
 
         $cuti = PegawaiCuti::where('id', $id)->first();
@@ -720,7 +720,7 @@ class CutiController extends Controller
 
     public function saldo_cuti_pegawai()
     {
-        $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->first();
+        $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', TRUE)->first();
         $this->authorize('admin_sdmoh', $kabiro);
         $title = 'Saldo Cuti Pegawai';
         $unit_kerja = UnitKerja::select('id', 'nama')->limit(22)->get();
