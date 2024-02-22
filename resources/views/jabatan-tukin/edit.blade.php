@@ -56,6 +56,9 @@
                                     <label>Jabatan :<span class="text-danger"><sup>*</sup></span></label>
                                     <select class="form-control" id="jabatan_id" name="jabatan_id" required>
                                         <option value="" selected disabled>-- Pilih Jabatan --</option>
+                                        @foreach ($jabatanData as $data)
+                                            <option value="{{ $data->id }}" {{ (old('jabatan_id') ?? $jabatanTukin->jabatan_id)  == $data->id ? 'selected' : '' }}>{{ $data->nama }}</option>
+                                        @endforeach
                                     </select>
                                     @error('jabatan_id')
                                         <small class="text-danger">{{ $message }}</small>
@@ -108,6 +111,7 @@
     <script src="{{ asset('assets/plugins/sweetalert/sweetalert.min.js') }}"></script>
     <script src="{{ asset('assets/plugins/select2-4.0.13/dist/js/select2.min.js') }}"></script>
     <script>
+
         (function () {
           'use strict'
 
@@ -150,8 +154,52 @@
 
         $(document).ready(function() {
             $('#jenis_jabatan_id').select2();
-            $('#jabatan_id').select2();
+            // Select element to be initialized as Select2
+            const jabatanIdSelect = $('#jabatan_id');
+
+            // Trigger initialization automatically (replace with your triggering logic)
+            if (jabatanIdSelect.length > 0 && !jabatanIdSelect.hasClass('select2-initialized')) {
+
+                jabatanIdSelect.select2({
+                    minimumInputLength: 3,
+                    ajax: {
+                        url: "{{ route('jabatan-tukin.getjabatan') }}",
+                        type: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        dataType: 'json',
+                        delay: 250,
+                        data: function(params) {
+                            var jenis_jabatan_id = $('#jenis_jabatan_id').val(); // Get value from another element
+                            return {
+                                jenis_jabatan_id: jenis_jabatan_id,
+                                nama: params.term,
+                                page: params.page || 1
+                            };
+                        },
+                        processResults: function(data) {
+                            return {
+                                results: data.items.map(function(item) {
+                                return {
+                                    id: item.id, // Ensure unique ID for Select2
+                                    text: item.nama // Customize display text if needed
+                                };
+                                }),
+                                pagination: {
+                                more: data.more
+                                }
+                            };
+                        },
+                        cache: true
+                    }
+                });
+                // Mark as initialized to prevent redundant triggering
+                jabatanIdSelect.addClass('select2-initialized');
+            }
             $('#tukin_id').select2();
+
+
 
             var jenis_jabatan_id = {!! json_encode(is_null(old('jenis_jabatan_id')) ? $jabatanTukin->jenis_jabatan_id : old('jenis_jabatan_id')) !!};
             var jabatan_id = {!! json_encode(is_null(old('jabatan_id')) ? $jabatanTukin->jabatan_id : old('jabatan_id')) !!};
@@ -162,7 +210,9 @@
             document.getElementById("nominal_tunjangan_jabatan").value = formattedValue;
 
             console.log(jenis_jabatan_id);
-            get_jabatan(jenis_jabatan_id, jabatan_id);
+            // get_jabatan(jenis_jabatan_id, jabatan_id);
+            // Set default value
+            // $("#jabatan_id").val(jabatan_id).trigger("change"); // Set the default value
 
 
             $("#nominal_tunjangan_jabatan").on("keyup change", function(e) {
@@ -189,53 +239,9 @@
             }else{
                 tukinDiv.style.display = 'block';
             }
-            get_jabatan(id)
+
         });
 
-        document.getElementById("jabatan_id").onload = function() {
-            const jabId = 1;
-            console.log('OK');
-            get_jabatan(jabId);
-
-        };
-
-        $('#jabatan_id').on('change', function(e) {
-            e.preventDefault();
-            const id = $(this).val();
-        });
-
-        const get_jabatan = (jenis_jabatan_id = null, jabatan_id = null) => {
-
-            $.ajax({
-                type: "POST",
-                url: "{{ route('jabatan-tukin.getjabatan') }}",
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                data: {
-                    jabatan_id: jabatan_id,
-                    jenis_jabatan_id: jenis_jabatan_id
-                },
-                cache: false,
-                success: function(response) {
-                    // Clear existing options
-                    $('#jabatan_id').empty();
-                    // Add default option
-                    $('#jabatan_id').append(response);
-                    // Initialize Select2
-                    $('#jabatan_id').select2();
-
-                    var oldjabatanId = @json(old('jabatan_id'));
-                    if (oldjabatanId !== null) {
-                        $('#jabatan_id').val(oldjabatanId).trigger('change');
-                    }
-
-                },
-                error: function(data) {
-                    console.log('error : ', data);
-                }
-            });
-        }
 
         function toggleInput(selectedValue) {
             var inputTunjab = document.getElementById('inputTunjab');
