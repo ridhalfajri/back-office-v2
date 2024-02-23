@@ -146,9 +146,13 @@ class PegawaiRiwayatJabatanController extends Controller
                 //CARI PEGAWAI PIMPINAN LAMA
                 $pimpinan_lama = $this->get_pimpinan_lama($request->tx_tipe_jabatan_id, $request->unit_kerja);
 
-                //NON AKTIFKAN JABATAN PIMPINAN LAMA
-                $prj_pimpinan_lama = PegawaiRiwayatJabatan::where('id', $pimpinan_lama->id_pegawai_riwayat_jabatan)->first();
-                $prj_pimpinan_lama->is_now = FALSE;
+                if ($pimpinan_lama != null) {
+                    //NON AKTIFKAN JABATAN PIMPINAN LAMA
+                    $prj_pimpinan_lama = PegawaiRiwayatJabatan::where('id', $pimpinan_lama->id_pegawai_riwayat_jabatan)->first();
+                    $prj_pimpinan_lama->is_now = FALSE;
+                } else {
+                    $prj_pimpinan_lama = NULL;
+                }
 
                 //UPDATE DATA PEGAWAI BERSANGKUTAN
                 $pegawai_bersangkutan->pegawai_pimpinan_id = $pimpinan_parent->pegawai_id;
@@ -178,7 +182,9 @@ class PegawaiRiwayatJabatanController extends Controller
                             $jabatan_lama->save();
                         }
                         $prj_baru->save();
-                        $prj_pimpinan_lama->save();
+                        if ($prj_pimpinan_lama != NULL) {
+                            $prj_pimpinan_lama->save();
+                        }
                         $pegawai_bersangkutan->save();
                         $tim->update(['pegawai_pimpinan_id' => $pegawai_bersangkutan->pegawai_id]);
                         if ($request->media_sk_jabatan) {
