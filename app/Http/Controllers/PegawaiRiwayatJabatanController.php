@@ -89,10 +89,8 @@ class PegawaiRiwayatJabatanController extends Controller
             if ($request->tx_tipe_jabatan_id == 1) {
                 //AMBIL PARENT DARI UNIT KERJA YANG DIINPUT
                 $parent_unit_kerja = HirarkiUnitKerja::where('child_unit_kerja_id', $request->unit_kerja)->first();
-
                 // CARI PIMPINAN ID DARI PARENT UNIT KERJA TERSEBUT
-                $pimpinan_parent = $this->get_pimpinan(8, $parent_unit_kerja);
-
+                $pimpinan_parent = $this->get_pimpinan(1, $parent_unit_kerja);
                 //UPDATE DATA PEGAWAI BERSANGKUTAN
                 $pegawai_bersangkutan->pegawai_pimpinan_id = $pimpinan_parent->pegawai_id;
                 $pegawai_bersangkutan->unit_kerja_id = $request->unit_kerja;
