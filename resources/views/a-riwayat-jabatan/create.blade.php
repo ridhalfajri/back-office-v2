@@ -68,43 +68,43 @@
                         </div>
                         <div class="form-group col-md-6">
                             <label class="form-label">No SK</label>
-                            <input type="text" class="form-control" placeholder="No SK" value="" name="no_sk"
+                            <input type="text" class="form-control" placeholder="No SK" value="-" name="no_sk"
                                 id="no_sk">
                             <small class="text-danger" id="err_no_sk"></small>
 
                         </div>
                         <div class="form-group col-md-6">
                             <label class="form-label">No Pelantikan</label>
-                            <input type="text" class="form-control" placeholder="No Pelantikan" value=""
+                            <input type="text" class="form-control" placeholder="No Pelantikan" value="-"
                                 name="no_pelantikan" id="no_pelantikan">
                             <small class="text-danger" id="err_no_pelantikan"></small>
 
                         </div>
                         <div class="form-group col-md-6">
                             <label class="form-label">Tanggal SK</label>
-                            <input type="date" class="form-control" placeholder="Tanggal SK" value=""
+                            <input type="date" class="form-control" placeholder="Tanggal SK" value="2024-02-23"
                                 name="tanggal_sk" id="tanggal_sk">
                             <small class="text-danger" id="err_tanggal_sk"></small>
 
                         </div>
                         <div class="form-group col-md-6">
                             <label class="form-label">Tanggal Pelantikan</label>
-                            <input type="date" class="form-control" placeholder="Tanggal Pelantikan" value=""
+                            <input type="date" class="form-control" placeholder="Tanggal Pelantikan" value="2024-02-23"
                                 name="tanggal_pelantikan" id="tanggal_pelantikan">
                             <small class="text-danger" id="err_tanggal_pelantikan"></small>
 
                         </div>
                         <div class="form-group col-md-6">
                             <label class="form-label">Tmt Jabatan</label>
-                            <input type="date" class="form-control" placeholder="Tmt Jabatan" value=""
+                            <input type="date" class="form-control" placeholder="Tmt Jabatan" value="2024-02-23"
                                 name="tmt_jabatan" id="tmt_jabatan">
                             <small class="text-danger" id="err_tmt_jabatan"></small>
 
                         </div>
                         <div class="form-group col-md-6">
                             <label class="form-label">Pejabat Penetap</label>
-                            <input type="text" class="form-control" placeholder="Pejabat Penetap" value=""
-                                name="pejabat_penetap" id="pejabat_penetap">
+                            <input type="text" class="form-control" placeholder="Pejabat Penetap"
+                                value="Kukuh S Achmad" name="pejabat_penetap" id="pejabat_penetap">
                             <small class="text-danger" id="err_pejabat_penetap"></small>
 
                         </div>
@@ -112,8 +112,8 @@
                             <label class="form-label">Status PLT </label>
                             <select class="form-control" id="is_plt" name="is_plt" required>
                                 <option value="">--Pilih Status PLT--</option>
-                                <option value="1" selected="">Ya</option>
-                                <option value="0" selected="">Tidak</option>
+                                <option value="1">Ya</option>
+                                <option value="0" selected>Tidak</option>
                             </select>
                             <small class="text-danger" id="err_is_plt"></small>
 
@@ -122,8 +122,8 @@
                             <label class="form-label">Status Jabatan </label>
                             <select class="form-control" id="is_now" name="is_now" required>
                                 <option value="">--Pilih Status Jabatan--</option>
-                                <option value="1" selected="">Aktif</option>
-                                <option value="0" selected="">Tidak Aktif</option>
+                                <option value="1" selected>Aktif</option>
+                                <option value="0">Tidak Aktif</option>
                             </select>
                             <small class="text-danger" id="err_is_now"></small>
 
