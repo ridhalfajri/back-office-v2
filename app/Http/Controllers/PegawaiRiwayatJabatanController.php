@@ -48,7 +48,7 @@ class PegawaiRiwayatJabatanController extends Controller
                 'is_plt' => ['required'],
                 'is_now' => ['required'],
                 'tx_tipe_jabatan_id' => ['required'],
-                'media_sk_jabatan' => ['required'],
+                // 'media_sk_jabatan' => ['required'],
 
             ],
             [
