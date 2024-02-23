@@ -30,7 +30,7 @@ class PegawaiController extends Controller
     {
         $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', TRUE)->first();
         $this->authorize('admin_sdmoh', $kabiro);
-        $unit_kerja = UnitKerja::select('id', 'nama')->limit(22)->get();
+        $unit_kerja = UnitKerja::select('id', 'nama')->where('is_active', 'Y')->get();
         $title = "Pegawai";
         $esselon = false;
         return view('pegawai.index', compact('title', 'unit_kerja', 'esselon'));
@@ -347,11 +347,11 @@ class PegawaiController extends Controller
     public function datatable(Request $request)
     {
         $pegawai = Pegawai::select('pegawai.id', 'nip', 'nama_depan', 'nama_belakang', DB::raw('CONCAT(nama_depan," " ,nama_belakang) AS nama_lengkap'), 'no_telp', 'email_kantor', 'uk.nama AS nama_unit_kerja')->orderBy('nama_unit_kerja', 'DESC')
-            ->join('pegawai_riwayat_jabatan AS prj', 'prj.pegawai_id', '=', 'pegawai.id')
-            ->join('jabatan_unit_kerja AS juk', 'juk.id', '=', 'prj.jabatan_unit_kerja_id')
-            ->join('hirarki_unit_kerja AS huk', 'huk.id', '=', 'juk.hirarki_unit_kerja_id')
-            ->join('unit_kerja AS uk', 'uk.id', '=', 'huk.child_unit_kerja_id')
-            ->where('prj.is_now', 1);
+            ->leftJoin('pegawai_riwayat_jabatan AS prj', 'prj.pegawai_id', '=', 'pegawai.id')
+            ->leftJoin('jabatan_unit_kerja AS juk', 'juk.id', '=', 'prj.jabatan_unit_kerja_id')
+            ->leftJoin('hirarki_unit_kerja AS huk', 'huk.id', '=', 'juk.hirarki_unit_kerja_id')
+            ->leftJoin('unit_kerja AS uk', 'uk.id', '=', 'huk.child_unit_kerja_id');
+        // ->where('prj.is_now', 1);
 
         if ($request->unit_kerja != null) {
             $pegawai->where('huk.child_unit_kerja_id', $request->unit_kerja);
