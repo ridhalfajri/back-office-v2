@@ -193,7 +193,8 @@ class PegawaiRiwayatJabatanController extends Controller
                     return response()->json(['errors' => ['connection' => 'data gagal disimpan']]);
                 }
             } else if ($request->tx_tipe_jabatan_id == 6 || $request->tx_tipe_jabatan_id == 7) {
-                if ($request->unit_kerja == 9 || $request->tx_tipe_jabatan_id == 7) {
+                $unit_kerja_kabiro = PegawaiRiwayatJabatan::where('tx_tipe_jabatan_id', 5)->where('is_now', 1)->first();
+                if ($request->unit_kerja == $unit_kerja_kabiro->jabatan_unit_kerja->hirarki_unit_kerja->child_unit_kerja_id || $request->tx_tipe_jabatan_id == 7) {
                     $pimpinan = $this->get_pimpinan_lama(5, $request->unit_kerja);
                 } else {
                     $pimpinan = $this->get_pimpinan_lama(2, $request->unit_kerja);
