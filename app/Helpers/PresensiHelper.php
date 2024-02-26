@@ -1222,12 +1222,12 @@ class PresensiHelper {
             $TL1 = PrePotonganTukin::where('id', 1)->first();
             $TL2 = PrePotonganTukin::where('id', 2)->first();
             $TL3 = PrePotonganTukin::where('id', 3)->first();
-            $TL4 = PrePotonganTukin::where('id', 4)->first();
+            $TL4 = PrePotonganTukin::where('id', 4)->first(); //! MASIH MENUNGGU ATURAN RESMI
             $TL5 = PrePotonganTukin::where('id', 5)->first(); //ALPHA
 
 
             if ($statusKehadiran =='ALPHA'){
-                return $TL5->prosentase_pemotongan * $nominal_tukin;
+                return $TL5->prosentase_pemotongan * $nominal_tukin * 0.25;
             }
             elseif($kekurangan_jam > 0 && $kekurangan_jam <= $TL1->lama_waktu_keterlambatan){
                 return $TL1->prosentase_pemotongan * $nominal_tukin;
@@ -1244,31 +1244,6 @@ class PresensiHelper {
             }else{
                 return 0;
             }
-
-
-            // if ($kekurangan_jam <= $TL1->lama_waktu_keterlambatan) {
-            //     return $TL1->prosentase_pemotongan * $nominal_tukin;
-            // } else if ($kekurangan_jam > $TL1->prosentase_pemotongan && $kekurangan_jam <= $TL2->prosentase_pemotongan) {
-            //     return $TL2->prosentase_pemotongan * $nominal_tukin;
-            // } else if ($kekurangan_jam > $TL2->prosentase_pemotongan && $kekurangan_jam <= $TL3->prosentase_pemotongan) {
-            //     return $TL3->prosentase_pemotongan * $nominal_tukin;
-            // } else if ($kekurangan_jam > $TL3->prosentase_pemotongan) {
-            //     return $TL4->prosentase_pemotongan * $nominal_tukin;
-            // }
-
-            // if ($kekurangan_jam <= $TL1->lama_waktu_keterlambatan) {
-            //     echo $TL1;
-            //     return $TL1->prosentase_pemotongan * $nominal_tukin;
-            // } else if ($kekurangan_jam > $TL1->lama_waktu_keterlambatan && $kekurangan_jam <= $TL2->lama_waktu_keterlambatan) {
-            //     echo $TL2;
-            //     return $TL2->prosentase_pemotongan * $nominal_tukin;
-            // } else if ($kekurangan_jam > $TL2->lama_waktu_keterlambatan && $kekurangan_jam <= $TL3->lama_waktu_keterlambatan) {
-            //     echo $TL3;
-            //     return $TL3->prosentase_pemotongan * $nominal_tukin;
-            // } else if ($kekurangan_jam > $TL3->lama_waktu_keterlambatan) {
-            //     echo $TL3  . ' ' . $TL3->prosentase_pemotongan * $nominal_tukin;
-            //     return $TL4->prosentase_pemotongan * $nominal_tukin;
-            // }
 
         } catch (\Throwable $th) {
             Log::error('Error kalkulasi Potongan : ' . $th->getMessage() . ' | ' . $pegawai);

@@ -7,6 +7,14 @@
     {{-- File Upload --}}
     <link rel="stylesheet" href="{{ asset('assets/plugins/dropify/css/dropify.min.css') }}">
 @endpush
+@push('breadcrumb')
+    <ol class="breadcrumb custom-background-color">
+        <li class="breadcrumb-item"><a href="{{ route('dashboard') }}"><i class="fa fa-home"></i></a></li>
+        <li class="breadcrumb-item"><a href="{{route('pegawai.index')}}">Pegawai</a></li>
+        <li class="breadcrumb-item"><a href="{{route('pegawai.show',$diklat->pegawai_id)}}">Pegawai Detail</a></li>
+        <li class="breadcrumb-item active" aria-current="page">{{ $title }}</li>
+    </ol>
+@endpush
 @section('content')
     <div class="section-body">
         <div class="container-fluid">
