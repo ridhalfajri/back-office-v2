@@ -119,13 +119,13 @@ class CutiController extends Controller
                     }
                 }
             }
-            $saldo = null;
+            // $saldo = null;
             $split_tanggal = explode(" - ", $request->tanggal_cuti);
             $tanggal_mulai = $split_tanggal[0];
             $tanggal_akhir = $split_tanggal[1];
-            if ($request->jenis_cuti_id == 1) {
-                $saldo = $this->update_saldo_cuti(auth()->user()->pegawai_id, $request->lama_cuti);
-            }
+            // if ($request->jenis_cuti_id == 1) {
+            //     $saldo = $this->update_saldo_cuti(auth()->user()->pegawai_id, $request->lama_cuti);
+            // }
             $cuti = new PegawaiCuti();
             $cuti->pegawai_id = auth()->user()->pegawai_id;
             $cuti->jenis_cuti_id = $request->jenis_cuti_id;
@@ -141,10 +141,10 @@ class CutiController extends Controller
                 $cuti->detail_keterangan_cuti_p = $request->detail_keterangan_cuti_p;
             }
             try {
-                DB::transaction(function () use ($cuti, $saldo, $request) {
-                    if ($saldo != null) {
-                        $saldo->save();
-                    }
+                DB::transaction(function () use ($cuti, $request) {
+                    // if ($saldo != null) {
+                    //     $saldo->save();
+                    // }
                     $cuti->save();
                     if ($request->media_pengajuan_cuti) {
                         $cuti->addMediaFromRequest('media_pengajuan_cuti')->toMediaCollection('media_pengajuan_cuti');
@@ -211,12 +211,12 @@ class CutiController extends Controller
                     }
                 }
             }
-            $update_saldo  = null;
-            $restore_saldo = null;
+            // $update_saldo  = null;
+            // $restore_saldo = null;
             $cuti = PegawaiCuti::where('id', $id)->first();
-            if ($cuti->jenis_cuti_id == 1) {
-                $restore_saldo = $this->restore_saldo_cuti(auth()->user()->pegawai_id, $cuti->lama_cuti);
-            }
+            // if ($cuti->jenis_cuti_id == 1) {
+            //     $restore_saldo = $this->restore_saldo_cuti(auth()->user()->pegawai_id, $cuti->lama_cuti);
+            // }
 
             $split_tanggal = explode(" - ", $request->tanggal_cuti);
             $tanggal_mulai = $split_tanggal[0];
@@ -238,10 +238,10 @@ class CutiController extends Controller
                 $cuti->detail_keterangan_cuti_p = null;
             }
             try {
-                DB::transaction(function () use ($cuti, $request, $update_saldo, $restore_saldo) {
-                    if ($restore_saldo != null) {
-                        $restore_saldo->save();
-                    }
+                DB::transaction(function () use ($cuti, $request) {
+                    // if ($restore_saldo != null) {
+                    //     $restore_saldo->save();
+                    // }
                     if ($request->jenis_cuti_id == 1) {
                         $update_saldo = $this->update_saldo_cuti(auth()->user()->pegawai_id, $request->lama_cuti);
                     }
@@ -530,11 +530,11 @@ class CutiController extends Controller
         if (auth()->user()->pegawai_id != $atasan_pegawai->pegawai_pimpinan_id) {
             return response()->json(['errors' => ['data' => 'Anda tidak memiliki akses']]);
         }
-        $restore_saldo = null;
+        // $restore_saldo = null;
 
-        if ($cuti->jenis_cuti_id == 1 && $request->kode == 'Tolak') {
-            $restore_saldo = $this->restore_saldo_cuti($cuti->pegawai_id, $cuti->lama_cuti);
-        }
+        // if ($cuti->jenis_cuti_id == 1 && $request->kode == 'Tolak') {
+        //     $restore_saldo = $this->restore_saldo_cuti($cuti->pegawai_id, $cuti->lama_cuti);
+        // }
         switch ($request->kode) {
             case 'Terima':
                 $cuti->atasan_langsung_id = auth()->user()->pegawai_id;
@@ -550,9 +550,9 @@ class CutiController extends Controller
                 break;
         }
         try {
-            if ($restore_saldo != null) {
-                $restore_saldo->save();
-            }
+            // if ($restore_saldo != null) {
+            //     $restore_saldo->save();
+            // }
             $cuti->save();
             return response()->json(['success' => 'cuti berhasil di terima/tolak']);
         } catch (QueryException $qe) {
@@ -648,16 +648,20 @@ class CutiController extends Controller
         if ($cuti == null) {
             return response()->json(['errors' => ['data' => 'terjadi kesalahan harap lakukan refresh halaman']]);
         }
-        $restore_saldo = null;
-        if ($cuti->jenis_cuti_id == 1 && $request->kode == 'Tolak') {
-            $restore_saldo = $this->restore_saldo_cuti($cuti->pegawai_id, $cuti->lama_cuti);
-        }
+        // $restore_saldo = null;
+        // if ($cuti->jenis_cuti_id == 1 && $request->kode == 'Tolak') {
+        //     $restore_saldo = $this->restore_saldo_cuti($cuti->pegawai_id, $cuti->lama_cuti);
+        // }
 
         switch ($request->kode) {
             case 'Terima':
                 $cuti->kabiro_sdmoh_id = auth()->user()->pegawai_id;
                 $cuti->tanggal_approve_akb = Carbon::now()->format('Y-m-d');
                 $cuti->status_pengajuan_cuti_id = 3;
+                $saldo = null;
+                if ($cuti->jenis_cuti_id == 1) {
+                    $saldo = $this->update_saldo_cuti($cuti->pegawai_id, $cuti->lama_cuti);
+                }
                 break;
             case 'Tolak':
                 $cuti->kabiro_sdmoh_id = auth()->user()->pegawai_id;
@@ -671,9 +675,12 @@ class CutiController extends Controller
             $JAM = '00:00:00';
             DB::beginTransaction();
             $cuti->save();
-            if ($restore_saldo != null) {
-                $restore_saldo->save();
+            if ($saldo != null) {
+                $saldo->save();
             }
+            // if ($restore_saldo != null) {
+            //     $restore_saldo->save();
+            // }
             if ($request->kode == 'Terima') {
                 foreach ($tanggal_cuti as $hari) {
                     $presensi = Presensi::where('tanggal_presensi', $hari)->where('no_enroll', $cuti->pegawai->id)->first();
