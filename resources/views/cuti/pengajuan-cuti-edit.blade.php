@@ -8,6 +8,13 @@
     {{-- File Upload --}}
     <link rel="stylesheet" href="{{ asset('assets/plugins/dropify/css/dropify.min.css') }}">
 @endpush
+@push('breadcrumb')
+    <ol class="breadcrumb custom-background-color">
+        <li class="breadcrumb-item"><a href="{{ route('dashboard') }}"><i class="fa fa-home"></i></a></li>
+        <li class="breadcrumb-item"><a href="{{route('cuti.riwayat-cuti')}}">Riwayat Cuti</a></li>
+        <li class="breadcrumb-item active" aria-current="page">{{ $title }}</li>
+    </ol>
+@endpush
 @section('content')
     <div class="col-md-8 col-lg-8">
         <div class="card">

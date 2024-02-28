@@ -176,6 +176,7 @@ class PegawaiRiwayatThpController extends Controller
                 'potongan_tapera',
                 'bulan',
                 'tahun',
+                'pegawai.id AS pegawai_id',
                 'pegawai.nama_depan',
                 'pegawai.nama_belakang',
                 'pegawai.nip',
