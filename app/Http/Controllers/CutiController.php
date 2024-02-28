@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\HariLibur;
 use App\Models\HirarkiUnitKerja;
 use App\Models\JenisCuti;
+use App\Models\Konfigurasi;
 use App\Models\Pegawai;
 use App\Models\PegawaiCuti;
 use App\Models\PegawaiRiwayatJabatan;
@@ -16,6 +17,7 @@ use App\Models\TxHirarkiPegawai;
 use App\Models\UnitKerja;
 use Carbon\Carbon;
 use DateTime;
+use Dflydev\DotAccessData\Data;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -48,6 +50,9 @@ class CutiController extends Controller
     {
         $tanggal_mulai = $request->tanggal_mulai;
         $tanggal_akhir = $request->tanggal_akhir;
+        if (date('Y',strtotime($tanggal_mulai)) !=date('Y',strtotime($tanggal_akhir))){
+            return response()->json(['errors' => ['tahun' => 'mengajukan cuti tidak boleh lintas tahun']]);
+        }
         $weekdays = $this->get_all_weekdays($tanggal_mulai, $tanggal_akhir);
         if ($request->jenis_cuti == 1) {
             if (count($weekdays) > $request->saldo_cuti) {
@@ -643,22 +648,24 @@ class CutiController extends Controller
         if ($validate->fails()) {
             return response()->json(['errors' => ['data' => 'terjadi kesalahan harap lakukan refresh halaman']]);
         }
+        $konfigurasi = Konfigurasi::where('key','tahun_cuti')->select('value')->first();
+        $tahun_cuti = $konfigurasi->value;
+
         $cuti = PegawaiCuti::where('id', $request->id)->first();
+        if(date('Y',strtotime($cuti->tanggal_awal_cuti)) != $tahun_cuti){
+            return response()->json(['errors' => ['saldo_cuti' => 'saldo cuti untuk tahun ini belum diupdate, silahkan update saldo cuti terlebih dahulu']]);
+        }
         $tanggal_cuti = $this->get_all_weekdays($cuti->tanggal_awal_cuti, $cuti->tanggal_akhir_cuti);
         if ($cuti == null) {
             return response()->json(['errors' => ['data' => 'terjadi kesalahan harap lakukan refresh halaman']]);
         }
-        // $restore_saldo = null;
-        // if ($cuti->jenis_cuti_id == 1 && $request->kode == 'Tolak') {
-        //     $restore_saldo = $this->restore_saldo_cuti($cuti->pegawai_id, $cuti->lama_cuti);
-        // }
-
+        $restore_saldo = null;
+        $saldo = null;
         switch ($request->kode) {
             case 'Terima':
                 $cuti->kabiro_sdmoh_id = auth()->user()->pegawai_id;
                 $cuti->tanggal_approve_akb = Carbon::now()->format('Y-m-d');
                 $cuti->status_pengajuan_cuti_id = 3;
-                $saldo = null;
                 if ($cuti->jenis_cuti_id == 1) {
                     $saldo = $this->update_saldo_cuti($cuti->pegawai_id, $cuti->lama_cuti);
                 }
@@ -667,6 +674,9 @@ class CutiController extends Controller
                 $cuti->kabiro_sdmoh_id = auth()->user()->pegawai_id;
                 $cuti->tanggal_penolakan_cuti = Carbon::now()->format('Y-m-d');
                 $cuti->status_pengajuan_cuti_id = 4;
+                if ($cuti->jenis_cuti_id == 1) {
+                    $restore_saldo = $this->restore_saldo_cuti($cuti->pegawai_id, $cuti->lama_cuti);
+                }
                 break;
         }
         try {
@@ -678,9 +688,9 @@ class CutiController extends Controller
             if ($saldo != null) {
                 $saldo->save();
             }
-            // if ($restore_saldo != null) {
-            //     $restore_saldo->save();
-            // }
+             if ($restore_saldo != null) {
+                 $restore_saldo->save();
+             }
             if ($request->kode == 'Terima') {
                 foreach ($tanggal_cuti as $hari) {
                     $presensi = Presensi::where('tanggal_presensi', $hari)->where('no_enroll', $cuti->pegawai->id)->first();
@@ -731,7 +741,9 @@ class CutiController extends Controller
         $this->authorize('admin_sdmoh', $kabiro);
         $title = 'Saldo Cuti Pegawai';
         $unit_kerja = UnitKerja::select('id', 'nama')->limit(22)->get();
-        return view('cuti.saldo-cuti-pegawai', compact('title', 'unit_kerja'));
+        $konfigurasi = Konfigurasi::where('key','tahun_cuti')->select('value')->first();
+        $tahun_cuti = $konfigurasi->value != date('Y',strtotime(now()));
+        return view('cuti.saldo-cuti-pegawai', compact('title', 'unit_kerja','tahun_cuti'));
     }
     public function datatable_saldo_cuti(Request $request)
     {
@@ -768,6 +780,9 @@ class CutiController extends Controller
                 $saldo->saldo_n_2 = $saldo_n_2;
                 $saldo->save();
             }
+            $konfigurasi = Konfigurasi::where('key','tahun_cuti')->first();
+            $konfigurasi->value = date('Y',strtotime(now()));
+            $konfigurasi->save();
         });
         return response()->json(['success' => 'saldo berhasil di update']);
     }

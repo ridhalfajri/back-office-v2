@@ -14,8 +14,10 @@
                 <div class="container-fluid">
                     <div class="row clearfix">
                         <div class="col-md-12 col-lg-12">
+                            @if($tahun_cuti)
                             <button type="button" id="btn-update-saldo" name="btn-update-saldo"
                                 class="btn btn-primary mb-2">Update Saldo</button>
+                            @endif
                         </div>
                         <div class="col-lg-12">
 
