@@ -227,6 +227,19 @@
                             $('#tanggal_cuti').val(`${date_now} - ${date_now}`)
                             $('#lama_cuti').val(1)
 
+                        } else if(response.errors.tahun){
+                            if (response.errors.tahun) {
+                                Swal.fire({
+                                    title: 'Error!',
+                                    text: response.errors.tahun,
+                                    icon: 'error',
+                                    confirmButtonText: 'Tutup'
+                                })
+                                const date_now = moment().format('DD-MM-YYYY')
+                                $('#tanggal_cuti').val(`${date_now} - ${date_now}`)
+                                $('#lama_cuti').val(1)
+
+                            }
                         }
                     } else if (response.success) {
                         $('#lama_cuti').val(response.success.lama_cuti)

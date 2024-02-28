@@ -268,6 +268,14 @@
                                 confirmButtonText: 'Tutup'
                             })
                         }
+                        if (response.errors.saldo_cuti) {
+                            Swal.fire({
+                                title: 'Error!',
+                                text: response.errors.saldo_cuti,
+                                icon: 'error',
+                                confirmButtonText: 'Tutup'
+                            })
+                        }
                         if (response.errors.connection) {
                             Swal.fire({
                                 title: 'Error!',
@@ -283,11 +291,11 @@
                             icon: 'success',
                             confirmButtonText: 'Tutup'
                         })
+                        setTimeout(function() {
+                            window.location.href =
+                                '{{ route('cuti.pengajuan-masuk-sdmoh') }}'
+                        }, 1000);
                     }
-                    setTimeout(function() {
-                        window.location.href =
-                            '{{ route('cuti.pengajuan-masuk-sdmoh') }}'
-                    }, 1000);
                 }
             });
         });
