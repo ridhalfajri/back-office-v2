@@ -517,8 +517,13 @@ class PegawaiRiwayatThpController extends Controller
             return $gaji->gaji->nominal_tunjangan_jabatan;
         } else if ($jabatan->jabatan_unit_kerja->jabatan_tukin->jenis_jabatan_id == 2) {
             //JFT
-            $nominal = JabatanFungsional::select('nominal_tunjangan')->where('id', $jabatan->jabatan_unit_kerja->jabatan_tukin->jabatan_id)->first();
-            return $nominal->nominal_tunjangan;
+            if ($pegawai->status_pegawai_id == 4) {
+                //CPNS JFT
+                return $gaji->gaji->nominal_tunjangan_jabatan;
+            } else {
+                $nominal = JabatanFungsional::select('nominal_tunjangan')->where('id', $jabatan->jabatan_unit_kerja->jabatan_tukin->jabatan_id)->first();
+                return $nominal->nominal_tunjangan;
+            }
         } else if ($jabatan->jabatan_unit_kerja->jabatan_tukin->jenis_jabatan_id == 1) {
             //STRUKTURAL
             $nominal = JabatanStruktural::select('nominal_tunjangan')->where('id', $jabatan->jabatan_unit_kerja->jabatan_tukin->jabatan_id)->first();

@@ -243,7 +243,7 @@ class PegawaiRiwayatUmakController extends Controller
                 ->select('p.id', 'p.no_enroll')
                 ->leftJoin('status_pegawai as sp', function ($join) {
                     $join->on('sp.id', '=', 'p.status_pegawai_id')
-                        ->whereIn('sp.nama', array('PNS', 'CPNS', 'PPPK'))
+                        ->whereIn('sp.nama', array('PNS', 'CPNS'))
                         ->where('sp.is_active','Y')
                         ;
                 })
@@ -296,8 +296,8 @@ class PegawaiRiwayatUmakController extends Controller
                         $uangMakanId = $umakPegawai->id;
                         $nominalUangMakan = $umakPegawai->nominal;
 
-                        //
-                        $totalUangMakan = $nominalUangMakan * $jumlahHariMasuk;
+                        //ada pajak 5%
+                        $totalUangMakan = $nominalUangMakan * $jumlahHariMasuk * 0.05;
                     } else {
                         // session()->flash('message', 'Ada pegawai yang datanya belum ada di tabel pegawai_riwayat_golongan!');
                         // return redirect()->back();

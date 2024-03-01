@@ -21,6 +21,7 @@ use App\Models\AturanThrGajiplus;
 use App\Models\JabatanFungsional;
 use App\Models\JabatanStruktural;
 use App\Models\PegawaiAnak;
+use App\Models\PegawaiCuti;
 use App\Models\PegawaiRiwayatGajiplus;
 use App\Models\PegawaiRiwayatThr;
 use App\Models\PegawaiSuamiIstri;
@@ -132,7 +133,7 @@ class PegawaiRiwayatGajiplusController extends Controller
                 ->select('p.*')
                 ->leftJoin('status_pegawai as sp', function ($join) {
                     $join->on('sp.id', '=', 'p.status_pegawai_id')
-                        ->whereIn('sp.nama', array('PNS', 'CPNS', 'PPPK'))
+                        ->whereIn('sp.nama', array('PNS', 'CPNS'))
                         ->where('sp.is_active','Y')
                         ;
                 })
@@ -224,9 +225,32 @@ class PegawaiRiwayatGajiplusController extends Controller
                         ->where('tahun', '=', $periode)
                         ->get();
 
+                    //cek dia CLTN tidak
+                    $cekCltn = PegawaiCuti::where('pegawai_id', '=', $pegawai->id)
+                        ->whereDate('tanggal_awal_cuti', '<=', now()->toDateString())
+                        ->whereDate('tanggal_akhir_cuti', '>=', now()->toDateString())
+                        ->where('jenis_cuti_id', '=', 6)
+                        ->where('status_pengajuan_cuti_id', '=', 3)
+                        ->first();
+
                     if ($cekData->isNotEmpty()) {
                         //update
-                        DB::table('pegawai_riwayat_gajiplus')
+                        if ($cekCltn != null) {
+                            DB::table('pegawai_riwayat_gajiplus')
+                            ->where('pegawai_id', $pegawai->id)
+                            ->where('tahun', $periode)
+                            ->update([
+                                'nominal_gaji_pokok' => 0,
+                                'tunjangan_beras' => 0,
+                                'tunjangan_pasangan' => 0,
+                                'tunjangan_anak' => 0,
+                                'tunjangan_jabatan' => 0,
+                                'tunjangan_kinerja' => 0,
+                                'total_gajiplus' => 0,
+                                'updated_at' => now(),
+                            ]);
+                        } else {
+                            DB::table('pegawai_riwayat_gajiplus')
                             ->where('pegawai_id', $pegawai->id)
                             ->where('tahun', $periode)
                             ->update([
@@ -239,20 +263,36 @@ class PegawaiRiwayatGajiplusController extends Controller
                                 'total_gajiplus' => $TOTAL_GAJIPLUS,
                                 'updated_at' => now(),
                             ]);
+                        }
                     } else {
                         //insert
-                        DB::table('pegawai_riwayat_gajiplus')->insert([
-                            'pegawai_id' => $pegawai->id,
-                            'tahun' => $periode,
-                            'nominal_gaji_pokok' => $NOMINAL_GAJI_POKOK,
-                            'tunjangan_beras' => $TUNJANGAN_BERAS,
-                            'tunjangan_pasangan' => $TUNJANGAN_PASANGAN,
-                            'tunjangan_anak' => $TUNJANGAN_ANAK,
-                            'tunjangan_jabatan' => $TUNJANGAN_JABATAN,
-                            'tunjangan_kinerja' => $TUNJANGAN_KINERJA,
-                            'total_gajiplus' => $TOTAL_GAJIPLUS,
-                            'created_at' => now(),
-                        ]);
+                        if ($cekCltn != null) {
+                            DB::table('pegawai_riwayat_gajiplus')->insert([
+                                'pegawai_id' => $pegawai->id,
+                                'tahun' => $periode,
+                                'nominal_gaji_pokok' => 0,
+                                'tunjangan_beras' => 0,
+                                'tunjangan_pasangan' => 0,
+                                'tunjangan_anak' => 0,
+                                'tunjangan_jabatan' => 0,
+                                'tunjangan_kinerja' => 0,
+                                'total_gajiplus' => 0,
+                                'created_at' => now(),
+                            ]);
+                        } else {
+                            DB::table('pegawai_riwayat_gajiplus')->insert([
+                                'pegawai_id' => $pegawai->id,
+                                'tahun' => $periode,
+                                'nominal_gaji_pokok' => $NOMINAL_GAJI_POKOK,
+                                'tunjangan_beras' => $TUNJANGAN_BERAS,
+                                'tunjangan_pasangan' => $TUNJANGAN_PASANGAN,
+                                'tunjangan_anak' => $TUNJANGAN_ANAK,
+                                'tunjangan_jabatan' => $TUNJANGAN_JABATAN,
+                                'tunjangan_kinerja' => $TUNJANGAN_KINERJA,
+                                'total_gajiplus' => $TOTAL_GAJIPLUS,
+                                'created_at' => now(),
+                            ]);
+                        }
                     }
                 }
             } else {
@@ -324,8 +364,13 @@ class PegawaiRiwayatGajiplusController extends Controller
             return $gaji->gaji->nominal_tunjangan_jabatan;
         } else if ($jabatan->jabatan_unit_kerja->jabatan_tukin->jenis_jabatan_id == 2) {
             //JFT
-            $nominal = JabatanFungsional::select('nominal_tunjangan')->where('id', $jabatan->jabatan_unit_kerja->jabatan_tukin->jabatan_id)->first();
-            return $nominal->nominal_tunjangan;
+            if ($pegawai->status_pegawai_id == 4) {
+                //CPNS JFT
+                return $gaji->gaji->nominal_tunjangan_jabatan;
+            } else {
+                $nominal = JabatanFungsional::select('nominal_tunjangan')->where('id', $jabatan->jabatan_unit_kerja->jabatan_tukin->jabatan_id)->first();
+                return $nominal->nominal_tunjangan;
+            }
         } else if ($jabatan->jabatan_unit_kerja->jabatan_tukin->jenis_jabatan_id == 1) {
             //STRUKTURAL
             $nominal = JabatanStruktural::select('nominal_tunjangan')->where('id', $jabatan->jabatan_unit_kerja->jabatan_tukin->jabatan_id)->first();

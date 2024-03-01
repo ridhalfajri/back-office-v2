@@ -85,6 +85,12 @@
                                 </div>
                             </div>
                         </div>
+
+                        <div class="col-12 col-lg-6 col-md-6">
+                            <label class="form-label" style="color: orange;"><i>Note</i> :<br>
+                                Total uang makan sudah dikurangi pajak sebesar 5%.</label>
+                        </div>
+
                         <div class="col-lg-12">
                             <div class="table-responsive mb-4">
                                 <table id="tbl-penghasilan-show"
