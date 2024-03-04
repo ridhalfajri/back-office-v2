@@ -111,21 +111,22 @@ class PegawaiRiwayatGolonganController extends Controller
 
         //nama pegawai
         $pegawai = DB::table('pegawai as p')
-            ->select('p.id', DB::raw('CONCAT(p.nama_depan," ",p.nama_belakang," | ",p.nip," | ",uk.singkatan) AS nama_pegawai'))
-            ->join('pegawai_riwayat_jabatan as prj', function ($join) {
-                $join->on('prj.pegawai_id','=','p.id')
-                    ->where('prj.is_now','=',1)
-                    ;
-            })
-            ->join('jabatan_unit_kerja as juk', 'juk.id', '=', 'prj.jabatan_unit_kerja_id')
-            ->join('hirarki_unit_kerja as huk', 'huk.id', '=', 'juk.hirarki_unit_kerja_id')
-            ->leftJoin('unit_kerja as uk', function ($join) {
-                $join->on('uk.id', '=', 'huk.child_unit_kerja_id')
-                    ->where('uk.is_active','=','Y')
-                    ;
-            })
+        ->select('p.id', DB::raw('CONCAT(p.nama_depan," ",p.nama_belakang," | ",p.nip," | ") AS nama_pegawai'))
+            // ->select('p.id', DB::raw('CONCAT(p.nama_depan," ",p.nama_belakang," | ",p.nip," | ",uk.singkatan) AS nama_pegawai'))
+            // ->join('pegawai_riwayat_jabatan as prj', function ($join) {
+            //     $join->on('prj.pegawai_id','=','p.id')
+            //         ->where('prj.is_now','=',1)
+            //         ;
+            // })
+            // ->join('jabatan_unit_kerja as juk', 'juk.id', '=', 'prj.jabatan_unit_kerja_id')
+            // ->join('hirarki_unit_kerja as huk', 'huk.id', '=', 'juk.hirarki_unit_kerja_id')
+            // ->leftJoin('unit_kerja as uk', function ($join) {
+            //     $join->on('uk.id', '=', 'huk.child_unit_kerja_id')
+            //         ->where('uk.is_active','=','Y')
+            //         ;
+            // })
             
-            ->orderBy('uk.id','asc')
+            // ->orderBy('uk.id','asc')
             ->orderBy('p.nama_depan','asc')
             ->get();
 
@@ -242,21 +243,22 @@ class PegawaiRiwayatGolonganController extends Controller
 
         //nama pegawai
         $pegawai = DB::table('pegawai as p')
-        ->select('p.id', DB::raw('CONCAT(p.nama_depan," ",p.nama_belakang," | ",p.nip," | ",uk.singkatan) AS nama_pegawai'))
-        ->join('pegawai_riwayat_jabatan as prj', function ($join) {
-            $join->on('prj.pegawai_id','=','p.id')
-                ->where('prj.is_now','=',1)
-                ;
-        })
-        ->join('jabatan_unit_kerja as juk', 'juk.id', '=', 'prj.jabatan_unit_kerja_id')
-        ->join('hirarki_unit_kerja as huk', 'huk.id', '=', 'juk.hirarki_unit_kerja_id')
-        ->leftJoin('unit_kerja as uk', function ($join) {
-            $join->on('uk.id', '=', 'huk.child_unit_kerja_id')
-                ->where('uk.is_active','=','Y')
-                ;
-        })
+        ->select('p.id', DB::raw('CONCAT(p.nama_depan," ",p.nama_belakang," | ",p.nip," | ") AS nama_pegawai'))
+        // ->select('p.id', DB::raw('CONCAT(p.nama_depan," ",p.nama_belakang," | ",p.nip," | ",uk.singkatan) AS nama_pegawai'))
+        // ->join('pegawai_riwayat_jabatan as prj', function ($join) {
+        //     $join->on('prj.pegawai_id','=','p.id')
+        //         ->where('prj.is_now','=',1)
+        //         ;
+        // })
+        // ->join('jabatan_unit_kerja as juk', 'juk.id', '=', 'prj.jabatan_unit_kerja_id')
+        // ->join('hirarki_unit_kerja as huk', 'huk.id', '=', 'juk.hirarki_unit_kerja_id')
+        // ->leftJoin('unit_kerja as uk', function ($join) {
+        //     $join->on('uk.id', '=', 'huk.child_unit_kerja_id')
+        //         ->where('uk.is_active','=','Y')
+        //         ;
+        // })
         
-        ->orderBy('uk.id','asc')
+        // ->orderBy('uk.id','asc')
         ->orderBy('p.nama_depan','asc')
         ->get();
 
