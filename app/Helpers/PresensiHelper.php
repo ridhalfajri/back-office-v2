@@ -173,7 +173,7 @@ class PresensiHelper {
                                 }else
                                 {
                                     $blnSavePresensi = true;
-                                    //Jika data DB presensi tidak ada maka check apakah tanggal presensi yang baru apakah hari sabtu/minggu
+                                    //Jika data DB presensi tidak ada maka check apakah tanggal presensi yang baru hari sabtu/minggu
                                     if($dayOfWeekIndex>5){
                                         //Ubah tipe presensi menjadi jam masuk jika hari sabtu/minggu karena jam lembur tidak berdasarkan pada jam kerja normal
                                         $typePresensi = true;
@@ -309,12 +309,16 @@ class PresensiHelper {
         $todayYear = now()->format('Y');
         $todayMonth = now()->format('m');
 
-        $inOut = DB::connection('adms')->table('checkinout')
-            //->whereDate('checktime', $todayDate)
-            ->whereYear('checktime','=',$todayYear)
-            ->whereMonth('checktime','=',$todayMonth)
-            ->where('Reserved', '0')
-            ->orderBy('checktime')
+        $inOut = DB::connection('adms')
+            ->table('checkinout')
+            ->join('userinfo', 'checkinout.userid', '=', 'userinfo.userid')
+            ->select('checkinout.id as id', 'checkinout.userid as userid', 'checkinout.checktime as checktime', 'checkinout.Reserved as Reserved', DB::raw('CAST(userinfo.badgenumber AS UNSIGNED) AS badgenumber'))
+            // ->whereDate('checkinout.checktime', $todayDate)
+            ->whereYear('checkinout.checktime', '=', $todayYear)
+            ->whereMonth('checkinout.checktime', '=', $todayMonth)
+            ->where('checkinout.Reserved', '0')
+            ->orderBy('checkinout.checktime')
+            ->limit(50)
             ->get();
 
         self::SaveInfo('Get data presensi adms: '. $inOut->count() . ' record');
@@ -322,7 +326,8 @@ class PresensiHelper {
         $jamKerja = PreJamKerja::Where('is_active', 'Y')->first();
 
         foreach ($inOut as $row) {
-            //echo "ID: " . $row->id . ", userId: " . $row->userid . ", tanggal: " . $row->checktime . "\n";
+            // echo "ID: " . $row->id . ", noEnroll: " . $row->badgenumber . ", tanggal: " . $row->checktime . "\n";
+
             $dateTime = $row->checktime;
 
             $tglPresensi = Carbon::parse($dateTime)->format('Y-m-d');
@@ -491,7 +496,7 @@ class PresensiHelper {
                                     $presensi->status_kehadiran = 'HADIR';
                                 }
                                 $presensi->save();
-                                self::SaveInfo('New Presensi, No_Enroll:'. $presensi->no_enroll . '|' . $presensi->tanggal_presensi .'|'. $jamPresensi);
+                                self::SaveInfo('New Presensi, No_Enroll:'. $presensi->no_enroll . '|' . $presensi->nip . '|' . $presensi->nama_belakang . '|' . $presensi->tanggal_presensi .'|'. $jamPresensi);
                                 self::UpdateAdms($row->id);
                                 $OK++;
 
