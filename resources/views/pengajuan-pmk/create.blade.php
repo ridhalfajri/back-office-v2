@@ -10,7 +10,7 @@
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="{{ route('dashboard') }}"><i class="fa fa-home"></i></a></li>
-            <li class="breadcrumb-item"><a href="{{ route('pengajuan-pmk.index') }}">Pengajuan Tambahan Masa Kerja</a>
+            <li class="breadcrumb-item"><a href="{{ route('pengajuan-pmk.index') }}">Pengajuan Peninjauan Masa Kerja</a>
             </li>
             <li class="breadcrumb-item active" aria-current="page">{{ $title }}</li>
         </ol>
@@ -87,6 +87,17 @@
                                     <em>Silakan upload file pengajuan pmk (rar/zip max 50Mb)</em>
                                     <br>
                                     <em>Format nama file: Pengajuan-PMK_'nama'_'nip'_'unit kerja'</em>
+                                    <br>
+                                    <br>
+                                    <em>Berkas yang dikumpulkan:</em>
+                                    <br><em> 1. SK PNS</em>
+                                    <br><em> 2. SK Pangkat Terakhir</em>
+                                    <br><em> 3. SK Pengangkatan Kerja (Kontrak Kerja )</em>
+                                    <br><em> 4. Surat Keterangan Kerja (Paklaring)</em>
+                                    <br><em> 5. Slip Gaji Terakhir Tempat Bekerja</em>
+                                    <br><em> 6. Ijazah dan Transkrip Nilai</em>
+                                    <br><em> 7. Kartu Pegawai (Kartu ASN Virtual)</em>
+                                    <br><em> 8. Nota Dinas Usulan dari Unit Kerja</em>
                                 </div>
 
                                 <div class="form-group @error('keterangan')has-error @enderror">

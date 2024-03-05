@@ -138,11 +138,14 @@ class PegawaiRiwayatGajiplusController extends Controller
                         ;
                 })
                 ->where('status_dinas', 1)
+                ->whereIn('jenis_pegawai_id', array(1, 21))
                 ->whereNull('tanggal_berhenti')
                 ->whereNull('tanggal_wafat')
                 //untuk test, data pegawai_riwayat_golongan harus ada!
-                ->where('p.id', '=', 498)
+                //->where('p.id', '=', 498)
                 ->get();
+
+                //dd($listPegawai);
 
             //cek list ada atau tidak
             if ($listPegawai->isNotEmpty()) {
@@ -216,14 +219,9 @@ class PegawaiRiwayatGajiplusController extends Controller
 
                     $TOTAL_GAJIPLUS = $NOMINAL_GAJI_POKOK + $TUNJANGAN_PASANGAN + $TUNJANGAN_ANAK + $TUNJANGAN_JABATAN + $TUNJANGAN_KINERJA + $TUNJANGAN_BERAS;
 
-                    //cek ke tabel pegawai_riwayat_umak ada data tidak
-                    $cekData = null;
+                    //cek dia pegawai instansi lain yang diperbantukan ke bsn
+                    //pak minan
 
-                    $cekData = DB::table('pegawai_riwayat_gajiplus')
-                        ->select('*')
-                        ->where('pegawai_id', '=', $pegawai->id)
-                        ->where('tahun', '=', $periode)
-                        ->get();
 
                     //cek dia CLTN tidak
                     $cekCltn = PegawaiCuti::where('pegawai_id', '=', $pegawai->id)
@@ -233,23 +231,116 @@ class PegawaiRiwayatGajiplusController extends Controller
                         ->where('status_pengajuan_cuti_id', '=', 3)
                         ->first();
 
+                    if ($cekCltn != null) {
+                        $NOMINAL_GAJI_POKOK = 0;
+                        $TUNJANGAN_PASANGAN = 0;
+                        $TUNJANGAN_ANAK = 0;
+                        $TUNJANGAN_JABATAN = 0;
+                        $TUNJANGAN_KINERJA = 0;
+                        $TUNJANGAN_BERAS = 0;
+
+                        $TOTAL_GAJIPLUS = 0;
+                    }
+
+                    //cek ke tabel pegawai_riwayat_umak ada data tidak
+                    $cekData = null;
+
+                    $cekData = DB::table('pegawai_riwayat_gajiplus')
+                        ->select('*')
+                        ->where('pegawai_id', '=', $pegawai->id)
+                        ->where('tahun', '=', $periode)
+                        ->get();
+
                     if ($cekData->isNotEmpty()) {
                         //update
-                        if ($cekCltn != null) {
-                            DB::table('pegawai_riwayat_gajiplus')
-                            ->where('pegawai_id', $pegawai->id)
-                            ->where('tahun', $periode)
-                            ->update([
-                                'nominal_gaji_pokok' => 0,
-                                'tunjangan_beras' => 0,
-                                'tunjangan_pasangan' => 0,
-                                'tunjangan_anak' => 0,
-                                'tunjangan_jabatan' => 0,
-                                'tunjangan_kinerja' => 0,
-                                'total_gajiplus' => 0,
-                                'updated_at' => now(),
-                            ]);
-                        } else {
+                        DB::table('pegawai_riwayat_gajiplus')
+                        ->where('pegawai_id', $pegawai->id)
+                        ->where('tahun', $periode)
+                        ->update([
+                            'nominal_gaji_pokok' => $NOMINAL_GAJI_POKOK,
+                            'tunjangan_beras' => $TUNJANGAN_BERAS,
+                            'tunjangan_pasangan' => $TUNJANGAN_PASANGAN,
+                            'tunjangan_anak' => $TUNJANGAN_ANAK,
+                            'tunjangan_jabatan' => $TUNJANGAN_JABATAN,
+                            'tunjangan_kinerja' => $TUNJANGAN_KINERJA,
+                            'total_gajiplus' => $TOTAL_GAJIPLUS,
+                            'updated_at' => now(),
+                        ]);
+                    } else {
+                        //insert
+                        DB::table('pegawai_riwayat_gajiplus')->insert([
+                            'pegawai_id' => $pegawai->id,
+                            'tahun' => $periode,
+                            'nominal_gaji_pokok' => $NOMINAL_GAJI_POKOK,
+                            'tunjangan_beras' => $TUNJANGAN_BERAS,
+                            'tunjangan_pasangan' => $TUNJANGAN_PASANGAN,
+                            'tunjangan_anak' => $TUNJANGAN_ANAK,
+                            'tunjangan_jabatan' => $TUNJANGAN_JABATAN,
+                            'tunjangan_kinerja' => $TUNJANGAN_KINERJA,
+                            'total_gajiplus' => $TOTAL_GAJIPLUS,
+                            'created_at' => now(),
+                        ]);
+                    }
+                }
+
+                //untuk pegawai BSN yang Diperbantukan di Instansi Lain
+                //looping data pegawai
+                $listPegawai2 = DB::table('pegawai as p')
+                ->select('p.*')
+                ->leftJoin('status_pegawai as sp', function ($join) {
+                    $join->on('sp.id', '=', 'p.status_pegawai_id')
+                        ->whereIn('sp.nama', array('PNS', 'CPNS'))
+                        ->where('sp.is_active','Y')
+                        ;
+                })
+                ->where('status_dinas', 1)
+                ->where('jenis_pegawai_id', '=', 20)
+                ->whereNull('tanggal_berhenti')
+                ->whereNull('tanggal_wafat')
+                //untuk test, data pegawai_riwayat_golongan harus ada!
+                //->where('p.id', '=', 498)
+                ->get();
+
+                //cek list ada atau tidak
+                if ($listPegawai2->isNotEmpty()) {
+                    foreach ($listPegawai2 as $pegawai) {
+                        $gaji = PegawaiTmtGaji::where('pegawai_id', $pegawai->id)->where('is_active', 1)->first();
+                        $NOMINAL_GAJI_POKOK = $gaji->gaji->nominal;
+
+                        //* TUNJANGAN PASANGAN
+                        $pasangan = PegawaiSuamiIstri::where('pegawai_id', $pegawai->id)->where('status_tunjangan', true)->first();
+                        $TUNJANGAN_PASANGAN = $this->_tunjangan_pasangan($pegawai, $NOMINAL_GAJI_POKOK, $pasangan);
+
+                        //* TUNJANGAN ANAK
+                        $count_anak = PegawaiAnak::where('pegawai_id', $pegawai->id)->where('status_tunjangan', 1)->count();
+                        $TUNJANGAN_ANAK = $this->_tunjangan_anak($NOMINAL_GAJI_POKOK, $count_anak);
+                    
+                        //*TUNJANGAN BERAS
+                        $TUNJANGAN_BERAS = $this->_tunjangan_beras($pasangan, $count_anak);
+
+                        //cek aturan persentase tukin, gaji pokok dan tunjangan yg lain
+                        $cekAturan = AturanThrGajiplus::where('is_active', 'Y')->first();
+
+                        if ($cekAturan != null) {
+                            $NOMINAL_GAJI_POKOK = ($cekAturan->persentase_lainnya / 100) * $NOMINAL_GAJI_POKOK;
+                            $TUNJANGAN_PASANGAN = ($cekAturan->persentase_lainnya / 100) * $TUNJANGAN_PASANGAN;
+                            $TUNJANGAN_ANAK = ($cekAturan->persentase_lainnya / 100) * $TUNJANGAN_ANAK;
+                            $TUNJANGAN_BERAS = ($cekAturan->persentase_lainnya / 100) * $TUNJANGAN_BERAS;
+                        }
+
+                        $TOTAL_GAJIPLUS = $NOMINAL_GAJI_POKOK + $TUNJANGAN_PASANGAN + $TUNJANGAN_ANAK + $TUNJANGAN_BERAS;
+
+                        //cek ke tabel pegawai_riwayat_umak ada data tidak
+                        $cekData = null;
+
+                        $cekData = DB::table('pegawai_riwayat_gajiplus')
+                            ->select('*')
+                            ->where('pegawai_id', '=', $pegawai->id)
+                            ->where('tahun', '=', $periode)
+                            ->get();
+
+                        if ($cekData->isNotEmpty()) {
+                            //update
                             DB::table('pegawai_riwayat_gajiplus')
                             ->where('pegawai_id', $pegawai->id)
                             ->where('tahun', $periode)
@@ -258,28 +349,13 @@ class PegawaiRiwayatGajiplusController extends Controller
                                 'tunjangan_beras' => $TUNJANGAN_BERAS,
                                 'tunjangan_pasangan' => $TUNJANGAN_PASANGAN,
                                 'tunjangan_anak' => $TUNJANGAN_ANAK,
-                                'tunjangan_jabatan' => $TUNJANGAN_JABATAN,
-                                'tunjangan_kinerja' => $TUNJANGAN_KINERJA,
+                                'tunjangan_jabatan' => 0,
+                                'tunjangan_kinerja' => 0,
                                 'total_gajiplus' => $TOTAL_GAJIPLUS,
                                 'updated_at' => now(),
                             ]);
-                        }
-                    } else {
-                        //insert
-                        if ($cekCltn != null) {
-                            DB::table('pegawai_riwayat_gajiplus')->insert([
-                                'pegawai_id' => $pegawai->id,
-                                'tahun' => $periode,
-                                'nominal_gaji_pokok' => 0,
-                                'tunjangan_beras' => 0,
-                                'tunjangan_pasangan' => 0,
-                                'tunjangan_anak' => 0,
-                                'tunjangan_jabatan' => 0,
-                                'tunjangan_kinerja' => 0,
-                                'total_gajiplus' => 0,
-                                'created_at' => now(),
-                            ]);
                         } else {
+                            //insert
                             DB::table('pegawai_riwayat_gajiplus')->insert([
                                 'pegawai_id' => $pegawai->id,
                                 'tahun' => $periode,
@@ -287,14 +363,15 @@ class PegawaiRiwayatGajiplusController extends Controller
                                 'tunjangan_beras' => $TUNJANGAN_BERAS,
                                 'tunjangan_pasangan' => $TUNJANGAN_PASANGAN,
                                 'tunjangan_anak' => $TUNJANGAN_ANAK,
-                                'tunjangan_jabatan' => $TUNJANGAN_JABATAN,
-                                'tunjangan_kinerja' => $TUNJANGAN_KINERJA,
+                                'tunjangan_jabatan' => 0,
+                                'tunjangan_kinerja' => 0,
                                 'total_gajiplus' => $TOTAL_GAJIPLUS,
                                 'created_at' => now(),
                             ]);
                         }
                     }
                 }
+
             } else {
                 // session()->flash('message', 'Data pegawai tidak ada untuk memproses kalkulasi uang makan!');
                 // return redirect()->back();

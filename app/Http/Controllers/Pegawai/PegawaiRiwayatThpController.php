@@ -281,7 +281,7 @@ class PegawaiRiwayatThpController extends Controller
         if ($cek_tukin != 0) {
             return response()->json(['errors' => ['exists' => 'Tukin pada bulan ' . Carbon::parse($waktu)->translatedFormat('F') . ' sudah ada']]);
         }
-//        try {
+        try {
             //validasi tanggal awal 21 dan akhir 20
             $tglAwal = date('d', strtotime($tanggal_mulai));
             $tglAkhir = date('d', strtotime($tanggal_akhir));
@@ -299,7 +299,7 @@ class PegawaiRiwayatThpController extends Controller
                 })
                 ->whereNull('pegawai.tanggal_berhenti')
                 ->whereNull('pegawai.tanggal_wafat')
-                ->where('pegawai.id', 492)
+                //->where('pegawai.id', 492)
                 ->get();
             // $all_pegawai = Pegawai::where('status_dinas', 1)->get();
             DB::beginTransaction();
@@ -421,6 +421,11 @@ class PegawaiRiwayatThpController extends Controller
                 $SUM_POTONGAN = $POTONGAN_BPJS_LAINNYA + $POTONGAN_BPJS + $POTONGAN_IWP + $POTONGAN_PAJAK + $POTONGAN_TAPERA + $POTONGAN_TUKIN;
 
                 $TOTAL_THP = $SUM_THP - $SUM_POTONGAN;
+
+                //cek dia pegawai instansi lain yang diperbantukan ke bsn
+                //pak minan
+
+
                 $waktu = date('Y-m-d', strtotime($tanggal_akhir . ' +1 month'));
                 $BULAN = Carbon::parse($waktu)->translatedFormat('m');
                 $TAHUN = Carbon::parse($waktu)->translatedFormat('Y');
@@ -472,12 +477,104 @@ class PegawaiRiwayatThpController extends Controller
                 $riwayat_thp->bulan = $BULAN;
                 $riwayat_thp->save();
             }
+
+            //untuk pegawai BSN yang Diperbantukan di Instansi Lain
+            //looping data pegawai
+            $listPegawai2 = DB::table('pegawai as p')
+            ->select('p.*')
+            ->leftJoin('status_pegawai as sp', function ($join) {
+                $join->on('sp.id', '=', 'p.status_pegawai_id')
+                    ->whereIn('sp.nama', array('PNS', 'CPNS'))
+                    ->where('sp.is_active','Y')
+                    ;
+            })
+            ->where('status_dinas', 1)
+            ->where('jenis_pegawai_id', '=', 20)
+            ->whereNull('tanggal_berhenti')
+            ->whereNull('tanggal_wafat')
+            //->where('p.id', '=', 498)
+            ->get();
+
+            //cek list ada atau tidak
+            if ($listPegawai2->isNotEmpty()) {
+                foreach ($listPegawai2 as $pegawai) {
+                    //*NOMINAL GAJI POKOK
+                    $gaji = PegawaiTmtGaji::where('pegawai_id', $pegawai->id)->where('is_active', 1)->first();
+                    $NOMINAL_GAJI_POKOK = $gaji->gaji->nominal;
+
+                    //* TUNJANGAN PASANGAN
+                    $pasangan = PegawaiSuamiIstri::where('pegawai_id', $pegawai->id)->where('status_tunjangan', true)->first();
+                    $TUNJANGAN_PASANGAN = $this->_tunjangan_pasangan($pegawai, $NOMINAL_GAJI_POKOK, $pasangan);
+
+                    //* TUNJANGAN ANAK
+                    $count_anak = PegawaiAnak::where('pegawai_id', $pegawai->id)->where('status_tunjangan', 1)->count();
+                    $TUNJANGAN_ANAK = $this->_tunjangan_anak($NOMINAL_GAJI_POKOK, $count_anak);
+                    
+                    //*TUNJANGAN BERAS
+                    $TUNJANGAN_BERAS = $this->_tunjangan_beras($pasangan, $count_anak);
+                    
+                    $SUM_THP = $NOMINAL_GAJI_POKOK + $TUNJANGAN_PASANGAN + $TUNJANGAN_ANAK + $TUNJANGAN_BERAS;
+
+                    $POTONGAN_BPJS = 0.01 * $SUM_THP;
+                    
+                    $POTONGAN_IWP = 0.1 * $NOMINAL_GAJI_POKOK;
+
+                    $bpjs_lainnya = PegawaiBpjsLainnya::where('pegawai_id', $pegawai->id)
+                    ->where('status', '=', 3)
+                    ->select(
+                        DB::raw('SUM(pegawai_bpjs_lainnya.total_mertua) as total_mertua'),
+                        DB::raw('SUM(pegawai_bpjs_lainnya.total_orang_tua) as total_orang_tua'),
+                        DB::raw('SUM(pegawai_bpjs_lainnya.total_kelebihan_anak) as total_kelebihan_anak')
+                    )
+                    ->first();
+                    //dikomen indrawan dulu
+                    // $bpjs_lainnya = PegawaiBpjsLainnya::where('pegawai_id', $pegawai->id)
+                    //     ->where('is_active', true)
+                    //     ->first();
+                    if ($bpjs_lainnya != null) {
+                        $count_bpjs_lainnya = $bpjs_lainnya->total_mertua + $bpjs_lainnya->total_orang_tua + $bpjs_lainnya->total_kelebihan_anak;
+                        $POTONGAN_BPJS_LAINNYA = $count_bpjs_lainnya * 0.01 * $SUM_THP;
+                    } else {
+                        $POTONGAN_BPJS_LAINNYA = 0;
+                    }
+
+                    $SUM_POTONGAN = $POTONGAN_BPJS_LAINNYA + $POTONGAN_BPJS + $POTONGAN_IWP;
+                    
+                    $TOTAL_THP = $SUM_THP - $SUM_POTONGAN;
+                    
+                    $waktu = date('Y-m-d', strtotime($tanggal_akhir . ' +1 month'));
+                    $BULAN = Carbon::parse($waktu)->translatedFormat('m');
+                    $TAHUN = Carbon::parse($waktu)->translatedFormat('Y');
+                    
+                    $riwayat_thp = new PegawaiRiwayatThp();
+                    $riwayat_thp->nominal_gaji_pokok = $NOMINAL_GAJI_POKOK;
+                    $riwayat_thp->tunjangan_pasangan = $TUNJANGAN_PASANGAN;
+                    $riwayat_thp->tunjangan_anak = $TUNJANGAN_ANAK;
+                    $riwayat_thp->tunjangan_jabatan = 0;
+                    $riwayat_thp->tunjangan_kinerja = 0;
+                    $riwayat_thp->tunjangan_pajak = 0;
+                    $riwayat_thp->tunjangan_beras = $TUNJANGAN_BERAS;
+                    $riwayat_thp->potongan_bpjs_lainnya = $POTONGAN_BPJS_LAINNYA;
+                    $riwayat_thp->potongan_bpjs = $POTONGAN_BPJS;
+                    $riwayat_thp->potongan_iwp = $POTONGAN_IWP;
+                    $riwayat_thp->potongan_tukin = 0;
+                    $riwayat_thp->potongan_pajak = 0;
+                    $riwayat_thp->potongan_tapera = 0;
+                    $riwayat_thp->potongan_simpanan_wajib = 0;
+                    $riwayat_thp->total_thp = $TOTAL_THP;
+                    $riwayat_thp->pegawai_id = $pegawai->id;
+                    $riwayat_thp->tahun = $TAHUN;
+                    $riwayat_thp->bulan = $BULAN;
+                    $riwayat_thp->save();
+                }
+            }
+
             DB::commit();
             return response()->json(['success' => 'Sukses Generate Tukin']);
-//        } catch (\Throwable $th) {
-//            DB::rollBack();
-//            return response()->json(['errors' => ['connection' => 'Generate Tukin Gagal Harap Ulangi']]);
-//        }
+       } catch (\Throwable $th) {
+           DB::rollBack();
+           return response()->json(['errors' => ['connection' => 'Generate Tukin Gagal Harap Ulangi']]);
+       }
         // $all_pegawai = Pegawai::where('status_dinas', 1)->get();
 
 

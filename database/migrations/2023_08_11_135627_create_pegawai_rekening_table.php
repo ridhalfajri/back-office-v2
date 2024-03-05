@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('pegawai_id');
             $table->unsignedInteger('bank_id');
+            $table->string('no_rekening', 100)->nullable(true);
+            $table->enum('tipe_rekening',['Gaji','Tukin','Umak'])->nullable(false);
             $table->timestamps();
             $table->foreign('pegawai_id')->references('id')->on('pegawai')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('bank_id')->references('id')->on('bank')->onUpdate('cascade')->onDelete('cascade');

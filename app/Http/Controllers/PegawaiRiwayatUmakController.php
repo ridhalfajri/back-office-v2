@@ -248,6 +248,7 @@ class PegawaiRiwayatUmakController extends Controller
                         ;
                 })
                 ->where('status_dinas', 1)
+                ->whereIn('jenis_pegawai_id', array(1, 21))
                 ->whereNull('tanggal_berhenti')
                 ->whereNull('tanggal_wafat')
                 //untuk test, data pegawai_riwayat_golongan harus ada!

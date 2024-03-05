@@ -92,6 +92,7 @@
                                     <br>
                                     <em>Format nama file: Pengajuan-BPJS-Tambahan_'nama'_'nip'_'unit kerja'</em>
                                     <br>
+                                    <br>
                                     <em>Note: Tambahan 1 orang anggota keluarga lain akan ada potongan 1% dari THP</em>
                                 </div>
 
