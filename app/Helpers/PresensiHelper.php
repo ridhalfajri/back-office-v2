@@ -670,6 +670,8 @@ class PresensiHelper {
                     $kurangSecondAkhir = 0;
                     $kelebihanJamKerja = 0;
 
+                    $JumlahJamTM = 0; // Terlambat Masuk
+                    $JumlahJamPC = 0; // Pulang Cepat
                     //===================================================================================
                     //Jika Ijin datang terlambat
                     //===================================================================================
@@ -713,6 +715,9 @@ class PresensiHelper {
                         $JamPulangMinimal = Carbon::parse($JamPulangMinimal)->format('H:i:s');
                     }
 
+                    if ($kurangJamKerja>0){
+                        $JumlahJamTM = $kurangJamKerja;
+                    }
                     //===================================================================================
                     //Ijin Pulang Awal
                     //===================================================================================
@@ -734,6 +739,9 @@ class PresensiHelper {
                         elseif (strtotime($jamPulang)>strtotime('12:00:00') && strtotime($jamPulang)>strtotime('13:00:00') ){
                             $JamIstirahat = self::get_Second_Diff('13:00:00',$jamPulang);
                         }
+
+
+                        $JumlahJamPC = self::get_Second_Diff($JamPulangMinimal,$jamPulang);
 
                         $kurangJamKerja += self::get_Second_Diff($JamPulangMinimal,$jamPulang);
 
