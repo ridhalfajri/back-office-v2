@@ -216,11 +216,18 @@ class PegawaiRiwayatThrController extends Controller
                         $TUNJANGAN_BERAS = ($cekAturan->persentase_lainnya / 100) * $TUNJANGAN_BERAS;
                     }
 
-                    $TOTAL_THR = $NOMINAL_GAJI_POKOK + $TUNJANGAN_PASANGAN + $TUNJANGAN_ANAK + $TUNJANGAN_JABATAN + $TUNJANGAN_KINERJA + $TUNJANGAN_BERAS;
-
                     //cek dia pegawai instansi lain yang diperbantukan ke bsn
-                    //pak minan
-                    
+                    //ex: pak minan
+                    if($pegawai->jenis_pegawai_id == 20){
+                        //dapat tunkin dan tunjab
+                        //tdk dpt gapok, tunjangan pasangan, tunjangan anak, tunjangan beras
+                        $NOMINAL_GAJI_POKOK = 0;
+                        $TUNJANGAN_PASANGAN = 0;
+                        $TUNJANGAN_ANAK = 0;
+                        $TUNJANGAN_BERAS = 0;
+                    }
+
+                    $TOTAL_THR = $NOMINAL_GAJI_POKOK + $TUNJANGAN_PASANGAN + $TUNJANGAN_ANAK + $TUNJANGAN_JABATAN + $TUNJANGAN_KINERJA + $TUNJANGAN_BERAS;
 
                     //cek dia CLTN tidak
                     $cekCltn = PegawaiCuti::where('pegawai_id', '=', $pegawai->id)

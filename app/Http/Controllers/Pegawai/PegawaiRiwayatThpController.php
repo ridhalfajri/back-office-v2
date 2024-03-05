@@ -364,6 +364,19 @@ class PegawaiRiwayatThpController extends Controller
                     $TUNJANGAN_BERAS = $PERSEN_TUBEL * $TUNJANGAN_BERAS;
                 }
 
+                //cek dia pegawai instansi lain yang diperbantukan ke bsn
+                //ex: pak minan
+                if($pegawai->jenis_pegawai_id == 20){
+                    //dapat tunkin dan tunjab
+                    //tdk dpt gapok, tunjangan pasangan, tunjangan anak, tunjangan beras
+                    $NOMINAL_GAJI_POKOK = 0;
+                    $TUNJANGAN_PASANGAN = 0;
+                    $TUNJANGAN_ANAK = 0;
+                    $TUNJANGAN_BERAS = 0;
+
+                    $TUNJANGAN_PAJAK = 0;
+                }
+
                 $SUM_THP = $NOMINAL_GAJI_POKOK + $TUNJANGAN_PASANGAN + $TUNJANGAN_ANAK + $TUNJANGAN_JABATAN + $TUNJANGAN_KINERJA + $TUNJANGAN_BERAS + $TUNJANGAN_PAJAK;
 
                 //* POTONGAN BPJS LAINNYA
@@ -418,13 +431,21 @@ class PegawaiRiwayatThpController extends Controller
 
                 $POTONGAN_SIMPANAN_WAJIB = 0;
 
+                //cek dia pegawai instansi lain yang diperbantukan ke bsn
+                //ex: pak minan
+                if($pegawai->jenis_pegawai_id == 20){
+                    //dapat tunkin dan tunjab
+                    //tdk dpt gapok, tunjangan pasangan, tunjangan anak, tunjangan beras
+                    $POTONGAN_BPJS_LAINNYA = 0;
+                    $POTONGAN_BPJS = 0;
+                    $POTONGAN_IWP = 0;
+                    $POTONGAN_PAJAK = 0;
+                    $POTONGAN_TAPERA = 0;
+                }
+
                 $SUM_POTONGAN = $POTONGAN_BPJS_LAINNYA + $POTONGAN_BPJS + $POTONGAN_IWP + $POTONGAN_PAJAK + $POTONGAN_TAPERA + $POTONGAN_TUKIN;
 
                 $TOTAL_THP = $SUM_THP - $SUM_POTONGAN;
-
-                //cek dia pegawai instansi lain yang diperbantukan ke bsn
-                //pak minan
-
 
                 $waktu = date('Y-m-d', strtotime($tanggal_akhir . ' +1 month'));
                 $BULAN = Carbon::parse($waktu)->translatedFormat('m');
