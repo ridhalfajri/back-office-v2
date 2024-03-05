@@ -293,6 +293,7 @@ class PresensiHelper
             ->join('userinfo', 'checkinout.userid', '=', 'userinfo.userid')
             ->select('checkinout.id as id', 'checkinout.userid as userid', 'checkinout.checktime as checktime', 'checkinout.Reserved as Reserved', DB::raw('CAST(userinfo.badgenumber AS UNSIGNED) AS badgenumber'))
             // ->whereDate('checkinout.checktime', $todayDate)
+
             ->whereYear('checkinout.checktime', '=', $todayYear)
             ->whereMonth('checkinout.checktime', '=', $todayMonth)
             ->where('checkinout.Reserved', '0')
@@ -565,8 +566,10 @@ class PresensiHelper
                     if ($presensi->is_ijin == 1 || $presensi->is_ijin == 3) {
                         if ($presensi->is_ijin == 1) {
                             $presensi->keterangan = 'Ijin datang terlambat, Jam Pulang :' . $MasterJamPulang;
+                            $presensi->nominal_potongan = self::_hitung_potongan($pegawai->id,'','ITM');
                         } else {
                             $presensi->keterangan = 'Ijin datang terlambat dan Pulang Awal';
+                            $presensi->nominal_potongan = self::_hitung_potongan($pegawai->id,'','ITMIPC');
                         }
                     } else {
 
@@ -581,6 +584,8 @@ class PresensiHelper
                                 $JamPulangMinimal = Carbon::parse($JamPulangMinimal)->format('H:i:s');
                                 $kurangSecond = $kurangSecond - $totalFloatingSeconds;
                                 $presensi->keterangan = 'Datang terlambat, Jam Pulang :' . $JamPulangMinimal . ', Kekurangan Jam Kerja :' . self::get_ConvertDateTime($kurangSecond);
+                                $Terlambat = self::get_ConvertDateTime($kurangSecond);
+                                $presensi->nominal_potongan = self::_hitung_potongan($pegawai->id,$Terlambat,'TM');
                             } elseif ($kurangSecond == $totalFloatingSeconds) {
                                 $JamPulangMinimal = $MasterJamPulang->addSecond($totalFloatingSeconds);
                                 $JamPulangMinimal = Carbon::parse($JamPulangMinimal)->format('H:i:s');
@@ -614,7 +619,9 @@ class PresensiHelper
                     $kelebihanJamKerja = 0;
 
                     $JumlahJamTM = 0; // Terlambat Masuk
+                    $PotonganTM = 0;
                     $JumlahJamPC = 0; // Pulang Cepat
+                    $PotonganPC = 0;
                     //===================================================================================
                     //Jika Ijin datang terlambat
                     //===================================================================================
@@ -657,6 +664,12 @@ class PresensiHelper
 
                     if ($kurangJamKerja>0){
                         $JumlahJamTM = $kurangJamKerja;
+                        if ($presensi->is_ijin == 1 || $presensi->is_ijin == 3) {
+                            $PotonganTM = self::_hitung_potongan($pegawai->id,'','ITM'); // bisa ITM => Ijin Telat masuk
+                        }else{
+                            $Terlambat = self::get_ConvertDateTime($JumlahJamTM);
+                            $PotonganTM = self::_hitung_potongan($pegawai->id,$Terlambat,'TM');
+                        }
                     }
                     //===================================================================================
                     //Ijin Pulang Awal
@@ -680,9 +693,6 @@ class PresensiHelper
 
                         $JumlahJamPC = self::get_Second_Diff($JamPulangMinimal,$jamPulang);
 
-
-                        $JumlahJamPC = self::get_Second_Diff($JamPulangMinimal,$jamPulang);
-
                         $kurangJamKerja += self::get_Second_Diff($JamPulangMinimal,$jamPulang);
 
 
@@ -703,6 +713,19 @@ class PresensiHelper
                         //============================================================================================
                     }
 
+                    if ($JumlahJamPC>0){
+                        //====================================================================================
+                        // Jika ada Ijin datang terlmabat dan pulang awal maka potongan 0.5%
+                        //=====================================================================================
+                        //0= tidak ijin, 1=ijin datang_terlambat, 2=ijin pulang awal, 3=ijin datang terlambat dan pulang awal, 4 = tidak tercatat jam masuk, 5 = tidak tercatat jam pulang
+
+                        if ($presensi->is_ijin == 2 || $presensi->is_ijin == 3) {
+                            $PotonganPC = self::_hitung_potongan($pegawai->id,'','IPC');
+                        }else{
+                            $PulangAwal = self::get_ConvertDateTime($JumlahJamPC);
+                            $PotonganPC = self::_hitung_potongan($pegawai->id,$PulangAwal,'PC');
+                        }
+                    }
                     //====================================================================================
                     // Kalkulasi Jam Pulang dan kekurangan jam kerja
                     //====================================================================================
@@ -750,18 +773,7 @@ class PresensiHelper
                             $presensi->keterangan = $keterangan;
                         }
 
-                        //====================================================================================
-                        // Jika ada Ijin datang terlmabat dan pulang awal maka potongan sama dengan 0
-                        //=====================================================================================
-                        //0= tidak ijin, 1=ijin datang_terlambat, 2=ijin pulang awal, 3=ijin datang terlambat dan pulang awal, 4 = tidak tercatat jam masuk, 5 = tidak tercatat jam pulang
-                        if ($presensi->is_ijin == 3) {
-                            //check lagi disini jika ada ijin maka penghitungan potongan berubah
-                            $presensi->nominal_potongan = 0;
-                            $presensi->kekurangan_jam = "00:00:00";
-                            $presensi->keterangan = self::GetKeteranganIjin($presensi->is_ijin);
-                        } else {
-                            $presensi->nominal_potongan = self::_hitung_potongan($pegawai, $presensi->kekurangan_jam, $presensi->status_kehadiran);
-                        }
+                        $presensi->nominal_potongan = $PotonganTM + $PotonganPC;
                     }
 
                     if ($kelebihanJamKerja <= 0) {
@@ -780,7 +792,7 @@ class PresensiHelper
 
                     $presensi->kekurangan_jam = "07:30:00";
                     $presensi->kelebihan_jam = "00:00:00";
-                    $presensi->nominal_potongan = self::_hitung_potongan($pegawai, $presensi->kekurangan_jam, $presensi->status_kehadiran);
+                    $presensi->nominal_potongan = self::_hitung_potongan($pegawai->id, $presensi->kekurangan_jam, 'PC'); // Pulan Cepat atai TM lebih dari 7,5 Jam Potongannya sama
                     $presensi->keterangan = 'Tidak melakukan presensi Jam Masuk';
                     $presensi->save();
                 }
@@ -789,7 +801,7 @@ class PresensiHelper
             }
         } catch (\Throwable $th) {
 
-            Log::error("error Kalkulasi-Data-Presensi :" . $th->getMessage() . "\n=======================================");
+            Log::error("error Kalkulasi-Data-Presensi :" . $th->getMessage() . "\n=======================================" . '|' . $pegawai);
             return false;
         }
     }
@@ -933,6 +945,7 @@ class PresensiHelper
                         $presensi->save();
                     }
                 } catch (\Throwable $th) {
+                    Log::error("error fnc_CheckAbsenRoutine:" . $th->getMessage() . "\n=======================================" . '|' . $pegawaiItem);
                 }
             }
         } else {
@@ -956,29 +969,28 @@ class PresensiHelper
                                     if ((empty($jamMasuk) || $jamMasuk == "00:00:00") && (empty($jamPulang) && $jamPulang == "00:00:00")) {
                                         $presensi->kekurangan_jam = "07:30:00";
                                         $presensi->status_kehadiran = 'ALPHA';
-                                        $presensi->nominal_potongan = self::_hitung_potongan($pegawai, $presensi->kekurangan_jam, $presensi->status_kehadiran);
+                                        $presensi->nominal_potongan = self::_hitung_potongan($pegawai, $presensi->kekurangan_jam, 'ALPHA');
                                         $presensi->keterangan = 'Tidak melakukan presensi';
                                         $presensi->save();
                                     } elseif ((!empty($jamMasuk) || $jamMasuk != "00:00:00") && (empty($jamPulang) && $jamPulang == "00:00:00")) {
                                         $presensi->kekurangan_jam = "07:30:00";
                                         $presensi->status_kehadiran = 'HADIR';
-                                        $presensi->nominal_potongan = self::_hitung_potongan($pegawai, $presensi->kekurangan_jam, $presensi->status_kehadiran);
+                                        $presensi->nominal_potongan = self::_hitung_potongan($pegawai, $presensi->kekurangan_jam, 'TM');
                                         $presensi->keterangan = 'Tidak melakukan presensi jam pulang';
                                         $presensi->save();
                                     } elseif ((empty($jamMasuk) || $jamMasuk == "00:00:00") && (!empty($jamPulang) && $jamPulang != "00:00:00")) {
                                         $presensi->kekurangan_jam = "07:30:00";
                                         $presensi->status_kehadiran = 'HADIR';
-                                        $presensi->nominal_potongan = self::_hitung_potongan($pegawai, $presensi->kekurangan_jam, $presensi->status_kehadiran);
+                                        $presensi->nominal_potongan = self::_hitung_potongan($pegawai, $presensi->kekurangan_jam, 'PC');
                                         $presensi->keterangan = 'Tidak melakukan presensi jam masuk';
                                         $presensi->save();
                                     } else {
                                         //Jika jam masuk dan jam pulang tidak sama dengan kosong
-                                        $mpegawai = Pegawai::where('id', $pegawaiItem->id)->first();
-                                        $result = self::fncCalculatePresensi($mpegawai, $presensi);
+                                        $result = self::fncCalculatePresensi($pegawaiItem->id, $presensi);
                                     }
                                 }
                             } catch (\Throwable $th) {
-                                //throw $th;
+                                Log::error("error fnc_CheckAbsenRoutine:" . $th->getMessage() . "\n=======================================" . '|' . $pegawaiItem);
                             }
                         }
                     } else {
@@ -1039,6 +1051,7 @@ class PresensiHelper
                         $presensi->save();
                     }
                 } catch (\Throwable $th) {
+                    Log::error("error fnc_CheckAbsenRoutine:" . $th->getMessage() . "\n=======================================" . '|' . $pegawaiItem);
                 }
             }
         }
