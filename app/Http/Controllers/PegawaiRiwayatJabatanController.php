@@ -80,63 +80,137 @@ class PegawaiRiwayatJabatanController extends Controller
                 }
             });
         } else {
-            $pegawai_bersangkutan = TxHirarkiPegawai::where('pegawai_id', $request->pegawai_id)->first();
-            if ($pegawai_bersangkutan == null) {
-                $pegawai_bersangkutan = new TxHirarkiPegawai();
-                $pegawai_bersangkutan->pegawai_id = $request->pegawai_id;
-            }
+                $parent_unit_kerja = HirarkiUnitKerja::where('child_unit_kerja_id', $request->unit_kerja)->first();
+                // CARI PIMPINAN ID DARI PARENT UNIT KERJA TERSEBUT
+                $pimpinan_parent = $this->get_pimpinan(1, $parent_unit_kerja);
+            if($request->is_plt){
+                if($pimpinan_parent != null){
+                    $pegawai_bersangkutan = TxHirarkiPegawai::where('unit_kerja_id',$request->unit_kerja)->where('pegawai_pimpinan_id',$pimpinan_parent->pegawai_id)->first();
+                    $pegawai_bersangkutan->pegawai_id = $request->pegawai_id;
+                }else{
+                    $pegawai_bersangkutan = new TxHirarkiPegawai();
+                    $pegawai_bersangkutan->pegawai_id = $request->pegawai_id;
+                }
+            }else{
+                $pegawai_bersangkutan = TxHirarkiPegawai::where('pegawai_id', $request->pegawai_id)->first();
+                if ($pegawai_bersangkutan == null) {
+                    $pegawai_bersangkutan = new TxHirarkiPegawai();
+                    $pegawai_bersangkutan->pegawai_id = $request->pegawai_id;
+                }
 
-            if ($request->tx_tipe_jabatan_id == 1) {
+            }
+            //UPDATE DATA PEGAWAI BERSANGKUTAN
+            if($request->unit_kerja == 1 && $pimpinan_parent == null){
+                $pegawai_bersangkutan->pegawai_pimpinan_id = $request->pegawai_id;
+            }else{
+            $pegawai_bersangkutan->pegawai_pimpinan_id = $pimpinan_parent->pegawai_id;
+            }
+            $pegawai_bersangkutan->unit_kerja_id = $request->unit_kerja;
+
+
+
+            if($request->unit_kerja == 1){
+                //CARI KA BSN SEKARANG
+                $parent_unit_kerja = HirarkiUnitKerja::where('child_unit_kerja_id', $request->unit_kerja)->first();
+                $ka_bsn = $this->get_pimpinan(1, $parent_unit_kerja );
+                //END CARI KA BSN SEKARANG
+                $tim = null;
+                if($ka_bsn != null){
+                    $ka_bsn->is_now = FALSE;
+                    $tim = TxHirarkiPegawai::where('pegawai_pimpinan_id', $ka_bsn->pegawai_id);
+                }else{
+                    //AMBIL PEGAWAI RIWAYAT JABATAN YANG LAMA YANG AKTIF
+                    if ($request->is_plt) {
+                        $jabatan_lama = PegawaiRiwayatJabatan::where('pegawai_id', $request->pegawai_id)->where('is_now', TRUE)->where('is_plt', TRUE)->first();
+                    } else {
+                        $jabatan_lama = PegawaiRiwayatJabatan::where('pegawai_id', $request->pegawai_id)->where('is_now', TRUE)->where('is_plt', FALSE)->first();
+                    }
+                }
+                //NON AKTIFKAN JABATAN LAMA
+                if ($jabatan_lama != null) {
+                    $jabatan_lama->is_now = FALSE;
+                }
+                // GET DATA TIM KA BSN
+                //SET DATA KA BSN BARU
+                $prj_kbsn = $this->save_pegawai_riwayat_jabatan($request);
+                // SAVE TRANSAKSI
+                DB::transaction(function () use ($pegawai_bersangkutan, $tim, $prj_kbsn, $request, $jabatan_lama) {
+                    if ($jabatan_lama != null) {
+                        $jabatan_lama->save();
+                    }
+                    $prj_kbsn->save();
+                    if ($pegawai_bersangkutan != null){
+                        $pegawai_bersangkutan->save();
+                    }
+                    if($tim != null){
+                        $tim->update(['pegawai_pimpinan_id' => $pegawai_bersangkutan->pegawai_id]);
+                    }
+                    if ($request->media_sk_jabatan) {
+                        $prj_kbsn->addMediaFromRequest('media_sk_jabatan')->toMediaCollection('media_sk_jabatan');
+                    }
+                });
+
+            } else if ($request->tx_tipe_jabatan_id == 1 && $request->unit_kerja != 1) {
                 //AMBIL PARENT DARI UNIT KERJA YANG DIINPUT
                 $parent_unit_kerja = HirarkiUnitKerja::where('child_unit_kerja_id', $request->unit_kerja)->first();
                 // CARI PIMPINAN ID DARI PARENT UNIT KERJA TERSEBUT
                 $pimpinan_parent = $this->get_pimpinan(1, $parent_unit_kerja);
-                //UPDATE DATA PEGAWAI BERSANGKUTAN
-                $pegawai_bersangkutan->pegawai_pimpinan_id = $pimpinan_parent->pegawai_id;
-                $pegawai_bersangkutan->unit_kerja_id = $request->unit_kerja;
+                if($pimpinan_parent == null){
+                    return response()->json(['errors' => ['data_pimpinan' => 'unit kerja belum mempunyai pimpinan, silahkan mengisi pimpinan terlebih dahulu']]);
+                }
+
 
                 //CARI PEGAWAI PIMPINAN LAMA
                 $pimpinan_lama = $this->get_pimpinan_lama($request->tx_tipe_jabatan_id, $request->unit_kerja);
-                if ($pimpinan_lama == null) {
-                    return response()->json(['errors' => ['data_pimpinan' => 'unit kerja belum mempunyai pimpinan, silahkan mengisi pimpinan terlebih dahulu']]);
+
+                //DEKLARASI VARIABLE pimpinan lama dan tim
+                $prj_pimpinan_lama = null;
+                $tim = null;
+
+                if ($pimpinan_lama != null) {
+                    //NON AKTIFKAN JABATAN PIMPINAN LAMA
+                    $prj_pimpinan_lama = PegawaiRiwayatJabatan::where('id', $pimpinan_lama->id_pegawai_riwayat_jabatan)->first();
+                    $prj_pimpinan_lama->is_now = FALSE;
+
+                    //update PIMPINAN ID SEMUA TIM
+                    $tim = TxHirarkiPegawai::where('pegawai_pimpinan_id', $pimpinan_lama->pegawai_id)->where('unit_kerja_id',$request->unit_kerja);
                 }
-                //NON AKTIFKAN JABATAN PIMPINAN LAMA
-                $prj_pimpinan_lama = PegawaiRiwayatJabatan::where('id', $pimpinan_lama->id_pegawai_riwayat_jabatan)->first();
-                $prj_pimpinan_lama->is_now = FALSE;
-
-                //update PIMPINAN ID SEMUA TIM
-                $tim = TxHirarkiPegawai::where('pegawai_pimpinan_id', $pimpinan_lama->pegawai_id);
-
                 //CREATE JABATAN BARU PADA TABEL PEGAWAI RIWAYAT JABATAN
                 $prj_baru = $this->save_pegawai_riwayat_jabatan($request);
 
                 //AMBIL PEGAWAI RIWAYAT JABATAN YANG LAMA YANG AKTIF
                 if ($request->is_plt) {
-                    $jabatan_lama = PegawaiRiwayatJabatan::where('pegawai_id', $pegawai_bersangkutan->pegawai_id)->where('is_now', TRUE)->where('is_plt', TRUE)->first();
+                    $jabatan_lama = PegawaiRiwayatJabatan::where('pegawai_id', $request->pegawai_id)->where('is_now', TRUE)->where('is_plt', TRUE)->first();
                 } else {
-                    $jabatan_lama = PegawaiRiwayatJabatan::where('pegawai_id', $pegawai_bersangkutan->pegawai_id)->where('is_now', TRUE)->where('is_plt', FALSE)->first();
+                    $jabatan_lama = PegawaiRiwayatJabatan::where('pegawai_id', $request->pegawai_id)->where('is_now', TRUE)->where('is_plt', FALSE)->first();
                 }
                 //NON AKTIFKAN JABATAN LAMA
                 if ($jabatan_lama != null) {
                     $jabatan_lama->is_now = FALSE;
                 }
 
-                try {
+//                try {
                     DB::transaction(function () use ($pegawai_bersangkutan, $tim, $prj_pimpinan_lama, $prj_baru, $request, $jabatan_lama) {
                         if ($jabatan_lama != null) {
                             $jabatan_lama->save();
                         }
                         $prj_baru->save();
+                        if ($prj_pimpinan_lama != null){
                         $prj_pimpinan_lama->save();
-                        $pegawai_bersangkutan->save();
+                        }
+                        if ($pegawai_bersangkutan != null){
+                            $pegawai_bersangkutan->save();
+                        }
+                        if($tim != null){
                         $tim->update(['pegawai_pimpinan_id' => $pegawai_bersangkutan->pegawai_id]);
+                        }
                         if ($request->media_sk_jabatan) {
                             $prj_baru->addMediaFromRequest('media_sk_jabatan')->toMediaCollection('media_sk_jabatan');
                         }
                     });
-                } catch (\Throwable $th) {
-                    return response()->json(['errors' => ['connection' => 'data gagal disimpan']]);
-                }
+//                } catch (\Throwable $th) {
+//                    return response()->json(['errors' => ['connection' => 'data gagal disimpan']]);
+//                }
             } else if ($request->tx_tipe_jabatan_id == 2 || $request->tx_tipe_jabatan_id == 5) {
                 //AMBIL PARENT DARI UNIT KERJA YANG DIINPUT
                 $parent_unit_kerja = HirarkiUnitKerja::where('child_unit_kerja_id', $request->unit_kerja)->first();
@@ -156,10 +230,6 @@ class PegawaiRiwayatJabatanController extends Controller
                 } else {
                     $prj_pimpinan_lama = NULL;
                 }
-
-                //UPDATE DATA PEGAWAI BERSANGKUTAN
-                $pegawai_bersangkutan->pegawai_pimpinan_id = $pimpinan_parent->pegawai_id;
-                $pegawai_bersangkutan->unit_kerja_id = $request->unit_kerja;
 
                 //update PIMPINAN ID SEMUA TIM
                 $tim = TxHirarkiPegawai::where('unit_kerja_id', $pegawai_bersangkutan->unit_kerja_id)
@@ -199,8 +269,11 @@ class PegawaiRiwayatJabatanController extends Controller
                 }
             } else if ($request->tx_tipe_jabatan_id == 6 || $request->tx_tipe_jabatan_id == 7) {
                 $unit_kerja_kabiro = PegawaiRiwayatJabatan::where('tx_tipe_jabatan_id', 5)->where('is_now', 1)->first();
+                $uk_eselon1 = UnitKerja::where('id',$request->unit_kerja)->first();
                 if ($request->unit_kerja == $unit_kerja_kabiro->jabatan_unit_kerja->hirarki_unit_kerja->child_unit_kerja_id || $request->tx_tipe_jabatan_id == 7) {
                     $pimpinan = $this->get_pimpinan_lama(5, $request->unit_kerja);
+                } else if ($uk_eselon1->jenis_unit_kerja_id == 2) {
+                    $pimpinan = $this->get_pimpinan_lama(1, $request->unit_kerja);
                 } else {
                     $pimpinan = $this->get_pimpinan_lama(2, $request->unit_kerja);
                 }
@@ -212,9 +285,6 @@ class PegawaiRiwayatJabatanController extends Controller
                 //CREATE JABATAN BARU PADA TABEL PEGAWAI RIWAYAT JABATAN
                 $prj_baru = $this->save_pegawai_riwayat_jabatan($request);
 
-
-                $pegawai_bersangkutan->pegawai_pimpinan_id = $pimpinan->pegawai_id;
-                $pegawai_bersangkutan->unit_kerja_id = $request->unit_kerja;
 
                 $jabatan_lama = PegawaiRiwayatJabatan::where('pegawai_id', $pegawai_bersangkutan->pegawai_id)->where('is_now', TRUE)->first();
                 if ($jabatan_lama != null) {

@@ -126,10 +126,9 @@ class Pegawai extends Model implements HasMedia
     }
     public function jabatan_sekarang()
     {
-        // $pegawai = PegawaiRiwayatJabatan::where('is_now', TRUE)->count();
-        // if ($pegawai > 1){
+        $pegawai = PegawaiRiwayatJabatan::where('is_now', TRUE)->count();
+        // if ($pegawai > 1) {
         //     return $this->hasOne(PegawaiRiwayatJabatan::class)->where('is_now', 1)->where('');
-
         // }
         return $this->hasOne(PegawaiRiwayatJabatan::class)->where('is_now', 1);
     }

@@ -68,6 +68,8 @@ use App\Http\Controllers\PesanRuangRapatController;
 */
 
 Route::get('/welcome', function () {
+    $xx = \Illuminate\Support\Facades\DB::connection()->getPdo();
+    dd($xx);
     return view('welcome');
 });
 
