@@ -322,7 +322,41 @@ class PegawaiRiwayatThrController extends Controller
                         $TUNJANGAN_BERAS = ($cekAturan->persentase_lainnya / 100) * $TUNJANGAN_BERAS;
                     }
 
+
                     $TOTAL_THR = $NOMINAL_GAJI_POKOK + $TUNJANGAN_PASANGAN + $TUNJANGAN_ANAK + $TUNJANGAN_BERAS;
+
+                    //cek dia pegawai instansi lain yang diperbantukan ke bsn
+                    //ex: pak minan
+                    if($pegawai->jenis_pegawai_id == 20){
+                        //dapat tunkin dan tunjab
+                        //tdk dpt gapok, tunjangan pasangan, tunjangan anak, tunjangan beras
+                        $NOMINAL_GAJI_POKOK = 0;
+                        $TUNJANGAN_PASANGAN = 0;
+                        $TUNJANGAN_ANAK = 0;
+                        $TUNJANGAN_BERAS = 0;
+                    }
+
+                    $TOTAL_THR = $NOMINAL_GAJI_POKOK + $TUNJANGAN_PASANGAN + $TUNJANGAN_ANAK + $TUNJANGAN_JABATAN + $TUNJANGAN_KINERJA + $TUNJANGAN_BERAS;
+
+                    //cek dia CLTN tidak
+                    $cekCltn = PegawaiCuti::where('pegawai_id', '=', $pegawai->id)
+                        ->whereDate('tanggal_awal_cuti', '<=', now()->toDateString())
+                        ->whereDate('tanggal_akhir_cuti', '>=', now()->toDateString())
+                        ->where('jenis_cuti_id', '=', 6)
+                        ->where('status_pengajuan_cuti_id', '=', 3)
+                        ->first();
+
+                    if ($cekCltn != null) {
+                        $NOMINAL_GAJI_POKOK = 0;
+                        $TUNJANGAN_PASANGAN = 0;
+                        $TUNJANGAN_ANAK = 0;
+                        $TUNJANGAN_JABATAN = 0;
+                        $TUNJANGAN_KINERJA = 0;
+                        $TUNJANGAN_BERAS = 0;
+
+                        $TOTAL_THR = 0;
+                    }
+
 
                     //cek ke tabel pegawai_riwayat_umak ada data tidak
                     $cekData = null;
