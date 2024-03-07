@@ -299,7 +299,7 @@ class PegawaiRiwayatThpController extends Controller
                 })
                 ->whereNull('pegawai.tanggal_berhenti')
                 ->whereNull('pegawai.tanggal_wafat')
-                //->where('pegawai.id', 492)
+                ->where('pegawai.id', 492)
                 ->get();
             // $all_pegawai = Pegawai::where('status_dinas', 1)->get();
             DB::beginTransaction();
@@ -530,14 +530,14 @@ class PegawaiRiwayatThpController extends Controller
                     //* TUNJANGAN ANAK
                     $count_anak = PegawaiAnak::where('pegawai_id', $pegawai->id)->where('status_tunjangan', 1)->count();
                     $TUNJANGAN_ANAK = $this->_tunjangan_anak($NOMINAL_GAJI_POKOK, $count_anak);
-                    
+
                     //*TUNJANGAN BERAS
                     $TUNJANGAN_BERAS = $this->_tunjangan_beras($pasangan, $count_anak);
-                    
+
                     $SUM_THP = $NOMINAL_GAJI_POKOK + $TUNJANGAN_PASANGAN + $TUNJANGAN_ANAK + $TUNJANGAN_BERAS;
 
                     $POTONGAN_BPJS = 0.01 * $SUM_THP;
-                    
+
                     $POTONGAN_IWP = 0.1 * $NOMINAL_GAJI_POKOK;
 
                     $bpjs_lainnya = PegawaiBpjsLainnya::where('pegawai_id', $pegawai->id)
@@ -560,13 +560,13 @@ class PegawaiRiwayatThpController extends Controller
                     }
 
                     $SUM_POTONGAN = $POTONGAN_BPJS_LAINNYA + $POTONGAN_BPJS + $POTONGAN_IWP;
-                    
+
                     $TOTAL_THP = $SUM_THP - $SUM_POTONGAN;
-                    
+
                     $waktu = date('Y-m-d', strtotime($tanggal_akhir . ' +1 month'));
                     $BULAN = Carbon::parse($waktu)->translatedFormat('m');
                     $TAHUN = Carbon::parse($waktu)->translatedFormat('Y');
-                    
+
                     $riwayat_thp = new PegawaiRiwayatThp();
                     $riwayat_thp->nominal_gaji_pokok = $NOMINAL_GAJI_POKOK;
                     $riwayat_thp->tunjangan_pasangan = $TUNJANGAN_PASANGAN;
