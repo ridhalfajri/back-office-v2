@@ -218,7 +218,7 @@ class PegawaiRiwayatThrController extends Controller
 
                     //cek dia pegawai instansi lain yang diperbantukan ke bsn
                     //ex: pak minan
-                    if($pegawai->jenis_pegawai_id == 20){
+                    if($pegawai->jenis_pegawai_id == 21){
                         //dapat tunkin dan tunjab
                         //tdk dpt gapok, tunjangan pasangan, tunjangan anak, tunjangan beras
                         $NOMINAL_GAJI_POKOK = 0;
@@ -356,7 +356,7 @@ class PegawaiRiwayatThrController extends Controller
                                 'tunjangan_anak' => $TUNJANGAN_ANAK,
                                 'tunjangan_jabatan' => 0,
                                 'tunjangan_kinerja' => 0,
-                                'total_gajiplus' => $TOTAL_THR,
+                                'total_thr' => $TOTAL_THR,
                                 'updated_at' => now(),
                             ]);
                         } else {
@@ -370,7 +370,7 @@ class PegawaiRiwayatThrController extends Controller
                                 'tunjangan_anak' => $TUNJANGAN_ANAK,
                                 'tunjangan_jabatan' => 0,
                                 'tunjangan_kinerja' => 0,
-                                'total_gajiplus' => $TOTAL_THR,
+                                'total_thr' => $TOTAL_THR,
                                 'created_at' => now(),
                             ]);
                         }
@@ -451,7 +451,12 @@ class PegawaiRiwayatThrController extends Controller
                 return $gaji->gaji->nominal_tunjangan_jabatan;
             } else {
                 $nominal = JabatanFungsional::select('nominal_tunjangan')->where('id', $jabatan->jabatan_unit_kerja->jabatan_tukin->jabatan_id)->first();
-                return $nominal->nominal_tunjangan;
+                
+                if($nominal == null){
+                    return 0;
+                } else {
+                    return $nominal->nominal_tunjangan;
+                }
             }
         } else if ($jabatan->jabatan_unit_kerja->jabatan_tukin->jenis_jabatan_id == 1) {
             //STRUKTURAL

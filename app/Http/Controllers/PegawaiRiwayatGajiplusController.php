@@ -219,7 +219,7 @@ class PegawaiRiwayatGajiplusController extends Controller
 
                     //cek dia pegawai instansi lain yang diperbantukan ke bsn
                     //ex: pak minan
-                    if($pegawai->jenis_pegawai_id == 20){
+                    if($pegawai->jenis_pegawai_id == 21){
                         //dapat tunkin dan tunjab
                         //tdk dpt gapok, tunjangan pasangan, tunjangan anak, tunjangan beras
                         $NOMINAL_GAJI_POKOK = 0;
@@ -453,7 +453,12 @@ class PegawaiRiwayatGajiplusController extends Controller
                 return $gaji->gaji->nominal_tunjangan_jabatan;
             } else {
                 $nominal = JabatanFungsional::select('nominal_tunjangan')->where('id', $jabatan->jabatan_unit_kerja->jabatan_tukin->jabatan_id)->first();
-                return $nominal->nominal_tunjangan;
+                
+                if($nominal == null){
+                    return 0;
+                } else {
+                    return $nominal->nominal_tunjangan;
+                }
             }
         } else if ($jabatan->jabatan_unit_kerja->jabatan_tukin->jenis_jabatan_id == 1) {
             //STRUKTURAL
