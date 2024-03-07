@@ -18,10 +18,10 @@
                 href="{{ route('riwayat-gajiplus.index') }}"><i class="fa fa-money"></i><span>Riwayat Gaji-13</span></a>
         </li>
 
-        <li
+        {{-- <li
             class="{{ request()->segment(2) == 'riwayat-jabatan' && request()->segment(1) == auth()->user()->pegawai_id ? 'active' : '' }}">
             <a href="{{ route('riwayat-jabatan.index') }}"><i class="icon-bar-chart"></i><span>Riwayat Jabatan</span></a>
-        </li>
+        </li> --}}
         <li
             class="{{ request()->segment(2) == 'riwayat_cuti' || request()->segment(2) == 'saldo_cuti' ? 'active' : '' }}">
             <a href="javascript:void(0)" class="has-arrow"><i class="icon-rocket"></i><span>Cuti</span></a>
@@ -178,6 +178,8 @@
             <li class="{{ Request::is('master/aturan-thr-gajiplus*') ? 'active' : '' }}"><a
                     href="{{ route('aturan-thr-gajiplus.index') }}"><i class="icon-envelope-letter"></i><span>Aturan THR dan
                         Gaji-13</span></a></li>
+            <li class="{{ Request::is('master/pegawai-rekening*') ? 'active' : '' }}"><a
+                href="{{ route('pegawai-rekening.index') }}"><i class="fa fa-money"></i><span>Rekening Pegawai</span></a></li>
 
             <li><a href="{{ route('gaji.index') }}"><i class="icon-social-dropbox"></i><span>Gaji Pegawai</span></a></li>
             <li><a href="{{ route('jabatan-tukin.index') }}"><i class="icon-equalizer"></i><span>Tunjangan
