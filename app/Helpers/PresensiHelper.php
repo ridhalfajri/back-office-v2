@@ -300,7 +300,7 @@ class PresensiHelper
             ->whereMonth('checkinout.checktime', '=', $todayMonth)
             ->where('checkinout.Reserved', '0')
             ->orderBy('checkinout.checktime')
-            ->limit(500)
+            ->limit(100)
             ->get();
 
         // dd($inOut);
