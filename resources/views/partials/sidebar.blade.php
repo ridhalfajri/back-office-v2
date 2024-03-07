@@ -178,8 +178,8 @@
             <li class="{{ Request::is('master/aturan-thr-gajiplus*') ? 'active' : '' }}"><a
                     href="{{ route('aturan-thr-gajiplus.index') }}"><i class="icon-envelope-letter"></i><span>Aturan THR dan
                         Gaji-13</span></a></li>
-            <li class="{{ Request::is('master/pegawai-rekening*') ? 'active' : '' }}"><a
-                href="{{ route('pegawai-rekening.index') }}"><i class="fa fa-money"></i><span>Rekening Pegawai</span></a></li>
+            {{-- <li class="{{ Request::is('master/pegawai-rekening*') ? 'active' : '' }}"><a
+                href="{{ route('pegawai-rekening.index') }}"><i class="fa fa-money"></i><span>Rekening Pegawai</span></a></li> --}}
 
             <li><a href="{{ route('gaji.index') }}"><i class="icon-social-dropbox"></i><span>Gaji Pegawai</span></a></li>
             <li><a href="{{ route('jabatan-tukin.index') }}"><i class="icon-equalizer"></i><span>Tunjangan
