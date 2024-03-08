@@ -80,7 +80,8 @@ class PegawaiRiwayatGajiplusController extends Controller
                 //->join('pegawai_riwayat_jabatan as prj', 'prj.pegawai_id', '=', 'pegawai_riwayat_umak.pegawai_id')
                 ->join('pegawai_riwayat_jabatan as prj', function ($join) {
                     $join->on('prj.pegawai_id', '=', 'pegawai_riwayat_gajiplus.pegawai_id')
-                        ->where('prj.is_now', '=', 1);
+                        ->where('prj.is_now', '=', 1)
+                        ->where('prj.is_plt', '=', 0);
                 })
                 ->join('jabatan_unit_kerja as juk', 'juk.id', '=', 'prj.jabatan_unit_kerja_id')
                 ->join('hirarki_unit_kerja as huk', 'huk.id', '=', 'juk.hirarki_unit_kerja_id')
@@ -92,7 +93,9 @@ class PegawaiRiwayatGajiplusController extends Controller
                 //
                 ->where('pegawai_riwayat_gajiplus.tahun', '=', $tahun)
                 ->orderBy('uk.id', 'asc')
-                ->orderBy('p.nama_depan', 'asc');
+                ->orderBy('p.nama_depan', 'asc')
+                ->orderBy('pegawai_riwayat_thr.tahun', 'desc')
+                ;
 
             if (null != $unitKerja || '' != $unitKerja) {
                 $data->where('uk.id', '=', $unitKerja);
