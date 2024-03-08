@@ -428,6 +428,10 @@
                     {
                         data: 'keterangan',
                         name: 'keterangan',
+                        className: 'text-left',
+                        render: function(data, type, row) {
+                            return '<p class="font-weight-bold text-dark">' + data + '</p>';
+                        }
                     },
                 ],
                 columnDefs: [{

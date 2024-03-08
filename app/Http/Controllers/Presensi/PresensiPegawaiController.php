@@ -148,6 +148,7 @@ class PresensiPegawaiController extends Controller
                             FROM db_backoffice.hirarki_unit_kerja a
                             INNER JOIN unit_kerja b ON a.parent_unit_kerja_id = b.id
                             INNER JOIN jenis_unit_kerja c ON c.id = b.jenis_unit_kerja_id) c'), 'a.id', '=', 'c.id')
+                    ->where('b.is_active','Y')
                     ->orderBy('b.nama', 'asc')
                     ->get();
         }
@@ -218,7 +219,6 @@ class PresensiPegawaiController extends Controller
 
             $data->orderBy('o.tanggal_presensi', 'asc')
             ;
-
 
             return Datatables::of($data)
             ->addColumn('no', '')

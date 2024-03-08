@@ -563,6 +563,7 @@ class PegawaiRiwayatThpController extends Controller
                 $POTONGAN_IWP = 0.1 * $NOMINAL_GAJI_POKOK;
 
                 $bpjs_lainnya = PegawaiBpjsLainnya::where('pegawai_id', $pegawai->id)
+
                     ->where('status', '=', 3)
                     ->select(
                         DB::raw('SUM(pegawai_bpjs_lainnya.total_mertua) as total_mertua'),
