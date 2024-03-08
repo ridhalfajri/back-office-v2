@@ -94,7 +94,7 @@ class PegawaiRiwayatGajiplusController extends Controller
                 ->where('pegawai_riwayat_gajiplus.tahun', '=', $tahun)
                 ->orderBy('uk.id', 'asc')
                 ->orderBy('p.nama_depan', 'asc')
-                ->orderBy('pegawai_riwayat_thr.tahun', 'desc')
+                ->orderBy('pegawai_riwayat_gajiplus.tahun', 'desc')
                 ;
 
             if (null != $unitKerja || '' != $unitKerja) {
