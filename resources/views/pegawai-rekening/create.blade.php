@@ -82,22 +82,16 @@
                                     <label>Tipe Rekening <span class="text-danger"><sup>*</sup></span></label>
                                     <select id="tipe_rek" name="tipe_rek" class="form-control">
                                         <option value="">--Pilih--</option>
-                                        @if (old('tipe_rek') == 'Gaji')
-                                            <option value="Gaji" selected>Gaji</option>
+                                        @if (old('tipe_rek') == 'Gaji & Umak')
+                                            <option value="Gaji & Umak" selected>Gaji & Umak</option>
                                         @else
-                                            <option value="Gaji">Gaji</option>
+                                            <option value="Gaji & Umak">Gaji & Umak</option>
                                         @endif
 
                                         @if (old('tipe_rek') == 'Tukin')
                                             <option value="Tukin" selected>Tukin</option>
                                         @else
                                             <option value="Tukin">Tukin</option>
-                                        @endif
-
-                                        @if (old('tipe_rek') == 'Umak')
-                                            <option value="Umak" selected>Umak</option>
-                                        @else
-                                            <option value="Umak">Umak</option>
                                         @endif
                                     </select>
                                 </div>

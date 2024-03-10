@@ -30,6 +30,14 @@ class DataExportPru implements FromCollection, WithHeadings
     {
         $data = PegawaiRiwayatUmak::select(DB::raw('CONCAT(p.nama_depan," ",p.nama_belakang) AS nama_pegawai'), 'p.nip', 'uk.nama as unit_kerja', 'um.nominal',
             'pegawai_riwayat_umak.jumlah_hari_masuk', 'pegawai_riwayat_umak.total', 'pegawai_riwayat_umak.is_double', DB::raw('MONTHNAME(STR_TO_DATE(pegawai_riwayat_umak.bulan, "%m")) as nama_bulan'), 'pegawai_riwayat_umak.tahun')
+            ->selectSub(function ($query) {
+                $query->select(DB::raw("CONCAT(b.nama, ' - ', pr.no_rekening)"))
+                    ->from('pegawai_rekening as pr')
+                    ->join('bank as b', 'b.id', '=', 'pr.bank_id')
+                    ->whereColumn('pr.pegawai_id', 'pegawai_riwayat_umak.pegawai_id')
+                    ->where('pr.tipe_rekening', '=', 'Gaji & Umak')
+                    ->limit(1);
+            }, 'rekening_umak')
             ->join('pegawai as p','p.id','=','pegawai_riwayat_umak.pegawai_id')
             //->join('pegawai_riwayat_jabatan as prj', 'prj.pegawai_id', '=', 'pegawai_riwayat_umak.pegawai_id')
             ->join('pegawai_riwayat_jabatan as prj', function ($join) {
@@ -81,6 +89,7 @@ class DataExportPru implements FromCollection, WithHeadings
             'Is Double',
             'Bulan',
             'Tahun',
+            'No. Rek Umak',
             // ... tambahkan judul kolom lainnya
         ];
     }
