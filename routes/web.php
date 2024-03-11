@@ -47,6 +47,7 @@ use App\Http\Controllers\PengajuanTambahanBpjsController;
 use App\Http\Controllers\PegawaiTambahanBpjsController;
 use App\Http\Controllers\PegawaiRiwayatUmakController;
 use App\Http\Controllers\PegawaiRekeningController;
+use App\Http\Controllers\PegawaiHirarkiController;
 
 use App\Http\Controllers\PegawaiRiwayatThrController;
 use App\Http\Controllers\PegawaiRiwayatGajiplusController;
@@ -222,6 +223,9 @@ Route::middleware('auth')->group(function () {
 
         Route::post('/pegawai-rekening/datatable', [PegawaiRekeningController::class, 'datatable'])->name('pegawai-rekening.datatable');
         Route::resource('/pegawai-rekening', PegawaiRekeningController::class);
+
+        Route::post('/pegawai-hirarki/datatable', [PegawaiHirarkiController::class, 'datatable'])->name('pegawai-hirarki.datatable');
+        Route::resource('/pegawai-hirarki', PegawaiHirarkiController::class)->only('index');
 
         Route::post('/ruang-rapat/datatable', [RuangRapatController::class, 'datatable'])->name('ruang-rapat.datatable');
         Route::resource('/ruang-rapat', RuangRapatController::class);
