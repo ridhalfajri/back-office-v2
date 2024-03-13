@@ -49,6 +49,7 @@ class PegawaiBpjsLainnyaController extends Controller
             ->join('pegawai_riwayat_jabatan as prj', function ($join) {
                 $join->on('prj.pegawai_id','=','pbl.pegawai_id')
                     ->where('prj.is_now','=',1)
+                    ->where('prj.is_plt', '=', 0)
                     ;
             })
             ->join('jabatan_unit_kerja as juk', 'juk.id', '=', 'prj.jabatan_unit_kerja_id')
@@ -114,6 +115,7 @@ class PegawaiBpjsLainnyaController extends Controller
             ->join('pegawai_riwayat_jabatan as prj', function ($join) {
                 $join->on('prj.pegawai_id','=','p.id')
                     ->where('prj.is_now','=',1)
+                    ->where('prj.is_plt', '=', 0)
                     ;
             })
             ->join('jabatan_unit_kerja as juk', 'juk.id', '=', 'prj.jabatan_unit_kerja_id')
@@ -242,6 +244,7 @@ class PegawaiBpjsLainnyaController extends Controller
         ->join('pegawai_riwayat_jabatan as prj', function ($join) {
             $join->on('prj.pegawai_id','=','p.id')
                 ->where('prj.is_now','=',1)
+                ->where('prj.is_plt', '=', 0)
                 ;
         })
         ->join('jabatan_unit_kerja as juk', 'juk.id', '=', 'prj.jabatan_unit_kerja_id')

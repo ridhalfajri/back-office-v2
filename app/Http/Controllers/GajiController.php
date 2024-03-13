@@ -50,7 +50,11 @@ class GajiController extends Controller
     {
 
         //  $data = Gaji::select('gaji.id as id','masa_kerja',  DB::raw("CONCAT('Rp. ', FORMAT(nominal, 0)) AS nominal"), 'golongan.nama as nama')->join('golongan', 'golongan.id', '=', 'gaji.golongan_id');
-        $data = Gaji::select('gaji.id as id', 'masa_kerja', 'nominal', 'nominal_tunjangan_jabatan','golongan.nama as nama','golongan.nama_pangkat as nama_pangkat')->join('golongan', 'golongan.id', '=', 'gaji.golongan_id');
+        $data = Gaji::select('gaji.id as id', 'masa_kerja', 'nominal', 'nominal_tunjangan_jabatan','golongan.nama as nama','golongan.nama_pangkat as nama_pangkat')
+        ->join('golongan', 'golongan.id', '=', 'gaji.golongan_id')
+        ->orderBy('golongan.id', 'asc')
+        ->orderBy('masa_kerja', 'asc')
+        ;
 
         return Datatables::of($data)
             ->addColumn('no', '')

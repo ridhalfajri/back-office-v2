@@ -32,11 +32,28 @@ class DataExportPrg implements FromCollection, WithHeadings
             'pegawai_riwayat_gajiplus.nominal_gaji_pokok', 'pegawai_riwayat_gajiplus.tunjangan_beras', 'pegawai_riwayat_gajiplus.tunjangan_pasangan',
             'pegawai_riwayat_gajiplus.tunjangan_anak', 'pegawai_riwayat_gajiplus.tunjangan_jabatan', 'pegawai_riwayat_gajiplus.tunjangan_kinerja',
             'pegawai_riwayat_gajiplus.total_gajiplus', 'pegawai_riwayat_gajiplus.tahun')
+            ->selectSub(function ($query) {
+                $query->select(DB::raw("CONCAT(b.nama, ' - ', pr.no_rekening)"))
+                    ->from('pegawai_rekening as pr')
+                    ->join('bank as b', 'b.id', '=', 'pr.bank_id')
+                    ->whereColumn('pr.pegawai_id', 'pegawai_riwayat_gajiplus.pegawai_id')
+                    ->where('pr.tipe_rekening', '=', 'Gaji & Umak')
+                    ->limit(1);
+            }, 'rekening_gaji')
+            ->selectSub(function ($query) {
+                $query->select(DB::raw("CONCAT(b.nama, ' - ', pr.no_rekening)"))
+                    ->from('pegawai_rekening as pr')
+                    ->join('bank as b', 'b.id', '=', 'pr.bank_id')
+                    ->whereColumn('pr.pegawai_id', 'pegawai_riwayat_gajiplus.pegawai_id')
+                    ->where('pr.tipe_rekening', '=', 'Tukin')
+                    ->limit(1);
+            }, 'rekening_tukin')
             ->join('pegawai as p','p.id','=','pegawai_riwayat_gajiplus.pegawai_id')
             //->join('pegawai_riwayat_jabatan as prj', 'prj.pegawai_id', '=', 'pegawai_riwayat_umak.pegawai_id')
             ->join('pegawai_riwayat_jabatan as prj', function ($join) {
                 $join->on('prj.pegawai_id','=','pegawai_riwayat_gajiplus.pegawai_id')
                     ->where('prj.is_now','=',1)
+                    ->where('prj.is_plt', '=', 0)
                     ;
             })
             ->join('jabatan_unit_kerja as juk', 'juk.id', '=', 'prj.jabatan_unit_kerja_id')
@@ -74,6 +91,8 @@ class DataExportPrg implements FromCollection, WithHeadings
             'Tunjangan Kinerja',
             'Total Gaji-13',
             'Tahun',
+            'No. Rek Gaji',
+            'No. Rek Tukin',
             // ... tambahkan judul kolom lainnya
         ];
     }

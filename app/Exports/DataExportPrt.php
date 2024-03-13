@@ -1,6 +1,8 @@
 <?php
 
 namespace App\Exports;
+
+use App\Models\PegawaiRekening;
 use App\Models\PegawaiRiwayatThr;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Concerns\Exportable;
@@ -29,12 +31,30 @@ class DataExportPrt implements FromCollection, WithHeadings
         $data = PegawaiRiwayatThr::select(DB::raw('CONCAT(p.nama_depan," ",p.nama_belakang) AS nama_pegawai'), 'p.nip', 'uk.nama as unit_kerja',
             'pegawai_riwayat_thr.nominal_gaji_pokok', 'pegawai_riwayat_thr.tunjangan_beras', 'pegawai_riwayat_thr.tunjangan_pasangan',
             'pegawai_riwayat_thr.tunjangan_anak', 'pegawai_riwayat_thr.tunjangan_jabatan', 'pegawai_riwayat_thr.tunjangan_kinerja',
-            'pegawai_riwayat_thr.total_thr', 'pegawai_riwayat_thr.tahun')
+            'pegawai_riwayat_thr.total_thr', 'pegawai_riwayat_thr.tahun'
+            )
+            ->selectSub(function ($query) {
+                $query->select(DB::raw("CONCAT(b.nama, ' - ', pr.no_rekening)"))
+                    ->from('pegawai_rekening as pr')
+                    ->join('bank as b', 'b.id', '=', 'pr.bank_id')
+                    ->whereColumn('pr.pegawai_id', 'pegawai_riwayat_thr.pegawai_id')
+                    ->where('pr.tipe_rekening', '=', 'Gaji & Umak')
+                    ->limit(1);
+            }, 'rekening_gaji')
+            ->selectSub(function ($query) {
+                $query->select(DB::raw("CONCAT(b.nama, ' - ', pr.no_rekening)"))
+                    ->from('pegawai_rekening as pr')
+                    ->join('bank as b', 'b.id', '=', 'pr.bank_id')
+                    ->whereColumn('pr.pegawai_id', 'pegawai_riwayat_thr.pegawai_id')
+                    ->where('pr.tipe_rekening', '=', 'Tukin')
+                    ->limit(1);
+            }, 'rekening_tukin')
             ->join('pegawai as p','p.id','=','pegawai_riwayat_thr.pegawai_id')
             //->join('pegawai_riwayat_jabatan as prj', 'prj.pegawai_id', '=', 'pegawai_riwayat_umak.pegawai_id')
             ->join('pegawai_riwayat_jabatan as prj', function ($join) {
                 $join->on('prj.pegawai_id','=','pegawai_riwayat_thr.pegawai_id')
                     ->where('prj.is_now','=',1)
+                    ->where('prj.is_plt', '=', 0)
                     ;
             })
             ->join('jabatan_unit_kerja as juk', 'juk.id', '=', 'prj.jabatan_unit_kerja_id')
@@ -71,6 +91,8 @@ class DataExportPrt implements FromCollection, WithHeadings
             'Tunjangan Kinerja',
             'Total THR',
             'Tahun',
+            'No. Rek Gaji',
+            'No. Rek Tukin',
             // ... tambahkan judul kolom lainnya
         ];
     }
