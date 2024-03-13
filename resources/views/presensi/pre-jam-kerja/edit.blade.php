@@ -88,6 +88,69 @@
 
                         <div class="row clearfix">
                             <div class="col-lg-4 col-md-4 col-sm-4">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h3 class="card-title">Jam Istirahat Hari Senin - Kamis</h3>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row clearfix">
+                                            <div class="col-6 col-lg-6 col-md-6">
+                                                <div class="form-group @error('mulai_jam_istirahat') has-error @enderror">
+                                                    <label>Jam Mulai<span class="text-danger"><sup>*</sup></span></label>
+                                                    <input class="form-control" type = "time" id="mulai_jam_istirahat" name = "mulai_jam_istirahat" value="{{ old('mulai_jam_istirahat') ?? $preJamKerja->mulai_jam_istirahat }}" placeholder="Mulai Jam Istirahat" autocomplete="off"/>
+                                                    @error('mulai_jam_istirahat')
+                                                        <small class="text-danger">{{ $message }}</small>
+                                                    @enderror
+                                                </div>
+                                            </div>
+                                            <div class="col-6 col-lg-6 col-md-6">
+                                                <div class="form-group @error('akhir_jam_istirahat') has-error @enderror">
+                                                    <label>Jam Berakhir<span class="text-danger"><sup>*</sup></span></label>
+                                                    <input class="form-control" type = "time" id="akhir_jam_istirahat" name = "akhir_jam_istirahat" value="{{ old('akhir_jam_istirahat') ?? $preJamKerja->akhir_jam_istirahat }}" placeholder="Akhir Jam Istirahat" autocomplete="off"/>
+                                                    @error('akhir_jam_istirahat')
+                                                        <small class="text-danger">{{ $message }}</small>
+                                                    @enderror
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h3 class="card-title">Jam Istirahat Hari Jum'at</h3>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row clearfix">
+                                            <div class="col-lg-6 col-md-6 col-sm-6">
+                                                <div class="form-group @error('mulai_jam_istirahat_khusus') has-error @enderror">
+                                                    <label>Jam Mulai<span class="text-danger"><sup>*</sup></span></label>
+                                                    <input class="form-control" type = "time" id="mulai_jam_istirahat_khusus" name = "mulai_jam_istirahat_khusus" value="{{ old('mulai_jam_istirahat_khusus') ?? $preJamKerja->mulai_jam_istirahat_khusus }}" placeholder="Mulai Jam Istirahat Khusus" autocomplete="off"/>
+                                                    @error('mulai_jam_istirahat_khusus')
+                                                        <small class="text-danger">{{ $message }}</small>
+                                                    @enderror
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-6 col-md-6 col-sm-6">
+                                                <div class="form-group @error('akhir_jam_istirahat_khusus') has-error @enderror">
+                                                    <label>Jam Berakhir<span class="text-danger"><sup>*</sup></span></label>
+                                                    <input class="form-control" type = "time" id="akhir_jam_istirahat_khusus" name = "akhir_jam_istirahat_khusus" value="{{ old('akhir_jam_istirahat_khusus') ?? $preJamKerja->akhir_jam_istirahat_khusus }}" placeholder="Akhir Jam Istirahat Khusus" autocomplete="off"/>
+                                                    @error('akhir_jam_istirahat_khusus')
+                                                        <small class="text-danger">{{ $message }}</small>
+                                                    @enderror
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="row clearfix">
+                            <div class="col-lg-4 col-md-4 col-sm-4">
                                 <div class="form-group @error('waktu_floating') has-error @enderror">
                                     <label>Waktu Floating<span class="text-danger"><sup>*</sup></span></label>
                                     <input class="form-control" type = "time" id="waktu_floating" name = "waktu_floating" value="{{  old('waktu_floating') ?? $preJamKerja->waktu_floating }}" placeholder="Waktu Floating" autocomplete="off"/>

@@ -64,21 +64,31 @@ class PreJamKerjaController extends Controller
     {
         try {
 
+
             $this->validate($request, [
 				'jam_masuk' => 'required',
 				'jam_pulang' => 'required',
+                'mulai_jam_istirahat'=> 'required',
+                'akhir_jam_istirahat'=> 'required',
 				'jam_masuk_khusus' => 'required',
 				'jam_pulang_khusus' => 'required',
+                'mulai_jam_istirahat_khusus'=> 'required',
+                'akhir_jam_istirahat_khusus'=> 'required',
 				'waktu_floating' => 'required',
 				'is_active' => 'required',
 				'keterangan' => 'required',
+
             ]);
 
             $input = [];
 			$input['jam_masuk'] = $request->jam_masuk;
 			$input['jam_pulang'] = $request->jam_pulang;
+            $input['mulai_jam_istirahat'] = $request->mulai_jam_istirahat;
+			$input['akhir_jam_istirahat'] = $request->akhir_jam_istirahat;
 			$input['jam_masuk_khusus'] = $request->jam_masuk_khusus;
 			$input['jam_pulang_khusus'] = $request->jam_pulang_khusus;
+            $input['mulai_jam_istirahat_khusus'] = $request->mulai_jam_istirahat_khusus;
+			$input['akhir_jam_istirahat_khusus'] = $request->akhir_jam_istirahat_khusus;
 			$input['waktu_floating'] = $request->waktu_floating;
 			$input['is_active'] = $request->is_active;
 			$input['keterangan'] = $request->keterangan;
@@ -136,8 +146,12 @@ class PreJamKerjaController extends Controller
             $this->validate($request, [
 				'jam_masuk' => 'required',
 				'jam_pulang' => 'required',
+                'mulai_jam_istirahat'=> 'required',
+                'akhir_jam_istirahat'=> 'required',
 				'jam_masuk_khusus' => 'required',
 				'jam_pulang_khusus' => 'required',
+                'mulai_jam_istirahat_khusus'=> 'required',
+                'akhir_jam_istirahat_khusus'=> 'required',
 				'waktu_floating' => 'required',
 				'is_active' => 'required',
 				'keterangan' => 'required',
@@ -145,8 +159,16 @@ class PreJamKerjaController extends Controller
 
 			$preJamKerja->jam_masuk = $request->jam_masuk;
 			$preJamKerja->jam_pulang = $request->jam_pulang;
+
+            $preJamKerja->mulai_jam_istirahat = $request->mulai_jam_istirahat;
+			$preJamKerja->akhir_jam_istirahat = $request->akhir_jam_istirahat;
+
 			$preJamKerja->jam_masuk_khusus = $request->jam_masuk_khusus;
 			$preJamKerja->jam_pulang_khusus = $request->jam_pulang_khusus;
+
+            $preJamKerja->mulai_jam_istirahat_khusus = $request->mulai_jam_istirahat_khusus;
+			$preJamKerja->akhir_jam_istirahat_khusus = $request->akhir_jam_istirahat_khusus;
+
 			$preJamKerja->waktu_floating = $request->waktu_floating;
 			$preJamKerja->is_active = $request->is_active;
 			$preJamKerja->keterangan = $request->keterangan;

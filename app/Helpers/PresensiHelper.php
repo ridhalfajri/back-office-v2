@@ -300,7 +300,7 @@ class PresensiHelper
             ->whereMonth('checkinout.checktime', '=', $todayMonth)
             ->where('checkinout.Reserved', '0')
             ->orderBy('checkinout.checktime')
-            ->limit(100)
+            ->limit(10000)
             ->get();
 
         // dd($inOut);
@@ -543,6 +543,8 @@ class PresensiHelper
 
                 $totalJamKerjaSeconds = self::get_Second_Diff($MasterJamMasuk, $MasterJamPulang);
                 $totalFloatingSeconds = (60 * 60 * $jamFloating) + (60 * $MenitFloating);
+                $totalIstirahatSeconds = self::get_Second_Diff($jamIstirahatStart, $jamIstirahatEnd);
+
                 $kelebihanJamKerja = 0;
 
                 if ((empty($jamMasuk) || $jamMasuk == "00:00:00") && (empty($jamPulang) || $jamPulang == "00:00:00") && ($presensi->status_kehadiran == 'ALPHA' || $presensi->status_kehadiran == 'HADIR')) {
@@ -561,7 +563,7 @@ class PresensiHelper
                     $presensi->is_jk_normal = $jamKerja->is_jk_normal;
                     //Default StatusKehadiran => Hadir
                     $presensi->status_kehadiran = 'ALPHA';
-                    $presensi->kekurangan_jam = "07:30:00";
+                    $presensi->kekurangan_jam = self::get_ConvertDateTime($totalJamKerjaSeconds - $totalIstirahatSeconds);
                     $presensi->kelebihan_jam = "00:00:00";
                     $presensi->keterangan = '-';
                     $kekurangan_jam  = $presensi->kekurangan_jam;
@@ -648,7 +650,9 @@ class PresensiHelper
                         //datang terlambat
                         $kurangJamKerja = self::get_Second_Diff($MasterJamMasuk, $jamMasuk);
                     } else {
-                        $kelebihanJamKerja  = self::get_Second_Diff($MasterJamMasuk, $jamMasuk);
+                        if (strtotime($jamPulang) > strtotime($MasterJamMasuk)) {
+                            $kelebihanJamKerja  = self::get_Second_Diff($MasterJamMasuk, $jamMasuk);
+                        }
                     }
 
                     $JamPulangMinimal =  Carbon::createFromTimeString($MasterJamPulang);
@@ -698,11 +702,13 @@ class PresensiHelper
                         //Pulang Awal
                         //Jika Jam Pulang lebih besar jam 12 siang maka
                         $JamIstirahat = 0;
-                        if (strtotime($jamPulang) <= strtotime($jamIstirahatEnd)) {
+                        if (strtotime($jamPulang) <= strtotime($jamIstirahatStart))
+                        {
+                            $JamIstirahat = $totalIstirahatSeconds;
+                        }
+                        else if (strtotime($jamPulang) > strtotime($jamIstirahatStart) && strtotime($jamPulang) <= strtotime($jamIstirahatEnd)) {
                             $SelisihIstirahat = 0;
-                            if(strtotime($jamPulang)> strtotime($jamIstirahatStart)){
-                                $SelisihIstirahat =  self::get_Second_Diff($jamPulang,$jamIstirahatStart);
-                            }
+                            $SelisihIstirahat =  self::get_Second_Diff($jamPulang,$jamIstirahatStart);
                             $JamIstirahat = self::get_Second_Diff($jamIstirahatStart,$jamIstirahatEnd);
                             $JamIstirahat = $JamIstirahat - $SelisihIstirahat;
                         }
@@ -783,13 +789,15 @@ class PresensiHelper
                         if ($keterangan == "") {
                             //Keterangan Akhir di isi ketika ada kekurangan jam kerja
                             $keterangan = self::GetKeteranganKehadiran($JumlahJamTM, $JumlahJamPC);
-
                         }
 
-                        //Jika kekurangan jam kerja melebihi 7.5 maka kekurangan yang diambil adalah 7,5 jam
-                        if ($kurangJamKerja > $totalJamKerjaSeconds) {
-                            $kurangJamKerja = $totalJamKerjaSeconds;
+                        //Jika kekurangan jam kerja melebihi 7.5/total jam kerja maka kekurangan yang diambil adalah 7,5/mak jam kerja jam
+                        if ($kurangJamKerja > $totalJamKerjaSeconds - $totalIstirahatSeconds) {
+                            $kurangJamKerja = $totalJamKerjaSeconds - $totalIstirahatSeconds;
                         }
+
+                        // var_dump(self::get_ConvertDateTime($kurangJamKerja));
+                        // dd(self::get_ConvertDateTime($totalJamKerjaSeconds - $totalIstirahatSeconds));
 
                         $presensi->kekurangan_jam = self::get_ConvertDateTime($kurangJamKerja);
                         if ($presensi->status_kehadiran == 'HADIR' &&  $presensi->is_ijin == 0) {
@@ -813,7 +821,7 @@ class PresensiHelper
                     //Jika Pegawai hanya melakukan presensi cuma pulang saja maka keterlambatan di set sebagai keterlmbatan maksimal yaitu 7,5 jam
                     //==============================================================================================================================
 
-                    $presensi->kekurangan_jam = "07:30:00";
+                    $presensi->kekurangan_jam = self::get_ConvertDateTime($totalJamKerjaSeconds-$totalIstirahatSeconds);
                     $presensi->kelebihan_jam = "00:00:00";
                     $presensi->nominal_potongan = self::_hitung_potongan($pegawai, $presensi->kekurangan_jam, 'PC'); // Pulan Cepat atai TM lebih dari 7,5 Jam Potongannya sama
                     $presensi->keterangan = 'Tidak melakukan presensi Jam Masuk';
@@ -955,7 +963,27 @@ class PresensiHelper
         $tglPresensi = $tglPresensiKemarin;
         $harilibur = HariLibur::where('tanggal', '=', $tglPresensi)->where('is_libur', '=', 1)->first();
 
-        self::SaveInfo('Tanggal Cari :' . $tglPresensi);
+        $dayOfWeekIndex = Carbon::parse($tglPresensi)->format('N');
+        if ($dayOfWeekIndex == 5) {
+            //Master Jam Kerja Hari Jum'at
+            $MasterJamMasuk = Carbon::parse($jamKerja->jam_masuk_khusus)->format('H:i:s');
+            $MasterJamPulang = Carbon::parse($jamKerja->jam_pulang_khusus)->format('H:i:s');
+
+            $jamIstirahatStart = Carbon::parse($jamKerja->mulai_jam_istirahat_khusus)->format('H:i:s');
+            $jamIstirahatEnd = Carbon::parse($jamKerja->akhir_jam_istirahat_khusus)->format('H:i:s');
+        } else {
+            //Master Jam Kerja Hari Senin-Selasa atau sabtu dan mingggu
+            $MasterJamMasuk = Carbon::parse($jamKerja->jam_masuk)->format('H:i:s');
+            $MasterJamPulang = Carbon::parse($jamKerja->jam_pulang)->format('H:i:s');
+
+            $jamIstirahatStart = Carbon::parse($jamKerja->mulai_jam_istirahat)->format('H:i:s');
+            $jamIstirahatEnd = Carbon::parse($jamKerja->akhir_jam_istirahat)->format('H:i:s');
+        }
+
+        $totalIstirahatSeconds = self::get_Second_Diff($jamIstirahatStart, $jamIstirahatEnd);
+        $totalJamKerjaSeconds = self::get_Second_Diff($MasterJamMasuk, $MasterJamPulang);
+
+        $totalJamKerjaSeconds = $totalJamKerjaSeconds - $totalIstirahatSeconds;
 
         if ($harilibur) {
             //=================================================
@@ -1023,21 +1051,21 @@ class PresensiHelper
                                     $jamMasuk = $presensi->jam_masuk;
                                     $jamPulang = $presensi->jam_pulang;
                                     if ((empty($jamMasuk) || $jamMasuk == "00:00:00") && (empty($jamPulang) || $jamPulang == "00:00:00")) {
-                                        $presensi->kekurangan_jam = "07:30:00";
+                                        $presensi->kekurangan_jam = self::get_ConvertDateTime($totalJamKerjaSeconds);
                                         $presensi->status_kehadiran = 'ALPHA';
                                         $presensi->nominal_potongan = self::_hitung_potongan($pegawaiItem, $presensi->kekurangan_jam, 'ALPHA');
                                         $presensi->keterangan = 'Tidak melakukan presensi';
                                         $presensi->save();
                                     }
                                     elseif ((!empty($jamMasuk) || $jamMasuk != "00:00:00") && (empty($jamPulang) || $jamPulang == "00:00:00")) {
-                                        $presensi->kekurangan_jam = "07:30:00";
+                                        $presensi->kekurangan_jam = self::get_ConvertDateTime($totalJamKerjaSeconds);
                                         $presensi->status_kehadiran = 'HADIR';
                                         $presensi->nominal_potongan = self::_hitung_potongan($pegawaiItem, $presensi->kekurangan_jam, 'TM');
                                         $presensi->keterangan = 'Tidak melakukan presensi jam pulang';
                                         $presensi->save();
                                     }
                                         elseif ((empty($jamMasuk) || $jamMasuk == "00:00:00") && (!empty($jamPulang) || $jamPulang != "00:00:00")) {
-                                        $presensi->kekurangan_jam = "07:30:00";
+                                        $presensi->kekurangan_jam = self::get_ConvertDateTime($totalJamKerjaSeconds);
                                         $presensi->status_kehadiran = 'HADIR';
                                         $presensi->nominal_potongan = self::_hitung_potongan($pegawaiItem, $presensi->kekurangan_jam, 'PC');
                                         $presensi->keterangan = 'Tidak melakukan presensi jam masuk';
@@ -1102,7 +1130,7 @@ class PresensiHelper
                                     $presensi->nominal_potongan = 0;
                                 } else {
                                     $presensi->status_kehadiran = 'ALPHA';
-                                    $presensi->kekurangan_jam = "07:30:00";
+                                    $presensi->kekurangan_jam = self::get_ConvertDateTime($totalJamKerjaSeconds);
                                     $presensi->kelebihan_jam = "00:00:00";
                                     $presensi->nominal_potongan = self::_hitung_potongan($pegawaiItem, $presensi->kekurangan_jam, $presensi->status_kehadiran);
                                 }
