@@ -417,7 +417,7 @@
                 columnDefs: [{
                     'sortable': false,
                     'searchable': false,
-                    'targets': [0, -1]
+                    'targets': [0]
                 }],
                 order: [
                     [1, 'asc']
