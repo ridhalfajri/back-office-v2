@@ -48,16 +48,23 @@ class DataExportPrg implements FromCollection, WithHeadings
                     ->where('pr.tipe_rekening', '=', 'Tukin')
                     ->limit(1);
             }, 'rekening_tukin')
-            ->join('pegawai as p','p.id','=','pegawai_riwayat_gajiplus.pegawai_id')
+            //->join('pegawai as p','p.id','=','pegawai_riwayat_gajiplus.pegawai_id')
+            ->join('pegawai as p', function ($join) {
+                $join->on('p.id','=','pegawai_riwayat_gajiplus.pegawai_id')
+                    ->whereIn('p.status_pegawai_id', array(1, 4)) //PNS, CPNS
+                    ->where('p.status_dinas', 1)
+                    ->whereIn('p.jenis_pegawai_id', array(1, 21, 20))
+                    ;
+            })
             //->join('pegawai_riwayat_jabatan as prj', 'prj.pegawai_id', '=', 'pegawai_riwayat_umak.pegawai_id')
-            ->join('pegawai_riwayat_jabatan as prj', function ($join) {
+            ->leftJoin('pegawai_riwayat_jabatan as prj', function ($join) {
                 $join->on('prj.pegawai_id','=','pegawai_riwayat_gajiplus.pegawai_id')
                     ->where('prj.is_now','=',1)
                     ->where('prj.is_plt', '=', 0)
                     ;
             })
-            ->join('jabatan_unit_kerja as juk', 'juk.id', '=', 'prj.jabatan_unit_kerja_id')
-            ->join('hirarki_unit_kerja as huk', 'huk.id', '=', 'juk.hirarki_unit_kerja_id')
+            ->leftJoin('jabatan_unit_kerja as juk', 'juk.id', '=', 'prj.jabatan_unit_kerja_id')
+            ->leftJoin('hirarki_unit_kerja as huk', 'huk.id', '=', 'juk.hirarki_unit_kerja_id')
             //->leftJoin('unit_kerja as uk', 'uk.id', '=', 'huk.child_unit_kerja_id')
             ->leftJoin('unit_kerja as uk', function ($join) {
                 $join->on('uk.id', '=', 'huk.child_unit_kerja_id')
@@ -66,6 +73,7 @@ class DataExportPrg implements FromCollection, WithHeadings
             })
             //
             ->where('pegawai_riwayat_gajiplus.tahun', '=', $this->tahun)
+            ->orderBy('p.jenis_pegawai_id','asc')
             ->orderBy('uk.id','asc')
             ->orderBy('p.nama_depan','asc')
             ->get();
