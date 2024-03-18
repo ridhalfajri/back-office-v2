@@ -210,6 +210,8 @@
             "hideMethod": "fadeOut"
         };
 
+
+
     $(document).ready(function() {
 
         var currentDate = new Date();
@@ -231,14 +233,14 @@
         document.getElementById('date_akhir').value = formattedDate;
 
         // Check if DataTable is already initialized on the table
-        if ($.fn.DataTable.isDataTable('#tbl-data')) {
-                // DataTable is already initialized, destroy it
-                $('#tbl-data').DataTable().destroy();
-            }
+        // if ($.fn.DataTable.isDataTable('#tbl-data')) {
+        //         // DataTable is already initialized, destroy it
+        //         $('#tbl-data').DataTable().destroy();
+        //     }
 
-        table = $('#tbl-data').DataTable({
-            // DataTable configuration options
-        });
+        // table = $('#tbl-data').DataTable({
+        //     // DataTable configuration options
+        // });
 
 
         $('#hirarki_unit_kerja_id').select2({
@@ -263,15 +265,17 @@
 
         $('#btnShowData').on('click', function() {
             // Check if DataTable is already initialized on the table
-            if ($.fn.DataTable.isDataTable('#tbl-data')) {
-                // DataTable is already initialized, destroy it
-                $('#tbl-data').DataTable().destroy();
-            }
+            // if ($.fn.DataTable.isDataTable('#tbl-data')) {
+            //     // DataTable is already initialized, destroy it
+            //     $('#tbl-data').DataTable().destroy();
+            // }
 
             var dateAwal = document.getElementById('date_awal').value;
             var dateAkhir = document.getElementById('date_akhir').value;
             var selectedPegawaiId = document.getElementById('pegawai_id').value;
             var selectedHirarkiUnitKerjaId = document.getElementById('hirarki_unit_kerja_id').value;
+            console.log('OK sudah');
+
             btnExport = 0;
             table = $('#tbl-data').DataTable({
                 processing: true,
@@ -295,23 +299,23 @@
                         exportOptions: {
                                 columns: [ 1, 2, 3, 4, 5, 6, 7],
                                 modifier: {
-                                page: 'all'
-                                },
-                                    format: {
-                                        header: function ( data, columnIdx ) {
-                                            if(columnIdx==1){
+                                        page: 'all'
+                                    },
+                                format: {
+                                    header: function ( data, columnIdx ) {
+                                        if(columnIdx==1){
                                             return 'Tanggal Presensi';
-                                            }
-                                            else{
+                                        }
+                                        else{
                                             return data;
-                                            }
                                         }
                                     }
+                                }
                             }
                 }],
                 lengthMenu: [10, 50, 100, 500, 1000, 10000,1000000],
                 ajax: {
-                    url: '{{ route('presensi-pegawai.datatablepresensi') }}',
+                    url: '{{ route("presensi-pegawai.datatablepresensi") }}',
                     type: 'GET',
                     headers: {
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
@@ -320,14 +324,14 @@
                         date_awal: dateAwal,
                         date_akhir: dateAkhir,
                         pegawai_id: selectedPegawaiId,
-                        hirarki_unit_kerja_id: selectedHirarkiUnitKerjaId
+                        hirarki_unit_kerja_id: selectedHirarkiUnitKerjaId,
                     },
                 },
                 columns: [
                     {
                         data: 'no',
                         name: 'no',
-                        className: 'text-center'
+                        className: 'text-center',
                     },
                     {
                         data: 'nip',
@@ -335,15 +339,15 @@
                     },
                     {
                         data: 'nama',
-                        name: 'nama'
+                        name: 'nama',
                     },
                     {
                         data: 'nama_jabatan',
-                        name: 'z.nama_jabatan'
+                        name: 'z.nama_jabatan',
                     },
                     {
                         data: 'nama_unit_kerja',
-                        name: 'y.nama_unit_kerja'
+                        name: 'y.nama_unit_kerja',
                     },
                     {
                         data: 'tanggal_presensi',
@@ -413,7 +417,7 @@
                 columnDefs: [{
                     'sortable': false,
                     'searchable': false,
-                    'targets': [0, -1]
+                    'targets': [0]
                 }],
                 order: [
                     [1, 'asc']
@@ -431,12 +435,23 @@
                 }
             });
 
-            // Add row numbers to the DataTable
-            table.on('order.dt search.dt', function() {
-                table.column(0, { search: 'applied', order: 'applied' }).nodes().each(function(cell, i) {
-                    cell.innerHTML = i + 1;
+            // // Add row numbers to the DataTable
+            // table.on('order.dt search.dt', function() {
+            //     table.column(0, { search: 'applied', order: 'applied' }).nodes().each(function(cell, i) {
+            //         cell.innerHTML = i + 1;
+            //     });
+            // }).draw();
+
+            table.on('draw.dt', function() {
+                var info = table.page.info();
+                table.column(0, {
+                    search: 'applied',
+                    order: 'applied',
+                    page: 'applied'
+                }).nodes().each(function(cell, i) {
+                    cell.innerHTML = i + 1 + info.start;
                 });
-            }).draw();
+            });
 
              // Add a custom button to export all data
              new $.fn.dataTable.Buttons(table, {
@@ -500,7 +515,20 @@
         });
 
 
+        setTimeout(myFunction, 1000);
+
     });
+
+    function myFunction()
+    {
+        var myButton = document.getElementById('btnShowData');
+        if (myButton) {
+            console.log('button OK');
+            myButton.click();
+        }
+    }
+
+
 </script>
 
 <script type="text/javascript">

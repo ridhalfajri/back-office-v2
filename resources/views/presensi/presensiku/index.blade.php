@@ -466,12 +466,12 @@
                 });
             });
 
-            // Add row numbers to the DataTable
-            table.on('order.dt search.dt', function() {
-                table.column(0, { search: 'applied', order: 'applied' }).nodes().each(function(cell, i) {
-                    cell.innerHTML = i + 1;
-                });
-            }).draw();
+            // // Add row numbers to the DataTable
+            // table.on('order.dt search.dt', function() {
+            //     table.column(0, { search: 'applied', order: 'applied' }).nodes().each(function(cell, i) {
+            //         cell.innerHTML = i + 1;
+            //     });
+            // }).draw();
 
              new $.fn.dataTable.Buttons(table, {
                 buttons: [{
@@ -489,8 +489,19 @@
 
         });
 
-
+        setTimeout(myFunction, 1000);
     });
+
+
+    function myFunction()
+    {
+        var myButton = document.getElementById('btnShowData');
+        if (myButton) {
+            console.log('button OK');
+            myButton.click();
+        }
+    }
+
 </script>
 
 <script type="text/javascript">

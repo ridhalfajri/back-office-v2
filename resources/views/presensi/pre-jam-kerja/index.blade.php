@@ -45,18 +45,20 @@
                 <thead>
                     <tr>
                         <th rowspan="2">No.</th>
-						<th colspan="2" class="text-center">Hari Senin-Kamis</th>
-						<th colspan="2" class="text-center">Hari Jum'at</th>
-						<th rowspan="2">waktu_floating</th>
-						<th rowspan="2">is_active</th>
+						<th colspan="3" class="text-center">Hari Senin-Kamis</th>
+						<th colspan="3" class="text-center">Hari Jum'at</th>
+						<th colspan="1" rowspan="2">Floating Time</th>
+						<th rowspan="2">Active</th>
 						<th rowspan="2">keterangan</th>
                          <th rowspan="2" style="width: 40px">aksi</th>
                     </tr>
                     <tr>
                         <th>Jam Masuk</th>
                         <th>Jam Pulang</th>
+                        <th>Jam Istirahat</th>
                         <th>Jam Masuk</th>
                         <th>Jam Pulang</th>
+                        <th>Jam Istirahat</th>
                     </tr>
                 </thead>
                 <tbody></tbody>
@@ -65,10 +67,12 @@
                         <th>No.</th>
 						<th>Jam Masuk</th>
                         <th>Jam Pulang</th>
+                        <th>Jam Istirahat</th>
                         <th>Jam Masuk</th>
                         <th>Jam Pulang</th>
-						<th>waktu_floating</th>
-						<th>is_active</th>
+                        <th>Jam Istirahat</th>
+						<th>Floating Time</th>
+						<th>Active</th>
 						<th>keterangan</th>
                          <th style="width: 40px">aksi</th>
                     </tr>
@@ -151,6 +155,20 @@
                     name: 'Jam Pulang',
                     class: 'text-center'
                 },
+                {
+                    data: null,
+                    name: 'combined_column',
+                    className: 'text-center',
+                    render: function(data, type, row) {
+                        // Combine the data from two columns (assuming columns are 'column1' and 'column2')
+                        var combinedData = row.mulai_jam_istirahat + '-' + row.akhir_jam_istirahat;
+
+                        // You can further customize the combined data as needed
+                        // For example, applying styles or adding additional HTML elements
+
+                        return combinedData;
+                    }
+                },
 				{
                     data: 'jam_masuk_khusus',
                     name: 'Jam Masuk Khusus',
@@ -160,6 +178,20 @@
                     data: 'jam_pulang_khusus',
                     name: 'Jam Pulang Khusus',
                     class: 'text-center'
+                },
+                {
+                    data: null,
+                    name: 'combined_columnsecond',
+                    className: 'text-center',
+                    render: function(data, type, row) {
+                        // Combine the data from two columns (assuming columns are 'column1' and 'column2')
+                        var combinedData = row.mulai_jam_istirahat_khusus + '-' + row.akhir_jam_istirahat_khusus;
+
+                        // You can further customize the combined data as needed
+                        // For example, applying styles or adding additional HTML elements
+
+                        return combinedData;
+                    }
                 },
 				{
                     data: 'waktu_floating',
@@ -182,11 +214,10 @@
                     class: 'text-center'
                 },
             ],
-            columnDefs: [{
-                'sortable': false,
-                'searchable': false,
-                'targets': [0, -1]
-            }],
+            columnDefs: [
+                        {'sortable': false, 'searchable': false, 'targets': [0, -1]},
+                        {'whiteSpace': 'nowrap', 'targets': [0, -1]},
+                    ],
             order: [
                 [1, 'asc']
             ]
