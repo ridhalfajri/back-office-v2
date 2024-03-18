@@ -81,8 +81,8 @@ class PresensiHelper
 
             $inOut = DB::connection('hadir')->table('v_presensi')
             ->select('nip', 'nama', 'email', 'tanggal', 'jam_masuk', 'jam_pulang')
-            ->whereYear('tanggal', '>=', $dateAwal)
-            ->whereMonth('tanggal', '<=', $dateAkhir)
+            ->where('tanggal', '>=', $dateAwal)
+            ->where('tanggal', '<=', $dateAkhir)
             ->where('nip', $pegawaiOnline->nip)
             ->orderBy('tanggal')
             ->orderBy('jam_masuk')
@@ -230,6 +230,7 @@ class PresensiHelper
                                             //Default StatusKehadiran => Hadir
                                             if ($dayOfWeekIndex > 5) {
                                                 $presensi->status_kehadiran = 'HADIR LEMBUR';
+                                                $presensi->keterangan = '';
                                             } else {
                                                 $presensi->status_kehadiran = 'HADIR';
                                             }
@@ -300,12 +301,9 @@ class PresensiHelper
             ->whereMonth('checkinout.checktime', '=', $todayMonth)
             ->where('checkinout.Reserved', '0')
             ->orderBy('checkinout.checktime')
-            ->limit(10000)
+            ->limit(100)
             ->get();
 
-        // dd($inOut);
-
-        self::SaveInfo('Get data presensi adms: ' . $inOut->count() . ' record');
 
         $jamKerja = PreJamKerja::Where('is_active', 'Y')->first();
 
@@ -419,6 +417,7 @@ class PresensiHelper
                             if ($presensi->status_kehadiran != 'DINAS LUAR' && $presensi->status_kehadiran != 'TUGAS BELAJAR') {
                                 if ($dayOfWeekIndex > 5) {
                                     $presensi->status_kehadiran = 'HADIR LEMBUR';
+                                    $presensi->keterangan = '';
                                 } else {
                                     $presensi->status_kehadiran = 'HADIR';
                                 }
@@ -461,6 +460,7 @@ class PresensiHelper
                                 //Default StatusKehadiran => Hadir
                                 if ($dayOfWeekIndex > 5) {
                                     $presensi->status_kehadiran = 'HADIR LEMBUR';
+                                    $presensi->keterangan = '';
                                 } else {
                                     $presensi->status_kehadiran = 'HADIR';
                                 }
@@ -500,7 +500,7 @@ class PresensiHelper
             }
         }
 
-        self::SaveInfo('Selesai Get data presensi adms, Status NG:' . $NG);
+        self::SaveInfo('Selesai Get data presensi adms, Status NG: ' . $NG . ' OK: ' . $OK);
 
         return $NG;
     }
@@ -886,9 +886,9 @@ class PresensiHelper
         }
 
         $retValue = $retAwal;
-        if ($retAwal != "") {
+        if ($retAwal != "" && $retAkhir!="") {
             $retValue = $retAwal . ' dan ' . $retAkhir;
-        } else {
+        } else if ($retAwal == "" && $retAkhir!="") {
             $retValue =  $retAkhir;
         }
 
@@ -914,14 +914,12 @@ class PresensiHelper
         return $retValue;
     }
 
-    public static function CronJobRun()
+    public static function CronJobRunGetPresensi()
     {
-
-
         try {
-            self::fnc_CheckAbsenRoutine();
+            self::get_DataPresensi();
         } catch (\Throwable $th) {
-            Log::error('(2) Error cronJob fnc_CheckAbsenRoutine :' . $th . "\n=======================================");
+            Log::error('(1) Error cronJob fnc_CheckAbsenRoutine :' . $th . "\n=======================================");
         }
 
         //=============================
@@ -932,20 +930,30 @@ class PresensiHelper
             $date = now()->format('Y-m-d ');
             self::get_DataPresensiHadirRoutine($date, $date);
         } catch (\Throwable $th) {
-            Log::error('(2) Error cronJob get_DataPresensiHadirRoutine :' . $th . "\n=> Pegawai No_Enroll:" . "\n=======================================");
+            Log::error('(2) Error cronJob get_DataPresensiHadirRoutine :' . $th . "\n=> \n=======================================");
+        }
+
+    }
+
+    public static function CronJobRunNoAbsenOrHoliday()
+    {
+        try {
+            self::fnc_CheckAbsenRoutine();
+        } catch (\Throwable $th) {
+            Log::error('(2) Error cronJob fnc_CheckAbsenRoutine :' . $th . "\n=======================================");
         }
 
         try {
             self::fnc_CheckDLRoutine();
         } catch (\Throwable $th) {
-            Log::error('(2) Error cronJob get_Data_Dinas_Luar :' . $th . "\n=> Pegawai No_Enroll:" . "\n=======================================");
+            Log::error('(2) Error cronJob get_Data_Dinas_Luar :' . $th . "\n=> \n=======================================");
         }
     }
 
     //Jalankan per jam 12 malam atau manual dan check Hari Libur serta
     public static function fnc_CheckAbsenRoutine()
     {
-        //disini check pegawai aktif yang tidak melakukan Presensi kemarin jalankan function ini setipa pergantian hari jam 00:00:01 (jam dua belas malam lewat satu detik)
+        //disini check pegawai aktif yang tidak melakukan Presensi kemarin jalankan function ini setiap jam tertentu
 
         $pegawai = PegawaiHelper::getPegawaiDataActiveAll();
 
@@ -953,14 +961,14 @@ class PresensiHelper
 
         $dateNow = now();
         //Tanggal Kemarin
-        $tglPresensiKemarin = Carbon::parse($dateNow)->subDays(1)->format('Y-m-d');
-        $dayOfWeekIndex = Carbon::parse($tglPresensiKemarin)->format('N');
+        $tglPresensiCheck = Carbon::parse($dateNow)->format('Y-m-d');
+        $dayOfWeekIndex = Carbon::parse($tglPresensiCheck)->format('N');
 
         //===================================================
         //Check Apakah Tanggal Tersebut hari libur atau Bukan
         //===================================================
 
-        $tglPresensi = $tglPresensiKemarin;
+        $tglPresensi = $tglPresensiCheck;
         $harilibur = HariLibur::where('tanggal', '=', $tglPresensi)->where('is_libur', '=', 1)->first();
 
         $dayOfWeekIndex = Carbon::parse($tglPresensi)->format('N');
@@ -1038,12 +1046,10 @@ class PresensiHelper
                 try {
 
                     //get Presensi
-                    $presensi = Presensi::whereDate('tanggal_presensi',  $tglPresensiKemarin)->Where('no_enroll', $pegawaiItem->no_enroll)->first();
+                    $presensi = Presensi::whereDate('tanggal_presensi',  $tglPresensiCheck)->Where('no_enroll', $pegawaiItem->no_enroll)->first();
 
                     //Check Jika Pegawai ditemukan
                     if ($presensi) {
-
-
 
                         if ($presensi->status_kehadiran != 'LIBUR') {
                             try {
@@ -1088,7 +1094,7 @@ class PresensiHelper
                         $presensi = new Presensi();
                         $presensi->no_enroll = $pegawaiItem->no_enroll;
                         $presensi->jam_kerja_id = $jamKerja->id;
-                        $presensi->tanggal_presensi = $tglPresensiKemarin;
+                        $presensi->tanggal_presensi = $tglPresensiCheck;
 
                         // Jam Masuk
                         $presensi->jam_masuk = '00:00:00';
@@ -1111,29 +1117,21 @@ class PresensiHelper
                             //===========================
                             //Check Apakah ada Tubel
                             //===========================
+                            $tubel = PreTubel::where('tanggal_awal', '>=', $tglPresensiCheck)
+                                ->where('tanggal_akhir', '<=', $tglPresensiCheck)
+                                ->where('no_enroll',$pegawaiItem->no_enroll)
+                                ->first();
 
-                            $dinasLuar = PreDinasLuar::where('tanggal_dinas_awal', '>=', $tglPresensiKemarin)
-                                ->where('tanggal_dinas_akhir', '<=', $tglPresensiKemarin)->get();
-                            if ($dinasLuar) {
-                                $presensi->status_kehadiran = 'DINAS LUAR';
+                            if ($tubel) {
+                                $presensi->status_kehadiran = 'TUGAS BELAJAR';
                                 $presensi->kekurangan_jam = "00:00:00";
                                 $presensi->kelebihan_jam = "00:00:00";
                                 $presensi->nominal_potongan = 0;
                             } else {
-                                $tubel = PreTubel::where('tanggal_dinas_awal', '>=', $tglPresensiKemarin)
-                                    ->where('tanggal_dinas_akhir', '<=', $tglPresensiKemarin)->get();
-
-                                if ($tubel) {
-                                    $presensi->status_kehadiran = 'TUGAS BELAJAR';
-                                    $presensi->kekurangan_jam = "00:00:00";
-                                    $presensi->kelebihan_jam = "00:00:00";
-                                    $presensi->nominal_potongan = 0;
-                                } else {
-                                    $presensi->status_kehadiran = 'ALPHA';
-                                    $presensi->kekurangan_jam = self::get_ConvertDateTime($totalJamKerjaSeconds);
-                                    $presensi->kelebihan_jam = "00:00:00";
-                                    $presensi->nominal_potongan = self::_hitung_potongan($pegawaiItem, $presensi->kekurangan_jam, $presensi->status_kehadiran);
-                                }
+                                $presensi->status_kehadiran = 'ALPHA';
+                                $presensi->kekurangan_jam = self::get_ConvertDateTime($totalJamKerjaSeconds);
+                                $presensi->kelebihan_jam = "00:00:00";
+                                $presensi->nominal_potongan = self::_hitung_potongan($pegawaiItem, $presensi->kekurangan_jam, $presensi->status_kehadiran);
                             }
                         }
 
@@ -1150,13 +1148,12 @@ class PresensiHelper
 
     public static function fnc_CheckDLRoutine()
     {
-        //disini check pegawai aktif yang tidak melakukan Presensi kemarin jalankan function ini setipa pergantian hari jam 00:00:01 (jam dua belas malam lewat satu detik)
 
         $dateNow = now(); // Assuming dateNow is the current date
         //Tanggal
         $tglPresensi = Carbon::parse($dateNow)->format('Y-m-d');
 
-        $DinasLuar = PreDinasLuar::where('tanggal_dinas_awal', '>=', $tglPresensi)->where('tanggal_dinas_akhir', '<=', $tglPresensi)->where('jenis_dinas', '=', 'DINAS LUAR KOTA')->get();
+        $DinasLuar = PreDinasLuar::where('tanggal_dinas_awal', '>=', $tglPresensi)->where('tanggal_dinas_akhir', '<=', $tglPresensi)->where('jenis_dinas', '=', 'DINAS LUAR KOTA')->where('','')->get();
 
         $jamKerja = PreJamKerja::Where('is_active', 'Y')->first();
 
@@ -1284,17 +1281,17 @@ class PresensiHelper
                         return $ALPHA->prosentase_pemotongan * $nominal_tukin;
                     }
                 }else{
-                    self::SaveInfo("Err: Jabatan Unit Kerja dan Tukin tidak ditemukan=>" . json_decode($pegawai));
+                    self::SaveInfo("Err: Jabatan Unit Kerja dan Tukin tidak ditemukan=>" . $pegawai->id .'|'. $pegawai->nama_depan . ' ' . $pegawai->nama_belakang);
                     return -1;
                 }
             }else{
-                self::SaveInfo("Err: Jabatan tidak ditemukan=>" . json_decode($pegawai));
+                self::SaveInfo("Err: Jabatan tidak ditemukan=>" . $pegawai->id .'|'. $pegawai->nama_depan . ' ' . $pegawai->nama_belakang);
                 return -1;
             }
 
 
         } catch (\Throwable $th) {
-            Log::error('Error kalkulasi Potongan : ' . $th . ' | ' . $pegawai->id . $jam . '|' . $status_kehadiran);
+            Log::error('Error kalkulasi Potongan : ' . $th . ' | ' . $pegawai->id .'|'. $pegawai->nama_depan . ' ' . $pegawai->nama_belakang .'|'. $jam . '|' . $status_kehadiran);
             return -1;
         }
     }
