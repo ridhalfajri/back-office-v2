@@ -4,7 +4,7 @@
 @push('breadcrumb')
     <ol class="breadcrumb custom-background-color">
         <li class="breadcrumb-item"><a href="{{ route('dashboard') }}"><i class="fa fa-home"></i></a></li>
-        <li class="breadcrumb-item"><a href="{{route('penghasilan.show',$gaji->pegawai_id)}}">Detail THP Pegawai</a></li>
+        <li class="breadcrumb-item"><a href="{{route('penghasilan.show',$cekPeriodUmak->pegawai_id)}}">Detail THP Pegawai</a></li>
         <li class="breadcrumb-item active" aria-current="page">{{ $title }}</li>
     </ol>
 @endpush
@@ -17,7 +17,7 @@
                         <div class="col-12">
                             <div class="card">
                                 <div class="card-header">
-                                    <h3 class="card-title">{{ $umak->periode }}</h3>
+                                    <h3 class="card-title">{{ $umakPeriode }}</h3>
                                 </div>
                                 <div class="card-body">
                                     <div class="row my-8">

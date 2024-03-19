@@ -198,7 +198,7 @@ class PegawaiRiwayatThpController extends Controller
         $this->authorize('personal', $cek_pegawai);
 
         $title = "Tukin Detail";
-        $tukin = PegawaiRiwayatThp::where('pegawai_riwayat_thp.id', $id)->select('tunjangan_kinerja', 'potongan_tukin', 'bulan', 'tahun', 'p.nama_depan', 'p.nama_belakang', 'p.nip', 'p.email_kantor')
+        $tukin = PegawaiRiwayatThp::where('pegawai_riwayat_thp.id', $id)->select('tunjangan_kinerja', 'potongan_tukin', 'bulan', 'tahun', 'p.nama_depan', 'p.nama_belakang', 'p.nip', 'p.email_kantor', 'p.id AS pegawai_id')
             ->join('pegawai AS p', 'p.id', '=', 'pegawai_riwayat_thp.pegawai_id')
             ->first();
         $monthName = date("F", strtotime("$tukin->tahun-$tukin->bulan-01"));
@@ -213,24 +213,25 @@ class PegawaiRiwayatThpController extends Controller
     //indrawan
     public function umak_detail($id)
     {
-        $pegawai = PegawaiRiwayatUmak::where('id', $id)->select('pegawai_id')->first();
-        $cek_pegawai = Pegawai::where('id', $pegawai->pegawai_id)->first();
+        //cek period dan detail umak
+        $cekPeriodUmak = PegawaiRiwayatUmak::where('id', $id)->first();
+        
+        $cek_pegawai = Pegawai::where('id', $cekPeriodUmak->pegawai_id)->first();
         $this->authorize('personal', $cek_pegawai);
         //where('pegawai_riwayat_umak.id', $id)
         $title = "Uang Makan Detail";
 
-        //cek period
-        $cekPeriodUmak = PegawaiRiwayatUmak::where('id', $id)->first();
-
         //cek double/tidak
         $rowUmak = PegawaiRiwayatUmak::where('bulan', $cekPeriodUmak->bulan)
             ->where('tahun', $cekPeriodUmak->tahun)
+            ->where('pegawai_id', $cekPeriodUmak->pegawai_id)
             ->count();
 
         $umak = [];
         if ($rowUmak == 1) {
             $umak = PegawaiRiwayatUmak::where('pegawai_riwayat_umak.bulan', $cekPeriodUmak->bulan)
                 ->where('pegawai_riwayat_umak.tahun', $cekPeriodUmak->tahun)
+                ->where('p.id', $cekPeriodUmak->pegawai_id)
                 ->select(
                     'p.nama_depan',
                     'p.nama_belakang',
@@ -248,6 +249,7 @@ class PegawaiRiwayatThpController extends Controller
         if ($rowUmak == 2) {
             $umak = PegawaiRiwayatUmak::where('pegawai_riwayat_umak.bulan', $cekPeriodUmak->bulan)
                 ->where('pegawai_riwayat_umak.tahun', $cekPeriodUmak->tahun)
+                ->where('p.id', $cekPeriodUmak->pegawai_id)
                 ->select(
                     'p.nama_depan',
                     'p.nama_belakang',
@@ -261,11 +263,12 @@ class PegawaiRiwayatThpController extends Controller
                 ->leftJoin('uang_makan AS um', 'um.id', '=', 'pegawai_riwayat_umak.uang_makan_id')
                 ->first();
         }
+        
 
         $monthName = date("F", strtotime("$cekPeriodUmak->tahun-$cekPeriodUmak->bulan-01"));
-        $umak->periode = Carbon::parse($monthName)->translatedFormat('F') . ' - ' . $cekPeriodUmak->tahun;
+        $umakPeriode = Carbon::parse($monthName)->translatedFormat('F') . ' - ' . $cekPeriodUmak->tahun;
 
-        return view('penghasilan.umak-detail', compact('title', 'umak'));
+        return view('penghasilan.umak-detail', compact('title', 'umak', 'umakPeriode', 'cekPeriodUmak'));
     }
     //
 
@@ -315,16 +318,16 @@ class PegawaiRiwayatThpController extends Controller
 
                 //* TUNJANGAN PASANGAN
                 $pasangan = PegawaiSuamiIstri::where('pegawai_id', $pegawai->id)
-                ->where('status_tunjangan', true)
-                ->where('is_verified', true)
-                ->first();
+                    ->where('status_tunjangan', true)
+                    ->where('is_verified', true)
+                    ->first();
                 $TUNJANGAN_PASANGAN = $this->_tunjangan_pasangan($pegawai, $NOMINAL_GAJI_POKOK, $pasangan);
 
                 //* TUNJANGAN ANAK
                 $count_anak = PegawaiAnak::where('pegawai_id', $pegawai->id)
-                ->where('status_tunjangan', true)
-                ->where('is_verified', true)
-                ->count();
+                    ->where('status_tunjangan', true)
+                    ->where('is_verified', true)
+                    ->count();
                 $TUNJANGAN_ANAK = $this->_tunjangan_anak($NOMINAL_GAJI_POKOK, $count_anak);
 
                 //*TUNJANGAN JABATAN
@@ -892,12 +895,14 @@ class PegawaiRiwayatThpController extends Controller
         //cek double/tidak
         $rowUmak = PegawaiRiwayatUmak::where('bulan', $cekPeriodUmak->bulan)
             ->where('tahun', $cekPeriodUmak->tahun)
+            ->where('pegawai_id', $cekPeriodUmak->pegawai_id)
             ->count();
 
         $umak = [];
         if ($rowUmak == 1) {
             $umak = PegawaiRiwayatUmak::where('pegawai_riwayat_umak.bulan', $cekPeriodUmak->bulan)
                 ->where('pegawai_riwayat_umak.tahun', $cekPeriodUmak->tahun)
+                ->where('p.id', $cekPeriodUmak->pegawai_id)
                 ->select(
                     'p.nama_depan',
                     'p.nama_belakang',
@@ -915,6 +920,7 @@ class PegawaiRiwayatThpController extends Controller
         if ($rowUmak == 2) {
             $umak = PegawaiRiwayatUmak::where('pegawai_riwayat_umak.bulan', $cekPeriodUmak->bulan)
                 ->where('pegawai_riwayat_umak.tahun', $cekPeriodUmak->tahun)
+                ->where('p.id', $cekPeriodUmak->pegawai_id)
                 ->select(
                     'p.nama_depan',
                     'p.nama_belakang',
@@ -930,9 +936,9 @@ class PegawaiRiwayatThpController extends Controller
         }
 
         $monthName = date("F", strtotime("$cekPeriodUmak->tahun-$cekPeriodUmak->bulan-01"));
-        $umak->periode = Carbon::parse($monthName)->translatedFormat('F') . ' - ' . $cekPeriodUmak->tahun;
+        $umakPeriode = Carbon::parse($monthName)->translatedFormat('F') . ' - ' . $cekPeriodUmak->tahun;
 
-        return view('penghasilan-esselon2.umak-detail', compact('title', 'umak'));
+        return view('penghasilan-esselon2.umak-detail', compact('title', 'umak', 'umakPeriode'));
     }
     //
 }
