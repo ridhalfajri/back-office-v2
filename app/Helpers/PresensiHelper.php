@@ -345,17 +345,17 @@ class PresensiHelper
 
                                 // Syarat jam masuk Presensi harus lebih besar dari jam masuk di db
                                 if (strtotime($jamPresensi) > strtotime($presensi->jam_masuk)) {
+                                     //Pegawai Pulang lebih Awal
                                     //====================================================================================================
-                                    //Jika Pegawai Izin pulang Awal atau Izin datang terlambat dan Pulang awal atau Pegawai masuk hari sabtu-minggu (Lembur), jika tidak izin maka presensi akan di skip
-                                    if ($presensi->is_ijin == 2 || $presensi->is_ijin == 3 || $dayOfWeekIndex > 5) {
-                                        //Ubah menjadi jam Pulang karena jam masuk sudah tersimpan sebelumnya
+                                    // //Jika Pegawai Izin pulang Awal atau Izin datang terlambat dan Pulang awal atau Pegawai masuk hari sabtu-minggu (Lembur), jika tidak izin maka presensi akan di skip
+                                    // if ($presensi->is_ijin == 2 || $presensi->is_ijin == 3 || $dayOfWeekIndex > 5) {
+                                    //     //Ubah menjadi jam Pulang karena jam masuk sudah tersimpan sebelumnya
+                                    //     $typePresensi = false;
+                                    //     $blnUpdatePresensi = true;
+                                    // }else{
                                         $typePresensi = false;
                                         $blnUpdatePresensi = true;
-                                    }else{
-                                        //Pegawai Pulang lebih Awal
-                                        $typePresensi = false;
-                                        $blnUpdatePresensi = true;
-                                    }
+                                    // }
                                     //======================================================================================================
                                 }
                             } else {
@@ -857,9 +857,12 @@ class PresensiHelper
         }
 
         $retValue = $retAwal;
-        if ($retAwal != "") {
+        if ($retAwal != "" && $retAkhir!="") {
             $retValue = $retAwal . ' dan ' . $retAkhir;
-        } else {
+        } elseif ($retAwal != "" && $retAkhir=="") {
+            $retValue = $retAwal;
+        } else
+        {
             $retValue =  $retAkhir;
         }
 
@@ -890,9 +893,18 @@ class PresensiHelper
         }
 
         $retValue = $retAwal;
+        // if ($retAwal != "" && $retAkhir!="") {
+        //     $retValue = $retAwal . ' dan ' . $retAkhir;
+        // } else if ($retAwal == "" && $retAkhir!="") {
+        //     $retValue =  $retAkhir;
+        // }
+
         if ($retAwal != "" && $retAkhir!="") {
             $retValue = $retAwal . ' dan ' . $retAkhir;
-        } else if ($retAwal == "" && $retAkhir!="") {
+        } elseif ($retAwal != "" && $retAkhir=="") {
+            $retValue = $retAwal;
+        } else
+        {
             $retValue =  $retAkhir;
         }
 
