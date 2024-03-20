@@ -25,6 +25,14 @@
 @section('content')
     <div class="section-body">
     <div class="card">
+        <div class="card-header">
+            <h4 class="card-title">
+                <button type="button" class="btn btn-xs btn-primary" id="btn-add" onclick="window.location.href='{{ route("pre-tubel.create") }}'">
+                    <i class="fa fa-plus"> Tugas Belajar Baru</i>
+                </button>
+            </h4>
+        </div>
+
         <div class="card-body">
             <div id="exportButtonsContainer">
             </div>

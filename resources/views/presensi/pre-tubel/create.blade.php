@@ -21,7 +21,7 @@
 
 @section('content')
     <div class="section-body">
-        <div class="card">
+        <div class="card col-4">
             <div class="card-body">
                 <div class="card-content">
                     <form class="needs-validation" id="preTubelForm" method="post"  action="{{ route('pre-tubel.store') }}"  accept-charset="utf-8" novalidate>
@@ -34,7 +34,7 @@
                                     <select class="form-control" id="no_enroll" name="no_enroll" required>
                                         <option value="" selected disabled>Pilih Nama Pegawai</option>
                                         @foreach ($pegawai as $data)
-                                            <option value="{{ $data->id }}" {{ old('no_enroll') == $data->id ? 'selected' : '' }}> NIP: {{ $data->nip }}  Nama : {{ $data->nama }} </option>
+                                            <option value="{{ $data->no_enroll }}" {{ old('no_enroll') == $data->no_enroll ? 'selected' : '' }}> NIP: {{ $data->nip }}  Nama : {{ $data->nama }}</option>
                                         @endforeach
                                     </select>
                                     <div class="invalid-feedback">
@@ -60,7 +60,7 @@
                         </div>
 
                         <div class="row clearfix">
-                            <div class="col-12 col-lg-12 col-md-12">
+                            <div class="col-4 col-lg-4 col-md-4">
                                 <div class="form-group @error('is_active') has-error @enderror">
                                     <label>Tugas Belajar Aktif :<span class="text-danger"><sup>*</sup></span></label>
                                     <select class="form-control" id="is_active" name="is_active" required>

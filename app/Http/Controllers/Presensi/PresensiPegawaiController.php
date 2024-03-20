@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Helpers\PresensiHelper;
 use Illuminate\Support\Carbon;
 use App\Helpers\PegawaiHelper;
+use PhpParser\Node\Stmt\TryCatch;
 use stdClass;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -48,6 +49,33 @@ class PresensiPegawaiController extends Controller
         // return redirect()->route('presensiku.index')
         //     ->with('success', 'Syncronize Data Presensi berhasil');
     }
+
+    public function manualcronjob(Request $request)
+    {
+        set_time_limit(3600);
+
+        try {
+            PresensiHelper::CronJobRunGetPresensi();
+        } catch (\Throwable $th) {
+            Log::error('(2) Error cronJobManual :' . $th . "\n=======================================");
+        }
+
+        try {
+            // PresensiHelper::CronJobRunNoAbsenOrHoliday();
+        } catch (\Throwable $th) {
+            Log::error('(2) Error cronJobManual :' . $th . "\n=======================================");
+        }
+
+
+
+        $responseData = ['status' => true, 'message' => 'Run Manual Cronjob selesai'];
+
+
+        return response()->json($responseData);
+
+
+    }
+
 
     public function datatable(Request $request)
     {

@@ -175,6 +175,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/presensi-pegawai/',  [PresensiPegawaiController::class, 'dataPresensiPegawai'])->name('presensi-pegawai');
     Route::get('/presensi-pegawai/datatablepresensi', [PresensiPegawaiController::class, 'datatablePresensi'])->name('presensi-pegawai.datatablepresensi');
     Route::post('/presensi-pegawai/getdatapresensipegawai', [PresensiPegawaiController::class, 'getdataPresensiPegawai'])->name('presensi-pegawai.getdatapresensipegawai');
+    Route::get('/presensi-pegawai/runmanual', [PresensiPegawaiController::class, 'manualcronjob'])->name('presensi-pegawai.runmanual');
 
     //uang makan
     Route::prefix('kalkulasi')->group(function () {
