@@ -92,7 +92,7 @@ class PresensiHelper
 
                 $dateTime = $row->tanggal;
                 $tglPresensi = Carbon::parse($dateTime)->format('Y-m-d');
-
+                //App Hadir Jam Maasuk dan Jam Pulang ada di 1 row
                 for ($i = 0; $i <= 1; $i++) {
                     if ($i == 0) {
                         $jamPresensi = $row->jam_masuk;
@@ -142,8 +142,8 @@ class PresensiHelper
                                             if ((empty($presensi->jam_masuk) || $presensi->jam_masuk == "00:00:00") && ($presensi->is_ijin == 1 || $presensi->is_ijin == 3)) {
                                                 $typePresensi = true;
                                                 $blnUpdatePresensi = true;
-                                            }else if ((empty($presensi->jam_masuk) || $presensi->jam_masuk == "00:00:00") && (empty($presensi->jam_pulang) || $presensi->jam_pulang == "00:00:00")) {
-                                                $typePresensi = true;
+                                            }else if (empty($presensi->jam_masuk) || $presensi->jam_masuk == "00:00:00") {
+                                                $blnUpdatePresensi = true;
                                             }
                                         }
                                     } else {
@@ -157,7 +157,7 @@ class PresensiHelper
                                             $blnUpdatePresensi = true;
                                         } else {
                                             //Jam Pulang
-                                            if (empty($presensi->jam_masuk) || $presensi->jam_masuk == "00:00:00") {
+                                            if (empty($presensi->jam_pulang) || $presensi->jam_pulang == "00:00:00") {
                                                 // Jika Jam Pulang null maka update presensi
                                                 $blnUpdatePresensi = true;
                                             } else {
@@ -297,13 +297,12 @@ class PresensiHelper
             ->table('checkinout')
             ->join('userinfo', 'checkinout.userid', '=', 'userinfo.userid')
             ->select('checkinout.id as id', 'checkinout.userid as userid', 'checkinout.checktime as checktime', 'checkinout.Reserved as Reserved', DB::raw('CAST(userinfo.badgenumber AS UNSIGNED) AS badgenumber'))
-            ->whereDate('checkinout.checktime', $todayDate)
-            // ->where('checkinout.userid',571)
-            // ->whereYear('checkinout.checktime', '=', $todayYear)
-            // ->whereMonth('checkinout.checktime', '=', $todayMonth)
+            // ->whereDate('checkinout.checktime', $todayDate)
+            ->whereYear('checkinout.checktime', '=', $todayYear)
+            ->whereMonth('checkinout.checktime', '=', $todayMonth)
             ->where('checkinout.Reserved', '0')
             ->orderBy('checkinout.checktime')
-            // ->limit(500)
+            ->limit(100)
             ->get();
 
 
@@ -364,8 +363,9 @@ class PresensiHelper
                                 if ((empty($presensi->jam_masuk) || $presensi->jam_masuk == "00:00:00") && ($presensi->is_ijin == 1 || $presensi->is_ijin == 3)) {
                                     $typePresensi = true;
                                     $blnUpdatePresensi = true;
-                                }else if ((empty($presensi->jam_masuk) || $presensi->jam_masuk == "00:00:00") && (empty($presensi->jam_pulang) || $presensi->jam_pulang == "00:00:00")) {
-                                    $typePresensi = true;
+                                }else if (empty($presensi->jam_masuk) || $presensi->jam_masuk == "00:00:00") {
+
+                                    $blnUpdatePresensi = true;
                                 }
                             }
                         } else {
@@ -939,6 +939,7 @@ class PresensiHelper
 
     }
 
+    //Jalankan setiap jam 20:00 / Jam delapan malam
     public static function CronJobRunNoAbsenOrHoliday()
     {
         try {
