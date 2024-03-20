@@ -299,7 +299,9 @@ class PegawaiRiwayatUmakController extends Controller
                         $nominalUangMakan = $umakPegawai->nominal;
 
                         //ada pajak 5%
-                        $totalUangMakan = $nominalUangMakan * $jumlahHariMasuk * 0.05;
+                        $pajakUmak = ($nominalUangMakan * $jumlahHariMasuk) * 0.05;
+
+                        $totalUangMakan = ($nominalUangMakan * $jumlahHariMasuk) - $pajakUmak;
                     } else {
                         // session()->flash('message', 'Ada pegawai yang datanya belum ada di tabel pegawai_riwayat_golongan!');
                         // return redirect()->back();
