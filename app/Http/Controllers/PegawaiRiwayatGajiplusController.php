@@ -157,11 +157,17 @@ class PegawaiRiwayatGajiplusController extends Controller
                     $NOMINAL_GAJI_POKOK = $gaji->gaji->nominal;
 
                     //* TUNJANGAN PASANGAN
-                    $pasangan = PegawaiSuamiIstri::where('pegawai_id', $pegawai->id)->where('status_tunjangan', true)->first();
+                    $pasangan = PegawaiSuamiIstri::where('pegawai_id', $pegawai->id)
+                    ->where('status_tunjangan', true)
+                    ->where('is_verified', true)
+                    ->first();
                     $TUNJANGAN_PASANGAN = $this->_tunjangan_pasangan($pegawai, $NOMINAL_GAJI_POKOK, $pasangan);
 
                     //* TUNJANGAN ANAK
-                    $count_anak = PegawaiAnak::where('pegawai_id', $pegawai->id)->where('status_tunjangan', 1)->count();
+                    $count_anak = PegawaiAnak::where('pegawai_id', $pegawai->id)
+                    ->where('status_tunjangan', true)
+                    ->where('is_verified', true)
+                    ->count();
                     $TUNJANGAN_ANAK = $this->_tunjangan_anak($NOMINAL_GAJI_POKOK, $count_anak);
 
                     //*TUNJANGAN JABATAN
