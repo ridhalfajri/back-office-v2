@@ -85,7 +85,11 @@
                             <div class="col-12 col-lg-6 col-md-6">
                                 <label class="form-label" style="color: orange;"><i>Note</i> :<br>
                                     Harap teliti dalam meng-<i>input</i> tanggal <i>cut off</i> untuk uang makan di
-                                    Desember ke-2 dan di Februari</label>
+                                    Desember ke-2 dan di Februari.<br><br>
+                                    
+                                    Total Uang Makan sudah dikurangi pajak 5%.
+                                </label>
+
                             </div>
                         </div>
 
