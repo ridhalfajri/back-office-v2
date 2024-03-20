@@ -180,8 +180,8 @@ class PreTubelController extends Controller
     public function edit(PreTubel $preTubel)
     {
         $title = 'Ubah Data Tugas Belajar';
-
-        return view('presensi.pre-tubel.edit', compact('title','preTubel'));
+        $pegawai = Pegawai::all();
+        return view('presensi.pre-tubel.edit', compact('title','preTubel','pegawai'));
     }
 
     /**
