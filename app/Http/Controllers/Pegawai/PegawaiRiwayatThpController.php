@@ -198,7 +198,7 @@ class PegawaiRiwayatThpController extends Controller
         $this->authorize('personal', $cek_pegawai);
 
         $title = "Tukin Detail";
-        $tukin = PegawaiRiwayatThp::where('pegawai_riwayat_thp.id', $id)->select('tunjangan_kinerja', 'potongan_tukin', 'bulan', 'tahun', 'p.nama_depan', 'p.nama_belakang', 'p.nip', 'p.email_kantor')
+        $tukin = PegawaiRiwayatThp::where('pegawai_riwayat_thp.id', $id)->select('tunjangan_kinerja', 'potongan_tukin', 'bulan', 'tahun', 'p.nama_depan', 'p.nama_belakang', 'p.nip', 'p.email_kantor', 'p.id AS pegawai_id')
             ->join('pegawai AS p', 'p.id', '=', 'pegawai_riwayat_thp.pegawai_id')
             ->first();
         $monthName = date("F", strtotime("$tukin->tahun-$tukin->bulan-01"));
@@ -315,16 +315,16 @@ class PegawaiRiwayatThpController extends Controller
 
                 //* TUNJANGAN PASANGAN
                 $pasangan = PegawaiSuamiIstri::where('pegawai_id', $pegawai->id)
-                ->where('status_tunjangan', true)
-                ->where('is_verified', true)
-                ->first();
+                    ->where('status_tunjangan', true)
+                    ->where('is_verified', true)
+                    ->first();
                 $TUNJANGAN_PASANGAN = $this->_tunjangan_pasangan($pegawai, $NOMINAL_GAJI_POKOK, $pasangan);
 
                 //* TUNJANGAN ANAK
                 $count_anak = PegawaiAnak::where('pegawai_id', $pegawai->id)
-                ->where('status_tunjangan', true)
-                ->where('is_verified', true)
-                ->count();
+                    ->where('status_tunjangan', true)
+                    ->where('is_verified', true)
+                    ->count();
                 $TUNJANGAN_ANAK = $this->_tunjangan_anak($NOMINAL_GAJI_POKOK, $count_anak);
 
                 //*TUNJANGAN JABATAN
