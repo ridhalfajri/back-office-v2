@@ -379,7 +379,7 @@ class PresensiHelper
                                 $blnUpdatePresensi = true;
                             } else {
                                 //Jam Pulang
-                                if (empty($presensi->jam_masuk) || $presensi->jam_masuk == "00:00:00") {
+                                if (empty($presensi->jam_pulang) || $presensi->jam_pulang == "00:00:00") {
                                     // Jika Jam Pulang null maka update presensi
                                     $blnUpdatePresensi = true;
                                 } else {
