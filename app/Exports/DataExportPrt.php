@@ -28,7 +28,8 @@ class DataExportPrt implements FromCollection, WithHeadings
     */
     public function collection()
     {
-        $data = PegawaiRiwayatThr::select(DB::raw('CONCAT(p.nama_depan," ",p.nama_belakang) AS nama_pegawai'), 'p.nip', 'uk.nama as unit_kerja',
+        $data = PegawaiRiwayatThr::select(DB::raw('CONCAT(p.nama_depan," ",p.nama_belakang) AS nama_pegawai'),
+        DB::raw('CONCAT("\'",p.nip) AS nip'), 'uk.nama as unit_kerja',
             'pegawai_riwayat_thr.nominal_gaji_pokok', 'pegawai_riwayat_thr.tunjangan_beras', 'pegawai_riwayat_thr.tunjangan_pasangan',
             'pegawai_riwayat_thr.tunjangan_anak', 'pegawai_riwayat_thr.tunjangan_jabatan', 'pegawai_riwayat_thr.tunjangan_kinerja',
             'pegawai_riwayat_thr.total_thr', 'pegawai_riwayat_thr.tahun'
@@ -75,14 +76,13 @@ class DataExportPrt implements FromCollection, WithHeadings
             ->where('pegawai_riwayat_thr.tahun', '=', $this->tahun)
             ->orderBy('p.jenis_pegawai_id','asc')
             ->orderBy('uk.id','asc')
-            ->orderBy('p.nama_depan','asc')
-            ->get();
+            ->orderBy('p.nama_depan','asc');
 
             if(null != $this->unitKerjaId || '' != $this->unitKerjaId){
                 $data->where('uk.id', '=', $this->unitKerjaId);
             }
 
-        return $data;
+        return $data->get();
     }
 
     public function headings(): array
