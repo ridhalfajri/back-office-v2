@@ -361,12 +361,12 @@
                                 },
                                     format: {
                                         header: function ( data, columnIdx ) {
-                                            if(columnIdx==1){
-                                            return 'Tanggal Presensi';
-                                            }
-                                            else{
+                                            // if(columnIdx==1){
+                                            // return 'Tanggal Presensi';
+                                            // }
+                                            // else{
                                             return data;
-                                            }
+                                            // }
                                         }
                                     }
                             }

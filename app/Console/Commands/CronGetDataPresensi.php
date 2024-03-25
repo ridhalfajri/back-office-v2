@@ -27,12 +27,12 @@ class CronGetDataPresensi extends Command
     public function handle()
     {
         PresensiHelper::CronJobRunGetPresensi();
-        //Jalankan Cronjob setiap menit
+        // Jalankan Cronjob setiap menit
         $time = now()->format('H:i');
-        if ($time == "20:00"){
+        // if ($time == "20:00"){
             //Cronjob untuk mengecheck pegawai yang tidak melakukan presensi
              PresensiHelper::CronJobRunNoAbsenOrHoliday();
-        }
+        // }
         $this->info('Prosedure untuk mendapatkan data presensi berhasil dijalankan!');
     }
 }

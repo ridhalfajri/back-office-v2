@@ -274,7 +274,7 @@
             var dateAkhir = document.getElementById('date_akhir').value;
             var selectedPegawaiId = document.getElementById('pegawai_id').value;
             var selectedHirarkiUnitKerjaId = document.getElementById('hirarki_unit_kerja_id').value;
-            console.log('OK sudah');
+
 
             btnExport = 0;
             table = $('#tbl-data').DataTable({
@@ -303,12 +303,12 @@
                                     },
                                 format: {
                                     header: function ( data, columnIdx ) {
-                                        if(columnIdx==1){
-                                            return 'Tanggal Presensi';
-                                        }
-                                        else{
+                                        // if(columnIdx==1){
+                                        //     return 'Tanggal Presensi';
+                                        // }
+                                        // else{
                                             return data;
-                                        }
+                                        // }
                                     }
                                 }
                             }
