@@ -101,7 +101,7 @@ class PreIjinController extends Controller
 
     public function datatablepersetujuan(Request $request)
     {
-        $this->authorize('preIjinPimpinanAuth');
+        // $this->authorize('preIjinPimpinanAuth');
 
         $data = DB::table('pegawai as p')
             ->select('s.id', 's.jenis_ijin', 's.tanggal', 's.status', 's.keterangan', 'p.id as pegawai_id', 'p.nip', 'p.nama_depan', 'p.nama_belakang', 'p.tempat_lahir', 'p.tanggal_lahir', 'p.email_kantor', 'p.no_enroll', 'x.id as jabatan_id', 'x.jabatan_tukin_id', 'q.jabatan_unit_kerja_id', 'z.jenis_jabatan', 'z.nama_jabatan', 'z.grade', 'z.nominal', 'y.nama_unit_kerja', 'x.hirarki_unit_kerja_id', 'y.nama_jenis_unit_kerja', 'y.nama_parent_unit_kerja', 'q.is_plt')
