@@ -28,7 +28,9 @@ class DataExportPru implements FromCollection, WithHeadings
     */
     public function collection()
     {
-        $data = PegawaiRiwayatUmak::select(DB::raw('CONCAT(p.nama_depan," ",p.nama_belakang) AS nama_pegawai'), 'p.nip', 'uk.nama as unit_kerja', 'um.nominal',
+        $data = PegawaiRiwayatUmak::select(DB::raw('CONCAT(p.nama_depan," ",p.nama_belakang) AS nama_pegawai'), 
+        DB::raw('CONCAT("\'",p.nip) AS nip'),
+        'uk.nama as unit_kerja', 'um.nominal',
             'pegawai_riwayat_umak.jumlah_hari_masuk', 'pegawai_riwayat_umak.total', 'pegawai_riwayat_umak.is_double', DB::raw('MONTHNAME(STR_TO_DATE(pegawai_riwayat_umak.bulan, "%m")) as nama_bulan'), 'pegawai_riwayat_umak.tahun')
             ->selectSub(function ($query) {
                 $query->select(DB::raw("CONCAT(b.nama, ' - ', pr.no_rekening)"))
@@ -67,14 +69,13 @@ class DataExportPru implements FromCollection, WithHeadings
             ->where('pegawai_riwayat_umak.bulan', '=', $this->bulan)
             ->where('pegawai_riwayat_umak.tahun', '=', $this->tahun)
             ->orderBy('uk.id','asc')
-            ->orderBy('p.nama_depan','asc')
-            ->get();
+            ->orderBy('p.nama_depan','asc');
 
             if(null != $this->unitKerjaId || '' != $this->unitKerjaId){
                 $data->where('uk.id', '=', $this->unitKerjaId);
             }
 
-        return $data;
+        return $data->get();
     }
 
     public function headings(): array

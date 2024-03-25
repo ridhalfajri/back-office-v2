@@ -28,7 +28,8 @@ class DataExportPrg implements FromCollection, WithHeadings
     */
     public function collection()
     {
-        $data = PegawaiRiwayatGajiplus::select(DB::raw('CONCAT(p.nama_depan," ",p.nama_belakang) AS nama_pegawai'), 'p.nip', 'uk.nama as unit_kerja',
+        $data = PegawaiRiwayatGajiplus::select(DB::raw('CONCAT(p.nama_depan," ",p.nama_belakang) AS nama_pegawai'),
+        DB::raw('CONCAT("\'",p.nip) AS nip'), 'uk.nama as unit_kerja',
             'pegawai_riwayat_gajiplus.nominal_gaji_pokok', 'pegawai_riwayat_gajiplus.tunjangan_beras', 'pegawai_riwayat_gajiplus.tunjangan_pasangan',
             'pegawai_riwayat_gajiplus.tunjangan_anak', 'pegawai_riwayat_gajiplus.tunjangan_jabatan', 'pegawai_riwayat_gajiplus.tunjangan_kinerja',
             'pegawai_riwayat_gajiplus.total_gajiplus', 'pegawai_riwayat_gajiplus.tahun')
@@ -75,14 +76,13 @@ class DataExportPrg implements FromCollection, WithHeadings
             ->where('pegawai_riwayat_gajiplus.tahun', '=', $this->tahun)
             ->orderBy('p.jenis_pegawai_id','asc')
             ->orderBy('uk.id','asc')
-            ->orderBy('p.nama_depan','asc')
-            ->get();
+            ->orderBy('p.nama_depan','asc');
 
             if(null != $this->unitKerjaId || '' != $this->unitKerjaId){
                 $data->where('uk.id', '=', $this->unitKerjaId);
             }
 
-        return $data;
+        return $data->get();
     }
 
     public function headings(): array
