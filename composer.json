@@ -15,6 +15,7 @@
         "laravel/tinker": "^2.8",
         "maatwebsite/excel": "^3.1",
         "nesbot/carbon": "^2.72",
+        "rap2hpoutre/fast-excel": "^5.4",
         "spatie/async": "^1.6",
         "spatie/laravel-medialibrary": "^10.0.0",
         "spatie/laravel-permission": "^6.2",

@@ -18,6 +18,10 @@ use PhpParser\Node\Stmt\TryCatch;
 use stdClass;
 use Yajra\DataTables\Facades\DataTables;
 
+use Rap2hpoutre\FastExcel\Exportable;
+use Rap2hpoutre\FastExcel\Facades\FastExcel as FacadesFastExcel;
+use Rap2hpoutre\FastExcel\FastExcel;
+
 class PresensiPegawaiController extends Controller
 {
     /**
@@ -27,6 +31,7 @@ class PresensiPegawaiController extends Controller
     */
     public function index()
     {
+
         $title = 'List Data Presensi';
         $user = Auth::user();
 
@@ -129,6 +134,46 @@ class PresensiPegawaiController extends Controller
 
     }
 
+    public function exportPresensi(Request $request)
+    {
+
+        try {
+
+            $user = Auth::user();
+
+            $pegawai = Pegawai::where('id', '=', $user->pegawai_id)->first();
+            $data = Presensi::where('no_enroll',$pegawai->no_enroll)
+                                ->Where('tanggal_presensi','>=',$request->date_awal)
+                                ->Where('tanggal_presensi','<=',$request->date_akhir)
+                                ->orderBy('tanggal_presensi', 'asc')->get();
+            if(!$data){
+                $data = [
+                    'status' => [
+                        'error' => false ,
+                        'message' => 'Tidak ada data!',
+                    ],
+                ];
+                return response()->json($data, 200);
+            }else{
+                $recordsArray = $data->toArray();
+                return FastExcel($recordsArray)->download('presensi'.$pegawai->nama_depan .' ' . $pegawai->nama_belakang .'.xlsx');
+            }
+
+
+        } catch (\Throwable $th) {
+            $data = [
+                'status' => [
+                    'error' => false ,
+                    'message' =>  $th->getMessage(),
+                ],
+            ];
+
+            return response()->json($data, 200);
+        }
+
+
+    }
+
 
     public function dataPresensiPegawai()
     {
@@ -186,8 +231,6 @@ class PresensiPegawaiController extends Controller
 
     public function datatablepresensi(Request $request)
     {
-
-
         if (!empty($request->date_awal) && !empty($request->date_akhir) ) {
 
             $data = DB::table('pegawai as p')
@@ -296,6 +339,93 @@ class PresensiPegawaiController extends Controller
 
             ->make(true);
         }
+
+    }
+
+    public function ExportPresensiPegawai(Request $request){
+
+        try {
+            if (!empty($request->date_awal) && !empty($request->date_akhir) ) {
+
+                $data = DB::table('pegawai as p')
+                ->select('p.nip', DB::raw("CONCAT(p.nama_depan, ' ', p.nama_belakang) as nama_pegawai"),
+                        's.nama as golongan','s.nama_pangkat', 'z.jenis_jabatan', 'z.nama_jabatan', 'y.nama_unit_kerja',
+                        'x.hirarki_unit_kerja_id', 'y.nama_jenis_unit_kerja', 'y.nama_parent_unit_kerja','o.tanggal_presensi', 'o.jam_masuk', 'o.jam_pulang', 'o.kekurangan_jam', 'o.kelebihan_jam',
+                        'o.nominal_potongan', 'o.status_kehadiran', 'o.keterangan')
+                ->join('pegawai_riwayat_jabatan as q', function ($join) {
+                    $join->on('p.id', '=', 'q.pegawai_id')
+                        ->where('q.is_now', '=', 1);
+                })
+                ->join('pegawai_riwayat_golongan as r', function ($join) {
+                    $join->on('p.id', '=', 'r.pegawai_id')
+                        ->where('r.is_active', '=', 1);
+                })
+                ->join('presensi as o', 'p.no_enroll', '=', 'o.no_enroll')
+                ->join('golongan as s', 'r.golongan_id', '=', 's.id')
+                ->join('jabatan_unit_kerja as x', 'q.jabatan_unit_kerja_id', '=', 'x.id')
+                ->join(DB::raw('(SELECT a.id, a.child_unit_kerja_id, a.parent_unit_kerja_id, b.nama as nama_unit_kerja, c.nama_jenis_unit_kerja, c.nama_parent_unit_kerja
+                                FROM hirarki_unit_kerja as a
+                                INNER JOIN unit_kerja as b ON a.child_unit_kerja_id = b.id
+                                INNER JOIN (SELECT a.id, a.child_unit_kerja_id, a.parent_unit_kerja_id, c.nama as nama_jenis_unit_kerja, b.nama as nama_parent_unit_kerja
+                                            FROM hirarki_unit_kerja as a
+                                            INNER JOIN unit_kerja as b ON a.parent_unit_kerja_id = b.id
+                                            INNER JOIN jenis_unit_kerja as c ON c.id = b.jenis_unit_kerja_id) as c ON a.id = c.id) as y'), function ($join) {
+                    $join->on('x.hirarki_unit_kerja_id', '=', 'y.id');
+                })
+                ->join(DB::raw('(SELECT a.id, a.jabatan_id, a.jenis_jabatan_id, b.nama as jenis_jabatan, c.grade, c.nominal,
+                                CASE
+                                    WHEN a.jenis_jabatan_id = 1 THEN d.nama
+                                    WHEN a.jenis_jabatan_id = 2 THEN e.nama
+                                    WHEN a.jenis_jabatan_id = 4 THEN f.nama
+                                    ELSE NULL
+                                END AS nama_jabatan
+                                FROM jabatan_tukin as a
+                                INNER JOIN jenis_jabatan as b ON a.jenis_jabatan_id = b.id
+                                INNER JOIN tukin as c ON a.tukin_id = c.id
+                                LEFT JOIN jabatan_struktural as d ON d.id = a.jabatan_id
+                                LEFT JOIN jabatan_fungsional as e ON e.id = a.jabatan_id
+                                LEFT JOIN jabatan_fungsional_umum as f ON f.id = a.jabatan_id) as z'), 'x.jabatan_tukin_id', '=', 'z.id')
+                ->whereBetween('o.tanggal_presensi', [$request->date_awal, $request->date_akhir])
+                ->where('q.is_plt', '=', 0);
+
+                if($request->hirarki_unit_kerja_id!=''){
+                    $data->where('x.hirarki_unit_kerja_id','=',$request->hirarki_unit_kerja_id);
+                }
+
+                if($request->pegawai_id!=''){
+                    $data->where('p.id','=',$request->pegawai_id);
+                }
+
+                if (auth()->user()->pegawai->jabatan_sekarang->tx_tipe_jabatan_id == 1 || auth()->user()->pegawai->jabatan_sekarang->tx_tipe_jabatan_id == 2 ){
+                    $data->where('p.id','<>',auth()->user()->pegawai->id);
+                }
+
+                $data->orderBy('o.tanggal_presensi', 'asc')->get();
+                if(!$data){
+                    $data = [
+                        'status' => [
+                            'error' => false ,
+                            'message' => 'Tidak ada data!',
+                        ],
+                    ];
+                    return response()->json($data, 200);
+                }else{
+                    $recordsArray = $data->toArray();
+                    return FastExcel($recordsArray)->download('presensi.xlsx');
+                }
+
+            }
+        } catch (\Throwable $th) {
+            $data = [
+                'status' => [
+                    'error' => false ,
+                    'message' =>  $th->getMessage(),
+                ],
+            ];
+
+            return response()->json($data, 200);
+        }
+
 
     }
 
