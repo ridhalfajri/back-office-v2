@@ -163,7 +163,10 @@ class RiwayatJabatanController extends Controller
     public function show($id)
     {
         $jabatan = PegawaiRiwayatJabatan::where('id', $id)->first();
-        $jabatan->media_sk_jabatan = $jabatan->getMedia("media_sk_jabatan")[0]->getUrl();
+        $cek_media = $jabatan->getMedia("media_sk_jabatan")->count();
+        if ($cek_media) {
+            $jabatan->media_sk_jabatan = $jabatan->getMedia("media_sk_jabatan")[0]->getUrl();
+        }
         if ($jabatan == null) {
             abort(404);
         }
