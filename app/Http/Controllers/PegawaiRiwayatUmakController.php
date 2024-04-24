@@ -55,9 +55,11 @@ class PegawaiRiwayatUmakController extends Controller
             $data = PegawaiRiwayatUmak::select(
                 'p.nama_depan',
                 'p.nama_belakang',
+                DB::raw('CONCAT(p.nama_depan," " ,p.nama_belakang) AS nama_pegawai'),
                 'p.nip',
                 'um.nominal',
                 'pegawai_riwayat_umak.jumlah_hari_masuk',
+                DB::raw('CONCAT(pegawai_riwayat_umak.jumlah_hari_masuk," ","hari") AS jumlah_hari'),
                 'pegawai_riwayat_umak.total',
                 'pegawai_riwayat_umak.is_double',
                 'pegawai_riwayat_umak.bulan',
@@ -99,11 +101,17 @@ class PegawaiRiwayatUmakController extends Controller
 
         return Datatables::of($data)
             ->addColumn('no', '')
-            ->addColumn('jumlah_hari', function ($data) {
-                return $data->jumlah_hari_masuk . ' hari';
+            // ->addColumn('jumlah_hari', function ($data) {
+            //     return $data->jumlah_hari_masuk . ' hari';
+            // })
+            ->filterColumn('jumlah_hari', function ($query, $keyword) {
+                $query->whereRaw("CONCAT(pegawai_riwayat_umak.jumlah_hari_masuk,' ','hari') like ?", ["%$keyword%"]);
             })
-            ->addColumn('nama_pegawai', function ($data) {
-                return $data->nama_depan . ' ' . $data->nama_belakang;
+            // ->addColumn('nama_pegawai', function ($data) {
+            //     return $data->nama_depan . ' ' . $data->nama_belakang;
+            // })
+            ->filterColumn('nama_pegawai', function ($query, $keyword) {
+                $query->whereRaw("CONCAT(p.nama_depan,' ',p.nama_belakang) like ?", ["%$keyword%"]);
             })
             ->addColumn('periode', function ($data) {
                 if ($data->bulan == '01') {
@@ -428,7 +436,7 @@ class PegawaiRiwayatUmakController extends Controller
             ->get();
 
             // Tentukan nama file
-            $fileName = 'Uang_Makan_'.$tgl_awal.'_sampai_'.$tgl_akhir.'.txt';
+            $fileName = 'Uang-Makan_'.$tgl_awal.'_sampai_'.$tgl_akhir.'.txt';
 
             // Buat file temporary
             $filePath = storage_path('app/' . $fileName);

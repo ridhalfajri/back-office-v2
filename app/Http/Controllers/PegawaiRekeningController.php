@@ -42,7 +42,9 @@ class PegawaiRekeningController extends Controller
         $unitKerja = $request->unitKerja;
 
         $data = DB::table('pegawai_rekening as pr')
-            ->select('pr.id', 'p.nama_depan', 'p.nama_belakang', 'p.nip', 'uk.nama as unit_kerja',
+            ->select('pr.id', 'p.nama_depan', 'p.nama_belakang',
+            DB::raw('CONCAT(p.nama_depan," " ,p.nama_belakang) AS nama_pegawai'),
+            'p.nip', 'uk.nama as unit_kerja',
             'b.nama as nama_bank', 'pr.no_rekening', 'pr.tipe_rekening')
             ->join('bank as b','b.id','=','pr.bank_id')
             ->join('pegawai as p','p.id','=','pr.pegawai_id')
@@ -71,8 +73,11 @@ class PegawaiRekeningController extends Controller
 
         return Datatables::of($data)
         ->addColumn('no', '')
-        ->addColumn('nama_pegawai', function ($data) {
-            return $data->nama_depan.' '.$data->nama_belakang;
+        // ->addColumn('nama_pegawai', function ($data) {
+        //     return $data->nama_depan.' '.$data->nama_belakang;
+        // })
+        ->filterColumn('nama_pegawai', function ($query, $keyword) {
+            $query->whereRaw("CONCAT(p.nama_depan,' ',p.nama_belakang) like ?", ["%$keyword%"]);
         })
 
         ->addColumn('aksi', 'pegawai-rekening.aksi')

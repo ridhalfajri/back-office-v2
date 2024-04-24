@@ -42,7 +42,9 @@ class PegawaiRiwayatGolonganController extends Controller
         $isAktif = $request->isAktif;
 
         $data = DB::table('pegawai_riwayat_golongan as prg')
-            ->select('prg.id', 'p.nama_depan', 'p.nama_belakang', 'p.nip', 'uk.nama as unit_kerja',
+            ->select('prg.id', 'p.nama_depan', 'p.nama_belakang',
+            DB::raw('CONCAT(p.nama_depan," " ,p.nama_belakang) AS nama_pegawai'),
+            'p.nip', 'uk.nama as unit_kerja',
             'g.nama as nama_golongan','prg.no_sk', 'prg.is_active')
             ->join('golongan as g','g.id','=','prg.golongan_id')
             ->join('pegawai as p','p.id','=','prg.pegawai_id')
@@ -77,8 +79,11 @@ class PegawaiRiwayatGolonganController extends Controller
 
         return Datatables::of($data)
         ->addColumn('no', '')
-        ->addColumn('nama_pegawai', function ($data) {
-            return $data->nama_depan.' '.$data->nama_belakang;
+        // ->addColumn('nama_pegawai', function ($data) {
+        //     return $data->nama_depan.' '.$data->nama_belakang;
+        // })
+        ->filterColumn('nama_pegawai', function ($query, $keyword) {
+            $query->whereRaw("CONCAT(p.nama_depan,' ',p.nama_belakang) like ?", ["%$keyword%"]);
         })
         ->addColumn('status', function ($data) {
             if($data->is_active == 1){
