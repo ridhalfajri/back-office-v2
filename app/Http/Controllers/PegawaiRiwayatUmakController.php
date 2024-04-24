@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\PegawaiRiwayatJabatan;
 use App\Models\PegawaiRiwayatUmak;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -403,6 +404,54 @@ class PegawaiRiwayatUmakController extends Controller
 
             // return redirect()->route('pegawai-riwayat-umak.index')
             //         ->with('error', 'Error saat Proses Data Pegawai Riwayat Uang Makan!');
+        }
+    }
+
+    public function exportToTxt($tgl_awal, $tgl_akhir)
+    {
+        try {
+            //jumlah hari dalam parameter bulan dan tahun
+            // $date = Carbon::create($tahun, $bulan, 1);
+            // $numberOfDays = $date->daysInMonth;
+
+            // $tanggalAwal = $tahun.'-'.$bulan.'-1';
+            // $tanggalAkhir = $tahun.'-'.$bulan.'-'.$numberOfDays;
+
+            //---------------
+
+            $data = DB::table('pegawai')
+            ->select('pegawai.nip', 'presensi.tanggal_presensi')
+            ->join('presensi', 'pegawai.no_enroll', '=', 'presensi.no_enroll')
+            ->whereBetween('presensi.tanggal_presensi', [$tgl_awal, $tgl_akhir])
+            ->where('presensi.status_kehadiran', 'HADIR')
+            ->orderBy('pegawai.nip', 'asc')
+            ->get();
+
+            // Tentukan nama file
+            $fileName = 'Uang_Makan_'.$tgl_awal.'_sampai_'.$tgl_akhir.'.txt';
+
+            // Buat file temporary
+            $filePath = storage_path('app/' . $fileName);
+
+            // Buka file untuk menulis
+            $file = fopen($filePath, 'w');
+
+            // Tulis baris header jika diperlukan
+            // contoh: fwrite($file, "Header1\tHeader2\tHeader3\n");
+
+            // Tulis data ke file dengan delimiter tab
+            foreach ($data as $row) {
+                $rowData = implode("\t", get_object_vars($row));
+                fwrite($file, $rowData . "\n");
+            }
+
+            // Tutup file
+            fclose($file);
+
+            // Buat respons untuk mengunduh file
+            return Response::download($filePath, $fileName)->deleteFileAfterSend(true);
+        } catch (\Exception $e) {
+            Log::error($e->getMessage(), ['Export data txt gagal di method exportToTxt pada PegawaiRiwayatUmakController!']);
         }
     }
 

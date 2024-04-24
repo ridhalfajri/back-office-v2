@@ -36,6 +36,37 @@
                 <div class="card">
                     {{-- card-header --}}
                     <div class="card-body">
+                        <label class="form-label"><i>Export Data Txt</i></label>
+                        {{-- export txt --}}
+                        <div class="row">
+                            <div class="col-3">
+                                <div class="form-group">
+                                    <label class="form-label">Tanggal Awal Export</label>
+                                    <input type="date" class="form-control" id="tgl_awal" name = "tgl_awal" placeholder="Pilih Tanggal"/>
+            
+                                </div>
+                            </div>
+            
+                            <div class="col-3">
+                                <div class="form-group">
+                                    <label class="form-label">Tanggal Akhir Export</label>
+                                    <input type="date" class="form-control" id="tgl_akhir" name = "tgl_akhir" placeholder="Pilih Tanggal"/>
+            
+                                </div>
+                            </div>
+
+                            <div class="col-3">
+                                <div class="form-group">
+                                    <label class="form-label">Aksi</label>
+                                    <button type="button" id="exportTxt" class="btn btn-success waves-effect waves-light">
+                                        Export to Txt
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-body">
                         @if ($errors->any())
                             <div class="alert alert-danger" role="alert">
                                 @foreach ($errors->all() as $error)
@@ -212,6 +243,7 @@
                         <button type="button" id="exportExcel" class="btn btn-success waves-effect waves-light">
                             Export to Excel
                         </button>
+
                     </div>
                 </div>
             </div>
@@ -381,6 +413,16 @@
                     window.location.href = '{{ url('kalkulasi/export-to-excel/umak') }}/' + bulan + '/' +
                         tahun + '/' + unitKerjaId;
                 }
+            });
+
+            //export data txt
+            $('#exportTxt').on('click', function(e) {
+                e.preventDefault();
+                let tgl_awal = $("#tgl_awal").val();
+                let tgl_akhir = $("#tgl_akhir").val();
+
+                window.location.href = '{{ url('kalkulasi/export-to-txt/umak') }}/' + tgl_awal + '/' +
+                    tgl_akhir;
             });
 
             //pop up kalkulasi umak

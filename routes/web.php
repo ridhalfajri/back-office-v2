@@ -180,6 +180,7 @@ Route::middleware('auth')->group(function () {
     //uang makan
     Route::prefix('kalkulasi')->group(function () {
         //indrawan
+        Route::get('/export-to-txt/umak/{tgl_awal}/{tgl_akhir}', [PegawaiRiwayatUmakController::class, 'exportToTxt'])->name('pegawai-riwayat-umak.export-txt-umak');
         Route::get('/export-to-excel/umak/{bulan}/{tahun}', [PegawaiRiwayatUmakController::class, 'exportToExcel'])->name('pegawai-riwayat-umak.export-excel-umak');
         Route::get('/export-to-excel/umak/{bulan}/{tahun}/{unitKerjaId}', [PegawaiRiwayatUmakController::class, 'exportToExcelDua'])->name('pegawai-riwayat-umak.export-excel-umak-dua');
         Route::post('/pegawai-riwayat-umak/datatable', [PegawaiRiwayatUmakController::class, 'datatable'])->name('pegawai-riwayat-umak.datatable');
