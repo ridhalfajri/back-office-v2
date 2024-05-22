@@ -384,18 +384,37 @@ class PegawaiRiwayatThpController extends Controller
 
             DB::beginTransaction();
             foreach ($all_pegawai as $pegawai) {
-                $jabatan = PegawaiRiwayatJabatan::where('pegawai_id', $pegawai->id)->where('is_now', true)->where('is_plt', false)->first();
+                //$jabatan = PegawaiRiwayatJabatan::where('pegawai_id', $pegawai->id)->where('is_now', true)->where('is_plt', false)->first();
+
+                $getTukin = DB::table('pegawai_riwayat_jabatan as prj')
+                ->select('t.nominal')
+                ->leftJoin('jabatan_unit_kerja as juk', 'juk.id', '=', 'prj.jabatan_unit_kerja_id')
+                ->leftJoin('jabatan_tukin as jt', 'jt.id', '=', 'juk.jabatan_tukin_id')
+                ->leftJoin('tukin as t', 't.id', '=', 'jt.tukin_id')
+                ->where('prj.pegawai_id', $pegawai->id)
+                ->where('prj.is_now', true)
+                ->where('prj.is_plt', false)
+                ->first();
 
                 //TUNJANGAN KINERJA
-                $TUNJANGAN_KINERJA = $jabatan->jabatan_unit_kerja->jabatan_tukin->tukin->nominal;
+                $TUNJANGAN_KINERJA = $getTukin->nominal;
+
+                //$jabatan_plt = PegawaiRiwayatJabatan::where('pegawai_id', $pegawai->id)->where('is_now', true)->where('is_plt', true)->first();
                 
+                $getTukinPlt = DB::table('pegawai_riwayat_jabatan as prj')
+                ->select('t.nominal')
+                ->leftJoin('jabatan_unit_kerja as juk', 'juk.id', '=', 'prj.jabatan_unit_kerja_id')
+                ->leftJoin('jabatan_tukin as jt', 'jt.id', '=', 'juk.jabatan_tukin_id')
+                ->leftJoin('tukin as t', 't.id', '=', 'jt.tukin_id')
+                ->where('prj.pegawai_id', $pegawai->id)
+                ->where('prj.is_now', true)
+                ->where('prj.is_plt', true)
+                ->first();
+
                 //TUNJANGAN KINERJA PLT
-                $TUNJANGAN_KINERJA_PLT = 0;
-                $jabatan_plt = PegawaiRiwayatJabatan::where('pegawai_id', $pegawai->id)->where('is_now', true)->where('is_plt', true)->first();
-                if ($jabatan_plt != null) {
-                    //!INI ADA PERUBAHAN NANTINYA LAGI MENUNGGU
-                    //$TUNJANGAN_KINERJA += 0.2 * $jabatan_plt->jabatan_unit_kerja->jabatan_tukin->tukin->nominal;
-                    $TUNJANGAN_KINERJA_PLT = 0.2 * $jabatan_plt->jabatan_unit_kerja->jabatan_tukin->tukin->nominal;
+                if ($getTukinPlt != null) {
+                    //$TUNJANGAN_KINERJA_PLT = 0.2 * $jabatan_plt->jabatan_unit_kerja->jabatan_tukin->tukin->nominal;
+                    $TUNJANGAN_KINERJA_PLT = 0.2 * $getTukinPlt->nominal;
                 }
 
                 //JIKA CPNS
