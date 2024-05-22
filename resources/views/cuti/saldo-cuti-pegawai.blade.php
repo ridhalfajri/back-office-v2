@@ -106,15 +106,15 @@
                     },
                     {
                         data: 'saldo_n',
-                        name: 'pegawai_cuti.saldo_n',
+                        name: 'pegawai_saldo_cuti.saldo_n',
                     },
                     {
                         data: 'saldo_n_1',
-                        name: 'pegawai_cuti.saldo_n_1',
+                        name: 'pegawai_saldo_cuti.saldo_n_1',
                     },
                     {
                         data: 'saldo_n_2',
-                        name: 'pegawai_cuti.saldo_n_2',
+                        name: 'pegawai_saldo_cuti.saldo_n_2',
                     },
                 ],
                 columnDefs: [{
