@@ -397,7 +397,10 @@ class PegawaiRiwayatThpController extends Controller
                 ->first();
 
                 //TUNJANGAN KINERJA
-                $TUNJANGAN_KINERJA = $getTukin->nominal;
+                $TUNJANGAN_KINERJA = 0;
+                if ($getTukin != null) {
+                    $TUNJANGAN_KINERJA = $getTukin->nominal;
+                }
 
                 //$jabatan_plt = PegawaiRiwayatJabatan::where('pegawai_id', $pegawai->id)->where('is_now', true)->where('is_plt', true)->first();
                 
@@ -412,6 +415,7 @@ class PegawaiRiwayatThpController extends Controller
                 ->first();
 
                 //TUNJANGAN KINERJA PLT
+                $TUNJANGAN_KINERJA_PLT = 0;
                 if ($getTukinPlt != null) {
                     //$TUNJANGAN_KINERJA_PLT = 0.2 * $jabatan_plt->jabatan_unit_kerja->jabatan_tukin->tukin->nominal;
                     $TUNJANGAN_KINERJA_PLT = 0.2 * $getTukinPlt->nominal;
