@@ -139,9 +139,14 @@
             <li class="{{ Request::is('pegawai-riwayat-golongan*') ? 'active' : '' }}"><a
                     href="{{ route('pegawai-riwayat-golongan.index') }}"><i class="icon-folder-alt"></i><span>Riwayat
                         Golongan Pegawai</span></a></li>
-            <li class="{{ request()->segment(2) == 'pre-tubel' ? 'active' : '' }}">
-                <a href="{{ route('pre-tubel.index') }}"><i class="icon-graduation"></i>Tugas belajar</span></a>
+            <li class="{{ Request::is('pegawai-penilaian-kinerja*') ? 'active' : '' }}"><a
+                href="{{ route('pegawai-penilaian-kinerja.index') }}"><i class="icon-film"></i><span>Penilaian Kinerja Pegawai</span>
+                </a>
             </li>
+
+        <li class="{{ request()->segment(2) == 'pre-tubel' ? 'active' : '' }}">
+            <a href="{{ route('pre-tubel.index') }}"><i class="icon-graduation"></i>Tugas belajar</span></a>
+        </li>
 
             <li class="{{ Request::is('pegawai-tambahan-mk*') ? 'active' : '' }}"><a
                 href="{{ route('pegawai-tambahan-mk.index') }}"><i class="icon-note"></i><span>Approval Peninjauan Masa Kerja

@@ -40,20 +40,37 @@
                                                 <td class="text-right">
                                                     {{ 'Rp ' . number_format($tukin->tunjangan_kinerja, 2, ',', '.') }}</td>
                                             </tr>
-                                            <tr class="bg-light">
+                                            <tr>
                                                 <td class="text-center">2</td>
                                                 <td>
-                                                    <p class="font600 mb-1">Potongan Tunjangan Kinerja</p>
+                                                    <p class="font600 mb-1">Tunjangan Kinerja Plt</p>
+                                                </td>
+                                                <td class="text-right">
+                                                    {{ 'Rp ' . number_format($tukin->tunjangan_kinerja_plt, 2, ',', '.') }}</td>
+                                            </tr>
+                                            <tr class="bg-light">
+                                                <td class="text-center">3</td>
+                                                <td>
+                                                    <p class="font600 mb-1">Potongan Presensi</p>
                                                 </td>
                                                 <td class="text-right">
                                                     {{ 'Rp ' . number_format($tukin->potongan_tukin, 2, ',', '.') }}
+                                                </td>
+                                            </tr>
+                                            <tr class="bg-light">
+                                                <td class="text-center">4</td>
+                                                <td>
+                                                    <p class="font600 mb-1">Potongan Kinerja</p>
+                                                </td>
+                                                <td class="text-right">
+                                                    {{ 'Rp ' . number_format($tukin->potongan_tukin_kinerja, 2, ',', '.') }}
                                                 </td>
                                             </tr>
                                             <tr class="bg-green text-light">
                                                 <td colspan="2" class="font700 text-right">Total Pendapatan Tunjangan
                                                     Kinerja</td>
                                                 <td class="font700 text-right">
-                                                    {{ 'Rp ' . number_format($tukin->tunjangan_kinerja - $tukin->potongan_tukin, 2, ',', '.') }}
+                                                    {{ 'Rp ' . number_format($tukin->tunjangan_kinerja + $tukin->tunjangan_kinerja_plt - $tukin->potongan_tukin - $tukin->potongan_tukin_kinerja, 2, ',', '.') }}
                                                 </td>
                                             </tr>
                                         </table>

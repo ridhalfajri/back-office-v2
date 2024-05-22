@@ -12,6 +12,9 @@
         href="{{ asset('assets/plugins/datatable/fixedeader/dataTables.fixedcolumns.bootstrap4.min.css') }}">
     <link rel="stylesheet"
         href="{{ asset('assets/plugins/datatable/fixedeader/dataTables.fixedheader.bootstrap4.min.css') }}">
+
+    <!-- Select2 -->
+    <link rel="stylesheet" href="{{ asset('assets/plugins/select2/css/select2.min.css') }}">
 @endpush
 @push('breadcrumb')
     <ol class="breadcrumb custom-background-color">
@@ -25,6 +28,81 @@
             <div class="section-body  py-4">
                 <div class="container-fluid">
                     <div class="row clearfix">
+                        <div class="card-body">
+                            <label class="form-label"><i>Export Data Tukin Txt</i></label>
+                            {{-- export txt --}}
+                            <div class="row">
+                                <div class="col-3">
+                                    <div class="form-group">
+                                        <label class="form-label">Bulan</label>
+                                        <select id="bulan" name="bulan" class="form-control">
+                                            <option value="01"@if (Carbon\Carbon::now()->format('m') == '01') selected @endif>
+                                                Januari</option>
+                                            <option value="02"@if (Carbon\Carbon::now()->format('m') == '02') selected @endif>
+                                                Februari
+                                            </option>
+                                            <option value="03"@if (Carbon\Carbon::now()->format('m') == '03') selected @endif>
+                                                Maret
+                                            </option>
+                                            <option value="04"@if (Carbon\Carbon::now()->format('m') == '04') selected @endif>
+                                                April
+                                            </option>
+                                            <option value="05"@if (Carbon\Carbon::now()->format('m') == '05') selected @endif>
+                                                Mei
+                                            </option>
+                                            <option value="06"@if (Carbon\Carbon::now()->format('m') == '06') selected @endif>
+                                                Juni
+                                            </option>
+                                            <option value="07"@if (Carbon\Carbon::now()->format('m') == '07') selected @endif>
+                                                Juli
+                                            </option>
+                                            <option value="08"@if (Carbon\Carbon::now()->format('m') == '08') selected @endif>
+                                                Agustus
+                                            </option>
+                                            <option value="09"@if (Carbon\Carbon::now()->format('m') == '09') selected @endif>
+                                                September
+                                            </option>
+                                            <option value="10"@if (Carbon\Carbon::now()->format('m') == '10') selected @endif>
+                                                Oktober
+                                            </option>
+                                            <option value="11"@if (Carbon\Carbon::now()->format('m') == '11') selected @endif>
+                                                November
+                                            </option>
+                                            <option value="12"@if (Carbon\Carbon::now()->format('m') == '12') selected @endif>
+                                                Desember
+                                            </option>
+                                        </select>
+                                    </div>
+                                </div>
+                
+                                <div class="col-3">
+                                    <div class="form-group">
+                                        <label class="form-label">Tahun</label>
+                                        <select id="tahun" name="tahun" class="form-control">
+                                            @for ($a = Carbon\Carbon::now()->format('Y'); $a >= Carbon\Carbon::now()->format('Y') - 4; $a--)
+                                                @if ($a == Carbon\Carbon::now()->format('Y'))
+                                                    <option value="{{ $a }}" selected>{{ $a }}
+                                                    </option>
+                                                @else
+                                                    <option value="{{ $a }}">{{ $a }}
+                                                    </option>
+                                                @endif
+                                            @endfor
+                                        </select>
+                                    </div>
+                                </div>
+    
+                                <div class="col-3">
+                                    <div class="form-group">
+                                        <label class="form-label">Aksi</label>
+                                        <button type="button" id="exportTxt" class="btn btn-success waves-effect waves-light">
+                                            Export to Txt
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="col-lg-12 col-md-12 col-sm-12">
                             <div class="card card-collapsed">
                                 <div class="card-status bg-blue"></div>
@@ -41,8 +119,10 @@
                                             <label>Range Generate Tukin</label>
                                             <input class="form-control input-daterange-datepicker" type="text"
                                                 name="tanggal" id="tanggal" value="">
+                                            {{-- <button class="btn btn-sm btn-primary mt-2"
+                                                id="generate_tukin">Generate Gaji dan Tukin</button> --}}
                                             <button class="btn btn-sm btn-primary mt-2"
-                                                id="generate_tukin">Generate</button>
+                                                id="generate_tukin_only">Generate</button>
                                         </div>
                                     </div>
                                 </div>
@@ -116,12 +196,24 @@
     <script src="{{ asset('assets/bundles/dataTables.bundle.js') }}"></script>
     <script src="{{ asset('assets/js/table/datatable.js') }}"></script>
 
+    <!-- Select2 -->
+    <script src="{{ asset('assets/plugins/select2/js/select2.min.js') }}"></script>
+
     {{-- DateRange --}}
     <script src="{{ asset('assets/plugins/daterangepicker/moment.js') }}"></script>
     <script src="{{ asset('assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
     <script src="{{ asset('assets/plugins/daterangepicker/daterangepicker.js') }}"></script>
     <script>
         "use strict"
+
+        $('#bulan').select2({
+            width: 'resolve'
+        });
+
+        $('#tahun').select2({
+            width: 'resolve'
+        });
+
         $('.input-daterange-datepicker').daterangepicker({
             buttonClasses: ['btn', 'btn-sm'],
             applyClass: 'btn-primary',
@@ -216,7 +308,63 @@
                 });
             });
         }
-        $('#generate_tukin').on('click', () => {
+
+        // $('#generate_tukin').on('click', () => {
+        //     Swal.fire({
+        //         title: "Apakah anda yakin?",
+        //         text: "Generate Tukin Periode " + $('#tanggal').val(),
+        //         icon: "warning",
+        //         showCancelButton: true,
+        //         confirmButtonColor: "#3085d6",
+        //         cancelButtonColor: "#d33",
+        //         confirmButtonText: "Yes"
+        //     }).then((result) => {
+        //         if (result.isConfirmed) {
+        //             $.ajax({
+        //                 url: '{{ route('penghasilan.generate-tukin') }}',
+        //                 type: "POST",
+        //                 headers: {
+        //                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        //                 },
+        //                 data: {
+        //                     tanggal: $('#tanggal').val()
+        //                 },
+        //                 success: function(response) {
+        //                     if (response.errors) {
+        //                         if (response.errors.connection) {
+
+        //                             Swal.fire({
+        //                                 title: 'Error!',
+        //                                 text: response.errors.connection,
+        //                                 icon: 'error',
+        //                                 confirmButtonText: 'Tutup'
+        //                             })
+        //                         }
+        //                         if (response.errors.exists) {
+        //                             Swal.fire({
+        //                                 title: 'Error!',
+        //                                 text: response.errors.exists,
+        //                                 icon: 'error',
+        //                                 confirmButtonText: 'Tutup'
+        //                             })
+        //                         }
+        //                     } else {
+        //                         Swal.fire({
+        //                             title: 'Berhasil!',
+        //                             text: response.success,
+        //                             icon: 'success',
+        //                             confirmButtonText: 'Tutup'
+        //                         })
+        //                     }
+        //                 },
+        //             });
+        //         }
+        //     });
+
+
+        // })
+
+        $('#generate_tukin_only').on('click', () => {
             Swal.fire({
                 title: "Apakah anda yakin?",
                 text: "Generate Tukin Periode " + $('#tanggal').val(),
@@ -228,7 +376,7 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({
-                        url: '{{ route('penghasilan.generate-tukin') }}',
+                        url: '{{ route('penghasilan.generate-tukin-only') }}',
                         type: "POST",
                         headers: {
                             'X-CSRF-TOKEN': '{{ csrf_token() }}'
@@ -270,5 +418,15 @@
 
 
         })
+
+        //export data txt
+        $('#exportTxt').on('click', function(e) {
+                e.preventDefault();
+                let tahun = $("#tahun").val();
+                let bulan = $("#bulan").val();
+
+                window.location.href = '{{ url('penghasilan/export-to-txt/tukin') }}/' + tahun + '/' +
+                bulan;
+            });
     </script>
 @endpush

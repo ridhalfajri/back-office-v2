@@ -40,6 +40,7 @@ use App\Http\Controllers\GradeTukinController;
 use App\Http\Controllers\TunjanganBerasController;
 use App\Http\Controllers\AturanThrGajiplusController;
 use App\Http\Controllers\PegawaiRiwayatGolonganController;
+use App\Http\Controllers\PegawaiPenilaianKinerjaController;
 use App\Http\Controllers\PegawaiBpjsLainnyaController;
 use App\Http\Controllers\PengajuanPMKController;
 use App\Http\Controllers\PegawaiTambahanMkController;
@@ -107,6 +108,10 @@ Route::middleware('auth')->group(function () {
     //indrawan
     Route::post('/pegawai-riwayat-golongan/datatable', [PegawaiRiwayatGolonganController::class, 'datatable'])->name('pegawai-riwayat-golongan.datatable');
     Route::resource('/pegawai-riwayat-golongan', PegawaiRiwayatGolonganController::class);
+
+    //indrawan
+    Route::post('/pegawai-penilaian-kinerja/datatable', [PegawaiPenilaianKinerjaController::class, 'datatable'])->name('pegawai-penilaian-kinerja.datatable');
+    Route::resource('/pegawai-penilaian-kinerja', PegawaiPenilaianKinerjaController::class);
 
     Route::post('/grade-tukin', [GradeTukinController::class, 'datatable'])->name('grade-tukin.datatable');
     Route::resource('/grade-tukin', GradeTukinController::class)->only('index');
@@ -361,6 +366,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/datatable', [ThpController::class, 'datatable'])->name('thp.datatable');
     });
     Route::prefix('penghasilan')->group(function () {
+        Route::post('/tukin-only/generate', [PegawaiRiwayatThpController::class, 'generate_tukin_only'])->name('penghasilan.generate-tukin-only');
         Route::post('/tukin/generate', [PegawaiRiwayatThpController::class, 'generate_tukin'])->name('penghasilan.generate-tukin');
         Route::get('/', [PegawaiRiwayatThpController::class, 'index'])->name('penghasilan.index');
         Route::get('/show/gaji/{id}', [PegawaiRiwayatThpController::class, 'gaji_detail'])->name('penghasilan.gaji-detail');
@@ -369,6 +375,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/show/{id}', [PegawaiRiwayatThpController::class, 'show'])->name('penghasilan.show');
         Route::post('/datatable', [PegawaiRiwayatThpController::class, 'datatable'])->name('penghasilan.datatable');
         Route::post('/datatable_show', [PegawaiRiwayatThpController::class, 'datatable_show'])->name('penghasilan.datatable_show');
+        //indrawan
+        Route::get('/export-to-txt/tukin/{tahun}/{bulan}', [PegawaiRiwayatThpController::class, 'exportTukinToTxt'])->name('penghasilan.export-txt-tukin');
     });
     Route::get('/esselon2/penghasilan', [PegawaiRiwayatThpController::class, 'index_esselon'])->name('penghasilan.index-esselon');
     Route::post('/esselon2/penghasilan/datatable_esselon', [PegawaiRiwayatThpController::class, 'datatable_esselon'])->name('penghasilan.datatable-esselon');
