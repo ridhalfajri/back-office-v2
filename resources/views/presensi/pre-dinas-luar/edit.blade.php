@@ -211,18 +211,24 @@
 
                         <div class="row rowdata">
                             <div class="col-sm-2">
-                                <strong>Unggah Surat Tugas (ST)  <span class="text-danger"><sup>*</sup></span></strong>
+                                <strong>Unggah Surat Tugas (ST)  <span class="text-danger"><sup></sup></span></strong>
                             </div>
                             <div class="col-sm-4">
                                 <div class="form-group @error('media_st_dinas_luar') has-error @enderror">
-                                    <input type="file" name="media_st_dinas_luar" id="media_st_dinas_luar" accept="image/*,.pdf, .doc, .docx" required>
+                                    <input type="file" name="media_st_dinas_luar" id="media_st_dinas_luar" accept="image/*,.pdf, .doc, .docx">
                                     <div class="invalid-feedback">
-                                        Silakan Upload File Yang Berisi Tangkapan Layar Daftar Presensi
+                                        Silakan Upload File ST
                                     </div>
                                     @error('media_st_dinas_luar')
                                         <small class="text-danger">{{ $message }}</small>
                                     @enderror
                                 </div>
+
+                                @php
+                                    $filename = basename($mediaSTUrl);
+                                @endphp
+                                <a href="{{ $mediaSTUrl }}" target="_blank">{{ $filename }} </a>
+
                             </div>
 
                             <div class="col-sm-2">
@@ -238,6 +244,13 @@
                                         <small class="text-danger">{{ $message }}</small>
                                     @enderror
                                 </div>
+
+                                @php
+                                    $filenameRef = basename($mediaRefUrl);
+                                @endphp
+                                <a href="{{ $mediaRefUrl }}" target="_blank">{{ $filenameRef }} </a>
+
+
                             </div>
                         </div>
 

@@ -331,7 +331,11 @@
                     name: 'file_st',
                     render: function(data, type, row) {
                         if (data){
-                            return '<a href="'+data+'" target="_blank">Surat Tugas</a>';
+                            var url = new URL(data);
+                            // Extract the pathname and split it to get the filename
+                            var filename = url.pathname.split('/').pop();
+
+                            return '<a href="'+data+'" target="_blank">'+filename+'</a>';
                         }
                         else
                         {
@@ -345,7 +349,10 @@
                     name: 'file_ref',
                     render: function(data, type, row) {
                         if (data){
-                            return '<a href="'+data+'" target="_blank">Referensi</a>';
+                            var urlRef = new URL(data);
+                            // Extract the pathname and split it to get the filename
+                            var filenameRef = urlRef.pathname.split('/').pop();
+                            return '<a href="'+data+'" target="_blank">'+filenameRef+'</a>';
                         }else
                         {
                             return '';

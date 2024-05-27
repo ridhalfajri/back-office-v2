@@ -365,10 +365,28 @@ class PreDinasLuarController extends Controller
     */
     public function edit(PreDinasLuar $preDinasLuar)
     {
-        if ($preDinasLuar->status==1 && $preDinasLuar->no_enroll==auth()->user()->pegawai->no_enroll ){
+        if ($preDinasLuar->status_approve==1 && $preDinasLuar->no_enroll==auth()->user()->pegawai->no_enroll ){
             $title = 'Ubah Data Pengajuan Dinas Luar';
             $pegawai = PegawaiHelper::getPegawaiData(auth()->user()->pegawai->id);
-            return view('presensi.pre-dinas-luar.edit', compact('title','preDinasLuar','pegawai'));
+
+            $mediaRefUrl="";
+            $mediaSTUrl="";
+
+            $mediaSTItem = $preDinasLuar->getMedia('media_st_dinas_luar')->first();
+            // Check if the media item exists
+            if ($mediaSTItem) {
+                // Get the URL of the media item
+                $mediaSTUrl = $mediaSTItem->getUrl();
+            }
+
+            $mediaItem = $preDinasLuar->getMedia('media_ref_dinas_luar')->first();
+            // Check if the media item exists
+            if ($mediaItem) {
+                // Get the URL of the media item
+                $mediaRefUrl = $mediaItem->getUrl();
+            }
+
+            return view('presensi.pre-dinas-luar.edit', compact('title','preDinasLuar','pegawai','mediaSTUrl','mediaRefUrl'));
         }
         else{
             return redirect()->back()->with('warning', 'Terjadi kesalahan!');
@@ -390,8 +408,7 @@ class PreDinasLuarController extends Controller
                 'jenis_dinas' => 'required',
 				'nama_kegiatan' => 'required',
 				'lokasi' => 'required',
-                'tanggal_dinas' => 'required',
-                'media_st_dinas_luar' => 'required',
+                'tanggal_dinas' => 'required'
             ]);
 
             $dateRange = explode(' - ',  $request->tanggal_dinas);
@@ -407,15 +424,19 @@ class PreDinasLuarController extends Controller
 			$preDinasLuar->is_active = 'Y';
             $preDinasLuar->save();
 
-            // Retrieve the media item associated with the model and the collection name
-            $stFile = $preDinasLuar->getMedia('media_st_dinas_luar')->first();
-            if ($stFile) {
-                $stFile->delete();
+            if ($request->media_st_dinas_luar) {
+                // Retrieve the media item associated with the model and the collection name
+                $stFile = $preDinasLuar->getMedia('media_st_dinas_luar')->first();
+                if ($stFile) {
+                    $stFile->delete();
+                }
             }
 
-            $refFile = $preDinasLuar->getMedia('media_ref_dinas_luar')->first();
-            if ($refFile) {
-                $refFile->delete();
+            if ($request->media_ref_dinas_luar) {
+                $refFile = $preDinasLuar->getMedia('media_ref_dinas_luar')->first();
+                if ($refFile) {
+                    $refFile->delete();
+                }
             }
 
             if ($request->media_st_dinas_luar) {
@@ -447,7 +468,7 @@ class PreDinasLuarController extends Controller
         $blnValue = false;
         $msg = "";
 
-        if ($preDinasLuar->status==1 && $preDinasLuar->no_enroll==auth()->user()->pegawai->no_enroll ){
+        if ($preDinasLuar->status_approve==1 && $preDinasLuar->no_enroll==auth()->user()->pegawai->no_enroll ){
 
             try {
                 $preDinasLuar->delete();
