@@ -168,11 +168,15 @@ Route::middleware('auth')->group(function () {
         Route::resource('/presensiku', PresensiPegawaiController::class);
         Route::post('/presensiku/datatable', [PresensiPegawaiController::class, 'datatable'])->name('presensiku.datatable');
         Route::post('/presensiku/getdatapresensi', [PresensiPegawaiController::class, 'getdatapresensi'])->name('presensiku.getdatapresensi');
+        Route::get('/exportdatapresensi', [PresensiPegawaiController::class, 'exportPresensi'])->name('exportdatapresensi');
+
     });
 
     Route::post('/presensi-pegawai/getanggotatim', [PresensiPegawaiController::class, 'getAnggotaTim'])->name('presensi-pegawai.getanggotatim');
 
     Route::get('/presensi-pegawai/',  [PresensiPegawaiController::class, 'dataPresensiPegawai'])->name('presensi-pegawai');
+    Route::get('/exportpresensipegawai', [PresensiPegawaiController::class, 'ExportPresensiPegawai'])->name('exportpresensipegawai');
+
     Route::get('/presensi-pegawai/datatablepresensi', [PresensiPegawaiController::class, 'datatablePresensi'])->name('presensi-pegawai.datatablepresensi');
     Route::post('/presensi-pegawai/getdatapresensipegawai', [PresensiPegawaiController::class, 'getdataPresensiPegawai'])->name('presensi-pegawai.getdatapresensipegawai');
     Route::get('/presensi-pegawai/runmanual', [PresensiPegawaiController::class, 'manualcronjob'])->name('presensi-pegawai.runmanual');
