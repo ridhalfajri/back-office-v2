@@ -11,8 +11,10 @@ use App\Models\Pegawai;
 use App\Models\PegawaiAnak;
 use App\Models\PegawaiBpjsLainnya;
 use App\Models\PegawaiCuti;
+use App\Models\PegawaiPenilaianKinerja;
 use App\Models\PegawaiRiwayatJabatan;
 use App\Models\PegawaiRiwayatThp;
+use App\Models\PegawaiRiwayatTukin;
 use App\Models\PegawaiRiwayatUmak;
 use App\Models\PegawaiSuamiIstri;
 use App\Models\PegawaiTmtGaji;
@@ -26,10 +28,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Support\Facades\Response;
 
 class PegawaiRiwayatThpController extends Controller
 {
-
     public function index()
     {
         $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
@@ -149,7 +151,7 @@ class PegawaiRiwayatThpController extends Controller
                 );
             })
             ->addColumn('tukin', function ($pegawai) {
-                return $pegawai->tunjangan_kinerja - $pegawai->potongan_tukin;
+                return $pegawai->tunjangan_kinerja + $pegawai->tunjangan_kinerja_plt - $pegawai->potongan_tukin - $pegawai->potongan_tukin_kinerja;
             })
             ->rawColumns(['aksi'])
             ->make(true);
@@ -198,7 +200,7 @@ class PegawaiRiwayatThpController extends Controller
         $this->authorize('personal', $cek_pegawai);
 
         $title = "Tukin Detail";
-        $tukin = PegawaiRiwayatThp::where('pegawai_riwayat_thp.id', $id)->select('tunjangan_kinerja', 'potongan_tukin', 'bulan', 'tahun', 'p.nama_depan', 'p.nama_belakang', 'p.nip', 'p.email_kantor', 'p.id AS pegawai_id')
+        $tukin = PegawaiRiwayatThp::where('pegawai_riwayat_thp.id', $id)->select('tunjangan_kinerja', 'tunjangan_kinerja_plt', 'potongan_tukin', 'potongan_tukin_kinerja', 'bulan', 'tahun', 'p.nama_depan', 'p.nama_belakang', 'p.nip', 'p.email_kantor', 'p.id AS pegawai_id')
             ->join('pegawai AS p', 'p.id', '=', 'pegawai_riwayat_thp.pegawai_id')
             ->first();
         $monthName = date("F", strtotime("$tukin->tahun-$tukin->bulan-01"));
@@ -272,6 +274,258 @@ class PegawaiRiwayatThpController extends Controller
     }
     //
 
+    public function exportTukinToTxt($tahun, $bulan)
+    {
+        try {
+            //ganti query
+            $data = DB::table('pegawai as p')
+            ->selectRaw("'613104' AS kode_satker")
+            ->addSelect('prt.bulan', 'prt.tahun', 'p.nip')
+            ->addSelect(DB::raw("CONCAT(p.nama_depan, ' ', p.nama_belakang) AS nama_pegawai"))
+            ->addSelect(DB::raw("'-' AS no_sk"))
+            ->addSelect(DB::raw("LPAD(t.grade, 2, '0') AS kode_grade"))
+            ->addSelect('prt.tunjangan_kinerja AS nilai_bruto')
+            ->addSelect(DB::raw('SUM(prt.potongan_tukin + prt.potongan_tukin_kinerja) AS nilai_potongan'))
+            ->addSelect(DB::raw('SUM(prt.tunjangan_kinerja - prt.potongan_tukin - prt.potongan_tukin_kinerja) AS nilai_bersih'))
+            ->addSelect('b.kode_bank_span', 'b.nama AS nama_bank', 'pr.no_rekening')
+            ->addSelect(DB::raw("CONCAT(p.nama_depan, ' ', p.nama_belakang) AS nama_rekening"))
+            ->addSelect('prt.bulan AS bulan_awal', 'prt.tahun AS tahun_awal', 'prt.bulan AS bulan_akhir', 'prt.tahun AS tahun_akhir')
+            ->addSelect(DB::raw('1 AS tukin_kali'))
+            ->addSelect(DB::raw("'-' AS no_tukin_lama"))
+            ->addSelect(DB::raw("'-' AS no_tukin_baru"))
+            ->join('pegawai_riwayat_thp as prt', 'prt.pegawai_id', '=', 'p.id')
+            ->leftJoin('tukin as t', 't.nominal', '=', 'prt.tunjangan_kinerja')
+            ->leftJoin('pegawai_rekening as pr', function($join) {
+                $join->on('pr.pegawai_id', '=', 'p.id')
+                    ->where('pr.tipe_rekening', '=', 'Tukin');
+            })
+            ->leftJoin('bank as b', 'b.id', '=', 'pr.bank_id')
+            ->where('prt.bulan', $bulan)
+            ->where('prt.tahun', $tahun)
+            ->groupBy('prt.bulan', 'prt.tahun', 'p.nip', 'prt.tunjangan_kinerja', 'prt.total_thp', 'b.kode_bank_span', 'b.nama', 'pr.no_rekening')
+            ->get();
+
+            //dd($data);
+
+            // Tentukan nama file
+            $fileName = 'Tukin_'.$tahun.'_'.$bulan.'.txt';
+
+            // Buat file temporary
+            $filePath = storage_path('app/' . $fileName);
+
+            // Buka file untuk menulis
+            $file = fopen($filePath, 'w');
+
+            // Tulis baris header jika diperlukan
+            // contoh: fwrite($file, "Header1\tHeader2\tHeader3\n");
+
+            // Tulis data ke file dengan delimiter tab
+            foreach ($data as $row) {
+                $rowData = implode("\t", get_object_vars($row));
+                fwrite($file, $rowData . "\n");
+            }
+
+            // Tutup file
+            fclose($file);
+
+            // Buat respons untuk mengunduh file
+            return Response::download($filePath, $fileName)->deleteFileAfterSend(true);
+        } catch (\Exception $e) {
+            Log::error($e->getMessage(), ['Export data txt gagal di method exportToTxt pada PegawaiRiwayatThpController!']);
+        }
+    }
+
+    public function generate_tukin_only(Request $request)
+    {
+        $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
+        $this->authorize('admin_sdmoh', $kabiro);
+
+        $split_tanggal = explode(" - ", $request->tanggal);
+        $tanggal_mulai = $split_tanggal[0];
+        $tanggal_akhir = $split_tanggal[1];
+        
+        $waktu = date('Y-m-d', strtotime($tanggal_akhir . ' +1 month'));
+        $BULAN = Carbon::parse($waktu)->translatedFormat('m');
+        $TAHUN = Carbon::parse($waktu)->translatedFormat('Y');
+
+        $cek_tukin = PegawaiRiwayatThp::where('bulan', $BULAN)->where('tahun', $TAHUN)->count();
+        if ($cek_tukin != 0) {
+            return response()->json(['errors' => ['exists' => 'Tukin pada bulan ' . Carbon::parse($waktu)->translatedFormat('F') . ' sudah ada']]);
+        }
+
+        $tanggalMulaiFormat = Carbon::parse($tanggal_mulai)->translatedFormat('Y-m-d');
+        $tanggalAkhirFormat = Carbon::parse($tanggal_akhir)->translatedFormat('Y-m-d');
+
+       try {
+            //validasi tanggal awal 21 dan akhir 20
+            $tglAwal = date('d', strtotime($tanggal_mulai));
+            $tglAkhir = date('d', strtotime($tanggal_akhir));
+            if ($tglAwal != 21 || $tglAkhir != 20) {
+                //keluarkan pop up warning
+                return response()->json(['errors' => ['exists' => 'Tanggal awal tidak 20 atau Tanggal akhir tidak 21!']]);
+            }
+
+            //DATA DUMMY
+            $all_pegawai = DB::table('pegawai as p')
+                ->select('p.*')
+                ->leftJoin('status_pegawai as sp', function ($join) {
+                    $join->on('sp.id', '=', 'p.status_pegawai_id')
+                        ->whereIn('sp.nama', array('PNS', 'CPNS'))
+                        ->where('sp.is_active', 'Y');
+                })
+                ->where('status_dinas', 1)
+                ->whereIn('jenis_pegawai_id', array(1, 21))
+                ->whereNull('tanggal_berhenti')
+                ->whereNull('tanggal_wafat')
+                //untuk test, data pegawai_riwayat_golongan harus ada!
+                //->whereIn('p.id', array(297, 425)) dedy damhudi, donny p
+                ->get();
+            // $all_pegawai = Pegawai::where('status_dinas', 1)->get();
+
+            DB::beginTransaction();
+            foreach ($all_pegawai as $pegawai) {
+                //$jabatan = PegawaiRiwayatJabatan::where('pegawai_id', $pegawai->id)->where('is_now', true)->where('is_plt', false)->first();
+
+                $getTukin = DB::table('pegawai_riwayat_jabatan as prj')
+                ->select('t.nominal')
+                ->leftJoin('jabatan_unit_kerja as juk', 'juk.id', '=', 'prj.jabatan_unit_kerja_id')
+                ->leftJoin('jabatan_tukin as jt', 'jt.id', '=', 'juk.jabatan_tukin_id')
+                ->leftJoin('tukin as t', 't.id', '=', 'jt.tukin_id')
+                ->where('prj.pegawai_id', $pegawai->id)
+                ->where('prj.is_now', true)
+                ->where('prj.is_plt', false)
+                ->first();
+
+                //TUNJANGAN KINERJA
+                $TUNJANGAN_KINERJA = 0;
+                if ($getTukin != null) {
+                    $TUNJANGAN_KINERJA = $getTukin->nominal;
+                }
+
+                //$jabatan_plt = PegawaiRiwayatJabatan::where('pegawai_id', $pegawai->id)->where('is_now', true)->where('is_plt', true)->first();
+                
+                $getTukinPlt = DB::table('pegawai_riwayat_jabatan as prj')
+                ->select('t.nominal')
+                ->leftJoin('jabatan_unit_kerja as juk', 'juk.id', '=', 'prj.jabatan_unit_kerja_id')
+                ->leftJoin('jabatan_tukin as jt', 'jt.id', '=', 'juk.jabatan_tukin_id')
+                ->leftJoin('tukin as t', 't.id', '=', 'jt.tukin_id')
+                ->where('prj.pegawai_id', $pegawai->id)
+                ->where('prj.is_now', true)
+                ->where('prj.is_plt', true)
+                ->first();
+
+                //TUNJANGAN KINERJA PLT
+                $TUNJANGAN_KINERJA_PLT = 0;
+                if ($getTukinPlt != null) {
+                    //$TUNJANGAN_KINERJA_PLT = 0.2 * $jabatan_plt->jabatan_unit_kerja->jabatan_tukin->tukin->nominal;
+                    $TUNJANGAN_KINERJA_PLT = 0.2 * $getTukinPlt->nominal;
+                }
+
+                //JIKA CPNS
+                if ($pegawai->status_pegawai_id == 4) {
+                    $PERSEN_CPNS = 0.8;
+
+                    $TUNJANGAN_KINERJA = $PERSEN_CPNS * $TUNJANGAN_KINERJA;
+                }
+
+                //TUBEL
+                $cekTubel = PreTubel::where(function ($query) use ($tanggalMulaiFormat, $tanggalAkhirFormat) {
+                    $query->where('tanggal_awal', '<=', $tanggalAkhirFormat)
+                        ->where('tanggal_akhir', '>=', $tanggalMulaiFormat);
+                })
+                ->where('is_active', '=', 'Y')
+                ->where('no_enroll', '=', $pegawai->no_enroll)
+                ->first();
+
+                if ($cekTubel != null) {
+                    $PERSEN_TUBEL = 0.8;
+
+                    $TUNJANGAN_KINERJA = $PERSEN_TUBEL * $TUNJANGAN_KINERJA;
+                }
+
+                $SUM_TUKIN = $TUNJANGAN_KINERJA + $TUNJANGAN_KINERJA_PLT;
+
+                //potongan tukin kinerja
+                $POTONGAN_TUKIN_KINERJA = 0;
+                $cekPenilaianKinerja = PegawaiPenilaianKinerja::where(function ($query) use ($tanggalMulaiFormat, $tanggalAkhirFormat) {
+                    $query->where('awal_tgl_berlaku', '<=', $tanggalAkhirFormat)
+                        ->where('akhir_tgl_berlaku', '>=', $tanggalMulaiFormat);
+                })
+                ->where('pegawai_id', '=', $pegawai->id)
+                ->first();
+
+                if ($cekPenilaianKinerja != null) {
+                    if($cekPenilaianKinerja->nilai == 'Butuh Perbaikan'){
+                        $POTONGAN_TUKIN_KINERJA = $TUNJANGAN_KINERJA * 0.75 * 0.05;
+                    }
+
+                    if($cekPenilaianKinerja->nilai == 'Kurang'){
+                        $POTONGAN_TUKIN_KINERJA = $TUNJANGAN_KINERJA * 0.75 * 0.1;
+                    }
+
+                    if($cekPenilaianKinerja->nilai == 'Sangat Kurang'){
+                        $POTONGAN_TUKIN_KINERJA = $TUNJANGAN_KINERJA * 0.75 * 0.2;
+                    }
+
+                    if($cekPenilaianKinerja->nilai == 'Tidak Membuat'){
+                        $POTONGAN_TUKIN_KINERJA = $TUNJANGAN_KINERJA * 0.75 * 0.25;
+                    }
+                }
+
+                //POTONGAN TUKIN PRESENSI
+                $potongan_presensi = Presensi::whereBetween('tanggal_presensi', [$tanggalMulaiFormat, $tanggalAkhirFormat])->where('no_enroll', $pegawai->no_enroll)->where('nominal_potongan', '<>', 0)->sum('nominal_potongan');
+                $POTONGAN_TUKIN_PRESENSI = $potongan_presensi;
+
+                //potongan tunkin presensi max
+                $_POTONGAN_MAX_TUKIN_PRESENSI = $TUNJANGAN_KINERJA * 0.25;
+                if ($POTONGAN_TUKIN_PRESENSI > $_POTONGAN_MAX_TUKIN_PRESENSI) {
+                    $POTONGAN_TUKIN_PRESENSI = $_POTONGAN_MAX_TUKIN_PRESENSI;
+                }
+
+                $SUM_POTONGAN_TUKIN = $POTONGAN_TUKIN_PRESENSI + $POTONGAN_TUKIN_KINERJA;
+
+                $TOTAL_TUKIN = $SUM_TUKIN - $SUM_POTONGAN_TUKIN;
+
+                $cekCltn = PegawaiCuti::where('pegawai_id', '=', $pegawai->id)
+                    ->whereDate('tanggal_awal_cuti', '<=', $tanggalAkhirFormat)
+                    ->whereDate('tanggal_akhir_cuti', '>=', $tanggalMulaiFormat)
+                    ->where('jenis_cuti_id', '=', 6)
+                    ->where('status_pengajuan_cuti_id', '=', 3)
+                    ->first();
+
+                //insert ke tabel pegawai riwayat thp
+                $riwayat_thp = new PegawaiRiwayatThp();
+                if ($cekCltn != null) {
+                    $riwayat_thp->tunjangan_kinerja = 0;
+                    $riwayat_thp->tunjangan_kinerja_plt = 0;
+                    $riwayat_thp->potongan_tukin = 0;
+                    $riwayat_thp->potongan_tukin_kinerja = 0;
+                    $riwayat_thp->total_thp = 0;
+                } else {
+                    $riwayat_thp->tunjangan_kinerja = $TUNJANGAN_KINERJA;
+                    $riwayat_thp->tunjangan_kinerja_plt = $TUNJANGAN_KINERJA_PLT;
+                    $riwayat_thp->potongan_tukin = $POTONGAN_TUKIN_PRESENSI;
+                    $riwayat_thp->potongan_tukin_kinerja = $POTONGAN_TUKIN_KINERJA;
+                    $riwayat_thp->total_thp = $TOTAL_TUKIN;
+                }
+
+                $riwayat_thp->pegawai_id = $pegawai->id;
+                $riwayat_thp->tahun = $TAHUN;
+                $riwayat_thp->bulan = $BULAN;
+                $riwayat_thp->save();
+            }
+
+            DB::commit();
+            return response()->json(['success' => 'Sukses Generate Tukin Only']);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            Log::info($pegawai->id);
+            Log::error($th);
+            return response()->json(['errors' => ['connection' => 'Generate Tukin Only Gagal Harap Ulangi']]);
+        }
+    }
+
+    /* komen dulu
     public function generate_tukin(Request $request)
     {
         $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
@@ -312,29 +566,29 @@ class PegawaiRiwayatThpController extends Controller
             // $all_pegawai = Pegawai::where('status_dinas', 1)->get();
             DB::beginTransaction();
             foreach ($all_pegawai as $pegawai) {
-                //*NOMINAL GAJI POKOK
+                //NOMINAL GAJI POKOK
                 $gaji = PegawaiTmtGaji::where('pegawai_id', $pegawai->id)->where('is_active', 1)->first();
                 $NOMINAL_GAJI_POKOK = $gaji->gaji->nominal;
 
-                //* TUNJANGAN PASANGAN
+                //TUNJANGAN PASANGAN
                 $pasangan = PegawaiSuamiIstri::where('pegawai_id', $pegawai->id)
                     ->where('status_tunjangan', true)
                     ->where('is_verified', true)
                     ->first();
                 $TUNJANGAN_PASANGAN = $this->_tunjangan_pasangan($pegawai, $NOMINAL_GAJI_POKOK, $pasangan);
 
-                //* TUNJANGAN ANAK
+                //TUNJANGAN ANAK
                 $count_anak = PegawaiAnak::where('pegawai_id', $pegawai->id)
                     ->where('status_tunjangan', true)
                     ->where('is_verified', true)
                     ->count();
                 $TUNJANGAN_ANAK = $this->_tunjangan_anak($NOMINAL_GAJI_POKOK, $count_anak);
 
-                //*TUNJANGAN JABATAN
+                //TUNJANGAN JABATAN
                 $jabatan = PegawaiRiwayatJabatan::where('pegawai_id', $pegawai->id)->where('is_now', true)->where('is_plt', false)->first();
                 $TUNJANGAN_JABATAN = $this->_tunjangan_jabatan($pegawai, $gaji, $jabatan);
 
-                //* TUNJANGAN KINERJA
+                //TUNJANGAN KINERJA
                 $TUNJANGAN_KINERJA = $jabatan->jabatan_unit_kerja->jabatan_tukin->tukin->nominal;
                 $jabatan_plt = PegawaiRiwayatJabatan::where('pegawai_id', $pegawai->id)->where('is_now', true)->where('is_plt', true)->first();
                 if ($jabatan_plt != null) {
@@ -344,10 +598,10 @@ class PegawaiRiwayatThpController extends Controller
                 //? TUNJANGAN PAJAK DEFAULT 0
                 $TUNJANGAN_PAJAK = 0;
 
-                //*TUNJANGAN BERAS
+                //TUNJANGAN BERAS
                 $TUNJANGAN_BERAS = $this->_tunjangan_beras($pasangan, $count_anak);
 
-                //** JIKA CPNS*/
+                //JIKA CPNS
                 if ($pegawai->status_pegawai_id == 4) {
                     $PERSEN_CPNS = 0.8;
 
@@ -393,7 +647,7 @@ class PegawaiRiwayatThpController extends Controller
 
                 $SUM_THP = $NOMINAL_GAJI_POKOK + $TUNJANGAN_PASANGAN + $TUNJANGAN_ANAK + $TUNJANGAN_JABATAN + $TUNJANGAN_KINERJA + $TUNJANGAN_BERAS + $TUNJANGAN_PAJAK;
 
-                //* POTONGAN BPJS LAINNYA
+                //POTONGAN BPJS LAINNYA
                 //? BAGAIMANA MENGELOLA BPJS LAINNYA?
                 $bpjs_lainnya = PegawaiBpjsLainnya::where('pegawai_id', $pegawai->id)
                     ->where('status', '=', 3)
@@ -415,9 +669,9 @@ class PegawaiRiwayatThpController extends Controller
                     $POTONGAN_BPJS_LAINNYA = 0;
                 }
 
-                //* POTONGAN IWP
+                //POTONGAN IWP
                 $POTONGAN_IWP = 0.1 * $NOMINAL_GAJI_POKOK;
-                //* POTONGAN TUKIN
+                //POTONGAN TUKIN
                 //TODO: LOGIC POTONGAN TUKIN
 
                 // $tanggal_mulai = '2023-11-21';
@@ -428,19 +682,19 @@ class PegawaiRiwayatThpController extends Controller
                 if ($POTONGAN_TUKIN > $_POTONGAN_MAX_TUKIN) {
                     $POTONGAN_TUKIN = $_POTONGAN_MAX_TUKIN;
                 }
-                //* POTONGAN BPJS
+                //POTONGAN BPJS
                 $POTONGAN_BPJS = 0.01 * $SUM_THP;
 
-                //*POTONGAN PAJAK
+                //POTONGAN PAJAK
                 //? BELUM ADA KONFIRMASI DARI SYUKRI -> DEFAULT 0
                 $POTONGAN_PAJAK = 0;
 
-                //*POTONGAN_TAPERA
+                //POTONGAN_TAPERA
                 //? BELUM ADA KOPNFIRMASI -> DEFAULT 0
 
                 $POTONGAN_TAPERA = 0;
 
-                //*POTONGAN SIMPANAN WAJIB
+                //POTONGAN SIMPANAN WAJIB
                 //? BELUM ADA KOPNFIRMASI -> DEFAULT 0
 
                 $POTONGAN_SIMPANAN_WAJIB = 0;
@@ -542,27 +796,28 @@ class PegawaiRiwayatThpController extends Controller
             return response()->json(['errors' => ['connection' => 'Generate Tukin Gagal Harap Ulangi']]);
         }
         // $all_pegawai = Pegawai::where('status_dinas', 1)->get();
-
-
     }
+    */
+
+    /* komen dulu
     protected function generate_tukin_pns_instansi_lain($list_pegawai, $tanggal_akhir)
     {
         //cek list ada atau tidak
         if ($list_pegawai->isNotEmpty()) {
             foreach ($list_pegawai as $pegawai) {
-                //*NOMINAL GAJI POKOK
+                //NOMINAL GAJI POKOK
                 $gaji = PegawaiTmtGaji::where('pegawai_id', $pegawai->id)->where('is_active', 1)->first();
                 $NOMINAL_GAJI_POKOK = $gaji->gaji->nominal;
 
-                //* TUNJANGAN PASANGAN
+                //TUNJANGAN PASANGAN
                 $pasangan = PegawaiSuamiIstri::where('pegawai_id', $pegawai->id)->where('status_tunjangan', true)->first();
                 $TUNJANGAN_PASANGAN = $this->_tunjangan_pasangan($pegawai, $NOMINAL_GAJI_POKOK, $pasangan);
 
-                //* TUNJANGAN ANAK
+                //TUNJANGAN ANAK
                 $count_anak = PegawaiAnak::where('pegawai_id', $pegawai->id)->where('status_tunjangan', 1)->count();
                 $TUNJANGAN_ANAK = $this->_tunjangan_anak($NOMINAL_GAJI_POKOK, $count_anak);
 
-                //*TUNJANGAN BERAS
+                //TUNJANGAN BERAS
                 $TUNJANGAN_BERAS = $this->_tunjangan_beras($pasangan, $count_anak);
 
                 $SUM_THP = $NOMINAL_GAJI_POKOK + $TUNJANGAN_PASANGAN + $TUNJANGAN_ANAK + $TUNJANGAN_BERAS;
@@ -622,6 +877,8 @@ class PegawaiRiwayatThpController extends Controller
             }
         }
     }
+    */
+
     protected function _tunjangan_pasangan($pegawai, $nominal_gaji_pokok, $pasangan)
     {
         if ($pegawai->jenis_kawin_id == 1 || $pegawai->jenis_kawin_id == 3) {
@@ -823,7 +1080,7 @@ class PegawaiRiwayatThpController extends Controller
                 );
             })
             ->addColumn('tukin', function ($pegawai) {
-                return $pegawai->tunjangan_kinerja - $pegawai->potongan_tukin;
+                return $pegawai->tunjangan_kinerja + $pegawai->tunjangan_kinerja_plt - $pegawai->potongan_tukin - $pegawai->potongan_tukin_kinerja;
             })
             ->rawColumns(['aksi'])
             ->make(true);
@@ -869,7 +1126,7 @@ class PegawaiRiwayatThpController extends Controller
         $this->authorize('atasan_langsung', $atasan_langsung);
 
         $title = "Tukin Detail";
-        $tukin = PegawaiRiwayatThp::where('pegawai_riwayat_thp.id', $id)->select('tunjangan_kinerja', 'potongan_tukin', 'bulan', 'tahun', 'p.nama_depan', 'p.nama_belakang', 'p.nip', 'p.email_kantor')
+        $tukin = PegawaiRiwayatThp::where('pegawai_riwayat_thp.id', $id)->select('tunjangan_kinerja', 'tunjangan_kinerja_plt', 'potongan_tukin', 'potongan_tukin_kinerja', 'bulan', 'tahun', 'p.nama_depan', 'p.nama_belakang', 'p.nip', 'p.email_kantor')
             ->join('pegawai AS p', 'p.id', '=', 'pegawai_riwayat_thp.pegawai_id')
             ->first();
         $monthName = date("F", strtotime("$tukin->tahun-$tukin->bulan-01"));

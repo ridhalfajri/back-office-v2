@@ -64,6 +64,7 @@ class PegawaiRiwayatGajiplusController extends Controller
             $data = PegawaiRiwayatGajiplus::select(
                 'p.nama_depan',
                 'p.nama_belakang',
+                DB::raw('CONCAT(p.nama_depan," " ,p.nama_belakang) AS nama_pegawai'),
                 'p.nip',
                 'pegawai_riwayat_gajiplus.nominal_gaji_pokok',
                 'pegawai_riwayat_gajiplus.tunjangan_beras',
@@ -104,8 +105,11 @@ class PegawaiRiwayatGajiplusController extends Controller
 
         return Datatables::of($data)
             ->addColumn('no', '')
-            ->addColumn('nama_pegawai', function ($data) {
-                return $data->nama_depan . ' ' . $data->nama_belakang;
+            // ->addColumn('nama_pegawai', function ($data) {
+            //     return $data->nama_depan . ' ' . $data->nama_belakang;
+            // })
+            ->filterColumn('nama_pegawai', function ($query, $keyword) {
+                $query->whereRaw("CONCAT(p.nama_depan,' ',p.nama_belakang) like ?", ["%$keyword%"]);
             })
             ->addColumn('gapok_tunjangan', function ($data) {
                 return $data->nominal_gaji_pokok + $data->tunjangan_beras + $data->tunjangan_pasangan

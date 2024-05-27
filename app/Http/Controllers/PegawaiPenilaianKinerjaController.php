@@ -2,18 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\PegawaiPenilaianKinerja;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Yajra\Datatables\Datatables;
 use Intervention\Image\Facades\Image;
-use App\Models\PegawaiRiwayatGolongan;
 use App\Models\PegawaiRiwayatJabatan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Carbon;
 
-class PegawaiRiwayatGolonganController extends Controller
+class PegawaiPenilaianKinerjaController extends Controller
 {
     /**
     * Display a listing of the resource.
@@ -25,7 +26,7 @@ class PegawaiRiwayatGolonganController extends Controller
         $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
         $this->authorize('admin_sdmoh', $kabiro);
 
-        $title = 'Riwayat Golongan Pegawai';
+        $title = 'Penilaian Kinerja Pegawai';
 
         $dataUnitKerja = DB::table('unit_kerja')
         ->select('*')
@@ -33,23 +34,23 @@ class PegawaiRiwayatGolonganController extends Controller
         ->where('is_active','Y')
         ->get();
 
-        return view('pegawai-riwayat-golongan.index', compact('title', 'dataUnitKerja'));
+        return view('pegawai-penilaian-kinerja.index', compact('title', 'dataUnitKerja'));
     }
      
     public function datatable(Request $request)
     {        
         $unitKerja = $request->unitKerja;
-        $isAktif = $request->isAktif;
+        $tahunNilai = $request->tahunNilai;
+        $tw = $request->tw;
 
-        $data = DB::table('pegawai_riwayat_golongan as prg')
-            ->select('prg.id', 'p.nama_depan', 'p.nama_belakang',
+        $data = DB::table('pegawai_penilaian_kinerja as ppk')
+            ->select('ppk.id', 'p.nama_depan', 'p.nama_belakang',
             DB::raw('CONCAT(p.nama_depan," " ,p.nama_belakang) AS nama_pegawai'),
             'p.nip', 'uk.nama as unit_kerja',
-            'g.nama as nama_golongan','prg.no_sk', 'prg.is_active')
-            ->join('golongan as g','g.id','=','prg.golongan_id')
-            ->join('pegawai as p','p.id','=','prg.pegawai_id')
+            'ppk.tw', 'ppk.tahun_nilai', 'ppk.nilai')
+            ->join('pegawai as p','p.id','=','ppk.pegawai_id')
             ->join('pegawai_riwayat_jabatan as prj', function ($join) {
-                $join->on('prj.pegawai_id','=','prg.pegawai_id')
+                $join->on('prj.pegawai_id','=','ppk.pegawai_id')
                     ->where('prj.is_now','=',1)
                     ->where('prj.is_plt', '=', 0)
                     ;
@@ -65,16 +66,19 @@ class PegawaiRiwayatGolonganController extends Controller
             //->where('is_active','=',1)
             ->orderBy('uk.id','asc')
             ->orderBy('p.nama_depan','asc')
-            ->orderBy('prg.is_active','desc')
-            ->orderBy('g.id','desc')
+            ->orderBy('ppk.tahun_nilai','desc')
             ;
 
             if(null != $unitKerja || '' != $unitKerja){
                 $data->where('uk.id', '=', $unitKerja);
             }
 
-            if(null != $isAktif || '' != $isAktif){
-                $data->where('prg.is_active', '=', $isAktif);
+            if(null != $tahunNilai || '' != $tahunNilai){
+                $data->where('ppk.tahun_nilai', '=', $tahunNilai);
+            }
+
+            if(null != $tw || '' != $tw){
+                $data->where('ppk.tw', '=', $tw);
             }
 
         return Datatables::of($data)
@@ -85,19 +89,8 @@ class PegawaiRiwayatGolonganController extends Controller
         ->filterColumn('nama_pegawai', function ($query, $keyword) {
             $query->whereRaw("CONCAT(p.nama_depan,' ',p.nama_belakang) like ?", ["%$keyword%"]);
         })
-        ->addColumn('status', function ($data) {
-            if($data->is_active == 1){
-                return 'Aktif';
-            }
-            if($data->is_active == 0){
-                return 'Tidak Aktif';
-            }
-        })
-        // ->addColumn('aktif', function ($data) {
-        //     if($data)
-        // })
 
-        ->addColumn('aksi', 'pegawai-riwayat-golongan.aksi')
+        ->addColumn('aksi', 'pegawai-penilaian-kinerja.aksi')
         ->rawColumns(['aksi'])
 
         ->make(true);
@@ -113,7 +106,7 @@ class PegawaiRiwayatGolonganController extends Controller
         $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
         $this->authorize('admin_sdmoh', $kabiro);
 
-        $title = 'Buat Riwayat Golongan Pegawai';
+        $title = 'Buat Penilaian Kinerja Pegawai';
 
         //nama pegawai
         $pegawai = DB::table('pegawai as p')
@@ -137,12 +130,10 @@ class PegawaiRiwayatGolonganController extends Controller
             ->orderBy('p.nama_depan','asc')
             ->get();
 
-        //nama golongan
-        $golongan = DB::table('golongan as g')
-        ->select('g.*')
-        ->get();
+            $currentYear = Carbon::now()->year;
+            $years = range($currentYear, $currentYear - 4);
 
-        return view('pegawai-riwayat-golongan.create', compact('title', 'golongan', 'pegawai'));
+        return view('pegawai-penilaian-kinerja.create', compact('title', 'pegawai', 'years'));
     }
         
     /**
@@ -160,71 +151,64 @@ class PegawaiRiwayatGolonganController extends Controller
 
         $this->validate($request, [
             'pegawai_id' => ['required'],
-            'golongan_id' => ['required'],
-            'tmt_golongan' => ['required'],
-            'no_sk' => ['required'],
-            'tanggal_sk' => ['required'],
-            'is_active' => ['required'],
-            'sk_golongan' => ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:2048'],
+            'tgl_nilai' => ['required'],
+            'tw' => ['required'],
+            'tahun_nilai' => ['required'],
+            'nilai' => ['required'],
+            'awal_tgl_berlaku' => ['required'],
+            'akhir_tgl_berlaku' => ['required'],
+            'bukti' => ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:2048'],
         ],
         [
             'pegawai_id.required'=>'data pegawai harus diisi!',
-            'golongan_id.required'=>'data golongan harus diisi!',
-            'tmt_golongan.required'=>'data tmt golongan harus diisi!',
-            'no_sk.required'=>'data no. sk harus diisi!',
-            'tanggal_sk.required'=>'data tanggal sk harus diisi!',
-            'is_active.required'=>'data status harus diisi!',
-            'sk_golongan.mimes' => 'format file sk harus pdf/jpg/jpeg/png!',
-            'sk_golongan.max' => 'ukuran file terlalu besar (maksimal file 2Mb)!',
-            'sk_golongan.file' => 'upload data harus berupa file!',
+            'tgl_nilai.required'=>'data tanggal nilai harus diisi!',
+            'tw.required'=>'data tw harus diisi!',
+            'tahun_nilai.required'=>'data tahun nilai harus diisi!',
+            'nilai.required'=>'data nilai harus diisi!',
+            'awal_tgl_berlaku.required'=>'data awal tanggal berlaku harus diisi!',
+            'akhir_tgl_berlaku.required'=>'data akhir tanggal berlaku harus diisi!',
+            'bukti.mimes' => 'format file bukti harus pdf/jpg/jpeg/png!',
+            'bukti.max' => 'ukuran file terlalu besar (maksimal file 2Mb)!',
+            'bukti.file' => 'upload data harus berupa file!',
         ]);
 
         try {
             //validasi pegawai_id, golongan_id
-            $cekDataExist = PegawaiRiwayatGolongan::where('pegawai_id',$request->pegawai_id)
-            ->where('golongan_id',$request->golongan_id)
+            $cekDataExist = PegawaiPenilaianKinerja::where('pegawai_id',$request->pegawai_id)
+            ->where('tw',$request->tw)
+            ->where('tahun_nilai',$request->tahun_nilai)
             ->get();
 
             if($cekDataExist->isNotEmpty()){
-                session()->flash('message', 'Data riwayat golongan sudah ada!');
+                session()->flash('message', 'Data penilaian kinerja sudah ada!');
 
                 return redirect()->back();
             } else {
-                //update data lain is_active = 0
-                if(1 == $request->is_active){
-                    DB::table('pegawai_riwayat_golongan')
-                    ->where('pegawai_id', $request->pegawai_id)
-                    ->update([
-                        'is_active' => 0,
-                        'updated_at' => now(),
-                    ]);
-                }
-
                 //insert
-                $prg = new PegawaiRiwayatGolongan();
-                $prg->pegawai_id = $request->pegawai_id;
-                $prg->golongan_id = $request->golongan_id;
-                $prg->tmt_golongan = $request->tmt_golongan;
-                $prg->no_sk = $request->no_sk;
-                $prg->tanggal_sk = $request->tanggal_sk;
-                $prg->is_active = $request->is_active;
+                $ppk = new PegawaiPenilaianKinerja();
+                $ppk->pegawai_id = $request->pegawai_id;
+                $ppk->tw = $request->tw;
+                $ppk->tahun_nilai = $request->tahun_nilai;
+                $ppk->nilai = $request->nilai;
+                $ppk->tgl_nilai = $request->tgl_nilai;
+                $ppk->awal_tgl_berlaku = $request->awal_tgl_berlaku;
+                $ppk->akhir_tgl_berlaku = $request->akhir_tgl_berlaku;
+                $ppk->save();
 
-                $prg->save();
-
-                if ($request->sk_golongan) {
-                    $prg->addMediaFromRequest('sk_golongan')->toMediaCollection('sk_golongan');
+                if ($request->bukti) {
+                    $ppk->addMediaFromRequest('bukti')->toMediaCollection('bukti');
                 }
 
                 DB::commit();
-                Log::info('Data berhasil di-insert di method store pada PegawaiRiwayatGolonganController!');
+                Log::info('Data berhasil di-insert di method store pada PegawaiPenilaianKinerjaController!');
 
-                return redirect()->route('pegawai-riwayat-golongan.index')
-                    ->with('success', 'Data Riwayat Golongan berhasil disimpan');
+                return redirect()->route('pegawai-penilaian-kinerja.index')
+                    ->with('success', 'Data Penilaian Kinerja berhasil disimpan');
             }    
         } catch (\Exception $e) {
             //throw $th;
             DB::rollback();
-            Log::error($e->getMessage(), ['Data gagal di-insert di method store pada PegawaiRiwayatGolonganController!']);
+            Log::error($e->getMessage(), ['Data gagal di-insert di method store pada PegawaiPenilaianKinerjaController!']);
 
             session()->flash('message', 'Error saat proses data!');
 
@@ -234,18 +218,18 @@ class PegawaiRiwayatGolonganController extends Controller
         
     }
 
-    public function edit(PegawaiRiwayatGolongan $pegawai_riwayat_golongan)
+    public function edit(PegawaiPenilaianKinerja $pegawai_penilaian_kinerja)
     {               
         $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
         $this->authorize('admin_sdmoh', $kabiro);
         
-        $title = 'Ubah Riwayat Golongan Pegawai';
+        $title = 'Ubah Penilaian Kinerja Pegawai';
 
-        $prg = $pegawai_riwayat_golongan;
+        $ppk = $pegawai_penilaian_kinerja;
 
-        $cek_media = $prg->getMedia("sk_golongan")->count();
+        $cek_media = $ppk->getMedia("bukti")->count();
         if ($cek_media) {
-            $prg->sk_golongan = $prg->getMedia("sk_golongan")[0]->getUrl();
+            $ppk->bukti = $ppk->getMedia("bukti")[0]->getUrl();
         }
 
         //nama pegawai
@@ -270,15 +254,13 @@ class PegawaiRiwayatGolonganController extends Controller
         ->orderBy('p.nama_depan','asc')
         ->get();
 
-        //nama golongan
-        $golongan = DB::table('golongan as g')
-        ->select('g.*')
-        ->get();
+        $currentYear = Carbon::now()->year;
+        $years = range($currentYear, $currentYear - 4);
 
-        return view('pegawai-riwayat-golongan.edit', compact('title','prg', 'pegawai', 'golongan'));
+        return view('pegawai-penilaian-kinerja.edit', compact('title','ppk', 'pegawai', 'years'));
     }
 
-    public function update(Request $request, PegawaiRiwayatGolongan $pegawai_riwayat_golongan)
+    public function update(Request $request, PegawaiPenilaianKinerja $pegawai_penilaian_kinerja)
     {  
         $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
         $this->authorize('admin_sdmoh', $kabiro);
@@ -287,73 +269,65 @@ class PegawaiRiwayatGolonganController extends Controller
 
         $this->validate($request, [
             'pegawai_id' => ['required'],
-            'golongan_id' => ['required'],
-            'tmt_golongan' => ['required'],
-            'no_sk' => ['required'],
-            'tanggal_sk' => ['required'],
-            'is_active' => ['required'],
-            'sk_golongan' => ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:2048'],
+            'tgl_nilai' => ['required'],
+            'tw' => ['required'],
+            'tahun_nilai' => ['required'],
+            'nilai' => ['required'],
+            'awal_tgl_berlaku' => ['required'],
+            'akhir_tgl_berlaku' => ['required'],
+            'bukti' => ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:2048'],
         ],
         [
             'pegawai_id.required'=>'data pegawai harus diisi!',
-            'golongan_id.required'=>'data golongan harus diisi!',
-            'tmt_golongan.required'=>'data tmt golongan harus diisi!',
-            'no_sk.required'=>'data no. sk harus diisi!',
-            'tanggal_sk.required'=>'data tanggal sk harus diisi!',
-            'is_active.required'=>'data status harus diisi!',
-            'sk_golongan.mimes' => 'format file sk harus pdf/jpg/jpeg/png!',
-            'sk_golongan.max' => 'ukuran file terlalu besar (maksimal file 2Mb)!',
-            'sk_golongan.file' => 'upload data harus berupa file!',
+            'tgl_nilai.required'=>'data tanggal nilai harus diisi!',
+            'tw.required'=>'data tw harus diisi!',
+            'tahun_nilai.required'=>'data tahun nilai harus diisi!',
+            'nilai.required'=>'data nilai harus diisi!',
+            'awal_tgl_berlaku.required'=>'data awal tanggal berlaku harus diisi!',
+            'akhir_tgl_berlaku.required'=>'data akhir tanggal berlaku harus diisi!',
+            'bukti.mimes' => 'format file bukti harus pdf/jpg/jpeg/png!',
+            'bukti.max' => 'ukuran file terlalu besar (maksimal file 2Mb)!',
+            'bukti.file' => 'upload data harus berupa file!',
         ]);
 
         try {
             //validasi nama
-            $cekDataExist = PegawaiRiwayatGolongan::where('pegawai_id',$pegawai_riwayat_golongan->pegawai_id)
-            ->where('golongan_id',$request->golongan_id)
-            ->where('id','!=',$pegawai_riwayat_golongan->id)
+            $cekDataExist = PegawaiPenilaianKinerja::where('pegawai_id',$pegawai_penilaian_kinerja->pegawai_id)
+            ->where('tw',$request->tw)
+            ->where('tahun_nilai',$request->tahun_nilai)
+            ->where('id','!=',$pegawai_penilaian_kinerja->id)
             ->get();
 
             if($cekDataExist->isNotEmpty()){
-                session()->flash('message', 'Data Riwayat Golongan sudah ada!');
+                session()->flash('message', 'Data Penilaian Kinerja sudah ada!');
 
                 return redirect()->back();
             } else {
-                //update data lain is_active = 0
-                if(1 == $request->is_active){
-                    DB::table('pegawai_riwayat_golongan')
-                    ->where('pegawai_id', $pegawai_riwayat_golongan->pegawai_id)
-                    ->where('id','!=',$pegawai_riwayat_golongan->id)
-                    ->update([
-                        'is_active' => 0,
-                        'updated_at' => now(),
-                    ]);
-                }
-
                 //update
                 //$pegawai_riwayat_golongan->pegawai_id = $request->pegawai_id;
-                $pegawai_riwayat_golongan->golongan_id = $request->golongan_id;
-                $pegawai_riwayat_golongan->tmt_golongan = $request->tmt_golongan;
-                $pegawai_riwayat_golongan->no_sk = $request->no_sk;
-                $pegawai_riwayat_golongan->tanggal_sk = $request->tanggal_sk;
-                $pegawai_riwayat_golongan->is_active = $request->is_active;
+                $pegawai_penilaian_kinerja->tw = $request->tw;
+                $pegawai_penilaian_kinerja->tahun_nilai = $request->tahun_nilai;
+                $pegawai_penilaian_kinerja->nilai = $request->nilai;
+                $pegawai_penilaian_kinerja->tgl_nilai = $request->tgl_nilai;
+                $pegawai_penilaian_kinerja->awal_tgl_berlaku = $request->awal_tgl_berlaku;
+                $pegawai_penilaian_kinerja->akhir_tgl_berlaku = $request->akhir_tgl_berlaku;
+                $pegawai_penilaian_kinerja->update();
 
-                $pegawai_riwayat_golongan->update();
-
-                if ($request->file('sk_golongan')) {
-                    $pegawai_riwayat_golongan->clearMediaCollection('sk_golongan');
-                    $pegawai_riwayat_golongan->addMediaFromRequest('sk_golongan')->toMediaCollection('sk_golongan');
+                if ($request->file('bukti')) {
+                    $pegawai_penilaian_kinerja->clearMediaCollection('bukti');
+                    $pegawai_penilaian_kinerja->addMediaFromRequest('bukti')->toMediaCollection('bukti');
                 }
 
                 DB::commit();
-                Log::info('Data berhasil di-update di method update pada PegawaiRiwayatGolonganController!');
+                Log::info('Data berhasil di-update di method update pada PegawaiPenilaianKinerjaController!');
 
-                return redirect()->route('pegawai-riwayat-golongan.index')
-                    ->with('success', 'Data Riwayat Golongan berhasil diupdate');
+                return redirect()->route('pegawai-penilaian-kinerja.index')
+                    ->with('success', 'Data Penilaian Kinerja berhasil diupdate');
             }    
         } catch (\Exception $e) {
             //throw $th;
             DB::rollback();
-            Log::error($e->getMessage(), ['Data gagal di-update di method update pada PegawaiRiwayatGolonganController!']);
+            Log::error($e->getMessage(), ['Data gagal di-update di method update pada PegawaiPenilaianKinerjaController!']);
 
             session()->flash('message', 'Error saat proses data!');
 
@@ -368,35 +342,35 @@ class PegawaiRiwayatGolonganController extends Controller
     * @param  \App\Models\Models\PegawaiRiwayatGolongan  $bidangProfisiensi
     * @return \Illuminate\Http\Response
     */        
-    public function destroy(PegawaiRiwayatGolongan $pegawai_riwayat_golongan)
+    public function destroy(PegawaiPenilaianKinerja $pegawai_penilaian_kinerja)
     {           
         $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
         $this->authorize('admin_sdmoh', $kabiro);
         
         DB::beginTransaction();
         try {
-            $pegawai_riwayat_golongan->delete();
+            $pegawai_penilaian_kinerja->delete();
 
             $response['status'] = [
                 'code' => 200,
-                'message' => 'Data Riwayat Golongan berhasil di hapus!',
+                'message' => 'Data Penilaian Kinerja berhasil di hapus!',
                 'error' => false,
                 'error_message' => ''
             ];
 
             DB::commit();
-            Log::info('Data berhasil di-delete di method destroy pada PegawaiRiwayatGolonganController!');
+            Log::info('Data berhasil di-delete di method destroy pada PegawaiPenilaianKinerjaController!');
 
             return response()->json($response, 200);
         } catch (\Exception $e) {
             $response['status'] = [
                 'code' => 200,
-                'message' => 'Data Riwayat Golongan gagal dibatalkan!',
+                'message' => 'Data Penilaian Kinerja gagal dibatalkan!',
                 'error' => true,
-                'error_message' => 'Data Riwayat Golongan gagal dibatalkan!'
+                'error_message' => 'Data Penilaian Kinerja gagal dibatalkan!'
             ];
 
-            Log::error($e->getMessage(), ['Data gagal di-hapus di method destroy pada PegawaiRiwayatGolonganController!']);
+            Log::error($e->getMessage(), ['Data gagal di-hapus di method destroy pada PegawaiPenilaianKinerjaController!']);
             DB::rollback();
 
             return response()->json($response, 200);

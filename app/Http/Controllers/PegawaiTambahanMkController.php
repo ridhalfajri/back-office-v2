@@ -43,7 +43,9 @@ class PegawaiTambahanMkController extends Controller
         $status = $request->status;
 
         $data = DB::table('pegawai_tambahan_mk as ptm')
-        ->select('ptm.*', 'p.nama_depan', 'p.nama_belakang', 'p.nip',
+        ->select('ptm.*', 'p.nama_depan', 'p.nama_belakang',
+        DB::raw('CONCAT(p.nama_depan," " ,p.nama_belakang) AS nama_pegawai'),
+        'p.nip',
         'uk.nama as unit_kerja', 'uk.singkatan as singkatan_unit_kerja')
         ->join('pegawai as p','p.id','=','ptm.pegawai_id')
             //->join('pegawai_riwayat_jabatan as prj', 'prj.pegawai_id', '=', 'pegawai_riwayat_umak.pegawai_id')
@@ -75,8 +77,11 @@ class PegawaiTambahanMkController extends Controller
         return Datatables::of($data)
             ->addColumn('no', '')
 
-            ->addColumn('nama_pegawai', function ($data) {
-                return $data->nama_depan.' '.$data->nama_belakang;
+            // ->addColumn('nama_pegawai', function ($data) {
+            //     return $data->nama_depan.' '.$data->nama_belakang;
+            // })
+            ->filterColumn('nama_pegawai', function ($query, $keyword) {
+                $query->whereRaw("CONCAT(p.nama_depan,' ',p.nama_belakang) like ?", ["%$keyword%"]);
             })
 
             ->addColumn('status', function ($data) {

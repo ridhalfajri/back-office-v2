@@ -351,7 +351,8 @@ class PegawaiController extends Controller
             ->leftJoin('jabatan_unit_kerja AS juk', 'juk.id', '=', 'prj.jabatan_unit_kerja_id')
             ->leftJoin('hirarki_unit_kerja AS huk', 'huk.id', '=', 'juk.hirarki_unit_kerja_id')
             ->leftJoin('unit_kerja AS uk', 'uk.id', '=', 'huk.child_unit_kerja_id')
-            ->where('prj.is_now', 1);
+            ->where('prj.is_now', 1)
+            ->where('prj.is_plt', 0);
 
         if ($request->unit_kerja != null) {
             $pegawai->where('huk.child_unit_kerja_id', $request->unit_kerja);

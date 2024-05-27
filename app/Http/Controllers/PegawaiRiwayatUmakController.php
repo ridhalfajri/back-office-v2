@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\PegawaiRiwayatJabatan;
 use App\Models\PegawaiRiwayatUmak;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -54,9 +55,11 @@ class PegawaiRiwayatUmakController extends Controller
             $data = PegawaiRiwayatUmak::select(
                 'p.nama_depan',
                 'p.nama_belakang',
+                DB::raw('CONCAT(p.nama_depan," " ,p.nama_belakang) AS nama_pegawai'),
                 'p.nip',
                 'um.nominal',
                 'pegawai_riwayat_umak.jumlah_hari_masuk',
+                DB::raw('CONCAT(pegawai_riwayat_umak.jumlah_hari_masuk," ","hari") AS jumlah_hari'),
                 'pegawai_riwayat_umak.total',
                 'pegawai_riwayat_umak.is_double',
                 'pegawai_riwayat_umak.bulan',
@@ -98,11 +101,17 @@ class PegawaiRiwayatUmakController extends Controller
 
         return Datatables::of($data)
             ->addColumn('no', '')
-            ->addColumn('jumlah_hari', function ($data) {
-                return $data->jumlah_hari_masuk . ' hari';
+            // ->addColumn('jumlah_hari', function ($data) {
+            //     return $data->jumlah_hari_masuk . ' hari';
+            // })
+            ->filterColumn('jumlah_hari', function ($query, $keyword) {
+                $query->whereRaw("CONCAT(pegawai_riwayat_umak.jumlah_hari_masuk,' ','hari') like ?", ["%$keyword%"]);
             })
-            ->addColumn('nama_pegawai', function ($data) {
-                return $data->nama_depan . ' ' . $data->nama_belakang;
+            // ->addColumn('nama_pegawai', function ($data) {
+            //     return $data->nama_depan . ' ' . $data->nama_belakang;
+            // })
+            ->filterColumn('nama_pegawai', function ($query, $keyword) {
+                $query->whereRaw("CONCAT(p.nama_depan,' ',p.nama_belakang) like ?", ["%$keyword%"]);
             })
             ->addColumn('periode', function ($data) {
                 if ($data->bulan == '01') {
@@ -403,6 +412,54 @@ class PegawaiRiwayatUmakController extends Controller
 
             // return redirect()->route('pegawai-riwayat-umak.index')
             //         ->with('error', 'Error saat Proses Data Pegawai Riwayat Uang Makan!');
+        }
+    }
+
+    public function exportToTxt($tgl_awal, $tgl_akhir)
+    {
+        try {
+            //jumlah hari dalam parameter bulan dan tahun
+            // $date = Carbon::create($tahun, $bulan, 1);
+            // $numberOfDays = $date->daysInMonth;
+
+            // $tanggalAwal = $tahun.'-'.$bulan.'-1';
+            // $tanggalAkhir = $tahun.'-'.$bulan.'-'.$numberOfDays;
+
+            //---------------
+
+            $data = DB::table('pegawai')
+            ->select('pegawai.nip', 'presensi.tanggal_presensi')
+            ->join('presensi', 'pegawai.no_enroll', '=', 'presensi.no_enroll')
+            ->whereBetween('presensi.tanggal_presensi', [$tgl_awal, $tgl_akhir])
+            ->where('presensi.status_kehadiran', 'HADIR')
+            ->orderBy('pegawai.nip', 'asc')
+            ->get();
+
+            // Tentukan nama file
+            $fileName = 'Uang-Makan_'.$tgl_awal.'_sampai_'.$tgl_akhir.'.txt';
+
+            // Buat file temporary
+            $filePath = storage_path('app/' . $fileName);
+
+            // Buka file untuk menulis
+            $file = fopen($filePath, 'w');
+
+            // Tulis baris header jika diperlukan
+            // contoh: fwrite($file, "Header1\tHeader2\tHeader3\n");
+
+            // Tulis data ke file dengan delimiter tab
+            foreach ($data as $row) {
+                $rowData = implode("\t", get_object_vars($row));
+                fwrite($file, $rowData . "\n");
+            }
+
+            // Tutup file
+            fclose($file);
+
+            // Buat respons untuk mengunduh file
+            return Response::download($filePath, $fileName)->deleteFileAfterSend(true);
+        } catch (\Exception $e) {
+            Log::error($e->getMessage(), ['Export data txt gagal di method exportToTxt pada PegawaiRiwayatUmakController!']);
         }
     }
 

@@ -273,7 +273,7 @@
                     },
                     {
                         data: 'unit_kerja',
-                        name: 'uk.unit_kerja',
+                        name: 'uk.nama',
                         class: 'text-center'
                     },
                     {

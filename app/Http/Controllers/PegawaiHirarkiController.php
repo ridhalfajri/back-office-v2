@@ -71,6 +71,13 @@ class PegawaiHirarkiController extends Controller
 
         return Datatables::of($data)
         ->addColumn('no', '')
+        
+        ->filterColumn('nama_staff', function ($query, $keyword) {
+            $query->whereRaw("CONCAT(p1.nama_depan, ' ', p1.nama_belakang) like ?", ["%$keyword%"]);
+        })
+        ->filterColumn('nama_pimpinan', function ($query, $keyword) {
+            $query->whereRaw("CONCAT(p2.nama_depan, ' ', p2.nama_belakang) like ?", ["%$keyword%"]);
+        })
 
         ->make(true);
     }
