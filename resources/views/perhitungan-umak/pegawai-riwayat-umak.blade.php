@@ -437,6 +437,15 @@
                     confirmButtonText: "Yes"
                 }).then((result) => {
                     if (result.isConfirmed) {
+                        // Menampilkan tanda loading
+                        let loadingSwal = Swal.fire({
+                            title: 'Loading...',
+                            allowOutsideClick: false,
+                            didOpen: () => {
+                                Swal.showLoading()
+                            }
+                        });
+
                         $.ajax({
                             url: '{{ route('pegawai-riwayat-umak.kalkulasi-umak') }}',
                             type: "POST",
@@ -447,23 +456,27 @@
                                 tanggal: $('#tanggal').val()
                             },
                             success: function(response) {
-                                if (response.errors) {
-                                    Swal.fire({
-                                        title: 'Error!',
-                                        text: response.errors,
-                                        icon: 'error',
-                                        confirmButtonText: 'Tutup'
-                                    })
-                                } else {
-                                    Swal.fire({
-                                        title: 'Berhasil!',
-                                        text: response.success,
-                                        icon: 'success',
-                                        confirmButtonText: 'Tutup'
-                                    })
-                                    $("#tbl-data").DataTable().ajax.reload();
-                                }
+                                Swal.close();
+
+                                Swal.fire({
+                                    title: 'Berhasil!',
+                                    text: response.success,
+                                    icon: 'success',
+                                    confirmButtonText: 'Tutup'
+                                })
+                                $("#tbl-data").DataTable().ajax.reload();
                             },
+                            error: function() {
+                                // Menutup tanda loading
+                                Swal.close();
+
+                                Swal.fire({
+                                    title: 'Error!',
+                                    text: 'Terjadi kesalahan saat mengkalkulasi.',
+                                    icon: 'error',
+                                    confirmButtonText: 'Tutup'
+                                });
+                            }
                         });
                     }
                 });

@@ -375,6 +375,15 @@
                 confirmButtonText: "Yes"
             }).then((result) => {
                 if (result.isConfirmed) {
+                    // Menampilkan tanda loading
+                    let loadingSwal = Swal.fire({
+                        title: 'Loading...',
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading()
+                        }
+                    });
+
                     $.ajax({
                         url: '{{ route('penghasilan.generate-tukin-only') }}',
                         type: "POST",
@@ -385,33 +394,27 @@
                             tanggal: $('#tanggal').val()
                         },
                         success: function(response) {
-                            if (response.errors) {
-                                if (response.errors.connection) {
+                            // Menutup tanda loading
+                            Swal.close();
 
-                                    Swal.fire({
-                                        title: 'Error!',
-                                        text: response.errors.connection,
-                                        icon: 'error',
-                                        confirmButtonText: 'Tutup'
-                                    })
-                                }
-                                if (response.errors.exists) {
-                                    Swal.fire({
-                                        title: 'Error!',
-                                        text: response.errors.exists,
-                                        icon: 'error',
-                                        confirmButtonText: 'Tutup'
-                                    })
-                                }
-                            } else {
-                                Swal.fire({
-                                    title: 'Berhasil!',
-                                    text: response.success,
-                                    icon: 'success',
-                                    confirmButtonText: 'Tutup'
-                                })
-                            }
+                            Swal.fire({
+                                title: 'Berhasil!',
+                                text: response.success,
+                                icon: 'success',
+                                confirmButtonText: 'Tutup'
+                            })
                         },
+                        error: function() {
+                            // Menutup tanda loading
+                            Swal.close();
+
+                            Swal.fire({
+                                title: 'Error!',
+                                text: 'Terjadi kesalahan saat men-generate.',
+                                icon: 'error',
+                                confirmButtonText: 'Tutup'
+                            });
+                        }
                     });
                 }
             });
