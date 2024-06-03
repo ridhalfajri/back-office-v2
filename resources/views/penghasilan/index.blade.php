@@ -397,12 +397,32 @@
                             // Menutup tanda loading
                             Swal.close();
 
-                            Swal.fire({
-                                title: 'Berhasil!',
-                                text: response.success,
-                                icon: 'success',
-                                confirmButtonText: 'Tutup'
-                            })
+                            if (response.errors) {
+                                if (response.errors.connection) {
+
+                                    Swal.fire({
+                                        title: 'Error!',
+                                        text: response.errors.connection,
+                                        icon: 'error',
+                                        confirmButtonText: 'Tutup'
+                                    })
+                                }
+                                if (response.errors.exists) {
+                                    Swal.fire({
+                                        title: 'Error!',
+                                        text: response.errors.exists,
+                                        icon: 'error',
+                                        confirmButtonText: 'Tutup'
+                                    })
+                                }
+                            } else {
+                                Swal.fire({
+                                    title: 'Berhasil!',
+                                    text: response.success,
+                                    icon: 'success',
+                                    confirmButtonText: 'Tutup'
+                                })
+                            }
                         },
                         error: function() {
                             // Menutup tanda loading
