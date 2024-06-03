@@ -424,17 +424,6 @@
                                 })
                             }
                         },
-                        error: function() {
-                            // Menutup tanda loading
-                            Swal.close();
-
-                            Swal.fire({
-                                title: 'Error!',
-                                text: 'Terjadi kesalahan saat men-generate.',
-                                icon: 'error',
-                                confirmButtonText: 'Tutup'
-                            });
-                        }
                     });
                 }
             });

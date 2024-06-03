@@ -458,13 +458,22 @@
                             success: function(response) {
                                 Swal.close();
 
-                                Swal.fire({
-                                    title: 'Berhasil!',
-                                    text: response.success,
-                                    icon: 'success',
-                                    confirmButtonText: 'Tutup'
-                                })
-                                $("#tbl-data").DataTable().ajax.reload();
+                                if (response.errors) {
+                                    Swal.fire({
+                                        title: 'Error!',
+                                        text: response.errors,
+                                        icon: 'error',
+                                        confirmButtonText: 'Tutup'
+                                    })
+                                } else {
+                                    Swal.fire({
+                                        title: 'Berhasil!',
+                                        text: response.success,
+                                        icon: 'success',
+                                        confirmButtonText: 'Tutup'
+                                    })
+                                    $("#tbl-data").DataTable().ajax.reload();
+                                }
                             },
                             error: function() {
                                 // Menutup tanda loading
