@@ -38,7 +38,7 @@
                                                     <p class="font600 mb-1">Uang Makan</p>
                                                 </td>
                                                 <td class="text-right">
-                                                    {{ 'Rp ' . number_format($umak->nominal, 2, ',', '.') }}</td>
+                                                    {{ 'Rp ' . number_format($umak->nominal, 0, ',', '.') }}</td>
                                             </tr>
                                             <tr class="bg-light">
                                                 <td class="text-center">2</td>
@@ -50,9 +50,10 @@
                                                 </td>
                                             </tr>
                                             <tr class="bg-green text-light">
-                                                <td colspan="2" class="font700 text-right">Total Pendapatan Uang Makan</td>
+                                                <td colspan="2" class="font700 text-right">Total Pendapatan Uang Makan
+                                                </td>
                                                 <td class="font700 text-right">
-                                                    {{ 'Rp ' . number_format($umak->total, 2, ',', '.') }}
+                                                    {{ 'Rp ' . number_format($umak->total, 0, ',', '.') }}
                                                 </td>
                                             </tr>
                                         </table>

@@ -38,7 +38,7 @@
                                                     <p class="font600 mb-1">Tunjangan Kinerja</p>
                                                 </td>
                                                 <td class="text-right">
-                                                    {{ 'Rp ' . number_format($tukin->tunjangan_kinerja, 2, ',', '.') }}</td>
+                                                    {{ 'Rp ' . number_format($tukin->tunjangan_kinerja, 0, ',', '.') }}</td>
                                             </tr>
                                             <tr>
                                                 <td class="text-center">2</td>
@@ -46,7 +46,8 @@
                                                     <p class="font600 mb-1">Tunjangan Kinerja Plt</p>
                                                 </td>
                                                 <td class="text-right">
-                                                    {{ 'Rp ' . number_format($tukin->tunjangan_kinerja_plt, 2, ',', '.') }}</td>
+                                                    {{ 'Rp ' . number_format($tukin->tunjangan_kinerja_plt, 0, ',', '.') }}
+                                                </td>
                                             </tr>
                                             <tr class="bg-light">
                                                 <td class="text-center">3</td>
@@ -54,7 +55,7 @@
                                                     <p class="font600 mb-1">Potongan Presensi</p>
                                                 </td>
                                                 <td class="text-right">
-                                                    {{ 'Rp ' . number_format($tukin->potongan_tukin, 2, ',', '.') }}
+                                                    {{ 'Rp ' . number_format($tukin->potongan_tukin, 0, ',', '.') }}
                                                 </td>
                                             </tr>
                                             <tr class="bg-light">
@@ -63,14 +64,14 @@
                                                     <p class="font600 mb-1">Potongan Kinerja</p>
                                                 </td>
                                                 <td class="text-right">
-                                                    {{ 'Rp ' . number_format($tukin->potongan_tukin_kinerja, 2, ',', '.') }}
+                                                    {{ 'Rp ' . number_format($tukin->potongan_tukin_kinerja, 0, ',', '.') }}
                                                 </td>
                                             </tr>
                                             <tr class="bg-green text-light">
                                                 <td colspan="2" class="font700 text-right">Total Pendapatan Tunjangan
                                                     Kinerja</td>
                                                 <td class="font700 text-right">
-                                                    {{ 'Rp ' . number_format($tukin->tunjangan_kinerja + $tukin->tunjangan_kinerja_plt - $tukin->potongan_tukin - $tukin->potongan_tukin_kinerja, 2, ',', '.') }}
+                                                    {{ 'Rp ' . number_format($tukin->tunjangan_kinerja + $tukin->tunjangan_kinerja_plt - $tukin->potongan_tukin - $tukin->potongan_tukin_kinerja, 0, ',', '.') }}
                                                 </td>
                                             </tr>
                                         </table>

@@ -38,7 +38,7 @@
                                                     <p class="font600 mb-1">Gaji Pokok</p>
                                                 </td>
                                                 <td class="text-right">
-                                                    {{ 'Rp ' . number_format($gaji->nominal_gaji_pokok, 2, ',', '.') }}</td>
+                                                    {{ 'Rp ' . number_format($gaji->nominal_gaji_pokok, 0, ',', '.') }}</td>
                                             </tr>
                                             <tr>
                                                 <td class="text-center">2</td>
@@ -46,7 +46,7 @@
                                                     <p class="font600 mb-1">Tunjangan Beras</p>
                                                 </td>
                                                 <td class="text-right">
-                                                    {{ 'Rp ' . number_format($gaji->tunjangan_beras, 2, ',', '.') }}</td>
+                                                    {{ 'Rp ' . number_format($gaji->tunjangan_beras, 0, ',', '.') }}</td>
                                             </tr>
                                             <tr>
                                                 <td class="text-center">3</td>
@@ -54,7 +54,7 @@
                                                     <p class="font600 mb-1">Tunjangan Pasangan</p>
                                                 </td>
                                                 <td class="text-right">
-                                                    {{ 'Rp ' . number_format($gaji->tunjangan_pasangan, 2, ',', '.') }}</td>
+                                                    {{ 'Rp ' . number_format($gaji->tunjangan_pasangan, 0, ',', '.') }}</td>
                                             </tr>
                                             <tr>
                                                 <td class="text-center">4</td>
@@ -62,7 +62,7 @@
                                                     <p class="font600 mb-1">Tunjangan Anak</p>
                                                 </td>
                                                 <td class="text-right">
-                                                    {{ 'Rp ' . number_format($gaji->tunjangan_anak, 2, ',', '.') }}</td>
+                                                    {{ 'Rp ' . number_format($gaji->tunjangan_anak, 0, ',', '.') }}</td>
                                             </tr>
                                             <tr>
                                                 <td class="text-center">5</td>
@@ -70,7 +70,7 @@
                                                     <p class="font600 mb-1">Tunjangan Jabatan</p>
                                                 </td>
                                                 <td class="text-right">
-                                                    {{ 'Rp ' . number_format($gaji->tunjangan_jabatan, 2, ',', '.') }}</td>
+                                                    {{ 'Rp ' . number_format($gaji->tunjangan_jabatan, 0, ',', '.') }}</td>
                                             </tr>
                                             <tr>
                                                 <td class="text-center">6</td>
@@ -78,7 +78,7 @@
                                                     <p class="font600 mb-1">Tunjangan Pajak</p>
                                                 </td>
                                                 <td class="text-right">
-                                                    {{ 'Rp ' . number_format($gaji->tunjangan_pajak, 2, ',', '.') }}</td>
+                                                    {{ 'Rp ' . number_format($gaji->tunjangan_pajak, 0, ',', '.') }}</td>
                                             </tr>
                                             <tr class="bg-light">
                                                 <td class="text-center">7</td>
@@ -86,7 +86,7 @@
                                                     <p class="font600 mb-1">Potongan Simpanan Wajib</p>
                                                 </td>
                                                 <td class="text-right">
-                                                    {{ 'Rp ' . number_format($gaji->potongan_simpanan_wajib, 2, ',', '.') }}
+                                                    {{ 'Rp ' . number_format($gaji->potongan_simpanan_wajib, 0, ',', '.') }}
                                                 </td>
                                             </tr>
                                             <tr class="bg-light">
@@ -95,7 +95,7 @@
                                                     <p class="font600 mb-1">Potongan IWP</p>
                                                 </td>
                                                 <td class="text-right">
-                                                    {{ 'Rp ' . number_format($gaji->potongan_iwp, 2, ',', '.') }}
+                                                    {{ 'Rp ' . number_format($gaji->potongan_iwp, 0, ',', '.') }}
                                                 </td>
                                             </tr>
                                             <tr class="bg-light">
@@ -104,7 +104,7 @@
                                                     <p class="font600 mb-1">Potongan BPJS</p>
                                                 </td>
                                                 <td class="text-right">
-                                                    {{ 'Rp ' . number_format($gaji->potongan_bpjs, 2, ',', '.') }}
+                                                    {{ 'Rp ' . number_format($gaji->potongan_bpjs, 0, ',', '.') }}
                                                 </td>
                                             </tr>
                                             <tr class="bg-light">
@@ -113,7 +113,7 @@
                                                     <p class="font600 mb-1">Potongan BPJS Lainnya</p>
                                                 </td>
                                                 <td class="text-right">
-                                                    {{ 'Rp ' . number_format($gaji->potongan_bpjs_lainnya, 2, ',', '.') }}
+                                                    {{ 'Rp ' . number_format($gaji->potongan_bpjs_lainnya, 0, ',', '.') }}
                                                 </td>
                                             </tr>
                                             <tr class="bg-light">
@@ -122,7 +122,7 @@
                                                     <p class="font600 mb-1">Potongan Pajak</p>
                                                 </td>
                                                 <td class="text-right">
-                                                    {{ 'Rp ' . number_format($gaji->potongan_pajak, 2, ',', '.') }}
+                                                    {{ 'Rp ' . number_format($gaji->potongan_pajak, 0, ',', '.') }}
                                                 </td>
                                             </tr>
                                             <tr class="bg-light">
@@ -131,23 +131,23 @@
                                                     <p class="font600 mb-1">Potongan Tapera</p>
                                                 </td>
                                                 <td class="text-right">
-                                                    {{ 'Rp ' . number_format($gaji->potongan_tapera, 2, ',', '.') }}
+                                                    {{ 'Rp ' . number_format($gaji->potongan_tapera, 0, ',', '.') }}
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td colspan="2" class="font600 text-right">Total Tunjangan + Gaji</td>
                                                 <td class="text-right">
-                                                    {{ 'Rp ' . number_format($gaji->total_tunjangan, 2, ',', '.') }}</td>
+                                                    {{ 'Rp ' . number_format($gaji->total_tunjangan, 0, ',', '.') }}</td>
                                             </tr>
                                             <tr class="bg-light">
                                                 <td colspan="2" class="font600 text-right">Total Potongan</td>
                                                 <td class="text-right">
-                                                    {{ 'Rp ' . number_format($gaji->total_potongan, 2, ',', '.') }}</td>
+                                                    {{ 'Rp ' . number_format($gaji->total_potongan, 0, ',', '.') }}</td>
                                             </tr>
                                             <tr class="bg-green text-light">
                                                 <td colspan="2" class="font700 text-right">Total Pendapatan</td>
                                                 <td class="font700 text-right">
-                                                    {{ 'Rp ' . number_format($gaji->total_pendapatan, 2, ',', '.') }}</td>
+                                                    {{ 'Rp ' . number_format($gaji->total_pendapatan, 0, ',', '.') }}</td>
                                             </tr>
                                         </table>
                                     </div>

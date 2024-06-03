@@ -4,7 +4,8 @@
 @push('breadcrumb')
     <ol class="breadcrumb custom-background-color">
         <li class="breadcrumb-item"><a href="{{ route('dashboard') }}"><i class="fa fa-home"></i></a></li>
-        <li class="breadcrumb-item"><a href="{{route('penghasilan.show',$cekPeriodUmak->pegawai_id)}}">Detail THP Pegawai</a></li>
+        <li class="breadcrumb-item"><a href="{{ route('penghasilan.show', $cekPeriodUmak->pegawai_id) }}">Detail THP
+                Pegawai</a></li>
         <li class="breadcrumb-item active" aria-current="page">{{ $title }}</li>
     </ol>
 @endpush
@@ -45,7 +46,7 @@
                                                     <p class="font600 mb-1">Uang Makan</p>
                                                 </td>
                                                 <td class="text-right">
-                                                    {{ 'Rp ' . number_format($umak->nominal, 2, ',', '.') }}</td>
+                                                    {{ 'Rp ' . number_format($umak->nominal, 0, ',', '.') }}</td>
                                             </tr>
                                             <tr class="bg-light">
                                                 <td class="text-center">2</td>
@@ -57,9 +58,10 @@
                                                 </td>
                                             </tr>
                                             <tr class="bg-green text-light">
-                                                <td colspan="2" class="font700 text-right">Total Pendapatan Uang Makan</td>
+                                                <td colspan="2" class="font700 text-right">Total Pendapatan Uang Makan
+                                                </td>
                                                 <td class="font700 text-right">
-                                                    {{ 'Rp ' . number_format($umak->total, 2, ',', '.') }}
+                                                    {{ 'Rp ' . number_format($umak->total, 0, ',', '.') }}
                                                 </td>
                                             </tr>
                                         </table>

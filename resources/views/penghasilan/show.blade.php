@@ -190,18 +190,18 @@
                     {
                         data: 'gaji',
                         name: 'gaji',
-                        render: $.fn.dataTable.render.number(',', '.', 3, 'Rp')
+                        render: $.fn.dataTable.render.number('.', ',', 0, 'Rp ')
                     },
                     {
                         data: 'tukin',
                         name: 'tukin',
-                        render: $.fn.dataTable.render.number(',', '.', 3, 'Rp')
+                        render: $.fn.dataTable.render.number('.', ',', 0, 'Rp ')
 
                     },
                     {
                         data: 'total',
                         name: 'total',
-                        render: $.fn.dataTable.render.number(',', '.', 3, 'Rp')
+                        render: $.fn.dataTable.render.number('.', ',', 0, 'Rp ')
 
                     },
                     {
