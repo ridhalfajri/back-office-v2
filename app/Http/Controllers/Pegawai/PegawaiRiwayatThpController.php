@@ -350,7 +350,7 @@ class PegawaiRiwayatThpController extends Controller
 
         $cek_tukin = PegawaiRiwayatThp::where('bulan', $BULAN)->where('tahun', $TAHUN)->count();
         if ($cek_tukin != 0) {
-            return response()->json(['errors' => ['exists' => 'Tukin pada bulan ' . Carbon::parse($waktu)->translatedFormat('F') . ' sudah ada']]);
+            return response()->json(['error' => 'Tukin pada bulan ' . Carbon::parse($waktu)->translatedFormat('F') . ' sudah ada']);
         }
 
         $tanggalMulaiFormat = Carbon::parse($tanggal_mulai)->translatedFormat('Y-m-d');
@@ -362,7 +362,7 @@ class PegawaiRiwayatThpController extends Controller
             $tglAkhir = date('d', strtotime($tanggal_akhir));
             if ($tglAwal != 21 || $tglAkhir != 20) {
                 //keluarkan pop up warning
-                return response()->json(['errors' => ['exists' => 'Tanggal awal tidak 20 atau Tanggal akhir tidak 21!']]);
+                return response()->json(['error' => 'Tanggal awal tidak 20 atau Tanggal akhir tidak 21!']);
             }
 
             //DATA DUMMY
@@ -476,6 +476,19 @@ class PegawaiRiwayatThpController extends Controller
                 $potongan_presensi = Presensi::whereBetween('tanggal_presensi', [$tanggalMulaiFormat, $tanggalAkhirFormat])->where('no_enroll', $pegawai->no_enroll)->where('nominal_potongan', '<>', 0)->sum('nominal_potongan');
                 $POTONGAN_TUKIN_PRESENSI = $potongan_presensi;
 
+                //cek jika eselon 1 (potongan presensi  = 0)
+                $cekEselon1 = DB::table('pegawai_riwayat_jabatan as prj')
+                ->select('prj.*')
+                ->where('prj.pegawai_id', $pegawai->id)
+                ->where('prj.is_now', true)
+                ->where('prj.is_plt', false)
+                ->where('prj.tx_tipe_jabatan_id', 1)
+                ->first();
+
+                if($cekEselon1 != null){
+                    $POTONGAN_TUKIN_PRESENSI = 0;
+                }
+
                 //potongan tunkin presensi max
                 $_POTONGAN_MAX_TUKIN_PRESENSI = $TUNJANGAN_KINERJA * 0.25;
                 if ($POTONGAN_TUKIN_PRESENSI > $_POTONGAN_MAX_TUKIN_PRESENSI) {
@@ -521,7 +534,7 @@ class PegawaiRiwayatThpController extends Controller
             DB::rollBack();
             Log::info($pegawai->id);
             Log::error($th);
-            return response()->json(['errors' => ['connection' => 'Generate Tukin Only Gagal Harap Ulangi']]);
+            return response()->json(['error' => 'Generate Tukin Only Gagal Harap Ulangi']);
         }
     }
 

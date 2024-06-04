@@ -244,7 +244,7 @@ class PegawaiRiwayatUmakController extends Controller
                     // session()->flash('message', 'Tanggal awal dan tanggal akhir yang dipilih tidak dalam 1 bulan!');
                     // return redirect()->back();
 
-                    return response()->json(['errors' => 'Tanggal awal dan tanggal akhir yang dipilih tidak dalam 1 bulan!']);
+                    return response()->json(['error' => 'Tanggal awal dan tanggal akhir yang dipilih tidak dalam 1 bulan!']);
                 }
             }
 
@@ -292,6 +292,31 @@ class PegawaiRiwayatUmakController extends Controller
                         // })
                         ->count();
 
+                    //eselon 1
+                    $cekEselon1 = DB::table('pegawai_riwayat_jabatan as prj')
+                    ->select('prj.*')
+                    ->where('prj.pegawai_id', $dataPegawai->id)
+                    ->where('prj.is_now', true)
+                    ->where('prj.is_plt', false)
+                    ->where('prj.tx_tipe_jabatan_id', 1)
+                    ->first();
+
+                    if($cekEselon1 != null){
+                        $jumlahHariMasuk = DB::table('presensi')
+                        ->select('tanggal_presensi')
+                        ->whereBetween('tanggal_presensi', [$tanggalMulaiFormat, $tanggalAkhirFormat])
+                        ->where('no_enroll', '=', $dataPegawai->no_enroll)
+                        ->whereIn('status_kehadiran', ['HADIR', 'ALPHA'])
+                        // ->where(function($query) {
+                        //     $query->whereRaw('jam_masuk != null')
+                        //         ->orWhereRaw('jam_pulang != null')
+                        //         ->orWhere('jam_pulang','!=','00:00:00')
+                        //         ->orWhere('jam_masuk','!=','00:00:00')
+                        //         ;
+                        // })
+                        ->count();
+                    }
+
                     $umakPegawai = DB::table('uang_makan as um')
                         ->select('um.id', 'um.nominal')
                         ->join('pegawai_riwayat_golongan as prg', function ($join) use ($pegawaiId) {
@@ -317,7 +342,7 @@ class PegawaiRiwayatUmakController extends Controller
                         DB::rollBack();
                         Log::warning('Ada pegawai yang datanya belum ada di tabel pegawai_riwayat_golongan di method kalkulasi pada PegawaiRiwayatUmakController!');
 
-                        return response()->json(['errors' => 'Ada pegawai yang datanya belum ada di tabel pegawai_riwayat_golongan!']);
+                        return response()->json(['error' => 'Ada pegawai yang datanya belum ada di tabel pegawai_riwayat_golongan!']);
                     }
 
                     //cek ke tabel pegawai_riwayat_umak ada data tidak
@@ -387,7 +412,7 @@ class PegawaiRiwayatUmakController extends Controller
                 // session()->flash('message', 'Data pegawai tidak ada untuk memproses kalkulasi uang makan!');
                 // return redirect()->back();
 
-                return response()->json(['errors' => 'Data pegawai tidak ada untuk memproses kalkulasi uang makan!']);
+                return response()->json(['error' => 'Data pegawai tidak ada untuk memproses kalkulasi uang makan!']);
             }
 
             DB::commit();
@@ -408,7 +433,7 @@ class PegawaiRiwayatUmakController extends Controller
             // session()->flash('message', 'Error saat proses data!');
             // return redirect()->back();
 
-            return response()->json(['errors' => 'Error saat proses data!']);
+            return response()->json(['error' => 'Error saat proses data!']);
 
             // return redirect()->route('pegawai-riwayat-umak.index')
             //         ->with('error', 'Error saat Proses Data Pegawai Riwayat Uang Makan!');
@@ -418,22 +443,38 @@ class PegawaiRiwayatUmakController extends Controller
     public function exportToTxt($tgl_awal, $tgl_akhir)
     {
         try {
-            //jumlah hari dalam parameter bulan dan tahun
-            // $date = Carbon::create($tahun, $bulan, 1);
-            // $numberOfDays = $date->daysInMonth;
-
-            // $tanggalAwal = $tahun.'-'.$bulan.'-1';
-            // $tanggalAkhir = $tahun.'-'.$bulan.'-'.$numberOfDays;
-
             //---------------
 
-            $data = DB::table('pegawai')
+            // $data = DB::table('pegawai')
+            // ->select('pegawai.nip', 'presensi.tanggal_presensi')
+            // ->join('presensi', 'pegawai.no_enroll', '=', 'presensi.no_enroll')
+            // ->whereBetween('presensi.tanggal_presensi', [$tgl_awal, $tgl_akhir])
+            // ->where('presensi.status_kehadiran', 'HADIR')
+            // ->orderBy('pegawai.nip', 'asc')
+            // ->get();
+
+            $query1 = DB::table('pegawai')
             ->select('pegawai.nip', 'presensi.tanggal_presensi')
+            ->leftJoin('pegawai_riwayat_jabatan as prj', 'prj.pegawai_id', '=', 'pegawai.id')
             ->join('presensi', 'pegawai.no_enroll', '=', 'presensi.no_enroll')
-            ->whereBetween('presensi.tanggal_presensi', [$tgl_awal, $tgl_akhir])
-            ->where('presensi.status_kehadiran', 'HADIR')
-            ->orderBy('pegawai.nip', 'asc')
-            ->get();
+            ->where('prj.is_now', 1)
+            ->where('prj.is_plt', 0)
+            ->where('prj.tx_tipe_jabatan_id', '!=', 1)
+            ->whereBetween('presensi.tanggal_presensi', ['2024-05-01', '2024-05-31'])
+            ->where('presensi.status_kehadiran', 'HADIR');
+
+            //eselon 1
+            $query2 = DB::table('pegawai')
+            ->select('pegawai.nip', 'presensi.tanggal_presensi')
+            ->leftJoin('pegawai_riwayat_jabatan as prj', 'prj.pegawai_id', '=', 'pegawai.id')
+            ->join('presensi', 'pegawai.no_enroll', '=', 'presensi.no_enroll')
+            ->where('prj.is_now', 1)
+            ->where('prj.is_plt', 0)
+            ->where('prj.tx_tipe_jabatan_id', 1)
+            ->whereBetween('presensi.tanggal_presensi', ['2024-05-01', '2024-05-31'])
+            ->whereIn('presensi.status_kehadiran', ['HADIR', 'ALPHA']);
+
+            $data = $query1->union($query2)->get();
 
             // Tentukan nama file
             $fileName = 'Uang-Makan_'.$tgl_awal.'_sampai_'.$tgl_akhir.'.txt';

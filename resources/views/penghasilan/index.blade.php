@@ -397,33 +397,24 @@
                             // Menutup tanda loading
                             Swal.close();
 
-                            if (response.errors) {
-                                if (response.errors.connection) {
-
-                                    Swal.fire({
-                                        title: 'Error!',
-                                        text: response.errors.connection,
-                                        icon: 'error',
-                                        confirmButtonText: 'Tutup'
-                                    })
-                                }
-                                if (response.errors.exists) {
-                                    Swal.fire({
-                                        title: 'Error!',
-                                        text: response.errors.exists,
-                                        icon: 'error',
-                                        confirmButtonText: 'Tutup'
-                                    })
-                                }
-                            } else {
-                                Swal.fire({
-                                    title: 'Berhasil!',
-                                    text: response.success,
-                                    icon: 'success',
-                                    confirmButtonText: 'Tutup'
-                                })
-                            }
+                            Swal.fire({
+                                title: 'Berhasil!',
+                                text: response.success,
+                                icon: 'success',
+                                confirmButtonText: 'Tutup'
+                            });
                         },
+                        error: function(response) {
+                            // Menutup tanda loading
+                            Swal.close();
+
+                            Swal.fire({
+                                title: 'Error!',
+                                text: response.error,
+                                icon: 'error',
+                                confirmButtonText: 'Tutup'
+                            });
+                        }
                     });
                 }
             });

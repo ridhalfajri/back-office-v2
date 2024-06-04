@@ -458,30 +458,21 @@
                             success: function(response) {
                                 Swal.close();
 
-                                if (response.errors) {
-                                    Swal.fire({
-                                        title: 'Error!',
-                                        text: response.errors,
-                                        icon: 'error',
-                                        confirmButtonText: 'Tutup'
-                                    })
-                                } else {
-                                    Swal.fire({
-                                        title: 'Berhasil!',
-                                        text: response.success,
-                                        icon: 'success',
-                                        confirmButtonText: 'Tutup'
-                                    })
-                                    $("#tbl-data").DataTable().ajax.reload();
-                                }
+                                Swal.fire({
+                                    title: 'Berhasil!',
+                                    text: response.success,
+                                    icon: 'success',
+                                    confirmButtonText: 'Tutup'
+                                })
+                                $("#tbl-data").DataTable().ajax.reload();
                             },
-                            error: function() {
+                            error: function(response) {
                                 // Menutup tanda loading
                                 Swal.close();
 
                                 Swal.fire({
                                     title: 'Error!',
-                                    text: 'Terjadi kesalahan saat mengkalkulasi.',
+                                    text: response.error,
                                     icon: 'error',
                                     confirmButtonText: 'Tutup'
                                 });
