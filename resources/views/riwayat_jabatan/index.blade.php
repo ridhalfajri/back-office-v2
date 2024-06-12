@@ -207,6 +207,9 @@
             $.ajax({
                 url: "/cuti/pengajuan_cuti/" + id,
                 type: "GET",
+                headers: {
+                    'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                },
                 success: function(response) {
                     console.log(response);
                     if (response.errors) {

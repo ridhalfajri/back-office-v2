@@ -204,6 +204,9 @@
             $.ajax({
                 type: "POST",
                 url: actionUrl,
+                headers: {
+                    'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                },
                 data: new FormData(this),
                 contentType: false,
                 cache: false,
