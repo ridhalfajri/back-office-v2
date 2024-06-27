@@ -50,7 +50,7 @@ class CutiController extends Controller
     {
         $tanggal_mulai = $request->tanggal_mulai;
         $tanggal_akhir = $request->tanggal_akhir;
-        if (date('Y',strtotime($tanggal_mulai)) !=date('Y',strtotime($tanggal_akhir))){
+        if (date('Y', strtotime($tanggal_mulai)) != date('Y', strtotime($tanggal_akhir))) {
             return response()->json(['errors' => ['tahun' => 'mengajukan cuti tidak boleh lintas tahun']]);
         }
         $weekdays = $this->get_all_weekdays($tanggal_mulai, $tanggal_akhir);
@@ -71,7 +71,7 @@ class CutiController extends Controller
 
         // Iterasi melalui rentang tanggal
         while ($tanggal_mulai_obj <= $tanggal_akhir_obj) {
-            // Periksa apakah tanggal saat ini adalah hari kerja (1: Senin, 7: Minggu)
+            //* Periksa apakah tanggal saat ini adalah hari kerja (1: Senin, 7: Minggu)
             $day_of_week = $tanggal_mulai_obj->format('N');
             if ($day_of_week >= 1 && $day_of_week <= 5) {
                 $libur = HariLibur::where('is_libur', 1)->where('tahun', $tanggal_mulai_obj->format('Y'))->where('tanggal', $tanggal_mulai_obj->format('Y-m-d'))->count();
@@ -648,11 +648,11 @@ class CutiController extends Controller
         if ($validate->fails()) {
             return response()->json(['errors' => ['data' => 'terjadi kesalahan harap lakukan refresh halaman']]);
         }
-        $konfigurasi = Konfigurasi::where('key','tahun_cuti')->select('value')->first();
+        $konfigurasi = Konfigurasi::where('key', 'tahun_cuti')->select('value')->first();
         $tahun_cuti = $konfigurasi->value;
 
         $cuti = PegawaiCuti::where('id', $request->id)->first();
-        if(date('Y',strtotime($cuti->tanggal_awal_cuti)) != $tahun_cuti){
+        if (date('Y', strtotime($cuti->tanggal_awal_cuti)) != $tahun_cuti) {
             return response()->json(['errors' => ['saldo_cuti' => 'saldo cuti untuk tahun ini belum diupdate, silahkan update saldo cuti terlebih dahulu']]);
         }
         $tanggal_cuti = $this->get_all_weekdays($cuti->tanggal_awal_cuti, $cuti->tanggal_akhir_cuti);
@@ -666,6 +666,11 @@ class CutiController extends Controller
                 $cuti->kabiro_sdmoh_id = auth()->user()->pegawai_id;
                 $cuti->tanggal_approve_akb = Carbon::now()->format('Y-m-d');
                 $cuti->status_pengajuan_cuti_id = 3;
+                $saldo_cuti = PegawaiSaldoCuti::where('pegawai_id', $cuti->pegawai_id)->first();
+                $total_saldo = $saldo_cuti->saldo_n + $saldo_cuti->saldo_n_1 + $saldo_cuti->saldo_n_2;
+                if ($total_saldo < $cuti->lama_cuti) {
+                    return response()->json(['errors' => ['saldo_cuti' => 'saldo cuti pegawai tidak mencukupi']]);
+                }
                 if ($cuti->jenis_cuti_id == 1) {
                     $saldo = $this->update_saldo_cuti($cuti->pegawai_id, $cuti->lama_cuti);
                 }
@@ -688,9 +693,9 @@ class CutiController extends Controller
             if ($saldo != null) {
                 $saldo->save();
             }
-             if ($restore_saldo != null) {
-                 $restore_saldo->save();
-             }
+            if ($restore_saldo != null) {
+                $restore_saldo->save();
+            }
             if ($request->kode == 'Terima') {
                 foreach ($tanggal_cuti as $hari) {
                     $presensi = Presensi::where('tanggal_presensi', $hari)->where('no_enroll', $cuti->pegawai->id)->first();
@@ -741,9 +746,9 @@ class CutiController extends Controller
         $this->authorize('admin_sdmoh', $kabiro);
         $title = 'Saldo Cuti Pegawai';
         $unit_kerja = UnitKerja::select('id', 'nama')->limit(22)->get();
-        $konfigurasi = Konfigurasi::where('key','tahun_cuti')->select('value')->first();
-        $tahun_cuti = $konfigurasi->value != date('Y',strtotime(now()));
-        return view('cuti.saldo-cuti-pegawai', compact('title', 'unit_kerja','tahun_cuti'));
+        $konfigurasi = Konfigurasi::where('key', 'tahun_cuti')->select('value')->first();
+        $tahun_cuti = $konfigurasi->value != date('Y', strtotime(now()));
+        return view('cuti.saldo-cuti-pegawai', compact('title', 'unit_kerja', 'tahun_cuti'));
     }
     public function datatable_saldo_cuti(Request $request)
     {
@@ -780,8 +785,8 @@ class CutiController extends Controller
                 $saldo->saldo_n_2 = $saldo_n_2;
                 $saldo->save();
             }
-            $konfigurasi = Konfigurasi::where('key','tahun_cuti')->first();
-            $konfigurasi->value = date('Y',strtotime(now()));
+            $konfigurasi = Konfigurasi::where('key', 'tahun_cuti')->first();
+            $konfigurasi->value = date('Y', strtotime(now()));
             $konfigurasi->save();
         });
         return response()->json(['success' => 'saldo berhasil di update']);
