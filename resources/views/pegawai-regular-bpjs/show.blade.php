@@ -11,7 +11,7 @@
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="{{ route('dashboard') }}"><i class="fa fa-home"></i></a></li>
             <li class="breadcrumb-item"><a href="{{ route('pegawai-tambahan-bpjs.index') }}">Persetujuan BPJS
-                    Keluarga Lain</a>
+                    Regular</a>
             </li>
             <li class="breadcrumb-item active" aria-current="page">{{ $title }}</li>
         </ol>
@@ -39,10 +39,10 @@
 
                     <div class="row clearfix">
                         <div class="col-12 col-lg-6 col-md-6">
-                            <div class="form-group @error('file_pengajuan_bpjs')has-error @enderror">
-                                @if ($bpjs->file_pengajuan_bpjs)
-                                    <a href="{{ $bpjs->file_pengajuan_bpjs }}" target="_blank"><i
-                                            class="dropdown-icon fa fa-file"></i>Download File Pengajuan BPJS Tambahan</a>
+                            <div class="form-group @error('file_pengajuan_bpjs_regular')has-error @enderror">
+                                @if ($bpjs->file_pengajuan_bpjs_regular)
+                                    <a href="{{ $bpjs->file_pengajuan_bpjs_regular }}" target="_blank"><i
+                                            class="dropdown-icon fa fa-file"></i>Download File Pengajuan BPJS Regular</a>
                                 @endif
                             </div>
 
@@ -53,7 +53,7 @@
                                 @endif
                             </div> --}}
 
-                            <a href="{{ route('pegawai-tambahan-bpjs.index') }}">
+                            <a href="{{ route('pegawai-regular-bpjs.index') }}">
                                 <button type="button" class="btn btn-sm btn-danger waves-effect waves-light">
                                     Kembali
                                 </button>

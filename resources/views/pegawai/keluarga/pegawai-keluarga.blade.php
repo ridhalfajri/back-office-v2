@@ -77,7 +77,7 @@
                                 <th>Nama</th>
                                 <th>Nik</th>
                                 <th>Tunjangan</th>
-                                <th>Verifikas</th>
+                                <th>Verifikasi</th>
                                 <th>Aksi</th>
                             </tr>
                         </thead>

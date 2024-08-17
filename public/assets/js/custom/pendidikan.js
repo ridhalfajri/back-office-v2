@@ -165,7 +165,7 @@ const show_pendidikan = (id) => {
                 $("#p_media_ijazah").attr(
                     "href",
                     "//" + response.result.media_ijazah
-                );
+                ).attr("target", "_blank");
             }
         },
     });

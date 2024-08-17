@@ -183,7 +183,7 @@ const edit_penghargaan = (id) => {
                 $("#download_media_sk_penghargaan").attr(
                     "href",
                     "//" + response.result.media_sk_penghargaan
-                );
+                ).attr("target", "_blank");
             }
             $("#modal-tambah-penghargaan").modal("show");
         },

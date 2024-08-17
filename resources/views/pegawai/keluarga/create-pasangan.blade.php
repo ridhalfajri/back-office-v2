@@ -147,10 +147,10 @@
                                         </div>
                                     </div>
                                     <div class="form-group col-lg-4 col-md-6 col-sm-12">
-                                        <label class="form-label">Foto Pasangan</label>
+                                        <label class="form-label">KK Pasangan</label>
                                         <div class="input-group">
-                                            <input type="file" id="media_foto_pasangan" name="media_foto_pasangan">
-                                            <small class="text-danger" id="error_media_foto_pasangan"></small>
+                                            <input type="file" id="media_kk_pasangan" name="media_kk_pasangan">
+                                            <small class="text-danger" id="error_media_kk_pasangan"></small>
                                         </div>
                                     </div>
                                 </div>
@@ -254,8 +254,8 @@
                         if (err.media_buku_nikah) {
                             $('#error_media_buku_nikah').text(err.media_buku_nikah)
                         }
-                        if (err.media_foto_pasangan) {
-                            $('#error_media_foto_pasangan').text(err.media_foto_pasangan)
+                        if (err.media_kk_pasangan) {
+                            $('#error_media_kk_pasangan').text(err.media_kk_pasangan)
                         }
 
                         if (err.connection) {
@@ -298,7 +298,7 @@
             $('#error_jenis_kawin_id').text('')
             $('#error_no_buku_nikah').text('')
             $('#error_media_buku_nikah').text('')
-            $('#error_media_foto_pasangan').text('')
+            $('#error_media_kk_pasangan').text('')
         }
     </script>
     <script>
@@ -320,7 +320,7 @@
         }
         $('.dropify').dropify();
 
-        const drEvent = $('#media_foto_pasangan').dropify();
+        const drEvent = $('#media_kk_pasangan').dropify();
         drEvent.on('dropify.beforeClear', function(event, element) {});
 
         drEvent.on('dropify.afterClear', function(event, element) {

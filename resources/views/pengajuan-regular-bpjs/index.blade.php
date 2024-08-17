@@ -33,34 +33,33 @@
                     <div class="card-header">
                         <h4 class="card-title">
                             <button type="button" class="btn btn-xs btn-primary" id="btn-add"
-                                onclick="window.location.href = '{{ route('pengajuan-tambahan-bpjs.create') }}';">
+                                onclick="window.location.href = '{{ route('pengajuan-regular-bpjs.create') }}';">
                                 Pengajuan</button>
                         </h4>
                     </div>
 
                     <div class="card-body">
-                        <em style="color: red">Pengajuan Anggota Keluarga Lain: Anak (ke-4 dst), Orang Tua, atau
-                            Mertua.</em>
+                        <em style="color: red">Pengajuan Anggota Regular: Pegawai Bersangkutan, Istri, dan Anak (sampai anak
+                            ke-3).</em>
                         <br>
                         <em style="color: black">Jika Status Disetujui, Silahkan Cek Berkala Aplikasi Mobile JKN.</em>
                         <br>
                         <br>
 
-                        <h5 class="box-title" style="text-align: center;"><b>List Pengajuan BPJS Keluarga Lain</b></h5>
+                        <h5 class="box-title" style="text-align: center;"><b>List Pengajuan BPJS Regular</b></h5>
 
                         <table id="tbl-data" class="table table-hover js-basic-example dataTable table_custom spacing5">
                             <thead>
                                 <tr>
                                     <th class="font-weight-bold text-dark" style="width: 5%">No</th>
-                                    <th class="font-weight-bold text-dark">Nama Keluarga</th>
+                                    <th class="font-weight-bold text-dark">Nama</th>
                                     <th class="font-weight-bold text-dark">NIK</th>
                                     <th class="font-weight-bold text-dark">No. KK</th>
                                     <th class="font-weight-bold text-dark">Status Hubungan<br>Keluarga</th>
+                                    <th class="font-weight-bold text-dark">Email</th>
+                                    <th class="font-weight-bold text-dark">No. Telp</th>
+                                    <th class="font-weight-bold text-dark">Kode Faskes</th>
 
-                                    {{-- <th class="font-weight-bold text-dark">Total Pengajuan<br>Orang Tua</th>
-                                    <th class="font-weight-bold text-dark">Total Pengajuan<br>Mertua</th>
-                                    <th class="font-weight-bold text-dark">Total Pengajuan<br>Anak</th> --}}
-                                    {{-- <th class="font-weight-bold text-dark">File SK</th> --}}
                                     <th class="font-weight-bold text-dark">Status</th>
                                     <th class="font-weight-bold text-dark">Aksi</th>
                                 </tr>
@@ -68,11 +67,14 @@
                             <tfoot>
                                 <tr>
                                     <th class="font-weight-bold text-dark" style="width: 5%">No</th>
-                                    <th class="font-weight-bold text-dark">Nama Keluarga</th>
+                                    <th class="font-weight-bold text-dark">Nama</th>
                                     <th class="font-weight-bold text-dark">NIK</th>
                                     <th class="font-weight-bold text-dark">No. KK</th>
                                     <th class="font-weight-bold text-dark">Status Hubungan<br>Keluarga</th>
-                                    {{-- <th class="font-weight-bold text-dark">File SK</th> --}}
+                                    <th class="font-weight-bold text-dark">Email</th>
+                                    <th class="font-weight-bold text-dark">No. Telp</th>
+                                    <th class="font-weight-bold text-dark">Kode Faskes</th>
+
                                     <th class="font-weight-bold text-dark">Status</th>
                                     <th class="font-weight-bold text-dark">Aksi</th>
                                 </tr>
@@ -124,7 +126,7 @@
                 info: true,
                 autoWidth: false,
                 ajax: {
-                    url: '{{ route('pengajuan-tambahan-bpjs.datatable') }}',
+                    url: '{{ route('pengajuan-regular-bpjs.datatable') }}',
                     type: 'POST',
                     headers: {
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
@@ -141,23 +143,38 @@
                         class: 'text-center'
                     },
                     {
-                        data: 'nama_keluarga',
-                        name: 'nama_keluarga',
+                        data: 'nama',
+                        name: 'nama',
                         class: 'text-center'
                     },
                     {
-                        data: 'nik_keluarga',
-                        name: 'nik_keluarga',
+                        data: 'nik',
+                        name: 'nik',
                         class: 'text-center'
                     },
                     {
-                        data: 'no_kk_keluarga',
-                        name: 'no_kk_keluarga',
+                        data: 'no_kk',
+                        name: 'no_kk',
                         class: 'text-center'
                     },
                     {
-                        data: 'status_keluarga',
-                        name: 'status_keluarga',
+                        data: 'status_hubungan',
+                        name: 'status_hubungan',
+                        class: 'text-center'
+                    },
+                    {
+                        data: 'email',
+                        name: 'email',
+                        class: 'text-center'
+                    },
+                    {
+                        data: 'no_telepon',
+                        name: 'no_telepon',
+                        class: 'text-center'
+                    },
+                    {
+                        data: 'kode_faskes',
+                        name: 'kode_faskes',
                         class: 'text-center'
                     },
                     {
@@ -223,7 +240,7 @@
                         delete_data(that.data('id')).then(function(hasil) {
                             if (hasil.status.error == true) {
                                 toastr['error'](
-                                    'Data Pengajuan BPJS Keluarga Lain gagal di hapus!');
+                                    'Data Pengajuan BPJS Regular gagal di hapus!');
                             } else {
                                 table.ajax.reload();
                                 toastr['success'](hasil.status.message);
@@ -243,7 +260,7 @@
         function delete_data(id) {
             return new Promise(function(resolve, reject) {
                 $.ajax({
-                    url: "{{ url('pengajuan-bpjs/pengajuan-tambahan-bpjs') }}/" + id,
+                    url: "{{ url('pengajuan-bpjs/pengajuan-regular-bpjs') }}/" + id,
                     method: 'POST',
                     headers: {
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
@@ -255,7 +272,7 @@
                 }).done(function(hasil) {
                     resolve(hasil);
                 }).fail(function() {
-                    reject('Gagal menghapus data Pengajuan BPJS Keluarga Lain!');
+                    reject('Gagal menghapus data Pengajuan BPJS Regular!');
                 })
             })
         }

@@ -167,7 +167,7 @@ class CutiController extends Controller
         $this->authorize('view', $cuti);
         $cek_media = $cuti->getMedia("media_pengajuan_cuti")->count();
         if ($cek_media) {
-            $cuti->media_pengajuan_cuti = $cuti->getMedia("media_pengajuan_cuti")[0]->getUrl();
+            $cuti->media_pengajuan_cuti = $cuti->getFirstMediaUrl("media_pengajuan_cuti");
         }
 
         $tanggal_mulai = Carbon::parse($cuti->tanggal_awal_cuti)->translatedFormat('d-m-Y');
@@ -361,7 +361,7 @@ class CutiController extends Controller
             }
             $cek_media = $cuti->getMedia("media_pengajuan_cuti")->count();
             if ($cek_media) {
-                $cuti->media_pengajuan_cuti = $cuti->getMedia("media_pengajuan_cuti")[0]->getUrl();
+                $cuti->media_pengajuan_cuti = $cuti->getFirstMediaUrl("media_pengajuan_cuti");
             }
             return response()->json(['result' => $cuti]);
         } catch (QueryException $e) {
@@ -502,7 +502,7 @@ class CutiController extends Controller
         }
         $cek_media = $cuti->getMedia("media_pengajuan_cuti")->count();
         if ($cek_media) {
-            $cuti->media_pengajuan_cuti = $cuti->getMedia("media_pengajuan_cuti")[0]->getUrl();
+            $cuti->media_pengajuan_cuti = $cuti->getFirstMediaUrl("media_pengajuan_cuti");
         }
         $saldo_cuti = PegawaiSaldoCuti::where('pegawai_id', $cuti->pegawai_id)->first();
         $title = 'Detail Pengajuan Cuti';
@@ -625,7 +625,7 @@ class CutiController extends Controller
         }
         $cek_media = $cuti->getMedia("media_pengajuan_cuti")->count();
         if ($cek_media) {
-            $cuti->media_pengajuan_cuti = $cuti->getMedia("media_pengajuan_cuti")[0]->getUrl();
+            $cuti->media_pengajuan_cuti = $cuti->getFirstMediaUrl("media_pengajuan_cuti");
         }
         $saldo_cuti = PegawaiSaldoCuti::where('pegawai_id', $cuti->pegawai_id)->first();
         $title = 'Detail Pengajuan Cuti';

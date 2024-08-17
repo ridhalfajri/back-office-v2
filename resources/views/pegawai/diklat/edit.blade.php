@@ -10,8 +10,8 @@
 @push('breadcrumb')
     <ol class="breadcrumb custom-background-color">
         <li class="breadcrumb-item"><a href="{{ route('dashboard') }}"><i class="fa fa-home"></i></a></li>
-        <li class="breadcrumb-item"><a href="{{route('pegawai.index')}}">Pegawai</a></li>
-        <li class="breadcrumb-item"><a href="{{route('pegawai.show',$diklat->pegawai_id)}}">Pegawai Detail</a></li>
+        <li class="breadcrumb-item"><a href="{{ route('pegawai.index') }}">Pegawai</a></li>
+        <li class="breadcrumb-item"><a href="{{ route('pegawai.show', $diklat->pegawai_id) }}">Pegawai Detail</a></li>
         <li class="breadcrumb-item active" aria-current="page">{{ $title }}</li>
     </ol>
 @endpush
@@ -90,8 +90,9 @@
                                     </div>
                                     <div class="form-group col-lg-4 col-md-6 col-sm-12">
                                         <label class="form-label">No Sertifikat</label>
-                                        <input type="text" class="form-control" id="no_sertifikat" name="no_sertifikat"
-                                            placeholder="No Sertifikat" value="{{ $diklat->no_sertifikat }}">
+                                        <input type="text" class="form-control" id="no_sertifikat"
+                                            name="no_sertifikat" placeholder="No Sertifikat"
+                                            value="{{ $diklat->no_sertifikat }}">
                                         <small class="text-danger" id="error_no_sertifikat"></small>
                                     </div>
                                     <div class="form-group col-lg-4 col-md-6 col-sm-12">
@@ -109,8 +110,11 @@
                                         <div class="input-group">
                                             <input type="file" id="media_sertifikat" name="media_sertifikat">
                                             <small class="text-danger" id="error_media_sertifikat"></small>
-                                            <a href='//{{ $diklat->media_sertifikat->getUrl() }}'+>File Sekarang :
-                                                {{ $diklat->media_sertifikat->file_name }}</a>
+                                            @if (!empty($diklat->media_sertifikat))
+                                                <a href='{{ $diklat->media_sertifikat }}' target="_blank">File
+                                                    Sekarang :
+                                                    {{ $diklat->media_sertifikat->file_name }}</a>
+                                            @endif
                                         </div>
                                     </div>
                                 </div>

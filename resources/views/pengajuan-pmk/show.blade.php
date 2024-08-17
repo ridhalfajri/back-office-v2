@@ -40,13 +40,15 @@
                         <div class="col-12 col-lg-6 col-md-6">
                             <div class="form-group @error('file_sk_pmk')has-error @enderror">
                                 @if ($pmk->file_sk_pmk)
-                                    <a href="//{{ $pmk->file_sk_pmk }}" target="_blank"><i class="dropdown-icon fa fa-file"></i>Download File SK</a>
+                                    <a href="{{ $pmk->file_sk_pmk }}" target="_blank"><i
+                                            class="dropdown-icon fa fa-file"></i>Download File SK</a>
                                 @endif
                             </div>
 
                             <div class="form-group @error('file_pengajuan_pmk')has-error @enderror">
                                 @if ($pmk->file_pengajuan_pmk)
-                                    <a href="//{{ $pmk->file_pengajuan_pmk }}" target="_blank"><i class="dropdown-icon fa fa-file"></i>Download File Pengajuan PMK</a>
+                                    <a href="{{ $pmk->file_pengajuan_pmk }}" target="_blank"><i
+                                            class="dropdown-icon fa fa-file"></i>Download File Pengajuan PMK</a>
                                 @endif
                             </div>
 
@@ -69,7 +71,5 @@
     <!-- Select2 -->
     <script src="{{ asset('assets/plugins/select2/js/select2.min.js') }}"></script>
 
-    <script type="text/javascript">
-        
-    </script>
+    <script type="text/javascript"></script>
 @endpush

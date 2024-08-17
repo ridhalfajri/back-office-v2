@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\PegawaiBpjsLainnya;
+use App\Models\PegawaiBpjsRegular;
 use App\Models\PegawaiRiwayatJabatan;
 use App\Models\PegawaiTambahanMk;
 use Illuminate\Http\Request;
@@ -14,12 +14,11 @@ use Yajra\Datatables\Datatables;
 use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-
 use Maatwebsite\Excel\Facades\Excel;
-use App\Exports\DataExportBpjsLain;
+use App\Exports\DataExportBpjsReg;
 use Carbon\Carbon;
 
-class PegawaiTambahanBpjsController extends Controller
+class PegawaiRegularBpjsController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -31,7 +30,7 @@ class PegawaiTambahanBpjsController extends Controller
         $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
         $this->authorize('admin_sdmoh', $kabiro);
 
-        $title = 'Approval BPJS Keluarga Lain Pegawai';
+        $title = 'Approval BPJS Regular';
 
         $dataUnitKerja = DB::table('unit_kerja')
             ->select('*')
@@ -39,7 +38,7 @@ class PegawaiTambahanBpjsController extends Controller
             ->where('is_active', 'Y')
             ->get();
 
-        return view('pegawai-tambahan-bpjs.index', compact('title', 'dataUnitKerja'));
+        return view('pegawai-regular-bpjs.index', compact('title', 'dataUnitKerja'));
     }
 
     public function datatable(Request $request)
@@ -48,7 +47,7 @@ class PegawaiTambahanBpjsController extends Controller
         $status = $request->status;
         $daftarBpjs = $request->daftarBpjs;
 
-        $data = DB::table('pegawai_bpjs_lainnya as ptm')
+        $data = DB::table('pegawai_bpjs_regular as ptm')
             ->select(
                 'ptm.*',
                 'p.nama_depan',
@@ -99,6 +98,21 @@ class PegawaiTambahanBpjsController extends Controller
                 $query->whereRaw("CONCAT(p.nama_depan,' ',p.nama_belakang) like ?", ["%$keyword%"]);
             })
 
+            ->addColumn('status_hub_keluarga', function ($data) {
+                if ($data->kode_hub_keluarga == 1) {
+                    return 'Peserta';
+                }
+                if ($data->kode_hub_keluarga == 2) {
+                    return 'Istri';
+                }
+                if ($data->kode_hub_keluarga == 3) {
+                    return 'Suami';
+                }
+                if ($data->kode_hub_keluarga == 4) {
+                    return 'Anak';
+                }
+            })
+
             ->addColumn('status', function ($data) {
                 if ($data->status == 1) {
                     return 'Pengajuan';
@@ -111,23 +125,23 @@ class PegawaiTambahanBpjsController extends Controller
                 }
             })
 
-            ->addColumn('aksi', 'pegawai-tambahan-bpjs.aksi')
+            ->addColumn('aksi', 'pegawai-regular-bpjs.aksi')
             ->rawColumns(['aksi'])
             ->make(true);
     }
 
-    public function show(PegawaiBpjsLainnya $pegawai_tambahan_bpj)
+    public function show(PegawaiBpjsRegular $pegawai_regular_bpj)
     {
         $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
         $this->authorize('admin_sdmoh', $kabiro);
 
         $title = 'Lihat File';
 
-        $bpjs = $pegawai_tambahan_bpj;
+        $bpjs = $pegawai_regular_bpj;
 
-        $cek_media = $bpjs->getMedia("file_pengajuan_bpjs")->count();
+        $cek_media = $bpjs->getMedia("file_pengajuan_bpjs_regular")->count();
         if ($cek_media) {
-            $bpjs->file_pengajuan_bpjs = $bpjs->getFirstMediaUrl("file_pengajuan_bpjs");
+            $bpjs->file_pengajuan_bpjs_regular = $bpjs->getFirstMediaUrl("file_pengajuan_bpjs_regular");
         }
 
         // $cek_media = $bpjs->getMedia("file_kartu_bpjs")->count();
@@ -135,17 +149,17 @@ class PegawaiTambahanBpjsController extends Controller
         //     $bpjs->file_kartu_bpjs = $bpjs->getMedia("file_kartu_bpjs")[0]->getUrl();
         // }
 
-        return view('pegawai-tambahan-bpjs.show', compact('title', 'bpjs'));
+        return view('pegawai-regular-bpjs.show', compact('title', 'bpjs'));
     }
 
-    public function edit(PegawaiBpjsLainnya $pegawai_tambahan_bpj)
+    public function edit(PegawaiBpjsRegular $pegawai_regular_bpj)
     {
         $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
         $this->authorize('admin_sdmoh', $kabiro);
 
-        $title = 'Persetujuan BPJS Keluarga Lain';
+        $title = 'Persetujuan BPJS Regular';
 
-        $pegawai = DB::table('pegawai_bpjs_lainnya as ptm')
+        $pegawai = DB::table('pegawai_bpjs_regular as ptm')
             ->select(
                 'ptm.*',
                 'p.nama_depan',
@@ -169,20 +183,20 @@ class PegawaiTambahanBpjsController extends Controller
                     ->where('uk.is_active', '=', 'Y')
                 ;
             })
-            ->where('ptm.pegawai_id', '=', $pegawai_tambahan_bpj->pegawai_id)
+            ->where('ptm.pegawai_id', '=', $pegawai_regular_bpj->pegawai_id)
             ->first();
 
-        $bpjs = $pegawai_tambahan_bpj;
+        $bpjs = $pegawai_regular_bpj;
 
-        $cek_media = $bpjs->getMedia("file_pengajuan_bpjs")->count();
+        $cek_media = $bpjs->getMedia("file_pengajuan_bpjs_regular")->count();
         if ($cek_media) {
-            $bpjs->file_pengajuan_bpjs = $bpjs->getFirstMediaUrl("file_pengajuan_bpjs");
+            $bpjs->file_pengajuan_bpjs_regular = $bpjs->getFirstMediaUrl("file_pengajuan_bpjs_regular");
         }
 
-        return view('pegawai-tambahan-bpjs.edit', compact('title', 'bpjs', 'pegawai'));
+        return view('pegawai-regular-bpjs.edit', compact('title', 'bpjs', 'pegawai'));
     }
 
-    public function update(Request $request, PegawaiBpjsLainnya $pegawai_tambahan_bpj)
+    public function update(Request $request, PegawaiBpjsRegular $pegawai_regular_bpj)
     {
         $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
         $this->authorize('admin_sdmoh', $kabiro);
@@ -195,19 +209,19 @@ class PegawaiTambahanBpjsController extends Controller
             //update
             //jika button submit atau jika button tolak
             if ($request->button_clicked == "setuju") {
-                $pegawai_tambahan_bpj->status = 3;
-                $pegawai_tambahan_bpj->is_active = 1;
-                $pegawai_tambahan_bpj->keterangan_tolak = '';
+                $pegawai_regular_bpj->status = 3;
+                $pegawai_regular_bpj->is_active = 1;
+                $pegawai_regular_bpj->keterangan_tolak = '';
             }
 
             if ($request->button_clicked == "tolak") {
-                $pegawai_tambahan_bpj->status = 2;
-                $pegawai_tambahan_bpj->is_active = 0;
-                $pegawai_tambahan_bpj->keterangan_tolak = $request->keterangan_tolak;
+                $pegawai_regular_bpj->status = 2;
+                $pegawai_regular_bpj->is_active = 0;
+                $pegawai_regular_bpj->keterangan_tolak = $request->keterangan_tolak;
             }
 
-            $pegawai_tambahan_bpj->daftar_ke_bpjs = 'N';
-            $pegawai_tambahan_bpj->update();
+            $pegawai_regular_bpj->daftar_ke_bpjs = 'N';
+            $pegawai_regular_bpj->update();
 
             // if ($request->file('file_kartu_bpjs')) {
             //     $pegawai_tambahan_bpj->clearMediaCollection('file_kartu_bpjs');
@@ -215,14 +229,14 @@ class PegawaiTambahanBpjsController extends Controller
             // }
 
             DB::commit();
-            Log::info('Data berhasil di-update di method update pada PegawaiTambahanBpjsController!');
+            Log::info('Data berhasil di-update di method update pada PegawaiRegularBpjsController!');
 
-            return redirect()->route('pegawai-tambahan-bpjs.index')
-                ->with('success', 'Data Persetujuan BPJS Keluarga Lain berhasil diupdate');
+            return redirect()->route('pegawai-regular-bpjs.index')
+                ->with('success', 'Data Persetujuan BPJS Regular berhasil diupdate');
         } catch (\Exception $e) {
             //throw $th;
             DB::rollback();
-            Log::error($e->getMessage(), ['Data gagal di-update di method update pada PegawaiTambahanBpjsController!']);
+            Log::error($e->getMessage(), ['Data gagal di-update di method update pada PegawaiRegularBpjsController!']);
 
             session()->flash('message', 'Error saat proses data!');
 
@@ -237,7 +251,7 @@ class PegawaiTambahanBpjsController extends Controller
      * @param  \App\Models\Models\PegawaiTambahanMk  $bidangProfisiensi
      * @return \Illuminate\Http\Response
      */
-    public function destroy(PegawaiBpjsLainnya $pegawai_tambahan_bpj)
+    public function destroy(PegawaiBpjsRegular $pegawai_regular_bpj)
     {
         $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
         $this->authorize('admin_sdmoh', $kabiro);
@@ -246,40 +260,40 @@ class PegawaiTambahanBpjsController extends Controller
         try {
             // $pegawai_tambahan_bpj->status = 2;
             // $pegawai_tambahan_bpj->is_active = 0;
-            $pegawai_tambahan_bpj->clearMediaCollection('file_pengajuan_bpjs');
-            $pegawai_tambahan_bpj->delete();
+            $pegawai_regular_bpj->clearMediaCollection('file_pengajuan_bpjs_regular');
+            $pegawai_regular_bpj->delete();
 
             $response['status'] = [
                 'code' => 200,
-                'message' => 'Data Pengajuan BPJS Keluarga Lain berhasil dihapus!',
+                'message' => 'Data Pengajuan BPJS Regular berhasil dihapus!',
                 'error' => false,
                 'error_message' => ''
             ];
 
             DB::commit();
-            Log::info('Data berhasil di-delete di method destroy pada PegawaiTambahanBpjsController!');
+            Log::info('Data berhasil di-delete di method destroy pada PegawaiRegularBpjsController!');
 
             return response()->json($response, 200);
         } catch (\Exception $e) {
             $response['status'] = [
                 'code' => 200,
-                'message' => 'Data Pengajuan BPJS Keluarga Lain gagal dihapus!',
+                'message' => 'Data Pengajuan BPJS Regular gagal dihapus!',
                 'error' => true,
-                'error_message' => 'Data Pengajuan BPJS Keluarga Lain gagal dihapus!'
+                'error_message' => 'Data Pengajuan BPJS Regular gagal dihapus!'
             ];
 
-            Log::error($e->getMessage(), ['Data gagal di-hapus di method destroy pada PegawaiTambahanBpjsController!']);
+            Log::error($e->getMessage(), ['Data gagal di-hapus di method destroy pada PegawaiRegularBpjsController!']);
             DB::rollback();
 
             return response()->json($response, 200);
         }
     }
 
-    public function kirimBpjs(Request $request, PegawaiBpjsLainnya $pegawai_tambahan_bpj)
+    public function kirimBpjs(Request $request, PegawaiBpjsRegular $pegawai_regular_bpj)
     {
         DB::beginTransaction();
         try {
-            $pegawai_tambahan_bpj->update([
+            $pegawai_regular_bpj->update([
                 'daftar_ke_bpjs' => 'Y'
             ]);
 
@@ -291,7 +305,7 @@ class PegawaiTambahanBpjsController extends Controller
             ];
 
             DB::commit();
-            Log::info('Fixasi data bpjs berhasil di-update di method kirimBpjs pada PegawaiTambahanBpjsController!');
+            Log::info('Fixasi data bpjs berhasil di-update di method kirimBpjs pada PegawaiRegularBpjsController!');
 
             return response()->json($response, 200);
         } catch (\Exception $e) {
@@ -302,7 +316,7 @@ class PegawaiTambahanBpjsController extends Controller
                 'error_message' => 'Gagal fixasi data daftar ke bpjs!'
             ];
 
-            Log::error($e->getMessage(), ['Fixasi data bpjs gagal di-update di method kirimBpjs pada PegawaiTambahanBpjsController!']);
+            Log::error($e->getMessage(), ['Fixasi data bpjs gagal di-update di method kirimBpjs pada PegawaiRegularBpjsController!']);
             DB::rollback();
 
             return response()->json($response, 500);
@@ -324,11 +338,11 @@ class PegawaiTambahanBpjsController extends Controller
                 $statusName = 'Disetujui';
             }
 
-            $fileName = 'BPJS-Keluarga-Lain' . '_' . $statusName . '_Daftar-' . $daftarBpjs . '_' . Carbon::now() . '.xlsx';
+            $fileName = 'BPJS-Regular' . '_' . $statusName . '_Daftar-' . $daftarBpjs . '_' . Carbon::now() . '.xlsx';
 
-            return Excel::download(new DataExportBpjsLain($status, $daftarBpjs), $fileName);
+            return Excel::download(new DataExportBpjsReg($status, $daftarBpjs), $fileName);
         } catch (\Exception $e) {
-            Log::error($e->getMessage(), ['Export data excel gagal di method exportToExcel pada PegawaiTambahanBpjsController!']);
+            Log::error($e->getMessage(), ['Export data excel gagal di method exportToExcel pada PegawaiRegularBpjsController!']);
         }
     }
 }

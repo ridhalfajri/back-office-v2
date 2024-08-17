@@ -4,7 +4,7 @@
 @push('breadcrumb')
     <ol class="breadcrumb custom-background-color">
         <li class="breadcrumb-item"><a href="{{ route('dashboard') }}"><i class="fa fa-home"></i></a></li>
-        <li class="breadcrumb-item"><a href="{{route('cuti.pengajuan-masuk')}}">Pengajuan Masuk</a></li>
+        <li class="breadcrumb-item"><a href="{{ route('cuti.pengajuan-masuk') }}">Pengajuan Masuk</a></li>
         <li class="breadcrumb-item active" aria-current="page">{{ $title }}</li>
     </ol>
 @endpush
@@ -88,7 +88,7 @@
                     <div class="form-group col-lg-6 col-md-6 col-sm-12">
                         <label class="form-label">Lampiran <small class="text-danger">(jika diperlukan, misal : Surat
                                 Keterangan Sakit, dll)</small></label>
-                        <a href="//{{ $cuti->media_pengajuan_cuti }}" class="btn btn-success">Download</a>
+                        <a href="{{ $cuti->media_pengajuan_cuti }}" class="btn btn-success">Download</a>
                     </div>
                 @endif
             </div>

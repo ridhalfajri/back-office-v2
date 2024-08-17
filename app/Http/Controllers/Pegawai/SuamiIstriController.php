@@ -60,8 +60,8 @@ class SuamiIstriController extends Controller
                 'tmt_sk_cerai' => ['nullable', 'date_format:d-m-Y'],
                 'jenis_kawin_id' => ['required', 'exists:jenis_kawin,id'],
                 'no_buku_nikah' => ['required', 'max:50'],
-                'media_foto_pasangan' => ['nullable', 'mimes:jpg,jpeg,png', 'file', 'max:1024'],
-                'media_buku_nikah' => ['nullable', 'mimes:pdf', 'file', 'max:1024']
+                'media_kk_pasangan' => ['nullable', 'mimes:jpg,jpeg,png,pdf', 'file', 'max:1024'],
+                'media_buku_nikah' => ['nullable', 'mimes:jpg,jpeg,png,pdf', 'file', 'max:1024']
             ],
             [
                 'pegawai_id.required' => 'pegawai harus diisi',
@@ -91,10 +91,12 @@ class SuamiIstriController extends Controller
                 'jenis_kawin_id.exists' => 'jenis kawin tidak valid',
                 'no_buku_nikah.required' => 'no kartu harus diiisi',
                 'no_buku_nikah.max' => 'no kartu maksimal 50 karakter',
-                'media_buku_nikah.mimes' => 'format file buku nikah harus pdf',
+                //'media_buku_nikah.required' => 'file buku nikah harus diiisi',
+                'media_buku_nikah.mimes' => 'format file buku nikah harus jpg, jpeg, png, pdf',
                 'media_buku_nikah.max' => 'ukuran file terlalu besar (maksimal file 1MB)',
-                'media_foto_pasangan.mimes' => 'format foto pasangan harus jpg, jpeg, png',
-                'media_foto_pasangan.max' => 'ukuran file terlalu besar (maksimal file 1MB)',
+                //'media_kk_pasangan.required' => 'file kk pasangan harus diiisi',
+                'media_kk_pasangan.mimes' => 'format foto pasangan harus jpg, jpeg, png, pdf',
+                'media_kk_pasangan.max' => 'ukuran file terlalu besar (maksimal file 1MB)',
             ]
         );
         if ($validate->fails()) {
@@ -113,14 +115,16 @@ class SuamiIstriController extends Controller
             $pasangan->pekerjaan = $request->pekerjaan;
             $pasangan->status_tunjangan = $request->status_tunjangan;
             $pasangan->no_sk_cerai = $request->no_sk_cerai;
-            $pasangan->tmt_sk_cerai = Carbon::parse($request->tmt_sk_cerai)->translatedFormat('Y-m-d');
+            if ($pasangan->tmt_sk_cerai != null) {
+                $pasangan->tmt_sk_cerai = Carbon::parse($request->tmt_sk_cerai)->translatedFormat('Y-m-d');
+            }
             $pasangan->jenis_kawin_id = $request->jenis_kawin_id;
             $pasangan->no_buku_nikah = $request->no_buku_nikah;
             try {
                 DB::transaction(function () use ($request, $pasangan) {
                     $pasangan->save();
-                    if ($request->file('media_foto_pasangan')) {
-                        $pasangan->addMediaFromRequest('media_foto_pasangan')->toMediaCollection('media_foto_pasangan');
+                    if ($request->file('media_kk_pasangan')) {
+                        $pasangan->addMediaFromRequest('media_kk_pasangan')->toMediaCollection('media_kk_pasangan');
                     }
                     if ($request->file('media_buku_nikah')) {
                         $pasangan->addMediaFromRequest('media_buku_nikah')->toMediaCollection('media_buku_nikah');
@@ -167,14 +171,14 @@ class SuamiIstriController extends Controller
                 $pasangan->tmt_sk_cerai = Carbon::parse($pasangan->tmt_sk_cerai)->translatedFormat('d-m-Y');
             }
             if ($pasangan->hasMedia("media_buku_nikah")) {
-                $pasangan->media_buku_nikah = $pasangan->getMedia("media_buku_nikah")[0]->getUrl();
+                $pasangan->media_buku_nikah = $pasangan->getFirstMediaUrl("media_buku_nikah");
             } else {
                 $pasangan->media_buku_nikah = null;
             }
-            if ($pasangan->hasMedia("media_foto_pasangan")) {
-                $pasangan->media_foto_pasangan = $pasangan->getMedia("media_foto_pasangan")[0]->getUrl();
+            if ($pasangan->hasMedia("media_kk_pasangan")) {
+                $pasangan->media_kk_pasangan = $pasangan->getFirstMediaUrl("media_kk_pasangan");
             } else {
-                $pasangan->media_foto_pasangan = null;
+                $pasangan->media_kk_pasangan = null;
             }
             $pasangan->jenis_kawin;
             $pasangan->pendidikan;
@@ -213,8 +217,14 @@ class SuamiIstriController extends Controller
         if ($pasangan->tmt_sk_cerai != null) {
             $pasangan->tmt_sk_cerai = Carbon::parse($pasangan->tmt_sk_cerai)->translatedFormat('d-m-Y');
         }
-        $pasangan->media_buku_nikah = $pasangan->getMedia("media_buku_nikah")[0];
-        $pasangan->media_foto_pasangan = $pasangan->getMedia("media_foto_pasangan")[0];
+
+        if (!empty($pasangan->getMedia('media_buku_nikah')[0])) {
+            $pasangan->media_buku_nikah = $pasangan->getFirstMediaUrl('media_buku_nikah');
+        }
+        if (!empty($pasangan->getMedia('media_kk_pasangan')[0])) {
+            $pasangan->media_kk_pasangan = $pasangan->getFirstMediaUrl('media_kk_pasangan');
+        }
+
         $pendidikan = TingkatPendidikan::select('id', 'nama')->get();
         $jenis_kawin = JenisKawin::select('id', 'nama')->get();
         return view('pegawai.keluarga.edit-pasangan', compact('title', 'pasangan', 'pendidikan', 'jenis_kawin'));
@@ -243,8 +253,8 @@ class SuamiIstriController extends Controller
                 'tmt_sk_cerai' => ['nullable', 'date_format:d-m-Y'],
                 'jenis_kawin_id' => ['required', 'exists:jenis_kawin,id'],
                 'no_buku_nikah' => ['required', 'max:50'],
-                'media_foto_pasangan' => ['nullable', 'mimes:jpg,jpeg,png', 'file', 'max:1024'],
-                'media_buku_nikah' => ['nullable', 'mimes:pdf', 'file', 'max:1024']
+                'media_kk_pasangan' => ['nullable', 'mimes:jpg,jpeg,png,pdf', 'file', 'max:1024'],
+                'media_buku_nikah' => ['nullable', 'mimes:jpg,jpeg,png,pdf', 'file', 'max:1024']
             ],
             [
                 'pegawai_id.required' => 'pegawai harus diisi',
@@ -274,10 +284,12 @@ class SuamiIstriController extends Controller
                 'jenis_kawin_id.exists' => 'jenis kawin tidak valid',
                 'no_buku_nikah.required' => 'no kartu harus diiisi',
                 'no_buku_nikah.max' => 'no kartu maksimal 50 karakter',
-                'media_buku_nikah.mimes' => 'format file buku nikah harus pdf',
+                //'media_buku_nikah.required' => 'file buku nikah harus diiisi',
+                'media_buku_nikah.mimes' => 'format file buku nikah harus jpg, jpeg, png, pdf',
                 'media_buku_nikah.max' => 'ukuran file terlalu besar (maksimal file 1MB)',
-                'media_foto_pasangan.mimes' => 'format foto pasangan harus jpg, jpeg, png',
-                'media_foto_pasangan.max' => 'ukuran file terlalu besar (maksimal file 1MB)',
+                //'media_kk_pasangan.required' => 'file kk pasangan harus diiisi',
+                'media_kk_pasangan.mimes' => 'format foto pasangan harus jpg, jpeg, png, pdf',
+                'media_kk_pasangan.max' => 'ukuran file terlalu besar (maksimal file 1MB)',
             ]
         );
         if ($validate->fails()) {
@@ -303,9 +315,9 @@ class SuamiIstriController extends Controller
             try {
                 DB::transaction(function () use ($pasangan, $request) {
                     $pasangan->save();
-                    if ($request->file('media_foto_pasangan')) {
-                        $pasangan->clearMediaCollection('media_foto_pasangan');
-                        $pasangan->addMediaFromRequest('media_foto_pasangan')->toMediaCollection('media_foto_pasangan');
+                    if ($request->file('media_kk_pasangan')) {
+                        $pasangan->clearMediaCollection('media_kk_pasangan');
+                        $pasangan->addMediaFromRequest('media_kk_pasangan')->toMediaCollection('media_kk_pasangan');
                     }
                     if ($request->file('media_buku_nikah')) {
                         $pasangan->clearMediaCollection('media_buku_nikah');
@@ -334,8 +346,8 @@ class SuamiIstriController extends Controller
                 if ($pasangan->hasMedia("media_buku_nikah")) {
                     $pasangan->getMedia("media_buku_nikah")[0]->delete();
                 }
-                if ($pasangan->hasMedia("media_foto_pasangan")) {
-                    $pasangan->getMedia("media_foto_pasangan")[0]->delete();
+                if ($pasangan->hasMedia("media_kk_pasangan")) {
+                    $pasangan->getMedia("media_kk_pasangan")[0]->delete();
                 }
                 $pasangan->delete();
             });

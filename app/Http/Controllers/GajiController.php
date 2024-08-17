@@ -15,19 +15,18 @@ class GajiController extends Controller
     {
 
         try {
-            $data = Golongan::select('id', 'nama','nama_pangkat')->orderBy('nama', 'asc')->get();
+            $data = Golongan::select('id', 'nama', 'nama_pangkat')->orderBy('nama', 'asc')->get();
             echo "<option value=''>-- Pilih Gaji --</option>";
             foreach ($data as $item) {
                 if ($request->golongan_id != null && $request->golongan_id == $item->id) {
-                    echo "<option value='" . $item->id . "' selected> Gol: " . $item->nama . " | " . $item->nama_pangkat ."</option>";
+                    echo "<option value='" . $item->id . "' selected> Gol: " . $item->nama . " | " . $item->nama_pangkat . "</option>";
                 } else {
-                    echo "<option value='" . $item->id . "'>" . $item->nama . " | " . $item->nama_pangkat ."</option>";
+                    echo "<option value='" . $item->id . "'>" . $item->nama . " | " . $item->nama_pangkat . "</option>";
                 }
             }
         } catch (QueryException $e) {
             abort(500);
         }
-
     }
 
     /**
@@ -50,18 +49,17 @@ class GajiController extends Controller
     {
 
         //  $data = Gaji::select('gaji.id as id','masa_kerja',  DB::raw("CONCAT('Rp. ', FORMAT(nominal, 0)) AS nominal"), 'golongan.nama as nama')->join('golongan', 'golongan.id', '=', 'gaji.golongan_id');
-        $data = Gaji::select('gaji.id as id', 'masa_kerja', 'nominal', 'nominal_tunjangan_jabatan','golongan.nama as nama','golongan.nama_pangkat as nama_pangkat')
-        ->join('golongan', 'golongan.id', '=', 'gaji.golongan_id')
-        ->orderBy('golongan.id', 'asc')
-        ->orderBy('masa_kerja', 'asc')
-        ;
+        $data = Gaji::select('gaji.id as id', 'masa_kerja', 'nominal', 'nominal_tunjangan_jabatan', 'golongan.nama as nama', 'golongan.nama_pangkat as nama_pangkat')
+            ->join('golongan', 'golongan.id', '=', 'gaji.golongan_id')
+            ->orderBy('golongan.id', 'asc')
+            ->orderBy('masa_kerja', 'asc');
 
         return Datatables::of($data)
             ->addColumn('no', '')
             // ->addColumn('aksi', '')
             ->addColumn('aksi', function ($row) {
 
-                $editButton = '<a href="'.route('gaji.edit',  $row->id).'" class="btn btn-sm btn-icon btn-warning on-default edit" title="Ubah"><i class="fa fa-edit text-white"></i></a>';
+                $editButton = '<a href="' . route('gaji.edit',  $row->id) . '" class="btn btn-sm btn-icon btn-warning on-default edit" title="Ubah"><i class="fa fa-edit text-white"></i></a>';
                 // $editButton = '<button class="btn btn-sm btn-icon btn-warning on-default edit" data-id="' . $row->id . '"><i class="fa fa-pencil"></i></button>';
                 $deleteButton = '<button class="btn btn-sm btn-icon btn-danger on-default delete" data-id="' . $row->id . '" title="Hapus"><i class="fa fa-trash"></i></button>';
 
@@ -73,7 +71,7 @@ class GajiController extends Controller
             })
             ->filterColumn('masa_kerja', function ($query, $keyword) {
                 $query->whereRaw("CONCAT(masa_kerja,' Tahun') like ?", ["%$keyword%"])
-                      ->orWhereRaw("masa_kerja LIKE ?", ["%$keyword%"]);
+                    ->orWhereRaw("masa_kerja LIKE ?", ["%$keyword%"]);
             })
             ->editColumn('nominal', function ($row) {
                 // Format the data as needed here
@@ -82,7 +80,7 @@ class GajiController extends Controller
             })
             ->filterColumn('nominal', function ($query, $keyword) {
                 $query->whereRaw("CONCAT('Rp. ', REPLACE(FORMAT(nominal, 0), ',', '.')) like ?", ["%$keyword%"])
-                      ->orWhereRaw("nominal LIKE ?", ["%$keyword%"]);
+                    ->orWhereRaw("nominal LIKE ?", ["%$keyword%"]);
             })
             ->editColumn('nominal_tunjangan_jabatan', function ($row) {
                 // Format the data as needed here
@@ -91,7 +89,7 @@ class GajiController extends Controller
             })
             ->filterColumn('nominal_tunjangan_jabatan', function ($query, $keyword) {
                 $query->whereRaw("CONCAT('Rp. ', REPLACE(FORMAT(nominal_tunjangan_jabatan, 0), ',', '.')) like ?", ["%$keyword%"])
-                      ->orWhereRaw("nominal_tunjangan_jabatan LIKE ?", ["%$keyword%"]);
+                    ->orWhereRaw("nominal_tunjangan_jabatan LIKE ?", ["%$keyword%"]);
             })
 
             ->rawColumns(['aksi'])
@@ -107,8 +105,8 @@ class GajiController extends Controller
     public function create()
     {
         $title = 'Input Gaji Baru';
-        $golongan = Golongan::select('id', 'nama','nama_pangkat')->orderBy('nama', 'asc')->get();
-        return view('gaji.create', compact('title','golongan'));
+        $golongan = Golongan::select('id', 'nama', 'nama_pangkat')->orderBy('nama', 'asc')->get();
+        return view('gaji.create', compact('title', 'golongan'));
     }
 
     /**
@@ -122,11 +120,11 @@ class GajiController extends Controller
         try {
 
             $this->validate($request, [
-                'golongan_id' => 'required|unique:gaji,golongan_id,NULL,id,golongan_id,'.$request->golongan_id.',masa_kerja,'.$request->masa_kerja.',nominal,'.preg_replace('/[^\d]/', '', $request->nominal),
+                'golongan_id' => 'required|unique:gaji,golongan_id,NULL,id,golongan_id,' . $request->golongan_id . ',masa_kerja,' . $request->masa_kerja . ',nominal,' . preg_replace('/[^\d]/', '', $request->nominal),
                 'masa_kerja' => 'required|min:0',
                 'nominal' => 'required|min:1',
                 'nominal_tunjangan_jabatan' => 'required|min:1',
-            ],[
+            ], [
                 'golongan_id.required' => 'Golongan harus diisi.',
                 'golongan_id.unique' => 'Golongan, Masa Kerja dan Nominal sudah ada di database.',
                 'masa_kerja.required' => 'Masa kerja harus diisi.',
@@ -147,12 +145,11 @@ class GajiController extends Controller
 
             return redirect()->route('gaji.index')
                 ->with('success', 'Data Gaji berhasil disimpan');
-        }catch (QueryException $e) {
+        } catch (QueryException $e) {
             $msg = $e->getMessage();
             return redirect()->route('gaji.index')
                 ->with('error', 'Simpan data Gaji gagal, Error: ' . $msg);
         }
-
     }
 
     /**
@@ -175,8 +172,8 @@ class GajiController extends Controller
     public function edit(Gaji $gaji)
     {
         $title = 'Ubah Data Gaji';
-        $golongan = Golongan::select('id', 'nama','nama_pangkat')->orderBy('nama', 'asc')->get();
-        return view('gaji.edit', compact('title', 'gaji','golongan'));
+        $golongan = Golongan::select('id', 'nama', 'nama_pangkat')->orderBy('nama', 'asc')->get();
+        return view('gaji.edit', compact('title', 'gaji', 'golongan'));
     }
 
     /* Update the specified resource in storage.
@@ -190,11 +187,11 @@ class GajiController extends Controller
         try {
 
             $this->validate($request, [
-                'golongan_id' => 'required|unique:gaji,golongan_id,'.$gaji->id.',id,masa_kerja,'.$request->masa_kerja.',nominal,'.preg_replace('/[^\d]/', '', $request->nominal),
+                'golongan_id' => 'required|unique:gaji,golongan_id,' . $gaji->id . ',id,masa_kerja,' . $request->masa_kerja . ',nominal,' . preg_replace('/[^\d]/', '', $request->nominal),
                 'masa_kerja' => 'required|min:1',
                 'nominal' => 'required|min:1',
                 'nominal_tunjangan_jabatan' => 'required|min:1',
-            ],[
+            ], [
                 'golongan_id.required' => 'Kolom golongan harus diisi.',
                 'golongan_id.unique' => 'Golongan, Masa Kerja dan Nominal sudah ada di database.',
                 'masa_kerja.required' => 'Kolom masa kerja harus diisi.',
@@ -219,8 +216,6 @@ class GajiController extends Controller
             return redirect()->route('gaji.index')
                 ->with('error', 'Ubah data Gaji gagal, Error: ' . $msg);
         }
-
-
     }
 
     /**
@@ -245,13 +240,12 @@ class GajiController extends Controller
 
         $data = [
             'status' => [
-                'error' => $blnValue ,
+                'error' => $blnValue,
                 'message' => $msg, // You can also include an error message
             ],
         ];
 
         return response()->json($data, 200);
-
     }
 
     public function get_gaji(Request $request)

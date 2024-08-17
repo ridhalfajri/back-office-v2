@@ -10,8 +10,8 @@
 @push('breadcrumb')
     <ol class="breadcrumb custom-background-color">
         <li class="breadcrumb-item"><a href="{{ route('dashboard') }}"><i class="fa fa-home"></i></a></li>
-        <li class="breadcrumb-item"><a href="{{route('pegawai.index')}}">Pegawai</a></li>
-        <li class="breadcrumb-item"><a href="{{route('pegawai.show',$pendidikan->pegawai_id)}}">Pegawai Detail</a></li>
+        <li class="breadcrumb-item"><a href="{{ route('pegawai.index') }}">Pegawai</a></li>
+        <li class="breadcrumb-item"><a href="{{ route('pegawai.show', $pendidikan->pegawai_id) }}">Pegawai Detail</a></li>
         <li class="breadcrumb-item active" aria-current="page">{{ $title }}</li>
     </ol>
 @endpush
@@ -115,8 +115,11 @@
                                         <div class="input-group">
                                             <input type="file" id="media_ijazah" name="media_ijazah">
                                             <small class="text-danger" id="error_media_ijazah"></small>
-                                            <a href='//{{ $pendidikan->media_ijazah->getUrl() }}'+>File Sekarang :
-                                                {{ $pendidikan->media_ijazah->file_name }}</a>
+                                            @if (!empty($pendidikan->media_ijazah))
+                                                <a href='{{ $pendidikan->media_ijazah }}' target="_blank">File
+                                                    Sekarang :
+                                                    {{ $pendidikan->media_ijazah->file_name }}</a>
+                                            @endif
                                         </div>
                                     </div>
                                 </div>

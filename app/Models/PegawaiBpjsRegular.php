@@ -7,11 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
-class PegawaiAnak extends Model implements HasMedia
+class PegawaiBpjsRegular extends Model implements HasMedia
 {
     use InteractsWithMedia;
 
-    protected $table = 'pegawai_anak';
+    protected $table = 'pegawai_bpjs_regular';
     protected $guarded = [];
     protected $primaryKey = 'id';
     protected $keyType = 'int';
@@ -20,9 +20,5 @@ class PegawaiAnak extends Model implements HasMedia
     public function pegawai()
     {
         return $this->belongsTo(Pegawai::class);
-    }
-    public function pendidikan()
-    {
-        return $this->belongsTo(TingkatPendidikan::class);
     }
 }

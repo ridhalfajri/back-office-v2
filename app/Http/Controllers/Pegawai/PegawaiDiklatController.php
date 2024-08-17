@@ -119,7 +119,12 @@ class PegawaiDiklatController extends Controller
             if ($diklat == null) {
                 return response()->json(['errors' => ['data' => 'Data tidak ditemukan']]);
             }
-            $diklat->media_sertifikat = $diklat->getMedia("media_sertifikat")[0]->getUrl();
+            if (!empty($diklat->getMedia('media_sertifikat')[0])) {
+                $diklat->media_sertifikat = $diklat->getFirstMediaUrl("media_sertifikat");
+            } else {
+                $diklat->media_sertifikat = null;
+            }
+
             $diklat->tanggal_mulai = Carbon::parse($diklat->tanggal_mulai)->translatedFormat('d F Y');
             $diklat->tanggal_akhir = Carbon::parse($diklat->tanggal_akhir)->translatedFormat('d F Y');
             $diklat->tanggal_sertifikat = Carbon::parse($diklat->tanggal_sertifikat)->translatedFormat('d F Y');
@@ -141,7 +146,11 @@ class PegawaiDiklatController extends Controller
         $diklat->tanggal_mulai = Carbon::parse($diklat->tanggal_mulai)->translatedFormat('d-m-Y');
         $diklat->tanggal_akhir = Carbon::parse($diklat->tanggal_akhir)->translatedFormat('d-m-Y');
         $diklat->tanggal_sertifikat = Carbon::parse($diklat->tanggal_sertifikat)->translatedFormat('d-m-Y');
-        $diklat->media_sertifikat = $diklat->getMedia("media_sertifikat")[0];
+        if (!empty($diklat->getMedia('media_sertifikat')[0])) {
+            $diklat->media_sertifikat = $diklat->getFirstMediaUrl("media_sertifikat");
+        } else {
+            $diklat->media_sertifikat = null;
+        }
         $jenis_diklat = JenisDiklat::select('id', 'nama')->get();
         if ($diklat == null) {
             abort(404);

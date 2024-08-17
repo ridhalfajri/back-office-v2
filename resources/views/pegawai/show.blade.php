@@ -16,7 +16,7 @@
 @push('breadcrumb')
     <ol class="breadcrumb custom-background-color">
         <li class="breadcrumb-item"><a href="{{ route('dashboard') }}"><i class="fa fa-home"></i></a></li>
-        <li class="breadcrumb-item"><a href="{{route('pegawai.index')}}">Pegawai</a></li>
+        <li class="breadcrumb-item"><a href="{{ route('pegawai.index') }}">Pegawai</a></li>
         <li class="breadcrumb-item active" aria-current="page">{{ $title }} Detail</li>
     </ol>
 @endpush
@@ -72,14 +72,14 @@
                             <a class="nav-link" id="pills-pendidikan-tab" data-toggle="pill" href="#pills-pendidikan"
                                 role="tab" aria-controls="pills-pendidikan" aria-selected="true">Pendidikan</a>
                         </li>
-                        <li class="nav-item">
+                        {{-- <li class="nav-item">
                             <a class="nav-link" id="pills-keluarga-tab" data-toggle="pill" href="#pills-keluarga"
                                 role="tab" aria-controls="pills-keluarga" aria-selected="true">Keluarga</a>
-                        </li>
-                        <li class="nav-item">
+                        </li> --}}
+                        {{-- <li class="nav-item">
                             <a class="nav-link" id="pills-penghargaan-tab" data-toggle="pill" href="#pills-penghargaan"
                                 role="tab" aria-controls="pills-penghargaan" aria-selected="true">Penghargaan</a>
-                        </li>
+                        </li> --}}
                     </ul>
                 </div>
                 <div class="col-lg-12 col-md-12">
@@ -96,10 +96,10 @@
                                             <a href="javascript:void(0)" data-toggle="dropdown"><i
                                                     class="fe fe-more-vertical"></i></a>
                                             <div class="dropdown-menu dropdown-menu-right">
-                                                <a href="javascript:void(0)" class="dropdown-item"><i
+                                                {{-- <a href="javascript:void(0)" class="dropdown-item"><i
                                                         class="dropdown-icon fa fa-drivers-license-o"></i> Curriculum
-                                                    Vitae</a>
-                                                <div class="dropdown-divider"></div>
+                                                    Vitae</a> --}}
+                                                {{-- <div class="dropdown-divider"></div> --}}
                                                 <a href="{{ route('pegawai.edit', $pegawai->id) }}" id="btn-edit"
                                                     class="dropdown-item"><i class="dropdown-icon fa fa-edit"></i>
                                                     Ubah</a>
@@ -257,7 +257,7 @@
                                             <div class="form-group">
                                                 <label class="form-label">No Fingerprint</label>
                                                 <input type="text" class="form-control" placeholder="No Fingerprint"
-                                                    disabled="" value="{{ $pegawai->no_fingerprint }}">
+                                                    disabled="" value="{{ $pegawai->no_enroll }}">
                                             </div>
                                         </div>
                                         {{-- <div class="col-sm-6 col-md-4">
@@ -267,6 +267,65 @@
                                                     disabled="" value="{{ $pegawai->no_kartu_pegawai }}">
                                             </div>
                                         </div> --}}
+                                        <div class="col-md-6 col-sm-6">
+                                            <div class="form-group">
+                                                <label class="form-label">Foto Pegawai</label>
+                                                @if (!empty($pegawai->media_foto_pegawai))
+                                                    <a href="{{ $pegawai->media_foto_pegawai }}" target="_blank">File
+                                                        Sekarang :
+                                                        Lihat File</a>
+                                                @endif
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6 col-sm-6">
+                                            <div class="form-group">
+                                                <label class="form-label">Kartu Pegawai</label>
+                                                @if (!empty($pegawai->media_kartu_pegawai))
+                                                    <a href="{{ $pegawai->media_kartu_pegawai }}" target="_blank">File
+                                                        Sekarang :
+                                                        Lihat File</a>
+                                                @endif
+                                            </div>
+                                        </div>
+
+                                        @if (auth()->user()->pegawai->jabatan_sekarang->tx_tipe_jabatan_id == 7 ||
+                                                auth()->user()->pegawai->jabatan_sekarang->tx_tipe_jabatan_id == 5)
+                                            @if ($pegawai->is_verified == 'Y')
+                                                <div class="col-md-12">
+                                                    <div class="form-group mb-0">
+                                                        <label class="form-label">Verifikasi Profile</label>
+                                                        <button class="btn btn-success btn-sm" type="button"
+                                                            disabled>Sukses</button>
+                                                    </div>
+                                                </div>
+                                            @else
+                                                <div class="col-md-12">
+                                                    <div class="form-group mb-0">
+                                                        <label class="form-label">Verifikasi Profile</label>
+                                                        <a href="{{ route('pegawai.verifikasi-profile', $pegawai->id) }}"
+                                                            class="btn btn-primary btn-sm">Verifikasi</a>
+                                                    </div>
+                                                </div>
+                                            @endif
+                                        @else
+                                            <div class="col-md-3">
+
+                                                <div class="form-group">
+                                                    <label class="form-label">Verifikasi Profile</label>
+                                                    @if ($pegawai->is_verified == 'Y')
+                                                        <input type="text" class="form-control" disabled=""
+                                                            value="Telah Diverifikasi SDMHH"
+                                                            style="background-color: #00eb0c">
+                                                    @else
+                                                        <input type="text" class="form-control" disabled=""
+                                                            value="Menunggu Verifikasi SDMHH"
+                                                            style="background-color: #ffd91c">
+                                                    @endif
+
+                                                </div>
+                                            </div>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
@@ -482,7 +541,7 @@
                                         <label class="form-label">Tmt Gaji</label>
                                         <div class="input-group">
                                             <input data-provide="datepicker" id="date_tmt_gaji" name="tmt_gaji"
-                                                data-date-autoclose="true" data-date-format="dd/mm/yyyy"
+                                                data-date-autoclose="true" data-date-format="dd-mm-yyyy"
                                                 class="form-control datepicker_tmt">
                                         </div>
                                         <small class="text-danger" id="error_tmt_gaji"></small>
@@ -505,7 +564,7 @@
                                             </label>
                                             <label class="custom-control custom-radio custom-control-inline">
                                                 <input type="radio" class="custom-control-input" name="is_active"
-                                                    checked="" value="0">
+                                                    value="0">
                                                 <span class="custom-control-label">Tidak Aktif</span>
                                             </label>
                                         </div>
@@ -702,8 +761,8 @@
                                         <a href="#" id="si_media_buku_nikah" class="btn btn-primary">Download</a>
                                     </div>
                                     <div class="form-group">
-                                        <label class="form-label">Foto Pasangan</label>
-                                        <div id="foto_pasangan"></div>
+                                        <label class="form-label">KK Pasangan</label>
+                                        <a href="#" id="si_media_kk_pasangan" class="btn btn-primary">Download</a>
 
                                     </div>
                                 </div>
@@ -776,6 +835,16 @@
                                     <input type="text" id="an_bidang_studi" disabled=""
                                         class="form-control mt-3 state-valid" value="">
                                 </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">Akta Lahir</label>
+                                    <a href="#" id="an_media_akta_lahir" class="btn btn-primary">Download</a>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">KK Anak</label>
+                                    <a href="#" id="an_media_kk_anak" class="btn btn-primary">Download</a>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -838,7 +907,8 @@
                                     <div class="form-group">
                                         <label class="form-label">SK Penghargaan</label>
                                         <div class="input-group">
-                                            <input type="file" id="media_sk_penghargaan" name="media_sk_penghargaan">
+                                            <input type="file" id="media_sk_penghargaan"
+                                                name="media_sk_penghargaan">
                                             <small class="text-danger" id="error_media_sk_penghargaan"></small>
                                             <a href="" id="download_media_sk_penghargaan">Download</a>
                                         </div>

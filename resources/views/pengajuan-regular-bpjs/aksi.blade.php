@@ -1,9 +1,9 @@
-<a href="{{ route('pengajuan-tambahan-bpjs.show', $id) }}" title="Lihat File">
+<a href="{{ route('pengajuan-regular-bpjs.show', $id) }}" title="Lihat File">
     <i class="dropdown-icon fa fa-file"></i>
 </a>
 
 @if ($status == 2)
-    <a href="{{ route('pengajuan-tambahan-bpjs.edit', $id) }}" class="btn btn-sm btn-icon btn-warning on-default edit"
+    <a href="{{ route('pengajuan-regular-bpjs.edit', $id) }}" class="btn btn-sm btn-icon btn-warning on-default edit"
         title="Ubah">
         <i class="fa fa-pencil text-white"></i>
     </a>

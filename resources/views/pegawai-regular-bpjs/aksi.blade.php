@@ -2,7 +2,7 @@
     <i class="dropdown-icon fa fa-file"></i>
 </a> --}}
 
-<a href="{{ route('pegawai-tambahan-bpjs.edit', $id) }}" class="btn btn-sm btn-icon btn-warning on-default edit"
+<a href="{{ route('pegawai-regular-bpjs.edit', $id) }}" class="btn btn-sm btn-icon btn-warning on-default edit"
     title="Persetujuan">
     <i class="fa fa-pencil text-white"></i>
 </a>

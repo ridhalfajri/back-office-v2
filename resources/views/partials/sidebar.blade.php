@@ -6,7 +6,7 @@
                 href="{{ route('pegawai.show', auth()->user()->pegawai_id) }}"><i
                     class="icon-home"></i><span>Profile</span></a>
         </li>
-        <li class="{{ request()->segment(3) == auth()->user()->pegawai_id ? 'active' : '' }}"><a
+        {{-- <li class="{{ request()->segment(3) == auth()->user()->pegawai_id ? 'active' : '' }}"><a
                 href="{{ route('penghasilan.show', auth()->user()->pegawai_id) }}"><i
                     class="icon-bar-chart"></i><span>Penghasilan</span></a>
         </li>
@@ -16,7 +16,7 @@
 
         <li class="{{ Request::is('riwayat-gajiplus*') ? 'active' : '' }}"><a
                 href="{{ route('riwayat-gajiplus.index') }}"><i class="fa fa-money"></i><span>Riwayat Gaji-13</span></a>
-        </li>
+        </li> --}}
 
         {{-- <li
             class="{{ request()->segment(2) == 'riwayat-jabatan' && request()->segment(1) == auth()->user()->pegawai_id ? 'active' : '' }}">
@@ -28,7 +28,7 @@
             <ul
                 class="{{ request()->segment(2) == 'riwayat_cuti' || request()->segment(2) == 'saldo_cuti' ? 'active' : '' }}">
                 <li class="{{ request()->segment(2) == 'riwayat_cuti' ? 'active' : '' }}"><a
-                        href="{{ route('cuti.riwayat-cuti') }}">Riwayat Cuti</a></li>
+                        href="{{ route('cuti.riwayat-cuti') }}">Pengajuan Cuti</a></li>
                 <li class="{{ request()->segment(2) == 'saldo_cuti' ? 'active' : '' }}"><a
                         href="{{ route('cuti.saldo-cuti') }}">Saldo Cuti</a></li>
 
@@ -57,12 +57,27 @@
             </ul>
         </li>
         <li class="{{ Request::is('pengajuan-pmk*') ? 'active' : '' }}"><a
-            href="{{ route('pengajuan-pmk.index') }}"><i class="icon-plus"></i><span>Pengajuan Peninjauan Masa Kerja</span></a>
+                href="{{ route('pengajuan-pmk.index') }}"><i class="icon-plus"></i><span>Pengajuan Peninjauan Masa
+                    Kerja</span></a>
         </li>
-        <li class="{{ Request::is('pengajuan-tambahan-bpjs*') ? 'active' : '' }}"><a
-                href="{{ route('pengajuan-tambahan-bpjs.index') }}"><i class="icon-list"></i><span>Pengajuan
-                    Tambahan BPJS</span></a>
+
+        <li class="{{ Request::is('pengajuan-bpjs*') ? 'active' : '' }}">
+            <a href="javascript:void(0)" class="has-arrow"><i class="icon-umbrella"></i><span>Pengajuan BPJS</span></a>
+            <ul class="sub-menu js__content">
+
+                <li class="{{ Request::is('pengajuan-bpjs/pengajuan-regular-bpjs*') ? 'active' : '' }}"><a
+                        href="{{ route('pengajuan-regular-bpjs.index') }}">Pengajuan
+                        BPJS Regular</a>
+                </li>
+
+                <li class="{{ Request::is('pengajuan-bpjs/pengajuan-tambahan-bpjs*') ? 'active' : '' }}"><a
+                        href="{{ route('pengajuan-tambahan-bpjs.index') }}">Pengajuan
+                        BPJS Keluarga Lain</a>
+                </li>
+
+            </ul>
         </li>
+
         <li class="{{ Request::is('grade-tukin*') ? 'active' : '' }}"><a href="{{ route('grade-tukin.index') }}"><i
                     class="icon-layers"></i><span>Info Grade Tukin</span></a>
         </li>
@@ -78,11 +93,11 @@
                 class="{{ request()->segment(1) == 'esselon2' && request()->segment(2) == 'pegawai' ? 'active' : '' }}">
                 <a href="{{ route('pegawai.index-esselon') }}"><i class="icon-users"></i><span>Staff</span></a>
             </li>
-            <li
+            {{-- <li
                 class="{{ request()->segment(1) == 'esselon2' && request()->segment(2) == 'penghasilan' ? 'active' : '' }}">
                 <a href="{{ route('penghasilan.index-esselon') }}"><i class="icon-book-open"></i><span>Penghasilan
                         Staff</span></a>
-            </li>
+            </li> --}}
         @endif
 
         @if (auth()->user()->pegawai->jabatan_sekarang->tx_tipe_jabatan_id == 1 ||
@@ -116,7 +131,7 @@
                 <a href="{{ route('presensi-pegawai') }}"><i class="icon-calendar"></i><span>Presensi
                         Pegawai</span></a>
             </li>
-            <li class="{{ Request::is('kalkulasi*') ? 'active' : '' }}">
+            {{-- <li class="{{ Request::is('kalkulasi*') ? 'active' : '' }}">
                 <a href="javascript:void(0)" class="has-arrow"><i class="icon-calculator"></i><span>Kalkulasi</span></a>
                 <ul class="sub-menu js__content">
                     <li class="{{ Request::is('kalkulasi/pegawai-riwayat-umak*') ? 'active' : '' }}">
@@ -131,29 +146,44 @@
                         <a href="{{ route('pegawai-riwayat-gajiplus.index') }}">Gaji-13 Pegawai</a>
                     </li>
                 </ul>
-            </li>
-            <li class="{{ request()->segment(1) == 'penghasilan' ? 'active' : '' }}"><a
-                    href="{{ route('penghasilan.index') }}"><i
-                        class="icon-briefcase"></i><span>Penghasilan</span></a>
-            </li>
+            </li> --}}
+            {{-- <li class="{{ request()->segment(1) == 'penghasilan' ? 'active' : '' }}"><a
+                    href="{{ route('penghasilan.index') }}"><i class="icon-briefcase"></i><span>Penghasilan</span></a>
+            </li> --}}
             <li class="{{ Request::is('pegawai-riwayat-golongan*') ? 'active' : '' }}"><a
                     href="{{ route('pegawai-riwayat-golongan.index') }}"><i class="icon-folder-alt"></i><span>Riwayat
                         Golongan Pegawai</span></a></li>
             <li class="{{ Request::is('pegawai-penilaian-kinerja*') ? 'active' : '' }}"><a
-                href="{{ route('pegawai-penilaian-kinerja.index') }}"><i class="icon-film"></i><span>Penilaian Kinerja Pegawai</span>
+                    href="{{ route('pegawai-penilaian-kinerja.index') }}"><i class="icon-film"></i><span>Penilaian
+                        Kinerja Pegawai</span>
                 </a>
             </li>
 
-        <li class="{{ request()->segment(2) == 'pre-tubel' ? 'active' : '' }}">
-            <a href="{{ route('pre-tubel.index') }}"><i class="icon-graduation"></i>Tugas belajar</span></a>
-        </li>
+            <li class="{{ request()->segment(2) == 'pre-tubel' ? 'active' : '' }}">
+                <a href="{{ route('pre-tubel.index') }}"><i class="icon-graduation"></i>Tugas belajar</span></a>
+            </li>
 
             <li class="{{ Request::is('pegawai-tambahan-mk*') ? 'active' : '' }}"><a
-                href="{{ route('pegawai-tambahan-mk.index') }}"><i class="icon-note"></i><span>Approval Peninjauan Masa Kerja
-                    Pegawai</span></a></li>
-            <li class="{{ Request::is('pegawai-tambahan-bpjs*') ? 'active' : '' }}"><a
-                    href="{{ route('pegawai-tambahan-bpjs.index') }}"><i class="icon-umbrella"></i><span>Approval
-                        Tambahan BPJS Pegawai</span></a></li>
+                    href="{{ route('pegawai-tambahan-mk.index') }}"><i class="icon-note"></i><span>Approval Peninjauan
+                        Masa Kerja
+                        Pegawai</span></a></li>
+
+            <li class="{{ Request::is('approval-bpjs*') ? 'active' : '' }}">
+                <a href="javascript:void(0)" class="has-arrow"><i class="icon-umbrella"></i><span>Approval
+                        BPJS</span></a>
+                <ul class="sub-menu js__content">
+                    <li class="{{ Request::is('approval-bpjs/pegawai-regular-bpjs*') ? 'active' : '' }}"><a
+                            href="{{ route('pegawai-regular-bpjs.index') }}">Approval
+                            BPJS Regular</a>
+                    </li>
+
+                    <li class="{{ Request::is('approval-bpjs/pegawai-tambahan-bpjs*') ? 'active' : '' }}"><a
+                            href="{{ route('pegawai-tambahan-bpjs.index') }}">Approval
+                            BPJS Keluarga Lain</a>
+                    </li>
+
+                </ul>
+            </li>
 
             {{-- MASTER     --}}
             <li class="g_heading">Master Data</li>
@@ -169,9 +199,6 @@
                         Pegawai</span></a></li>
             <li class="{{ Request::is('master/unit-kerja*') ? 'active' : '' }}"><a
                     href="{{ route('unit-kerja.index') }}"><i class="icon-users"></i><span>Unit Kerja</span></a></li>
-            {{-- <li class="{{ Request::is('pegawai-bpjs-lainnya*') ? 'active' : '' }}"><a
-                    href="{{ route('pegawai-bpjs-lainnya.index') }}"><i class="fa fa-credit-card"></i><span>Tambahan
-                        BPJS Pegawai</span></a></li> --}}
             <li class="{{ Request::is('master/tukin*') ? 'active' : '' }}"><a href="{{ route('tukin.index') }}"><i
                         class="icon-directions"></i><span>Grade Tukin</span></a></li>
             <li class="{{ Request::is('master/uang-makan*') ? 'active' : '' }}"><a
@@ -181,14 +208,18 @@
                     href="{{ route('tunjangan-beras.index') }}"><i class="icon-support"></i><span>Tunjangan
                         Beras</span></a></li>
             <li class="{{ Request::is('master/aturan-thr-gajiplus*') ? 'active' : '' }}"><a
-                    href="{{ route('aturan-thr-gajiplus.index') }}"><i class="icon-envelope-letter"></i><span>Aturan THR dan
+                    href="{{ route('aturan-thr-gajiplus.index') }}"><i class="icon-envelope-letter"></i><span>Aturan
+                        THR dan
                         Gaji-13</span></a></li>
             <li class="{{ Request::is('master/pegawai-rekening*') ? 'active' : '' }}"><a
-                href="{{ route('pegawai-rekening.index') }}"><i class="fa fa-money"></i><span>Rekening Pegawai</span></a></li>
+                    href="{{ route('pegawai-rekening.index') }}"><i class="fa fa-money"></i><span>Rekening
+                        Pegawai</span></a></li>
             <li class="{{ Request::is('master/pegawai-hirarki*') ? 'active' : '' }}"><a
-                href="{{ route('pegawai-hirarki.index') }}"><i class="icon-list"></i><span>Hirarki Pegawai</span></a></li>
+                    href="{{ route('pegawai-hirarki.index') }}"><i class="icon-list"></i><span>Hirarki
+                        Pegawai</span></a></li>
 
-            <li><a href="{{ route('gaji.index') }}"><i class="icon-social-dropbox"></i><span>Gaji Pegawai</span></a></li>
+            <li><a href="{{ route('gaji.index') }}"><i class="icon-social-dropbox"></i><span>Gaji Pegawai</span></a>
+            </li>
             <li><a href="{{ route('jabatan-tukin.index') }}"><i class="icon-equalizer"></i><span>Tunjangan
                         Kinerja Jabatan</span></a>
             </li>
@@ -216,7 +247,7 @@
                 <a href="{{ route('presensi-pegawai') }}"><i class="fa fa-clock-o"></i><span>Presensi
                         Pegawai</span></a>
             </li>
-            <li class="{{ Request::is('kalkulasi*') ? 'active' : '' }}">
+            {{-- <li class="{{ Request::is('kalkulasi*') ? 'active' : '' }}">
                 <a href="javascript:void(0)" class="has-arrow"><i class="fa fa-money"></i><span>Kalkulasi</span></a>
                 <ul class="sub-menu js__content">
                     <li class="{{ Request::is('kalkulasi/pegawai-riwayat-umak*') ? 'active' : '' }}">
@@ -231,11 +262,11 @@
                         <a href="{{ route('pegawai-riwayat-gajiplus.index') }}">Gaji-13 Pegawai</a>
                     </li>
                 </ul>
-            </li>
-            <li class="{{ request()->segment(1) == 'penghasilan' ? 'active' : '' }}"><a
+            </li> --}}
+            {{-- <li class="{{ request()->segment(1) == 'penghasilan' ? 'active' : '' }}"><a
                     href="{{ route('penghasilan.index') }}"><i
                         class="fa fa-credit-card"></i><span>Penghasilan</span></a>
-            </li>
+            </li> --}}
             <li class="{{ Request::is('pegawai-riwayat-golongan*') ? 'active' : '' }}"><a
                     href="{{ route('pegawai-riwayat-golongan.index') }}"><i
                         class="fa fa-credit-card"></i><span>Riwayat
@@ -248,9 +279,24 @@
             <li class="{{ Request::is('pegawai-tambahan-mk*') ? 'active' : '' }}"><a
                     href="{{ route('pegawai-tambahan-mk.index') }}"><i class="fa fa-plus"></i><span>Approval PMK
                         Pegawai</span></a></li>
-            <li class="{{ Request::is('pegawai-tambahan-bpjs*') ? 'active' : '' }}"><a
-                    href="{{ route('pegawai-tambahan-bpjs.index') }}"><i class="fa fa-id-card"></i><span>Approval
-                        Tambahan BPJS Pegawai</span></a></li>
+
+            <li class="{{ Request::is('approval-bpjs*') ? 'active' : '' }}">
+                <a href="javascript:void(0)" class="has-arrow"><i class="icon-umbrella"></i><span>Approval
+                        BPJS</span></a>
+                <ul class="sub-menu js__content">
+
+                    <li class="{{ Request::is('approval-bpjs/pegawai-regular-bpjs*') ? 'active' : '' }}"><a
+                            href="{{ route('pegawai-regular-bpjs.index') }}">Approval
+                            BPJS Regular</a>
+                    </li>
+
+                    <li class="{{ Request::is('approval-bpjs/pegawai-tambahan-bpjs*') ? 'active' : '' }}"><a
+                            href="{{ route('pegawai-tambahan-bpjs.index') }}">Approval
+                            BPJS Keluarga Lain</a>
+                    </li>
+
+                </ul>
+            </li>
 
             {{-- MASTER     --}}
             <li class="g_heading">Master Data</li>
@@ -267,9 +313,7 @@
             <li class="{{ Request::is('master/unit-kerja*') ? 'active' : '' }}"><a
                     href="{{ route('unit-kerja.index') }}"><i class="icon-users"></i><span>Unit Kerja</span></a>
             </li>
-            {{-- <li class="{{ Request::is('pegawai-bpjs-lainnya*') ? 'active' : '' }}"><a
-                    href="{{ route('pegawai-bpjs-lainnya.index') }}"><i class="fa fa-credit-card"></i><span>Tambahan
-                        BPJS Pegawai</span></a></li> --}}
+
             <li class="{{ Request::is('master/tukin*') ? 'active' : '' }}"><a href="{{ route('tukin.index') }}"><i
                         class="fa fa-money"></i><span>Grade Tukin</span></a></li>
             <li class="{{ Request::is('master/uang-makan*') ? 'active' : '' }}"><a

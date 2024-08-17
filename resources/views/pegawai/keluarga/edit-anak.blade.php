@@ -111,6 +111,32 @@
                                         </select>
                                         <small class="text-danger" id="error_status_tunjangan"></small>
                                     </div>
+
+                                    <div class="form-group col-lg-4 col-md-6 col-sm-12">
+                                        <label class="form-label">Akta Lahir</label>
+                                        <div class="input-group">
+                                            <input type="file" id="media_akta_lahir" name="media_akta_lahir">
+                                            <small class="text-danger" id="error_media_akta_lahir"></small>
+                                            @if (!empty($anak->media_akta_lahir))
+                                                <a href='{{ $anak->media_akta_lahir }}' target="_blank">File
+                                                    Sekarang :
+                                                    {{ $anak->media_akta_lahir->file_name }}</a>
+                                            @endif
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group col-lg-4 col-md-6 col-sm-12">
+                                        <label class="form-label">KK Anak</label>
+                                        <div class="input-group">
+                                            <input type="file" id="media_kk_anak" name="media_kk_anak">
+                                            <small class="text-danger" id="error_media_kk_anak"></small>
+                                            @if (!empty($anak->media_kk_anak))
+                                                <a href='{{ $anak->media_kk_anak }}' target="_blank">File
+                                                    Sekarang :
+                                                    {{ $anak->media_kk_anak->file_name }}</a>
+                                            @endif
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="card-footer d-flex justify-content-end">
@@ -191,6 +217,12 @@
                         if (err.status_tunjangan) {
                             $('#error_status_tunjangan').text(err.status_tunjangan)
                         }
+                        if (err.media_akta_lahir) {
+                            $('#error_media_akta_lahir').text(err.media_akta_lahir)
+                        }
+                        if (err.media_kk_anak) {
+                            $('#error_media_kk_anak').text(err.media_kk_anak)
+                        }
                         if (err.connection) {
                             Swal.fire({
                                 title: 'Gagal!',
@@ -225,6 +257,8 @@
             $('#error_status_anak').text('')
             $('#error_bidang_studi').text('')
             $('#error_status_tunjangan').text('')
+            $('#error_media_akta_lahir').text('')
+            $('#error_media_kk_anak').text('')
         }
     </script>
     <script>
@@ -246,10 +280,10 @@
         }
         $('.dropify').dropify();
 
-        const drEvent = $('#media_foto_pasangan').dropify();
-        drEvent.on('dropify.beforeClear', function(event, element) {});
+        const kk_anak = $('#media_kk_anak').dropify();
+        kk_anak.on('dropify.beforeClear', function(event, element) {});
 
-        drEvent.on('dropify.afterClear', function(event, element) {
+        kk_anak.on('dropify.afterClear', function(event, element) {
             Swal.fire({
                 position: 'center',
                 icon: 'success',
@@ -259,10 +293,10 @@
             })
         });
 
-        const buku_nikah = $('#media_buku_nikah').dropify();
-        buku_nikah.on('dropify.beforeClear', function(event, element) {});
+        const akta_lahir = $('#media_akta_lahir').dropify();
+        akta_lahir.on('dropify.beforeClear', function(event, element) {});
 
-        buku_nikah.on('dropify.afterClear', function(event, element) {
+        akta_lahir.on('dropify.afterClear', function(event, element) {
             Swal.fire({
                 position: 'center',
                 icon: 'success',

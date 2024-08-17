@@ -81,7 +81,7 @@ const get_table_tmt_gaji = (url, pegawai_id) => {
     });
 };
 $("#modal-tmt-gaji").on("show.bs.modal", function (e) {
-    resetForm();
+    resetFormTmtGaji();
     $("#modal-tmt-gaji").modal("show");
 });
 const get_data_gaji = (gaji_id = null) => {
@@ -156,12 +156,14 @@ $("#form-tmt-gaji").submit(function (e) {
         },
     });
 });
+
 function resetFormTmtGaji(is_success = false) {
     $("#error_gaji_id").text("");
     $("#error_tmt_gaji").text("");
     $("#error_is_active").text("");
     $("#error_media_tmt_gaji").text("");
 }
+
 $(".datepicker_tmt").datepicker({
     format: "dd-mm-yyyy",
 });
@@ -177,16 +179,33 @@ const edit_tmt_gaji = (id) => {
             id: id,
         },
         success: function (response) {
-            $("#download_media_tmt_gaji").show();
+            if (!response.result.media_tmt_gaji) {
+                $("#download_media_tmt_gaji").hide();
+            } else {
+                $("#download_media_tmt_gaji").show();
+            }
+
             get_data_gaji(response.result.gaji_id);
             $("#date_tmt_gaji").val(response.result.tmt_gaji);
             $("#tmt_gaji_id").val(response.result.id);
+            
+            // Set nilai is_active pada radio button
+            if (response.result.is_active == 1) {
+                $("input[name='is_active'][value='1']").prop("checked", true);
+            } else if (response.result.is_active == 0) {
+                $("input[name='is_active'][value='0']").prop("checked", true);
+            }
+            
             if (response.result.media_tmt_gaji) {
                 $("#download_media_tmt_gaji").attr(
                     "href",
                     "//" + response.result.media_tmt_gaji
-                );
+                ).attr("target", "_blank");
             }
+
+            $('#media_tmt_gaji').val('');
+            $('#media_tmt_gaji').dropify().data('dropify').resetPreview();
+            $('#media_tmt_gaji').dropify().data('dropify').clearElement();
         },
     });
 };
@@ -195,6 +214,8 @@ const create_tmt_gaji = () => {
     $("#download_media_tmt_gaji").hide();
     $("#date_tmt_gaji").val("");
     $("#tmt_gaji_id").val("");
+    $("input[name='is_active']").prop('checked', false);
+
 };
 
 const delete_tmt_gaji = (id) => {
@@ -247,13 +268,7 @@ const file = $("#media_tmt_gaji").dropify();
 file.on("dropify.beforeClear", function (event, element) {});
 
 file.on("dropify.afterClear", function (event, element) {
-    Swal.fire({
-        position: "center",
-        icon: "success",
-        title: "File berhasil dihapus!",
-        showConfirmButton: false,
-        timer: 1500,
-    });
+    
 });
 
 $(".dropify-fr").dropify({

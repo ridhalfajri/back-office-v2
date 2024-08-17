@@ -37,15 +37,17 @@
                     @endif
 
                     <form class="needs-validation" id="form-prg" method="post"
-                        action="{{ route('pegawai-rekening.update', $prg->id) }}" accept-charset="utf-8"
-                        novalidate>
+                        action="{{ route('pegawai-rekening.update', $prg->id) }}" accept-charset="utf-8" novalidate>
                         @csrf
                         @method('PATCH')
                         <div class="row clearfix">
                             <div class="col-12 col-lg-6 col-md-6">
                                 <div class="form-group @error('pegawai_id')has-error @enderror">
+                                    <input type="hidden" name="pegawai_id"
+                                        value="{{ $prg->pegawai_id ?? old('pegawai_id') }}">
+
                                     <label>Nama Pegawai <span class="text-danger"><sup>*</sup></span></label>
-                                    <select id="pegawai_id" name="pegawai_id" class="form-control" disabled>
+                                    <select id="pegawai_id" class="form-control" disabled>
                                         <option value="">--Pilih--</option>
                                         @foreach ($pegawai as $item)
                                             @if ($prg->pegawai_id == $item->id || old('pegawai_id') == $item->id)
@@ -75,8 +77,8 @@
                                 <div class="form-group @error('no_rek')has-error @enderror">
                                     <label>No. Rekening <span class="text-danger"><sup>*</sup></span></label>
                                     <input type="text" name="no_rek" id="no_rek"
-                                        value="{{ old('no_rek') ?? $prg->no_rekening }}" class="form-control" required=""
-                                        maxlength="100" placeholder="No. Rekening" autocomplete="off">
+                                        value="{{ old('no_rek') ?? $prg->no_rekening }}" class="form-control"
+                                        required="" maxlength="100" placeholder="No. Rekening" autocomplete="off">
                                 </div>
 
                                 <div class="form-group @error('tipe_rek')has-error @enderror">
@@ -88,7 +90,7 @@
                                         @else
                                             <option value="Gaji & Umak">Gaji & Umak</option>
                                         @endif
-                                        
+
                                         @if ($prg->tipe_rekening == 'Tukin' || old('tipe_rek') == 'Tukin')
                                             <option value="Tukin" selected>Tukin</option>
                                         @else

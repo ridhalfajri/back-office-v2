@@ -41,11 +41,12 @@ use App\Http\Controllers\TunjanganBerasController;
 use App\Http\Controllers\AturanThrGajiplusController;
 use App\Http\Controllers\PegawaiRiwayatGolonganController;
 use App\Http\Controllers\PegawaiPenilaianKinerjaController;
-use App\Http\Controllers\PegawaiBpjsLainnyaController;
 use App\Http\Controllers\PengajuanPMKController;
 use App\Http\Controllers\PegawaiTambahanMkController;
+use App\Http\Controllers\PengajuanRegularBpjsController;
 use App\Http\Controllers\PengajuanTambahanBpjsController;
 use App\Http\Controllers\PegawaiTambahanBpjsController;
+use App\Http\Controllers\PegawaiRegularBpjsController;
 use App\Http\Controllers\PegawaiRiwayatUmakController;
 use App\Http\Controllers\PegawaiRekeningController;
 use App\Http\Controllers\PegawaiHirarkiController;
@@ -122,10 +123,6 @@ Route::middleware('auth')->group(function () {
     Route::post('/riwayat-gajiplus', [RiwayatGajiplusController::class, 'datatable'])->name('riwayat-gajiplus.datatable');
     Route::resource('/riwayat-gajiplus', RiwayatGajiplusController::class)->only('index');
 
-    //indrawan
-    // Route::post('/pegawai-bpjs-lainnya/datatable', [PegawaiBpjsLainnyaController::class, 'datatable'])->name('pegawai-bpjs-lainnya.datatable');
-    // Route::resource('/pegawai-bpjs-lainnya', PegawaiBpjsLainnyaController::class);
-
     Route::post('/pesan-ruang-rapat/datatable', [PesanRuangRapatController::class, 'datatable'])->name('pesan-ruang-rapat.datatable');
     Route::resource('/pesan-ruang-rapat', PesanRuangRapatController::class)->except('edit', 'update');
 
@@ -135,12 +132,25 @@ Route::middleware('auth')->group(function () {
     Route::post('/pegawai-tambahan-mk/datatable', [PegawaiTambahanMkController::class, 'datatable'])->name('pegawai-tambahan-mk.datatable');
     Route::resource('/pegawai-tambahan-mk', PegawaiTambahanMkController::class)->except('create', 'store');
 
-    Route::post('/pengajuan-tambahan-bpjs/datatable', [PengajuanTambahanBpjsController::class, 'datatable'])->name('pengajuan-tambahan-bpjs.datatable');
-    Route::resource('/pengajuan-tambahan-bpjs', PengajuanTambahanBpjsController::class)->except('edit', 'update');
+    Route::prefix('pengajuan-bpjs')->group(function () {
+        Route::post('/pengajuan-tambahan-bpjs/datatable', [PengajuanTambahanBpjsController::class, 'datatable'])->name('pengajuan-tambahan-bpjs.datatable');
+        Route::resource('/pengajuan-tambahan-bpjs', PengajuanTambahanBpjsController::class);
 
-    Route::post('/pegawai-tambahan-bpjs/datatable', [PegawaiTambahanBpjsController::class, 'datatable'])->name('pegawai-tambahan-bpjs.datatable');
-    Route::resource('/pegawai-tambahan-bpjs', PegawaiTambahanBpjsController::class)->except('create', 'store');
-    //
+        Route::post('/pengajuan-regular-bpjs/datatable', [PengajuanRegularBpjsController::class, 'datatable'])->name('pengajuan-regular-bpjs.datatable');
+        Route::resource('/pengajuan-regular-bpjs', PengajuanRegularBpjsController::class);
+    });
+
+    Route::prefix('approval-bpjs')->group(function () {
+        Route::post('/pegawai-regular-bpjs/datatable', [PegawaiRegularBpjsController::class, 'datatable'])->name('pegawai-regular-bpjs.datatable');
+        Route::resource('/pegawai-regular-bpjs', PegawaiRegularBpjsController::class)->except('create', 'store');
+        Route::post('/pegawai-regular-bpjs/kirim-bpjs/{pegawai_regular_bpj}', [PegawaiRegularBpjsController::class, 'kirimBpjs'])->name('pegawai-regular-bpjs.kirim-bpjs');
+        Route::get('/export-to-excel/bpjs-regular/{status}/{daftarBpjs}', [PegawaiRegularBpjsController::class, 'exportToExcel'])->name('pegawai-regular-bpjs.export-excel-bpjs');
+
+        Route::post('/pegawai-tambahan-bpjs/datatable', [PegawaiTambahanBpjsController::class, 'datatable'])->name('pegawai-tambahan-bpjs.datatable');
+        Route::resource('/pegawai-tambahan-bpjs', PegawaiTambahanBpjsController::class)->except('create', 'store');
+        Route::post('/pegawai-tambahan-bpjs/kirim-bpjs/{pegawai_tambahan_bpj}', [PegawaiTambahanBpjsController::class, 'kirimBpjs'])->name('pegawai-tambahan-bpjs.kirim-bpjs');
+        Route::get('/export-to-excel/bpjs-tambahan/{status}/{daftarBpjs}', [PegawaiTambahanBpjsController::class, 'exportToExcel'])->name('pegawai-tambahan-bpjs.export-excel-bpjs');
+    });
 
     Route::prefix('presensi')->group(function () {
 
@@ -174,7 +184,6 @@ Route::middleware('auth')->group(function () {
         Route::post('/presensiku/datatable', [PresensiPegawaiController::class, 'datatable'])->name('presensiku.datatable');
         Route::post('/presensiku/getdatapresensi', [PresensiPegawaiController::class, 'getdatapresensi'])->name('presensiku.getdatapresensi');
         Route::get('/exportdatapresensi', [PresensiPegawaiController::class, 'exportPresensi'])->name('exportdatapresensi');
-
     });
 
     Route::post('/presensi-pegawai/getanggotatim', [PresensiPegawaiController::class, 'getAnggotaTim'])->name('presensi-pegawai.getanggotatim');
@@ -313,6 +322,8 @@ Route::middleware('auth')->group(function () {
 
         // Pegawai
         Route::post('/datatable', [PegawaiController::class, 'datatable'])->name('pegawai.datatable');
+        Route::get('/verifikasi/{id}', [PegawaiController::class, 'verifikasi_profile'])->name('pegawai.verifikasi-profile');
+
         Route::resource('/', PegawaiController::class, [
             'names' => [
                 'index' => 'pegawai.index',

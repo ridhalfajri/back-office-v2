@@ -53,7 +53,7 @@ class RiwayatPendidikanController extends Controller
                 'tanggal_ijazah' => ['required', 'date_format:d-m-Y'],
                 'kode_gelar_depan' => ['nullable', 'max:10'],
                 'kode_gelar_belakang' => ['nullable', 'max:10'],
-                'media_ijazah' => ['required', 'nullable', 'mimes:pdf', 'file', 'max:1024',],
+                'media_ijazah' => ['nullable', 'mimes:pdf', 'file', 'max:1024',],
             ],
             [
                 'pegawai_id.required' => 'pegawai harus diisi',
@@ -73,7 +73,7 @@ class RiwayatPendidikanController extends Controller
                 'no_ijazah.max' => ' nomor ijazah maksimal 100 karakter',
                 'kode_gelar_depan.max' => ' gelar depan maksimal 100 karakter',
                 'kode_gelar_belakang.max' => 'gelar belakang maksimal 100 karakter',
-                'media_ijazah.required' => 'file ijazah harus diisi',
+                //'media_ijazah.required' => 'file ijazah harus diisi',
                 'media_ijazah.mimes' => 'format file ijazah harus pdf',
                 'media_ijazah.max' => 'ukuran file terlalu besar (maksimal file 1MB)',
             ]
@@ -93,9 +93,12 @@ class RiwayatPendidikanController extends Controller
             $pendidikan->kode_gelar_depan = $request->kode_gelar_depan;
             $pendidikan->kode_gelar_belakang = $request->kode_gelar_belakang;
             try {
-                DB::transaction(function () use ($pendidikan) {
+                DB::transaction(function () use ($pendidikan, $request) {
                     $pendidikan->save();
-                    $pendidikan->addMediaFromRequest('media_ijazah')->toMediaCollection('media_ijazah');
+
+                    if ($request->file('media_ijazah')) {
+                        $pendidikan->addMediaFromRequest('media_ijazah')->toMediaCollection('media_ijazah');
+                    }
                 });
                 return response()->json(['success' => 'Sukses Mengubah Data']);
             } catch (QueryException $e) {
@@ -116,7 +119,13 @@ class RiwayatPendidikanController extends Controller
             if ($pendidikan == null) {
                 return response()->json(['errors' => ['data' => 'Data tidak ditemukan']]);
             }
-            $pendidikan->media_ijazah = $pendidikan->getMedia("media_ijazah")[0]->getUrl();
+
+            if ($pendidikan->hasMedia("media_ijazah")) {
+                $pendidikan->media_ijazah = $pendidikan->getFirstMediaUrl("media_ijazah");
+            } else {
+                $pendidikan->media_ijazah = null;
+            }
+
             $pendidikan->tanggal_ijazah = Carbon::parse($pendidikan->tanggal_ijazah)->translatedFormat('d F Y');
             $pendidikan->pendidikan->nama;
             $pendidikan->propinsi->nama;
@@ -138,7 +147,12 @@ class RiwayatPendidikanController extends Controller
             ->first();
         $pendidikan->tanggal_ijazah = Carbon::parse($pendidikan->tanggal_ijazah)->translatedFormat('d-m-Y');
         $m_pendidikan = TingkatPendidikan::select('id', 'nama')->get();
-        $pendidikan->media_ijazah = $pendidikan->getMedia("media_ijazah")[0];
+
+        if (!empty($pendidikan->getMedia('media_ijazah')[0])) {
+            $pendidikan->media_ijazah = $pendidikan->getFirstMediaUrl('media_ijazah');
+        } else {
+            $pendidikan->media_ijazah = null;
+        }
 
         return view('pegawai.pendidikan.edit', compact('title', 'pendidikan', 'm_pendidikan'));
     }

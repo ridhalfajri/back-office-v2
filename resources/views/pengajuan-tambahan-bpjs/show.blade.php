@@ -10,7 +10,8 @@
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="{{ route('dashboard') }}"><i class="fa fa-home"></i></a></li>
-            <li class="breadcrumb-item"><a href="{{ route('pengajuan-tambahan-bpjs.index') }}">Pengajuan Tambahan BPJS</a>
+            <li class="breadcrumb-item"><a href="{{ route('pengajuan-tambahan-bpjs.index') }}">Pengajuan BPJS Keluarga
+                    Lain</a>
             </li>
             <li class="breadcrumb-item active" aria-current="page">{{ $title }}</li>
         </ol>
@@ -38,15 +39,18 @@
 
                     <div class="row clearfix">
                         <div class="col-12 col-lg-6 col-md-6">
-                            <div class="form-group @error('file_kartu_bpjs')has-error @enderror">
+                            {{-- <div class="form-group @error('file_kartu_bpjs')has-error @enderror">
                                 @if ($bpjs->file_kartu_bpjs)
-                                    <a href="//{{ $bpjs->file_kartu_bpjs }}" target="_blank"><i class="dropdown-icon fa fa-file"></i>Download File Kartu BPJS</a>
+                                    <a href="//{{ $bpjs->file_kartu_bpjs }}" target="_blank"><i
+                                            class="dropdown-icon fa fa-file"></i>Download File Kartu BPJS</a>
                                 @endif
-                            </div>
+                            </div> --}}
 
                             <div class="form-group @error('file_pengajuan_bpjs')has-error @enderror">
                                 @if ($bpjs->file_pengajuan_bpjs)
-                                    <a href="//{{ $bpjs->file_pengajuan_bpjs }}" target="_blank"><i class="dropdown-icon fa fa-file"></i>Download File Pengajuan BPJS Tambahan</a>
+                                    <a href="{{ $bpjs->file_pengajuan_bpjs }}" target="_blank"><i
+                                            class="dropdown-icon fa fa-file"></i>Download File Pengajuan BPJS Keluarga
+                                        Lain</a>
                                 @endif
                             </div>
 
@@ -69,7 +73,5 @@
     <!-- Select2 -->
     <script src="{{ asset('assets/plugins/select2/js/select2.min.js') }}"></script>
 
-    <script type="text/javascript">
-        
-    </script>
+    <script type="text/javascript"></script>
 @endpush

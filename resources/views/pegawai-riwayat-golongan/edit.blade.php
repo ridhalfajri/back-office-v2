@@ -44,8 +44,12 @@
                         <div class="row clearfix">
                             <div class="col-12 col-lg-6 col-md-6">
                                 <div class="form-group @error('pegawai_id')has-error @enderror">
+
+                                    <input type="hidden" name="pegawai_id"
+                                        value="{{ $prg->pegawai_id ?? old('pegawai_id') }}">
+
                                     <label>Nama Pegawai <span class="text-danger"><sup>*</sup></span></label>
-                                    <select id="pegawai_id" name="pegawai_id" class="form-control" disabled>
+                                    <select id="pegawai_id" class="form-control" disabled>
                                         <option value="">--Pilih--</option>
                                         @foreach ($pegawai as $item)
                                             @if ($prg->pegawai_id == $item->id || old('pegawai_id') == $item->id)
@@ -118,7 +122,7 @@
                                     <em>Silakan upload file SK (jpg/jpeg/png/pdf max 2Mb)</em>
                                     <br>
                                     @if ($prg->sk_golongan)
-                                        <a href="//{{ $prg->sk_golongan }}" target="_blank">Download</a>
+                                        <a href="{{ $prg->sk_golongan }}" target="_blank">Download</a>
                                     @endif
                                 </div>
 

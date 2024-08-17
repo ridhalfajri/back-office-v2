@@ -10,8 +10,8 @@
 @push('breadcrumb')
     <ol class="breadcrumb custom-background-color">
         <li class="breadcrumb-item"><a href="{{ route('dashboard') }}"><i class="fa fa-home"></i></a></li>
-        <li class="breadcrumb-item"><a href="{{route('pegawai.index')}}">Pegawai</a></li>
-        <li class="breadcrumb-item"><a href="{{route('pegawai.show',$pegawai->id)}}">Pegawai Detail</a></li>
+        <li class="breadcrumb-item"><a href="{{ route('pegawai.index') }}">Pegawai</a></li>
+        <li class="breadcrumb-item"><a href="{{ route('pegawai.show', $pegawai->id) }}">Pegawai Detail</a></li>
         <li class="breadcrumb-item active" aria-current="page">{{ $title }}</li>
     </ol>
 @endpush
@@ -102,7 +102,7 @@
                                         <small class="text-danger" id="error_tanggal_ijazah"></small>
                                     </div>
                                     <div class="form-group col-lg-4 col-md-6 col-sm-12">
-                                        <label class="form-label">File Sertifikat</label>
+                                        <label class="form-label">File Ijazah</label>
                                         <div class="input-group">
                                             <input type="file" id="media_ijazah" name="media_ijazah">
                                             <small class="text-danger" id="error_media_ijazah"></small>

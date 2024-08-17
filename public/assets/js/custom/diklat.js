@@ -37,7 +37,7 @@ const show_diklat = (id) => {
                 $("#d_media_sertifikat").attr(
                     "href",
                     "//" + response.result.media_sertifikat
-                );
+                ).attr("target", "_blank");
             }
         },
     });

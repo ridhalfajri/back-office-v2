@@ -12,6 +12,7 @@ use App\Models\Propinsi;
 use App\Models\StatusPegawai;
 use App\Models\PegawaiRiwayatJabatan;
 use App\Models\UnitKerja;
+use App\Models\Gaji;
 use App\Models\HirarkiUnitKerja;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -82,6 +83,7 @@ class PegawaiController extends Controller
     public function show(string $id)
     {
         $cek_pegawai = Pegawai::where('id', $id)->first();
+        //$gaji = Gaji::select('id', 'masa_kerja', 'golongan_id', 'nominal')->get();
         $this->authorize('personal', $cek_pegawai);
         $title = 'Pegawai';
         try {
@@ -109,15 +111,22 @@ class PegawaiController extends Controller
                 'no_bpjs',
                 'no_taspen',
                 'no_enroll',
-                'npwp'
+                'npwp',
+                'is_verified'
             )->where('id', $id)->first();
             $alamat_domisili = PegawaiAlamat::where('pegawai_id', $pegawai->id)->where('tipe_alamat', 'Domisili')->first();
             $alamat_asal = PegawaiAlamat::where('pegawai_id', $pegawai->id)->where('tipe_alamat', 'Asal')->first();
+            // if (!empty($pegawai->getFirstMediaUrl('media_foto_pegawai'))) {
+            //     $pegawai->media_foto_pegawai = $pegawai->getFirstMediaUrl('media_foto_pegawai');
+            // }
+            // if (!empty($pegawai->getFirstMediaUrl('media_kartu_pegawai'))) {
+            //     $pegawai->media_kartu_pegawai = $pegawai->getFirstMediaUrl('media_kartu_pegawai');
+            // }
             if (!empty($pegawai->getMedia('media_foto_pegawai')[0])) {
-                $pegawai->media_foto_pegawai = $pegawai->getMedia('media_foto_pegawai')[0]->getUrl();
+                $pegawai->media_foto_pegawai = $pegawai->getFirstMediaUrl('media_foto_pegawai');
             }
             if (!empty($pegawai->getMedia('media_kartu_pegawai')[0])) {
-                $pegawai->media_kartu_pegawai = $pegawai->getMedia('media_kartu_pegawai')[0]->getUrl();
+                $pegawai->media_kartu_pegawai = $pegawai->getFirstMediaUrl('media_kartu_pegawai');
             }
         } catch (\Throwable $th) {
             return abort(500);
@@ -198,10 +207,10 @@ class PegawaiController extends Controller
         )->where('id', $id)->first();
 
         if (!empty($pegawai->getMedia('media_foto_pegawai')[0])) {
-            $pegawai->media_foto_pegawai = $pegawai->getMedia('media_foto_pegawai')[0];
+            $pegawai->media_foto_pegawai = $pegawai->getFirstMediaUrl('media_foto_pegawai');
         }
         if (!empty($pegawai->getMedia('media_kartu_pegawai')[0])) {
-            $pegawai->media_kartu_pegawai = $pegawai->getMedia('media_kartu_pegawai')[0];
+            $pegawai->media_kartu_pegawai = $pegawai->getFirstMediaUrl('media_kartu_pegawai');
         }
 
         return view('pegawai.edit', compact('title', 'pegawai', 'agama', 'jenis_kawin', 'jenis_pegawai', 'status_pegawai'));
@@ -236,7 +245,7 @@ class PegawaiController extends Controller
                 // 'no_kartu_pegawai' => 'nullable|between:7,10|string',
                 'tanggal_wafat' => 'nullable|date',
                 'tanggal_berhenti' => 'nullable|date',
-                'no_bpjs' => 'required|digits:13',
+                'no_bpjs' => 'nullable|digits:13',
                 'no_taspen' => 'nullable|max:50',
                 'npwp' => 'nullable|size:16|string',
                 'no_enroll' => 'max:50',
@@ -274,7 +283,7 @@ class PegawaiController extends Controller
                 // 'no_kartu_pegawai.string' => 'Nomor kartu pegawai harus string',
                 'tanggal_wafat.date' => 'Tanggal wafat harus format tanggal',
                 'tanggal_berhenti.date' => 'Tanggal berhenti harus format tanggal',
-                'no_bpjs.required' => 'Nomor BPJS harus diisi',
+                //'no_bpjs.required' => 'Nomor BPJS harus diisi',
                 'no_bpjs.digits' => 'Nomor BPJS harus 13 digits',
                 'no_taspen.max' => 'Nomor Taspen maksimal 50 karakter',
                 'npwp.size' => 'NPWP harus 16 karakter',
@@ -313,6 +322,7 @@ class PegawaiController extends Controller
             $pegawai->no_bpjs = $request->no_bpjs;
             $pegawai->no_taspen = $request->no_taspen;
             $pegawai->no_enroll = $request->no_enroll;
+            $pegawai->is_verified = 'N';
             // $pegawai->no_kartu_pegawai = $request->no_kartu_pegawai;
             try {
                 DB::transaction(function () use ($pegawai, $request) {
@@ -339,6 +349,17 @@ class PegawaiController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    public function verifikasi_profile($id)
+    {
+        $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', TRUE)->first();
+        $this->authorize('admin_sdmoh', $kabiro);
+        $pegawai = Pegawai::where('id', $id)->first();
+        //dd($pegawai);
+        $pegawai->is_verified = 'Y';
+        $pegawai->save();
+        return back();
     }
 
     /**

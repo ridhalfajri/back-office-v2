@@ -229,12 +229,16 @@ const show_pasangan = (id) => {
                 $("#si_media_buku_nikah").attr(
                     "href",
                     "//" + response.result.media_buku_nikah
-                );
-                $("#foto_pasangan").html(
-                    '<img src="//' +
-                        response.result.media_foto_pasangan +
-                        '" id="si_media_foto_pasangan" alt="Foto Pasangan" width="150"height="250"></img>'
-                );
+                ).attr("target", "_blank");
+                // $("#foto_pasangan").html(
+                //     '<img src="//' +
+                //         response.result.media_foto_pasangan +
+                //         '" id="si_media_foto_pasangan" alt="Foto Pasangan" width="150"height="250"></img>'
+                // );
+                $("#si_media_kk_pasangan").attr(
+                    "href",
+                    "//" + response.result.media_kk_pasangan
+                ).attr("target", "_blank");
             }
         },
     });
@@ -315,12 +319,23 @@ const show_anak = (id) => {
                 $("#an_anak_ke").val(response.result.anak_ke);
                 $("#an_status_anak").val(response.result.status_anak);
                 $("#an_bidang_studi").val(response.result.bidang_studi);
-                $("#an_pendidikan").val(response.result.pendidikan.nama);
-                if (response.result.is_pns == 1) {
+                if (response.result.status_tunjangan == 1) {
                     $("#an_status_tunjangan").val("Aktif");
                 } else {
                     $("#an_status_tunjangan").val("Non Aktif");
                 }
+                
+                $("#an_pendidikan").val(response.result.nama_pendidikan);
+                
+                $("#an_media_akta_lahir").attr(
+                    "href",
+                    "//" + response.result.media_akta_lahir
+                ).attr("target", "_blank");
+
+                $("#an_media_kk_anak").attr(
+                    "href",
+                    "//" + response.result.media_kk_anak
+                ).attr("target", "_blank");
             }
         },
     });

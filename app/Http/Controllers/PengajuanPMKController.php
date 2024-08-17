@@ -16,33 +16,32 @@ use Illuminate\Support\Facades\Log;
 class PengajuanPMKController extends Controller
 {
     /**
-    * Display a listing of the resource.
-    *
-    * @return \Illuminate\Http\Response
-    */
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index()
-    {            
+    {
         $title = 'Pengajuan Peninjauan Masa Kerja';
 
         return view('pengajuan-pmk.index', compact('title'));
     }
-     
+
     public function datatable(Request $request)
-    {        
+    {
         $data = PegawaiTambahanMk::select('*')
-            ->where('pegawai_id', '=', Auth::user()->pegawai_id)
-            ;
+            ->where('pegawai_id', '=', Auth::user()->pegawai_id);
 
         return Datatables::of($data)
             ->addColumn('no', '')
             ->addColumn('status', function ($data) {
-                if($data->status == 1){
+                if ($data->status == 1) {
                     return 'Pengajuan';
                 }
-                if($data->status == 2){
+                if ($data->status == 2) {
                     return 'Dibatalkan';
                 }
-                if($data->status == 3){
+                if ($data->status == 3) {
                     return 'Disetujui';
                 }
             })
@@ -64,49 +63,52 @@ class PengajuanPMKController extends Controller
     }
 
     /**
-    * Show the form for creating a new resource.
-    *
-    * @return \Illuminate\Http\Response
-    */
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function create()
-    {            
+    {
         $title = 'Buat Pengajuan Peninjauan Masa Kerja';
 
         return view('pengajuan-pmk.create', compact('title'));
     }
-        
+
     /**
-    * Store a newly created resource in storage.
-    *
-    * @param  \Illuminate\Http\Request  $request
-    * @return \Illuminate\Http\Response
-    */
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function store(Request $request)
     {
         DB::beginTransaction();
 
-        $this->validate($request, [
-            'tahun_plus_pengajuan' => ['required'],
-            'bulan_plus_pengajuan' => ['required'],
-            'tipe_pengalaman' => ['required'],
-            'file_pengajuan_pmk' => ['required', 'file', 'mimes:rar,zip', 'max:51200'],
-        ],
-        [
-            'tahun_plus_pengajuan.required'=>'data tahun plus pengajuan harus diisi!',
-            'bulan_plus_pengajuan.required'=>'data bulan plus pengajuan harus diisi!',
-            'tipe_pengalaman.required'=>'data tipe pmk harus diisi!',
-            'file_pengajuan_pmk.mimes' => 'format file sk harus rar/zip!',
-            'file_pengajuan_pmk.max' => 'ukuran file terlalu besar (maksimal file 50Mb)!',
-            'file_pengajuan_pmk.file' => 'upload data harus berupa file!',
-        ]);
+        $this->validate(
+            $request,
+            [
+                'tahun_plus_pengajuan' => ['required'],
+                'bulan_plus_pengajuan' => ['required'],
+                'tipe_pengalaman' => ['required'],
+                'file_pengajuan_pmk' => ['required', 'file', 'mimes:rar,zip', 'max:51200'],
+            ],
+            [
+                'tahun_plus_pengajuan.required' => 'data tahun plus pengajuan harus diisi!',
+                'bulan_plus_pengajuan.required' => 'data bulan plus pengajuan harus diisi!',
+                'tipe_pengalaman.required' => 'data tipe pmk harus diisi!',
+                'file_pengajuan_pmk.mimes' => 'format file sk harus rar/zip!',
+                'file_pengajuan_pmk.max' => 'ukuran file terlalu besar (maksimal file 50Mb)!',
+                'file_pengajuan_pmk.file' => 'upload data harus berupa file!',
+            ]
+        );
 
         try {
             //validasi pegawai_id, golongan_id
-            $cekDataExist = PegawaiTambahanMk::where('pegawai_id',Auth::user()->pegawai_id)
-            ->whereIn('status', array(1, 3))
-            ->get();
+            $cekDataExist = PegawaiTambahanMk::where('pegawai_id', Auth::user()->pegawai_id)
+                ->whereIn('status', array(1, 3))
+                ->get();
 
-            if($cekDataExist->isNotEmpty()){
+            if ($cekDataExist->isNotEmpty()) {
                 session()->flash('message', 'Data pengajuan pmk sudah ada!');
 
                 return redirect()->back();
@@ -132,7 +134,7 @@ class PengajuanPMKController extends Controller
 
                 return redirect()->route('pengajuan-pmk.index')
                     ->with('success', 'Data Pengajuan PMK berhasil disimpan');
-            }    
+            }
         } catch (\Exception $e) {
             //throw $th;
             DB::rollback();
@@ -142,8 +144,7 @@ class PengajuanPMKController extends Controller
 
             // return redirect()->route('uang-makan.create');
             return redirect()->back();
-        }  
-        
+        }
     }
 
     public function show(PegawaiTambahanMk $pengajuan_pmk)
@@ -154,25 +155,25 @@ class PengajuanPMKController extends Controller
 
         $cek_media = $pmk->getMedia("file_sk_pmk")->count();
         if ($cek_media) {
-            $pmk->file_sk_pmk = $pmk->getMedia("file_sk_pmk")[0]->getUrl();
+            $pmk->file_sk_pmk = $pmk->getFirstMediaUrl("file_sk_pmk");
         }
 
         $cek_media = $pmk->getMedia("file_pengajuan_pmk")->count();
         if ($cek_media) {
-            $pmk->file_pengajuan_pmk = $pmk->getMedia("file_pengajuan_pmk")[0]->getUrl();
+            $pmk->file_pengajuan_pmk = $pmk->getFirstMediaUrl("file_pengajuan_pmk");
         }
 
         return view('pengajuan-pmk.show', compact('title', 'pmk'));
     }
 
     /**
-    * Remove the specified resource from storage.
-    *
-    * @param  \App\Models\Models\PegawaiTambahanMk  $bidangProfisiensi
-    * @return \Illuminate\Http\Response
-    */        
+     * Remove the specified resource from storage.
+     *
+     * @param  \App\Models\Models\PegawaiTambahanMk  $bidangProfisiensi
+     * @return \Illuminate\Http\Response
+     */
     public function destroy(PegawaiTambahanMk $pengajuan_pmk)
-    {           
+    {
         DB::beginTransaction();
         try {
             $pengajuan_pmk->delete();

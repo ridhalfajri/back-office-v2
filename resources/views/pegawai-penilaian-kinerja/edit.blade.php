@@ -10,7 +10,8 @@
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="{{ route('dashboard') }}"><i class="fa fa-home"></i></a></li>
-            <li class="breadcrumb-item"><a href="{{ route('pegawai-penilaian-kinerja.index') }}">Penilaian Kinerja Pegawai</a>
+            <li class="breadcrumb-item"><a href="{{ route('pegawai-penilaian-kinerja.index') }}">Penilaian Kinerja
+                    Pegawai</a>
             </li>
             <li class="breadcrumb-item active" aria-current="page">{{ $title }}</li>
         </ol>
@@ -44,8 +45,11 @@
                         <div class="row clearfix">
                             <div class="col-12 col-lg-6 col-md-6">
                                 <div class="form-group @error('pegawai_id')has-error @enderror">
+                                    <input type="hidden" name="pegawai_id"
+                                        value="{{ $ppk->pegawai_id ?? old('pegawai_id') }}">
+
                                     <label>Nama Pegawai <span class="text-danger"><sup>*</sup></span></label>
-                                    <select id="pegawai_id" name="pegawai_id" class="form-control">
+                                    <select id="pegawai_id" class="form-control">
                                         <option value="">--Pilih--</option>
                                         @foreach ($pegawai as $item)
                                             @if ($ppk->pegawai_id == $item->id || old('pegawai_id') == $item->id)
@@ -142,24 +146,25 @@
                                 <div class="form-group @error('awal_tgl_berlaku')has-error @enderror">
                                     <label>Awal Berlaku Pengurangan <span class="text-danger"><sup>*</sup></span></label>
                                     <input type="date" data-date-format="YYYY MMMM DD" class="form-control floating"
-                                        id="awal_tgl_berlaku" name="awal_tgl_berlaku" value="{{ old('awal_tgl_berlaku') ?? $ppk->awal_tgl_berlaku }}">
+                                        id="awal_tgl_berlaku" name="awal_tgl_berlaku"
+                                        value="{{ old('awal_tgl_berlaku') ?? $ppk->awal_tgl_berlaku }}">
                                 </div>
 
                                 <div class="form-group @error('akhir_tgl_berlaku')has-error @enderror">
                                     <label>Akhir Berlaku Pengurangan <span class="text-danger"><sup>*</sup></span></label>
                                     <input type="date" data-date-format="YYYY MMMM DD" class="form-control floating"
-                                        id="akhir_tgl_berlaku" name="akhir_tgl_berlaku" value="{{ old('akhir_tgl_berlaku') ?? $ppk->akhir_tgl_berlaku }}">
+                                        id="akhir_tgl_berlaku" name="akhir_tgl_berlaku"
+                                        value="{{ old('akhir_tgl_berlaku') ?? $ppk->akhir_tgl_berlaku }}">
                                 </div>
 
                                 <div class="form-group @error('bukti')has-error @enderror">
                                     <label>Upload Bukti </label>
-                                    <input class="form-control fileClass" type="file" id="bukti"
-                                        name="bukti">
+                                    <input class="form-control fileClass" type="file" id="bukti" name="bukti">
                                     <em>Silakan upload file Bukti (jpg/jpeg/png/pdf max 2Mb)</em>
                                 </div>
                                 <br>
                                 @if ($ppk->bukti)
-                                    <a href="//{{ $ppk->bukti }}" target="_blank">Download</a>
+                                    <a href="{{ $ppk->bukti }}" target="_blank">Download</a>
                                 @endif
 
                             </div>

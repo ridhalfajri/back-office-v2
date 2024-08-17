@@ -63,6 +63,7 @@
                                 <div class="form-group @error('status')has-error @enderror">
                                     <label class="form-label">Status</label>
                                     <select id="status" name="status" class="form-control">
+                                        {{-- <option value="">--Pilih--</option> --}}
                                         <option value="1" selected>Pengajuan</option>
                                         <option value="2">Ditolak</option>
                                         <option value="3">Disetujui</option>
@@ -74,6 +75,7 @@
                                 <div class="form-group @error('daftarBpjs')has-error @enderror">
                                     <label class="form-label">Status Daftar BPJS</label>
                                     <select id="daftarBpjs" name="daftarBpjs" class="form-control">
+                                        {{-- <option value="">--Pilih--</option> --}}
                                         <option value="N" selected>Tidak</option>
                                         <option value="Y">Ya</option>
                                     </select>
@@ -83,7 +85,7 @@
                     </div>
 
                     <div class="card-body">
-                        <h5 class="box-title" style="text-align: center;"><b>List Persetujuan BPJS Keluarga Lain</b>
+                        <h5 class="box-title" style="text-align: center;"><b>List Persetujuan BPJS Regular</b>
                         </h5>
 
                         <table id="tbl-data" class="table table-hover js-basic-example dataTable table_custom spacing5">
@@ -93,7 +95,7 @@
                                     <th class="font-weight-bold text-dark">Nama Pegawai</th>
                                     <th class="font-weight-bold text-dark">NIP</th>
                                     <th class="font-weight-bold text-dark">Unit Kerja</th>
-                                    <th class="font-weight-bold text-dark">Nama Keluarga</th>
+                                    <th class="font-weight-bold text-dark">Nama</th>
                                     <th class="font-weight-bold text-dark">NIK</th>
                                     <th class="font-weight-bold text-dark">No. KK</th>
                                     <th class="font-weight-bold text-dark">Status Hubungan<br>Keluarga</th>
@@ -127,6 +129,7 @@
                         <button type="button" id="exportExcel" class="btn btn-success waves-effect waves-light">
                             Export to Excel
                         </button>
+
                     </div>
                 </div>
             </div>
@@ -175,7 +178,7 @@
                 info: true,
                 autoWidth: false,
                 ajax: {
-                    url: '{{ route('pegawai-tambahan-bpjs.datatable') }}',
+                    url: '{{ route('pegawai-regular-bpjs.datatable') }}',
                     type: 'POST',
                     headers: {
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
@@ -208,23 +211,23 @@
                         class: 'text-center'
                     },
                     {
-                        data: 'nama_keluarga',
-                        name: 'ptm.nama_keluarga',
+                        data: 'nama',
+                        name: 'ptm.nama',
                         class: 'text-center'
                     },
                     {
-                        data: 'nik_keluarga',
-                        name: 'ptm.nik_keluarga',
+                        data: 'nik',
+                        name: 'ptm.nik',
                         class: 'text-center'
                     },
                     {
-                        data: 'no_kk_keluarga',
-                        name: 'ptm.no_kk_keluarga',
+                        data: 'no_kk',
+                        name: 'ptm.no_kk',
                         class: 'text-center'
                     },
                     {
-                        data: 'status_keluarga',
-                        name: 'ptm.status_keluarga',
+                        data: 'status_hub_keluarga',
+                        name: 'status_hub_keluarga',
                         class: 'text-center'
                     },
                     {
@@ -300,7 +303,7 @@
                         delete_data(that.data('id')).then(function(hasil) {
                             if (hasil.status.error == true) {
                                 toastr['error'](
-                                    'Data Pengajuan BPJS Keluarga Lain gagal dihapus!');
+                                    'Data Pengajuan BPJS Regular gagal dihapus!');
                             } else {
                                 table.ajax.reload();
                                 toastr['success'](hasil.status.message);
@@ -320,7 +323,7 @@
         function delete_data(id) {
             return new Promise(function(resolve, reject) {
                 $.ajax({
-                    url: "{{ url('approval-bpjs/pegawai-tambahan-bpjs') }}/" + id,
+                    url: "{{ url('approval-bpjs/pegawai-regular-bpjs') }}/" + id,
                     method: 'POST',
                     headers: {
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
@@ -332,7 +335,7 @@
                 }).done(function(hasil) {
                     resolve(hasil);
                 }).fail(function() {
-                    reject('Gagal menghapus data Pengajuan BPJS Keluarga Lain Pegawai!');
+                    reject('Gagal menghapus data Pengajuan BPJS Regular Pegawai!');
                 })
             })
         }
@@ -376,7 +379,7 @@
             function kirim_bpjs(id) {
                 return new Promise(function(resolve, reject) {
                     $.ajax({
-                        url: "{{ url('approval-bpjs/pegawai-tambahan-bpjs/kirim-bpjs') }}/" +
+                        url: "{{ url('approval-bpjs/pegawai-regular-bpjs/kirim-bpjs') }}/" +
                             id,
                         method: 'POST',
                         headers: {
@@ -399,7 +402,7 @@
                 let status = $("#status").val();
                 let daftarBpjs = $("#daftarBpjs").val();
 
-                window.location.href = '{{ url('approval-bpjs/export-to-excel/bpjs-tambahan') }}/' +
+                window.location.href = '{{ url('approval-bpjs/export-to-excel/bpjs-regular') }}/' +
                     status + '/' +
                     daftarBpjs;
 

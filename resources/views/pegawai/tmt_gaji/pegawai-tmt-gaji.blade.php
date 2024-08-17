@@ -5,13 +5,16 @@
             <a href="#" class="card-options-fullscreen" data-toggle="card-fullscreen"><i
                     class="fe fe-maximize"></i></a>
             <div class="item-action dropdown ml-2">
-                <a href="javascript:void(0)" data-toggle="dropdown"><i class="fe fe-more-vertical"></i></a>
-                <div class="dropdown-menu dropdown-menu-right">
-                    <a href="javascript:void(0)" class="dropdown-item btn-tmt-gaji" data-toggle="modal"
-                        data-target="#modal-tmt-gaji" onclick="create_tmt_gaji()"><i
-                            class="dropdown-icon fa fa-edit"></i>
-                        Tambah</a>
-                </div>
+                @if (auth()->user()->pegawai->jabatan_sekarang->tx_tipe_jabatan_id == 7 ||
+                        auth()->user()->pegawai->jabatan_sekarang->tx_tipe_jabatan_id == 5)
+                    <a href="javascript:void(0)" data-toggle="dropdown"><i class="fe fe-more-vertical"></i></a>
+                    <div class="dropdown-menu dropdown-menu-right">
+                        <a href="javascript:void(0)" class="dropdown-item btn-tmt-gaji" data-toggle="modal"
+                            data-target="#modal-tmt-gaji" onclick="create_tmt_gaji()"><i
+                                class="dropdown-icon fa fa-edit"></i>
+                            Tambah</a>
+                    </div>
+                @endif
             </div>
         </div>
     </div>

@@ -43,7 +43,7 @@ class PenghargaanController extends Controller
                 'no_sk' => ['required'],
                 'tanggal_sk' => ['required', 'date_format:d-m-Y'],
                 'tahun' => ['required', 'digits:4'],
-                'media_sk' => ['nullable', 'mimes:jpg,png,jpeg,pdf'],
+                'media_sk_penghargaan' => ['nullable', 'mimes:jpg,png,jpeg,pdf'],
             ],
             [
                 'pegawai_id.required' => 'pegawai harus diisi',
@@ -70,15 +70,21 @@ class PenghargaanController extends Controller
             $penghargaan->tanggal_sk = Carbon::parse($request->tanggal_sk)->translatedFormat('Y-m-d');
             $penghargaan->tahun = $request->tahun;
             DB::transaction(function () use ($penghargaan, $request) {
-                if ($request->id_penghargaan != null) {
-                    if ($request->file('media_sk_penghargaan') != null) {
-                        $penghargaan->clearMediaCollection('media_sk_penghargaan');
-                    }
-                }
+                // if ($request->id_penghargaan != null) {
+                //     if ($request->file('media_sk_penghargaan') != null) {
+                //         $penghargaan->clearMediaCollection('media_sk_penghargaan');
+                //     }
+                // }
                 $penghargaan->save();
-                $penghargaan->addMediaFromRequest('media_sk_penghargaan')->toMediaCollection('media_sk_penghargaan');
+
+                if ($request->file('media_sk_penghargaan')) {
+                    $penghargaan->clearMediaCollection('media_sk_penghargaan');
+                    $penghargaan->addMediaFromRequest('media_sk_penghargaan')->toMediaCollection('media_sk_penghargaan');
+                }
+
+                //$penghargaan->addMediaFromRequest('media_sk_penghargaan')->toMediaCollection('media_sk_penghargaan');
             });
-            return response()->json(['success' => 'Tmt Gaji Berhasil Disimpan']);
+            return response()->json(['success' => 'Penghargaan Berhasil Disimpan']);
             try {
             } catch (QueryException $e) {
                 return response()->json(['errors' => ['connection' => 'Terjadi kesalahan koneksi']]);
@@ -107,7 +113,7 @@ class PenghargaanController extends Controller
             $penghargaan->tanggal_sk = Carbon::parse($penghargaan->tanggal_sk)->translatedFormat('d-m-Y');
             $penghargaan->penghargaan;
             try {
-                $penghargaan->media_sk_penghargaan = $penghargaan->getMedia("media_sk_penghargaan")[0]->getUrl();
+                $penghargaan->media_sk_penghargaan = $penghargaan->getFirstMediaUrl("media_sk_penghargaan");
             } catch (\Throwable $th) {
             }
             return response()->json(['result' => $penghargaan]);
@@ -183,12 +189,18 @@ class PenghargaanController extends Controller
             //throw $th;
         }
     }
+
     public function sk_penghargaan(Request $request)
     {
         try {
             $penghargaan = PegawaiRiwayatPenghargaan::where('id', $request->id)->first();
             if ($penghargaan != null) {
-                $penghargaan->media_sk_penghargaan = $penghargaan->getMedia("media_sk_penghargaan")[0]->getUrl();
+                if ($penghargaan->hasMedia("media_sk_penghargaan")) {
+                    $penghargaan->media_sk_penghargaan = $penghargaan->getFirstMediaUrl("media_sk_penghargaan");
+                } else {
+                    $penghargaan->media_sk_penghargaan = null;
+                }
+
                 return response()->json(['result' => $penghargaan->media_sk_penghargaan]);
             } else {
                 return response()->json(['errors' => ['connection' => 'Terjadi kesalahan koneksi']]);

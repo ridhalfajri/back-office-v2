@@ -10,7 +10,8 @@
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="{{ route('dashboard') }}"><i class="fa fa-home"></i></a></li>
-            <li class="breadcrumb-item"><a href="{{ route('pegawai-tambahan-mk.index') }}">Approval Peninjauan Masa Kerja Pegawai</a>
+            <li class="breadcrumb-item"><a href="{{ route('pegawai-tambahan-mk.index') }}">Approval Peninjauan Masa Kerja
+                    Pegawai</a>
             </li>
             <li class="breadcrumb-item active" aria-current="page">{{ $title }}</li>
         </ol>
@@ -45,45 +46,49 @@
                             <div class="col-12 col-lg-6 col-md-6">
                                 <div class="form-group @error('pegawai')has-error @enderror">
                                     <label>Pegawai </label>
-                                    <input type="text" name="pegawai" id="pegawai" value="{{ $pegawai->nama_depan.' '.$pegawai->nama_belakang.' - '.$pegawai->nip.' - '.$pegawai->singkatan_unit_kerja }}"
+                                    <input type="text" name="pegawai" id="pegawai"
+                                        value="{{ $pegawai->nama_depan . ' ' . $pegawai->nama_belakang . ' - ' . $pegawai->nip . ' - ' . $pegawai->singkatan_unit_kerja }}"
                                         class="form-control" required="" placeholder="Pegawai" disabled
                                         autocomplete="off">
                                 </div>
 
                                 <div class="form-group @error('tahun_plus_disetujui')has-error @enderror">
                                     <label>Total Tahun Disetujui <span class="text-danger"><sup>*</sup></span></label>
-                                    <input type="number" name="tahun_plus_disetujui" id="tahun_plus_disetujui" value="{{ old('tahun_plus_disetujui') ?? $pmk->tahun_plus_disetujui }}"
-                                        class="form-control" required="" maxlength="100" placeholder="Total tahun disetujui"
-                                        autocomplete="off">
+                                    <input type="number" name="tahun_plus_disetujui" id="tahun_plus_disetujui"
+                                        value="{{ old('tahun_plus_disetujui') ?? $pmk->tahun_plus_disetujui }}"
+                                        class="form-control" required="" maxlength="100"
+                                        placeholder="Total tahun disetujui" autocomplete="off">
                                 </div>
 
                                 <div class="form-group @error('bulan_plus_disetujui')has-error @enderror">
                                     <label>Total Bulan Disetujui <span class="text-danger"><sup>*</sup></span></label>
-                                    <input type="number" name="bulan_plus_disetujui" id="bulan_plus_disetujui" value="{{ old('bulan_plus_disetujui') ?? $pmk->bulan_plus_disetujui }}"
-                                        class="form-control" required="" maxlength="100" placeholder="Total bulan disetujui"
-                                        autocomplete="off">
+                                    <input type="number" name="bulan_plus_disetujui" id="bulan_plus_disetujui"
+                                        value="{{ old('bulan_plus_disetujui') ?? $pmk->bulan_plus_disetujui }}"
+                                        class="form-control" required="" maxlength="100"
+                                        placeholder="Total bulan disetujui" autocomplete="off">
                                 </div>
 
                                 {{-- tanggal_sk --}}
                                 <div class="form-group @error('tanggal_sk')has-error @enderror">
                                     <label>Tanggal SK <span class="text-danger"><sup>*</sup></span></label>
                                     <input type="date" data-date-format="YYYY MMMM DD" class="form-control floating"
-                                        id="tanggal_sk" name="tanggal_sk" value="{{ old('tanggal_sk') ?? $pmk->tanggal_sk }}">
+                                        id="tanggal_sk" name="tanggal_sk"
+                                        value="{{ old('tanggal_sk') ?? $pmk->tanggal_sk }}">
                                 </div>
 
                                 {{-- no_sk --}}
                                 <div class="form-group @error('no_sk')has-error @enderror">
                                     <label>No. SK <span class="text-danger"><sup>*</sup></span></label>
-                                    <input type="text" name="no_sk" id="no_sk" value="{{ old('no_sk') ?? $pmk->no_sk }}"
-                                        class="form-control" required="" maxlength="50" placeholder="No SK PMK"
-                                        autocomplete="off">
+                                    <input type="text" name="no_sk" id="no_sk"
+                                        value="{{ old('no_sk') ?? $pmk->no_sk }}" class="form-control" required=""
+                                        maxlength="50" placeholder="No SK PMK" autocomplete="off">
                                 </div>
 
                                 <div class="form-group @error('pejabat_penetap')has-error @enderror">
                                     <label>Pejabat Penetap <span class="text-danger"><sup>*</sup></span></label>
-                                    <input type="text" name="pejabat_penetap" id="pejabat_penetap" value="{{ old('pejabat_penetap') ?? $pmk->pejabat_penetap }}"
-                                        class="form-control" required="" maxlength="255" placeholder="Pejabat penetap SK"
-                                        autocomplete="off">
+                                    <input type="text" name="pejabat_penetap" id="pejabat_penetap"
+                                        value="{{ old('pejabat_penetap') ?? $pmk->pejabat_penetap }}" class="form-control"
+                                        required="" maxlength="255" placeholder="Pejabat penetap SK" autocomplete="off">
                                 </div>
 
                                 {{-- file_sk_pmk  --}}
@@ -94,7 +99,7 @@
                                     <em>Silakan upload file sk (pdf/doc/docx max 2Mb)</em>
                                     <br>
                                     @if ($pmk->file_sk_pmk)
-                                        <a href="//{{ $pmk->file_sk_pmk }}" target="_blank">Lihat File SK</a>
+                                        <a href="{{ $pmk->file_sk_pmk }}" target="_blank">Lihat File SK</a>
                                     @endif
                                 </div>
 
@@ -121,7 +126,6 @@
     <script src="{{ asset('assets/plugins/select2/js/select2.min.js') }}"></script>
 
     <script type="text/javascript">
-
         (function() {
             'use strict'
 
