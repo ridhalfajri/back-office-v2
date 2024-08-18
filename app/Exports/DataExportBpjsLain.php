@@ -15,12 +15,10 @@ class DataExportBpjsLain implements FromCollection, WithHeadings
     use Exportable;
 
     private $status;
-    private $daftarBpjs;
 
-    public function __construct($status, $daftarBpjs)
+    public function __construct($status)
     {
         $this->status = $status;
-        $this->daftarBpjs = $daftarBpjs;
     }
 
     /**
@@ -45,17 +43,13 @@ class DataExportBpjsLain implements FromCollection, WithHeadings
             $data->where('pegawai_bpjs_lainnya.status', '=', $this->status);
         }
 
-        if (null != $this->daftarBpjs || '' != $this->daftarBpjs) {
-            $data->where('pegawai_bpjs_lainnya.daftar_ke_bpjs', '=', $this->daftarBpjs);
-        }
-
         return $data->get();
     }
 
     public function headings(): array
     {
         return [
-            'Nama Penanggung (NIP dan NIK)',
+            'Nama Penanggung - NIP - NIK',
             'Nama',
             'NIK',
             'No. KK',

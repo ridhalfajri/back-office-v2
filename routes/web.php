@@ -47,6 +47,7 @@ use App\Http\Controllers\PengajuanRegularBpjsController;
 use App\Http\Controllers\PengajuanTambahanBpjsController;
 use App\Http\Controllers\PegawaiTambahanBpjsController;
 use App\Http\Controllers\PegawaiRegularBpjsController;
+
 use App\Http\Controllers\PegawaiRiwayatUmakController;
 use App\Http\Controllers\PegawaiRekeningController;
 use App\Http\Controllers\PegawaiHirarkiController;
@@ -144,12 +145,12 @@ Route::middleware('auth')->group(function () {
         Route::post('/pegawai-regular-bpjs/datatable', [PegawaiRegularBpjsController::class, 'datatable'])->name('pegawai-regular-bpjs.datatable');
         Route::resource('/pegawai-regular-bpjs', PegawaiRegularBpjsController::class)->except('create', 'store');
         Route::post('/pegawai-regular-bpjs/kirim-bpjs/{pegawai_regular_bpj}', [PegawaiRegularBpjsController::class, 'kirimBpjs'])->name('pegawai-regular-bpjs.kirim-bpjs');
-        Route::get('/export-to-excel/bpjs-regular/{status}/{daftarBpjs}', [PegawaiRegularBpjsController::class, 'exportToExcel'])->name('pegawai-regular-bpjs.export-excel-bpjs');
+        Route::get('/export-to-excel/bpjs-regular/{status}', [PegawaiRegularBpjsController::class, 'exportToExcel'])->name('pegawai-regular-bpjs.export-excel-bpjs');
 
         Route::post('/pegawai-tambahan-bpjs/datatable', [PegawaiTambahanBpjsController::class, 'datatable'])->name('pegawai-tambahan-bpjs.datatable');
         Route::resource('/pegawai-tambahan-bpjs', PegawaiTambahanBpjsController::class)->except('create', 'store');
         Route::post('/pegawai-tambahan-bpjs/kirim-bpjs/{pegawai_tambahan_bpj}', [PegawaiTambahanBpjsController::class, 'kirimBpjs'])->name('pegawai-tambahan-bpjs.kirim-bpjs');
-        Route::get('/export-to-excel/bpjs-tambahan/{status}/{daftarBpjs}', [PegawaiTambahanBpjsController::class, 'exportToExcel'])->name('pegawai-tambahan-bpjs.export-excel-bpjs');
+        Route::get('/export-to-excel/bpjs-tambahan/{status}', [PegawaiTambahanBpjsController::class, 'exportToExcel'])->name('pegawai-tambahan-bpjs.export-excel-bpjs');
     });
 
     Route::prefix('presensi')->group(function () {

@@ -46,6 +46,9 @@ class PengajuanTambahanBpjsController extends Controller
                 if ($data->status == 3) {
                     return 'Disetujui';
                 }
+                if ($data->status == 4) {
+                    return 'Daftar Ke BPJS';
+                }
             })
 
             // ->addColumn('file_pengajuan_pmk', function ($data) {
@@ -129,7 +132,7 @@ class PengajuanTambahanBpjsController extends Controller
                 $bpjs->nik_keluarga = $request->nik_keluarga;
                 $bpjs->no_kk_keluarga = $request->no_kk_keluarga;
                 $bpjs->status_keluarga = $request->status_keluarga;
-                $bpjs->daftar_ke_bpjs = 'N';
+                //$bpjs->daftar_ke_bpjs = 'N';
                 $bpjs->status = 1;
 
                 $bpjs->save();
@@ -235,7 +238,7 @@ class PengajuanTambahanBpjsController extends Controller
                 $pengajuan_tambahan_bpj->no_kk_keluarga = $request->no_kk_keluarga;
                 $pengajuan_tambahan_bpj->status_keluarga = $request->status_keluarga;
 
-                $pengajuan_tambahan_bpj->daftar_ke_bpjs = 'N';
+                //$pengajuan_tambahan_bpj->daftar_ke_bpjs = 'N';
                 $pengajuan_tambahan_bpj->status = 1;
                 $pengajuan_tambahan_bpj->update();
 

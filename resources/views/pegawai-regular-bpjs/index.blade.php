@@ -67,20 +67,11 @@
                                         <option value="1" selected>Pengajuan</option>
                                         <option value="2">Ditolak</option>
                                         <option value="3">Disetujui</option>
+                                        <option value="4">Daftar Ke BPJS</option>
                                     </select>
                                 </div>
                             </div>
 
-                            <div class="col-12 col-lg-6 col-md-6">
-                                <div class="form-group @error('daftarBpjs')has-error @enderror">
-                                    <label class="form-label">Status Daftar BPJS</label>
-                                    <select id="daftarBpjs" name="daftarBpjs" class="form-control">
-                                        {{-- <option value="">--Pilih--</option> --}}
-                                        <option value="N" selected>Tidak</option>
-                                        <option value="Y">Ya</option>
-                                    </select>
-                                </div>
-                            </div>
                         </div>
                     </div>
 
@@ -99,7 +90,6 @@
                                     <th class="font-weight-bold text-dark">NIK</th>
                                     <th class="font-weight-bold text-dark">No. KK</th>
                                     <th class="font-weight-bold text-dark">Status Hubungan<br>Keluarga</th>
-                                    <th class="font-weight-bold text-dark">Daftar Ke<br>BPJS</th>
 
                                     <th class="font-weight-bold text-dark">Status</th>
                                     <th class="font-weight-bold text-dark">Aksi</th>
@@ -115,7 +105,6 @@
                                     <th class="font-weight-bold text-dark">NIK</th>
                                     <th class="font-weight-bold text-dark">No. KK</th>
                                     <th class="font-weight-bold text-dark">Status Hubungan<br>Keluarga</th>
-                                    <th class="font-weight-bold text-dark">Daftar Ke<br>BPJS</th>
 
                                     <th class="font-weight-bold text-dark">Status</th>
                                     <th class="font-weight-bold text-dark">Aksi</th>
@@ -160,11 +149,6 @@
                 width: 'resolve'
             });
 
-            $('#daftarBpjs').select2({
-                width: 'resolve'
-            });
-
-
             table = $('#tbl-data').DataTable({
                 processing: true,
                 destroy: true,
@@ -187,7 +171,6 @@
                         //untuk on change datatable
                         d.unitKerja = $('#unitKerja').val();
                         d.status = $('#status').val();
-                        d.daftarBpjs = $('#daftarBpjs').val();
                     }
                 },
                 columns: [{
@@ -231,11 +214,6 @@
                         class: 'text-center'
                     },
                     {
-                        data: 'daftar_ke_bpjs',
-                        name: 'ptm.daftar_ke_bpjs',
-                        class: 'text-center'
-                    },
-                    {
                         data: 'status',
                         name: 'status',
                         class: 'text-center'
@@ -274,11 +252,6 @@
             });
 
             $('#status').change(function(e) {
-                e.preventDefault();
-                table.ajax.reload();
-            });
-
-            $('#daftarBpjs').change(function(e) {
                 e.preventDefault();
                 table.ajax.reload();
             });
@@ -400,11 +373,9 @@
             $('#exportExcel').on('click', function(e) {
                 e.preventDefault();
                 let status = $("#status").val();
-                let daftarBpjs = $("#daftarBpjs").val();
 
                 window.location.href = '{{ url('approval-bpjs/export-to-excel/bpjs-regular') }}/' +
-                    status + '/' +
-                    daftarBpjs;
+                    status;
 
             });
         });

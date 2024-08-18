@@ -53,6 +53,8 @@
                                         Ditolak
                                     @elseif($bpjs->status == 3)
                                         Disetujui
+                                    @elseif($bpjs->status == 4)
+                                        Daftar Ke BPJS
                                     @else
                                         Tidak Diketahui
                                     @endif

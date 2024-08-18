@@ -42,7 +42,8 @@
                         <em style="color: red">Pengajuan Anggota Keluarga Lain: Anak (ke-4 dst), Orang Tua, atau
                             Mertua.</em>
                         <br>
-                        <em style="color: black">Jika Status Disetujui, Silahkan Cek Berkala Aplikasi Mobile JKN.</em>
+                        <em style="color: black">Jika Status 'Daftar Ke BPJS', Silahkan Cek Berkala Aplikasi Mobile
+                            JKN.</em>
                         <br>
                         <br>
 

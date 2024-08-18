@@ -15,12 +15,10 @@ class DataExportBpjsReg implements FromCollection, WithHeadings
     use Exportable;
 
     private $status;
-    private $daftarBpjs;
 
-    public function __construct($status, $daftarBpjs)
+    public function __construct($status)
     {
         $this->status = $status;
-        $this->daftarBpjs = $daftarBpjs;
     }
 
     /**
@@ -56,10 +54,6 @@ class DataExportBpjsReg implements FromCollection, WithHeadings
 
         if (null != $this->status || '' != $this->status) {
             $data->where('pegawai_bpjs_regular.status', '=', $this->status);
-        }
-
-        if (null != $this->daftarBpjs || '' != $this->daftarBpjs) {
-            $data->where('pegawai_bpjs_regular.daftar_ke_bpjs', '=', $this->daftarBpjs);
         }
 
         return $data->get();

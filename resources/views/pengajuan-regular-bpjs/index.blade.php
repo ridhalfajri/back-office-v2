@@ -39,10 +39,12 @@
                     </div>
 
                     <div class="card-body">
-                        <em style="color: red">Pengajuan Anggota Regular: Pegawai Bersangkutan, Istri, dan Anak (sampai anak
+                        <em style="color: red">Pengajuan Anggota Regular: Pegawai Bersangkutan, Suami/Istri, dan Anak
+                            (sampai anak
                             ke-3).</em>
                         <br>
-                        <em style="color: black">Jika Status Disetujui, Silahkan Cek Berkala Aplikasi Mobile JKN.</em>
+                        <em style="color: black">Jika Status 'Daftar Ke BPJS', Silahkan Cek Berkala Aplikasi Mobile
+                            JKN.</em>
                         <br>
                         <br>
 

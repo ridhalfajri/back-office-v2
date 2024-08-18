@@ -61,6 +61,9 @@ class PengajuanRegularBpjsController extends Controller
                 if ($data->status == 3) {
                     return 'Disetujui';
                 }
+                if ($data->status == 4) {
+                    return 'Daftar Ke BPJS';
+                }
             })
 
             // ->addColumn('file_pengajuan_pmk', function ($data) {
@@ -169,7 +172,7 @@ class PengajuanRegularBpjsController extends Controller
                 $bpjs->nama_faskes = $request->nama_faskes;
                 $bpjs->nama_ibu_kandung = $request->nama_ibu_kandung;
 
-                $bpjs->daftar_ke_bpjs = 'N';
+                //$bpjs->daftar_ke_bpjs = 'N';
                 $bpjs->status = 1;
 
                 $bpjs->save();
@@ -298,7 +301,7 @@ class PengajuanRegularBpjsController extends Controller
                 $pengajuan_regular_bpj->kode_faskes = $request->kode_faskes;
                 $pengajuan_regular_bpj->nama_faskes = $request->nama_faskes;
                 $pengajuan_regular_bpj->nama_ibu_kandung = $request->nama_ibu_kandung;
-                $pengajuan_regular_bpj->daftar_ke_bpjs = 'N';
+                //$pengajuan_regular_bpj->daftar_ke_bpjs = 'N';
 
                 $pengajuan_regular_bpj->status = 1;
                 $pengajuan_regular_bpj->update();

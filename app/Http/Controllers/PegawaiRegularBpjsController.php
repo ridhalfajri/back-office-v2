@@ -45,7 +45,6 @@ class PegawaiRegularBpjsController extends Controller
     {
         $unitKerja = $request->unitKerja;
         $status = $request->status;
-        $daftarBpjs = $request->daftarBpjs;
 
         $data = DB::table('pegawai_bpjs_regular as ptm')
             ->select(
@@ -80,9 +79,9 @@ class PegawaiRegularBpjsController extends Controller
             $data->where('ptm.status', '=', $status);
         }
 
-        if (null != $daftarBpjs || '' != $daftarBpjs) {
-            $data->where('ptm.daftar_ke_bpjs', '=', $daftarBpjs);
-        }
+        // if (null != $daftarBpjs || '' != $daftarBpjs) {
+        //     $data->where('ptm.daftar_ke_bpjs', '=', $daftarBpjs);
+        // }
 
         if (null != $unitKerja || '' != $unitKerja) {
             $data->where('uk.id', '=', $unitKerja);
@@ -123,6 +122,9 @@ class PegawaiRegularBpjsController extends Controller
                 if ($data->status == 3) {
                     return 'Disetujui';
                 }
+                if ($data->status == 4) {
+                    return 'Daftar Ke BPJS';
+                }
             })
 
             ->addColumn('aksi', 'pegawai-regular-bpjs.aksi')
@@ -157,7 +159,7 @@ class PegawaiRegularBpjsController extends Controller
         $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
         $this->authorize('admin_sdmoh', $kabiro);
 
-        $title = 'Persetujuan BPJS Regular';
+        $title = 'Ubah Persetujuan BPJS Regular';
 
         $pegawai = DB::table('pegawai_bpjs_regular as ptm')
             ->select(
@@ -210,17 +212,17 @@ class PegawaiRegularBpjsController extends Controller
             //jika button submit atau jika button tolak
             if ($request->button_clicked == "setuju") {
                 $pegawai_regular_bpj->status = 3;
-                $pegawai_regular_bpj->is_active = 1;
+                //$pegawai_regular_bpj->is_active = 1;
                 $pegawai_regular_bpj->keterangan_tolak = '';
             }
 
             if ($request->button_clicked == "tolak") {
                 $pegawai_regular_bpj->status = 2;
-                $pegawai_regular_bpj->is_active = 0;
+                //$pegawai_regular_bpj->is_active = 0;
                 $pegawai_regular_bpj->keterangan_tolak = $request->keterangan_tolak;
             }
 
-            $pegawai_regular_bpj->daftar_ke_bpjs = 'N';
+            //$pegawai_regular_bpj->daftar_ke_bpjs = 'N';
             $pegawai_regular_bpj->update();
 
             // if ($request->file('file_kartu_bpjs')) {
@@ -294,7 +296,7 @@ class PegawaiRegularBpjsController extends Controller
         DB::beginTransaction();
         try {
             $pegawai_regular_bpj->update([
-                'daftar_ke_bpjs' => 'Y'
+                'status' => 4
             ]);
 
             $response['status'] = [
@@ -323,7 +325,7 @@ class PegawaiRegularBpjsController extends Controller
         }
     }
 
-    public function exportToExcel($status, $daftarBpjs)
+    public function exportToExcel($status)
     {
         try {
             $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
@@ -336,11 +338,13 @@ class PegawaiRegularBpjsController extends Controller
                 $statusName = 'Ditolak';
             } else if ($status == 3) {
                 $statusName = 'Disetujui';
+            } else if ($status == 4) {
+                $statusName = 'Daftar-Ke-BPJS';
             }
 
-            $fileName = 'BPJS-Regular' . '_' . $statusName . '_Daftar-' . $daftarBpjs . '_' . Carbon::now() . '.xlsx';
+            $fileName = 'BPJS-Regular' . '_' . $statusName . '_' . Carbon::now() . '.xlsx';
 
-            return Excel::download(new DataExportBpjsReg($status, $daftarBpjs), $fileName);
+            return Excel::download(new DataExportBpjsReg($status), $fileName);
         } catch (\Exception $e) {
             Log::error($e->getMessage(), ['Export data excel gagal di method exportToExcel pada PegawaiRegularBpjsController!']);
         }

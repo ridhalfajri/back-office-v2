@@ -168,6 +168,7 @@
                                         value="@if ($bpjs->status == 1) Pengajuan
                                                @elseif($bpjs->status == 2) Ditolak
                                                @elseif($bpjs->status == 3) Disetujui
+                                               @elseif($bpjs->status == 4) Daftar Ke BPJS
                                                @else Tidak Diketahui @endif"
                                         disabled class="form-control" required="" maxlength="50" placeholder=""
                                         autocomplete="off">
@@ -183,16 +184,12 @@
                             </button>
                         </a>
 
-                        @if ($bpjs->daftar_ke_bpjs == 'N')
-                            <button type="submit" id="setuju-btn"
-                                class="btn btn-primary btn-sm waves-effect waves-light">
-                                <i class="fa fa-check text-white"></i> Setujui
-                            </button>
-                            <button type="submit" id="tolak-btn"
-                                class="btn btn-secondary btn-sm waves-effect waves-light">
-                                <i class="fa fa-close text-white"></i> Tolak
-                            </button>
-                        @endif
+                        <button type="submit" id="setuju-btn" class="btn btn-primary btn-sm waves-effect waves-light">
+                            <i class="fa fa-check text-white"></i> Setujui
+                        </button>
+                        <button type="submit" id="tolak-btn" class="btn btn-secondary btn-sm waves-effect waves-light">
+                            <i class="fa fa-close text-white"></i> Tolak
+                        </button>
                     </form>
                 </div>
             </div>

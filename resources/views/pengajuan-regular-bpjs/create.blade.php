@@ -42,7 +42,7 @@
                         @csrf
                         <div class="row clearfix">
                             <div class="col-12 col-lg-6 col-md-6">
-                                <p style="color: red">Pengajuan Anggota Regular: Pegawai Bersangkutan, Istri, dan Anak
+                                <p style="color: red">Pengajuan Anggota Regular: Pegawai Bersangkutan, Suami/Istri, dan Anak
                                     (sampai anak
                                     ke-3).</p>
                                 <p style="color: black">Lihat Kode dan Nama Faskes TK I: <a
