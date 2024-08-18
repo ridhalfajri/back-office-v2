@@ -47,6 +47,7 @@ use App\Http\Controllers\PengajuanRegularBpjsController;
 use App\Http\Controllers\PengajuanTambahanBpjsController;
 use App\Http\Controllers\PegawaiTambahanBpjsController;
 use App\Http\Controllers\PegawaiRegularBpjsController;
+use App\Http\Controllers\PengajuanTunjanganKeluargaController;
 
 use App\Http\Controllers\PegawaiRiwayatUmakController;
 use App\Http\Controllers\PegawaiRekeningController;
@@ -140,6 +141,9 @@ Route::middleware('auth')->group(function () {
         Route::post('/pengajuan-regular-bpjs/datatable', [PengajuanRegularBpjsController::class, 'datatable'])->name('pengajuan-regular-bpjs.datatable');
         Route::resource('/pengajuan-regular-bpjs', PengajuanRegularBpjsController::class);
     });
+
+    Route::post('/pengajuan-tunjangan-keluarga/datatable', [PengajuanTunjanganKeluargaController::class, 'datatable'])->name('pengajuan-tunjangan-keluarga.datatable');
+    Route::resource('/pengajuan-tunjangan-keluarga', PengajuanTunjanganKeluargaController::class);
 
     Route::prefix('approval-bpjs')->group(function () {
         Route::post('/pegawai-regular-bpjs/datatable', [PegawaiRegularBpjsController::class, 'datatable'])->name('pegawai-regular-bpjs.datatable');
@@ -335,13 +339,6 @@ Route::middleware('auth')->group(function () {
                 'destroy' => 'pegawai.destroy',
             ]
         ])->parameters(['' => 'id'])->only(['index', 'show', 'edit', 'update']);
-
-
-
-        //Pengajuan Peninjauan Masa Kerja
-        //Route::resource('/pengajuan-mk', PegawaiPengajuanMk::class);
-        //Route::post('/pengajuan-mk/datatable', [PegawaiPengajuanMk::class, 'datatable'])->name('pengajuan-mk.datatable');
-
     });
 
     Route::get('/esselon2/pegawai', [PegawaiController::class, 'index_esselon'])->name('pegawai.index-esselon');

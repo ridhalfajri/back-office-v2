@@ -123,7 +123,7 @@
                                     <em style="color: black">Silakan upload file pengajuan bpjs (rar/zip max 50Mb)</em>
                                     <br>
                                     <em style="color: red">Format nama file:
-                                        Pengajuan-BPJS-Keluarga-Lain(STATUS KELUARGA)_(NAMA)_(NIP)_(UNIT KERJA)</em>
+                                        Pengajuan-BPJS-Keluarga-Lain_(STATUS KELUARGA)_(NAMA)_(NIP)_(UNIT KERJA)</em>
                                     <br>
                                     <br>
                                     <em style="color: black">Untuk Pengajuan Anak: file yang di-upload (1. Surat Kuasa, 2.

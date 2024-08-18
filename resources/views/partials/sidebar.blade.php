@@ -78,6 +78,11 @@
             </ul>
         </li>
 
+        <li class="{{ Request::is('pengajuan-tunjangan-keluarga*') ? 'active' : '' }}"><a
+                href="{{ route('pengajuan-tunjangan-keluarga.index') }}"><i class="icon-wallet"></i><span>Pengajuan
+                    Pengajuan Tunjangan Keluarga (KP 4)</span></a>
+        </li>
+
         <li class="{{ Request::is('grade-tukin*') ? 'active' : '' }}"><a href="{{ route('grade-tukin.index') }}"><i
                     class="icon-layers"></i><span>Info Grade Tukin</span></a>
         </li>

@@ -10,7 +10,8 @@
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="{{ route('dashboard') }}"><i class="fa fa-home"></i></a></li>
-            <li class="breadcrumb-item"><a href="{{ route('pengajuan-regular-bpjs.index') }}">Pengajuan BPJS Regular</a>
+            <li class="breadcrumb-item"><a href="{{ route('pengajuan-tunjangan-keluarga.index') }}">Pengajuan Tunjangan
+                    Keluarga</a>
             </li>
             <li class="breadcrumb-item active" aria-current="page">{{ $title }}</li>
         </ol>
@@ -37,47 +38,51 @@
                     @endif
 
                     <form class="needs-validation" id="form-pbl" method="post"
-                        action="{{ route('pengajuan-regular-bpjs.store') }}" accept-charset="utf-8"
+                        action="{{ route('pengajuan-tunjangan-keluarga.store') }}" accept-charset="utf-8"
                         enctype="multipart/form-data" novalidate>
                         @csrf
                         <div class="row clearfix">
                             <div class="col-12 col-lg-6 col-md-6">
-                                <p style="color: red">Pengajuan Anggota Regular: Pegawai Bersangkutan, Suami/Istri, dan Anak
-                                    (sampai anak
-                                    ke-3).</p>
-                                <p style="color: black">Lihat Kode dan Nama Faskes TK I: <a
-                                        href="https://bit.ly/FaskesBPJS2020" target="_blank">Download
+                                <p style="color: red">Pengajuan Tunjangan Keluarga Lain: Istri/Suami, Anak.</p>
+                                <p style="color: black">Lihat dokumen yang harus diisi untuk pengajuan istri/suami: <a
+                                        href="{{ asset('assets/Form_Isi_KP4_Istri-Suami.zip') }}" target="_blank">Download
                                         File</a>
                                 </p>
+                                <p style="color: black">Lihat dokumen yang harus diisi untuk pengajuan anak: <a
+                                        href="{{ asset('assets/Form_Isi_KP4_Anak.zip') }}" target="_blank">Download
+                                        File</a>
+                                </p>
+                                <br>
+                                <p style="color: brown">Untuk Pengajuan Istri/Suami: file yang di-upload (1. Nodin
+                                    Permohonan dari Unit Kerja, 2. Form Tunjangan Keluarga (KP 4), 3. Laporan Perkawinan
+                                    Pertama, 4. Daftar Isian Keluarga, 5. KK, 6. Surat/Akta Nikah, 7. KTP Istri/Suami,
+                                    8. Pas Foto Suami/Istri)</p>
+                                <p style="color: brown">Untuk Pengajuan Anak: file yang di-upload (1. Nodin
+                                    Permohonan dari Unit Kerja, 2. Form Tunjangan Keluarga (KP 4), 3. Daftar Isian
+                                    Keluarga, 4. KK, 5. Surat/Akta Nikah, 6. Akta Kelahiran Anak)
+                                </p>
 
-                                <div class="form-group @error('kode_hub_keluarga')has-error @enderror">
+                                <div class="form-group @error('status_keluarga')has-error @enderror">
                                     <label>Status Keluarga <span class="text-danger"><sup>*</sup></span></label>
-                                    <select id="kode_hub_keluarga" name="kode_hub_keluarga" class="form-control">
+                                    <select id="status_keluarga" name="status_keluarga" class="form-control">
                                         <option value="">--Pilih--</option>
-                                        @if (old('kode_hub_keluarga') == '1')
-                                            <option value="1" selected>Peserta</option>
+                                        @if (old('status_keluarga') == 'Istri')
+                                            <option value="Istri" selected>Istri</option>
                                         @else
-                                            <option value="1">Peserta</option>
+                                            <option value="Istri">Istri</option>
                                         @endif
 
-                                        @if (old('kode_hub_keluarga') == '2')
-                                            <option value="2" selected>Istri</option>
+                                        @if (old('status_keluarga') == 'Suami')
+                                            <option value="Suami" selected>Suami</option>
                                         @else
-                                            <option value="2">Istri</option>
+                                            <option value="Suami">Suami</option>
                                         @endif
 
-                                        @if (old('kode_hub_keluarga') == '3')
-                                            <option value="3" selected>Suami</option>
+                                        @if (old('status_keluarga') == 'Anak')
+                                            <option value="Anak" selected>Anak</option>
                                         @else
-                                            <option value="3">Suami</option>
+                                            <option value="Anak">Anak</option>
                                         @endif
-
-                                        @if (old('kode_hub_keluarga') == '4')
-                                            <option value="4" selected>Anak</option>
-                                        @else
-                                            <option value="4">Anak</option>
-                                        @endif
-
                                     </select>
                                 </div>
 
@@ -91,7 +96,7 @@
                                 <div class="form-group @error('nik')has-error @enderror">
                                     <label>NIK <span class="text-danger"><sup>*</sup></span></label>
                                     <input type="text" name="nik" id="nik" value="{{ old('nik') }}"
-                                        class="form-control" required="" maxlength="50" placeholder="NIK"
+                                        class="form-control" required="" ide maxlength="50" placeholder="NIK"
                                         autocomplete="off">
                                 </div>
 
@@ -108,79 +113,41 @@
                                         id="tgl_lahir" name="tgl_lahir" value="{{ old('tgl_lahir') }}">
                                 </div>
 
-                                <div class="form-group @error('alamat')has-error @enderror">
-                                    <label>Alamat Lengkap (Jl, RT/RW, Kel, Kec, Kode Pos) <span
+                                <div class="form-group @error('tgl_perkawinan')has-error @enderror">
+                                    <label>Tanggal Perkawinan (Jika Memilih Istri/Suami) <span
                                             class="text-danger"><sup>*</sup></span></label>
-                                    <input type="text" name="alamat" id="alamat" value="{{ old('alamat') }}"
-                                        class="form-control" required="" placeholder="Alamat Lengkap" autocomplete="off">
-                                </div>
-                            </div>
-
-                            <div class="col-12 col-lg-6 col-md-6">
-                                <p style="color: black; visibility: hidden;">hidden utk css
-                                </p>
-                                <p style="color: black; visibility: hidden;">hidden utk css
-                                </p>
-
-                                <div class="form-group @error('email')has-error @enderror">
-                                    <label>Email <span class="text-danger"><sup>*</sup></span></label>
-                                    <input type="email" name="email" id="email" value="{{ old('email') }}"
-                                        class="form-control" required="" maxlength="255" placeholder="Email"
-                                        autocomplete="off">
+                                    <input type="date" data-date-format="YYYY MMMM DD" class="form-control floating"
+                                        id="tgl_perkawinan" name="tgl_perkawinan" value="{{ old('tgl_perkawinan') }}">
                                 </div>
 
-                                <div class="form-group @error('no_telepon')has-error @enderror">
-                                    <label>No. Telepon <span class="text-danger"><sup>*</sup></span></label>
-                                    <input type="text" name="no_telepon" id="no_telepon"
-                                        value="{{ old('no_telepon') }}" class="form-control" required=""
-                                        maxlength="50" placeholder="No. Telepon" autocomplete="off">
-                                </div>
-
-                                <div class="form-group @error('kode_faskes')has-error @enderror">
-                                    <label>Kode Faskes TK I <span class="text-danger"><sup>*</sup></span></label>
-                                    <input type="text" name="kode_faskes" id="kode_faskes"
-                                        value="{{ old('kode_faskes') }}" class="form-control" required=""
-                                        maxlength="50" placeholder="Kode Faskes" autocomplete="off">
-                                </div>
-
-                                <div class="form-group @error('nama_faskes')has-error @enderror">
-                                    <label>Nama Faskes TK I <span class="text-danger"><sup>*</sup></span></label>
-                                    <input type="text" name="nama_faskes" id="nama_faskes"
-                                        value="{{ old('nama_faskes') }}" class="form-control" required=""
-                                        maxlength="255" placeholder="Nama Faskes" autocomplete="off">
-                                </div>
-
-                                <div class="form-group @error('nama_ibu_kandung')has-error @enderror">
-                                    <label>Nama Ibu Kandung <span class="text-danger"><sup>*</sup></span></label>
-                                    <input type="text" name="nama_ibu_kandung" id="nama_ibu_kandung"
-                                        value="{{ old('nama_ibu_kandung') }}" class="form-control" required=""
-                                        maxlength="255" placeholder="Nama Ibu Kandung" autocomplete="off">
-                                </div>
-
-                                <div class="form-group @error('file_pengajuan_bpjs_regular')has-error @enderror">
-                                    <label>Upload File Pengajuan BPJS Regular <span
+                                <div class="form-group @error('file_pengajuan_kp')has-error @enderror">
+                                    <label>Upload File Pengajuan Tunjangan Keluarga <span
                                             class="text-danger"><sup>*</sup></span></label>
-                                    <input class="form-control fileClass" type="file" id="file_pengajuan_bpjs_regular"
-                                        name="file_pengajuan_bpjs_regular">
+                                    <input class="form-control fileClass" type="file" id="file_pengajuan_kp"
+                                        name="file_pengajuan_kp">
 
-                                    <em style="color: black">Silakan upload file pengajuan bpjs (rar/zip max 50Mb)</em>
+                                    <em style="color: black">Silakan upload file pengajuan tunjangan (rar/zip max
+                                        50Mb)</em>
                                     <br>
                                     <em style="color: red">Format nama file:
-                                        Pengajuan-BPJS-Regular_(STATUS KELUARGA)_(NAMA)_(NIP)_(UNIT KERJA)</em>
+                                        Pengajuan-Tunjangan-Keluarga_(STATUS KELUARGA)_(NAMA)_(NIP)_(UNIT KERJA)</em>
                                     <br>
                                     <br>
-                                    <em style="color: black">Untuk Pengajuan Anak: file yang di-upload (1. KK, 2. Akte
-                                        Lahir)</em>
-                                    <br>
-                                    <em style="color: black">Untuk Pengajuan Istri: file yang di-upload (1. KK, 2.
-                                        Surat Nikah)
-                                    </em>
+                                    <em style="color: red">Note: 'File Form Tunjangan Keluarga (KP 4), Laporan
+                                        Perkawinan
+                                        Pertama, dan Daftar Isian Keluarga yg sudah di-download dan diisi',
+                                        dimasukkan ke
+                                        file
+                                        rar/zip
+                                        dalam bentuk '.doc/.docx' (bukan .pdf atau yg lain)</em>
+
                                 </div>
+
                             </div>
 
                         </div>
 
-                        <a href="{{ route('pengajuan-regular-bpjs.index') }}">
+                        <a href="{{ route('pengajuan-tunjangan-keluarga.index') }}">
                             <button type="button" class="btn btn-sm btn-danger waves-effect waves-light">
                                 Kembali
                             </button>
@@ -199,7 +166,7 @@
     <script src="{{ asset('assets/plugins/select2/js/select2.min.js') }}"></script>
 
     <script type="text/javascript">
-        $('#kode_hub_keluarga').select2({
+        $('#status_keluarga').select2({
             width: 'resolve'
         });
 

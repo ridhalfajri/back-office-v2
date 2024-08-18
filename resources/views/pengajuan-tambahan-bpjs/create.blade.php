@@ -96,47 +96,6 @@
                                         maxlength="50" placeholder="No. KK Keluarga" autocomplete="off">
                                 </div>
 
-                                {{-- <div class="form-group @error('total_orang_tua')has-error @enderror">
-                                    <label>Total Orang Tua <span class="text-danger"><sup>*</sup></span></label>
-                                    <input type="number" name="total_orang_tua" id="total_orang_tua"
-                                        value="{{ old('total_orang_tua') }}" class="form-control" required=""
-                                        maxlength="100" placeholder="Total orang tua" autocomplete="off">
-                                </div>
-
-                                <div class="form-group @error('total_mertua')has-error @enderror">
-                                    <label>Total Mertua <span class="text-danger"><sup>*</sup></span></label>
-                                    <input type="number" name="total_mertua" id="total_mertua"
-                                        value="{{ old('total_mertua') }}" class="form-control" required=""
-                                        maxlength="100" placeholder="Total mertua" autocomplete="off">
-                                </div>
-
-                                <div class="form-group @error('total_kelebihan_anak')has-error @enderror">
-                                    <label>Total Anak <span class="text-danger"><sup>*</sup></span></label>
-                                    <input type="number" name="total_kelebihan_anak" id="total_kelebihan_anak"
-                                        value="{{ old('total_kelebihan_anak') }}" class="form-control" required=""
-                                        maxlength="100" placeholder="Total anak" autocomplete="off">
-                                </div> --}}
-
-                                {{-- <div class="form-group @error('keterangan_orang_tua')has-error @enderror">
-                                    <label>Keterangan Orang Tua <span class="text-danger"><sup>*</sup></span></label>
-                                    <textarea name="keterangan_orang_tua" id="keterangan_orang_tua" rows="2"
-                                        class="form-control form-control-plaintext"
-                                        placeholder="Keterangan data orang tua (no kk, nik, nama, ttl, no hp, email)" autocomplete="off">{{ old('keterangan_orang_tua') }}</textarea>
-                                </div>
-
-                                <div class="form-group @error('keterangan_mertua')has-error @enderror">
-                                    <label>Keterangan Mertua <span class="text-danger"><sup>*</sup></span></label>
-                                    <textarea name="keterangan_mertua" id="keterangan_mertua" rows="2" class="form-control form-control-plaintext"
-                                        placeholder="Keterangan data mertua (no kk, nik, nama, ttl, no hp, email)" autocomplete="off">{{ old('keterangan_mertua') }}</textarea>
-                                </div>
-
-                                <div class="form-group @error('keterangan_kelebihan_anak')has-error @enderror">
-                                    <label>Keterangan Anak <span class="text-danger"><sup>*</sup></span></label>
-                                    <textarea name="keterangan_kelebihan_anak" id="keterangan_kelebihan_anak" rows="2"
-                                        class="form-control form-control-plaintext" placeholder="Keterangan data anak (no kk, nik, nama, ttl, no hp, email)"
-                                        autocomplete="off">{{ old('keterangan_kelebihan_anak') }}</textarea>
-                                </div> --}}
-
                                 <div class="form-group @error('file_pengajuan_bpjs')has-error @enderror">
                                     <label>Upload File Pengajuan BPJS Keluarga Lain <span
                                             class="text-danger"><sup>*</sup></span></label>
@@ -146,7 +105,7 @@
                                     <em style="color: black">Silakan upload file pengajuan bpjs (rar/zip max 50Mb)</em>
                                     <br>
                                     <em style="color: red">Format nama file:
-                                        Pengajuan-BPJS-Keluarga-Lain-(STATUS KELUARGA)_(NAMA)_(NIP)_(UNIT KERJA)</em>
+                                        Pengajuan-BPJS-Keluarga-Lain_(STATUS KELUARGA)_(NAMA)_(NIP)_(UNIT KERJA)</em>
                                     <br>
                                     <br>
                                     <em style="color: black">Untuk Pengajuan Anak: file yang di-upload (1. Surat Kuasa, 2.
