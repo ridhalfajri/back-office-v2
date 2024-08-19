@@ -242,7 +242,7 @@
                                         <div class="col-sm-6 col-md-6">
                                             <div class="form-group">
                                                 <label class="form-label">No BPJS</label>
-                                                <input type="text" class="form-control" placeholder="Tanggal Wafat"
+                                                <input type="text" class="form-control" placeholder="No BPJS"
                                                     disabled="" value="{{ $pegawai->no_bpjs }}">
                                             </div>
                                         </div>
