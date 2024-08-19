@@ -354,6 +354,9 @@
                         if (err.nik) {
                             $('#error_nik').text(err.nik)
                         }
+                        if (err.error_npwp) {
+                            $('#error_npwp').text(err.error_npwp)
+                        }
                         if (err.nip) {
                             $('#error_nip').text(err.nip)
                         }
@@ -452,6 +455,7 @@
             $('#error_pendidikan_id').text('')
             $('#error_nama').text('')
             $('#error_nik').text('')
+            $('#error_npwp').text('')
             $('#error_tempat_lahir').text('')
             $('#error_tanggal_lahir').text('')
             $('#error_tanggal_kawin').text('')

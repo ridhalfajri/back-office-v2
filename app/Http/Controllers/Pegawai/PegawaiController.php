@@ -249,7 +249,7 @@ class PegawaiController extends Controller
                 'tanggal_berhenti' => 'nullable|date',
                 'no_bpjs' => 'nullable|digits:13',
                 'no_taspen' => 'nullable|max:50',
-                'npwp' => 'nullable|size:16|string',
+                'npwp' => 'nullable|max:16|string',
                 'no_enroll' => 'max:50',
                 'media_kartu_pegawai' => 'nullable|mimes:jpg,png|max:1024',
                 'media_foto_pegawai' => 'nullable|mimes:jpg,png|max:1024'
@@ -288,7 +288,7 @@ class PegawaiController extends Controller
                 //'no_bpjs.required' => 'Nomor BPJS harus diisi',
                 'no_bpjs.digits' => 'Nomor BPJS harus 13 digits',
                 'no_taspen.max' => 'Nomor Taspen maksimal 50 karakter',
-                'npwp.size' => 'NPWP harus 16 karakter',
+                'npwp.max' => 'NPWP max 15 karakter',
                 'npwp.string' => 'NPWP harus string',
                 'no_enroll.max' => 'Nomor Fingerprint maksimal 50 karakter',
                 'media_kartu_pegawai.mimes' => 'Kartu pegawai bertipe jpg atau png',
