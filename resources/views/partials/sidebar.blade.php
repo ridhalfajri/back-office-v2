@@ -79,7 +79,7 @@
         </li>
 
         <li class="{{ Request::is('pengajuan-tunjangan-keluarga*') ? 'active' : '' }}"><a
-                href="{{ route('pengajuan-tunjangan-keluarga.index') }}"><i class="icon-wallet"></i><span>Pengajuan
+                href="{{ route('pengajuan-tunjangan-keluarga.index') }}"><i class="icon-wallet"></i><span>
                     Pengajuan Tunjangan Keluarga (KP 4)</span></a>
         </li>
 
@@ -189,6 +189,10 @@
 
                 </ul>
             </li>
+
+            <li class="{{ Request::is('pegawai-tunjangan-keluarga*') ? 'active' : '' }}"><a
+                    href="{{ route('pegawai-tunjangan-keluarga.index') }}"><i class="icon-wallet"></i><span>Approval
+                        Tunjangan Keluarga (KP 4)</span></a></li>
 
             {{-- MASTER     --}}
             <li class="g_heading">Master Data</li>
@@ -302,6 +306,10 @@
 
                 </ul>
             </li>
+
+            <li class="{{ Request::is('pegawai-tunjangan-keluarga*') ? 'active' : '' }}"><a
+                    href="{{ route('pegawai-tunjangan-keluarga.index') }}"><i class="icon-wallet"></i><span>Approval
+                        Tunjangan Keluarga (KP 4)</span></a></li>
 
             {{-- MASTER     --}}
             <li class="g_heading">Master Data</li>

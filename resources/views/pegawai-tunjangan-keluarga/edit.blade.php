@@ -10,8 +10,8 @@
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="{{ route('dashboard') }}"><i class="fa fa-home"></i></a></li>
-            <li class="breadcrumb-item"><a href="{{ route('pegawai-regular-bpjs.index') }}">Persetujuan BPJS
-                    Regular</a>
+            <li class="breadcrumb-item"><a href="{{ route('pegawai-tunjangan-keluarga.index') }}">Persetujuan Tunjangan
+                    Keluarga</a>
             </li>
             <li class="breadcrumb-item active" aria-current="page">{{ $title }}</li>
         </ol>
@@ -38,7 +38,7 @@
                     @endif
 
                     <form class="needs-validation" id="form-pbl" method="post"
-                        action="{{ route('pegawai-regular-bpjs.update', $bpjs->id) }}" accept-charset="utf-8"
+                        action="{{ route('pegawai-tunjangan-keluarga.update', $ptk->id) }}" accept-charset="utf-8"
                         enctype="multipart/form-data" novalidate>
                         @csrf
                         @method('PATCH')
@@ -52,35 +52,32 @@
                                         autocomplete="off">
                                 </div>
 
-                                <div class="form-group @error('kode_hub_keluarga')has-error @enderror">
+                                <div class="form-group @error('status_keluarga')has-error @enderror">
                                     <label>Status Keluarga </label>
-                                    <input type="text" name="kode_hub_keluarga" id="kode_hub_keluarga"
-                                        value="@if ($bpjs->kode_hub_keluarga == 1) Peserta
-                                               @elseif($bpjs->kode_hub_keluarga == 2) Istri
-                                               @elseif($bpjs->kode_hub_keluarga == 3) Suami
-                                               @elseif($bpjs->kode_hub_keluarga == 4) Anak
-                                               @else Tidak Diketahui @endif"
-                                        disabled class="form-control" required="" placeholder="" autocomplete="off">
+                                    <input type="text" name="status_keluarga" id="status_keluarga"
+                                        value="{{ old('status_keluarga') ?? $ptk->status_keluarga }}" disabled
+                                        class="form-control" required="" maxlength="50" placeholder=""
+                                        autocomplete="off">
                                 </div>
 
                                 <div class="form-group @error('nama')has-error @enderror">
                                     <label>Nama </label>
                                     <input type="text" name="nama" id="nama"
-                                        value="{{ old('nama') ?? $bpjs->nama }}" disabled class="form-control"
+                                        value="{{ old('nama') ?? $ptk->nama }}" disabled class="form-control"
                                         required="" maxlength="255" placeholder="" autocomplete="off">
                                 </div>
 
                                 <div class="form-group @error('nik')has-error @enderror">
                                     <label>NIK </label>
                                     <input type="text" name="nik" id="nik"
-                                        value="{{ old('nik') ?? $bpjs->nik }}" disabled class="form-control" required=""
+                                        value="{{ old('nik') ?? $ptk->nik }}" disabled class="form-control" required=""
                                         maxlength="50" placeholder="" autocomplete="off">
                                 </div>
 
                                 <div class="form-group @error('no_kk')has-error @enderror">
                                     <label>No. KK </label>
                                     <input type="text" name="no_kk" id="no_kk"
-                                        value="{{ old('no_kk') ?? $bpjs->no_kk }}" disabled class="form-control"
+                                        value="{{ old('no_kk') ?? $ptk->no_kk }}" disabled class="form-control"
                                         required="" maxlength="50" placeholder="" autocomplete="off">
                                 </div>
 
@@ -88,97 +85,64 @@
                                     <label>Tanggal Lahir </label>
                                     <input type="date" data-date-format="YYYY MMMM DD" class="form-control floating"
                                         disabled id="tgl_lahir" name="tgl_lahir"
-                                        value="{{ old('tgl_lahir') ?? $bpjs->tgl_lahir }}">
+                                        value="{{ old('tgl_lahir') ?? $ptk->tgl_lahir }}">
                                 </div>
 
-                                <div class="form-group @error('alamat')has-error @enderror">
-                                    <label>Alamat Lengkap </label>
-                                    <input type="text" name="alamat" id="alamat"
-                                        value="{{ old('alamat') ?? $bpjs->alamat }}" disabled class="form-control"
-                                        required="" placeholder="" autocomplete="off">
-                                </div>
+                                @if ($ptk->status_keluarga != 'Anak')
+                                    <div class="form-group @error('tgl_perkawinan')has-error @enderror">
+                                        <label>Tanggal Perkawinan </label>
+                                        <input type="date" data-date-format="YYYY MMMM DD" class="form-control floating"
+                                            disabled id="tgl_perkawinan" name="tgl_perkawinan"
+                                            value="{{ old('tgl_perkawinan') ?? $ptk->tgl_perkawinan }}">
+                                    </div>
+                                @endif
 
-                                <div class="form-group @error('keterangan_tolak')has-error @enderror">
-                                    <label>Keterangan Ditolak <span class="text-danger"><sup></sup></span></label>
-                                    <input type="text" name="keterangan_tolak" id="keterangan_tolak"
-                                        value="{{ old('keterangan_tolak') ?? $bpjs->keterangan_tolak }}"
-                                        class="form-control" maxlength="255" placeholder="Keterangan ditolak"
-                                        autocomplete="off">
-                                </div>
-                            </div>
-
-                            <div class="col-12 col-lg-6 col-md-6">
-                                <div class="form-group @error('email')has-error @enderror">
-                                    <label>Email </label>
-                                    <input type="email" name="email" id="email"
-                                        value="{{ old('email') ?? $bpjs->email }}" class="form-control" required=""
-                                        disabled maxlength="255" placeholder="Email" autocomplete="off">
-                                </div>
-
-                                <div class="form-group @error('no_telepon')has-error @enderror">
-                                    <label>No. Telepon </label>
-                                    <input type="text" name="no_telepon" id="no_telepon"
-                                        value="{{ old('no_telepon') ?? $bpjs->no_telepon }}" class="form-control"
-                                        disabled required="" maxlength="50" placeholder="No. Telepon"
-                                        autocomplete="off">
-                                </div>
-
-                                <div class="form-group @error('kode_faskes')has-error @enderror">
-                                    <label>Kode Faskes TK I </label>
-                                    <input type="text" name="kode_faskes" id="kode_faskes"
-                                        value="{{ old('kode_faskes') ?? $bpjs->kode_faskes }}" class="form-control"
-                                        disabled required="" maxlength="50" placeholder="Kode Faskes"
-                                        autocomplete="off">
-                                </div>
-
-                                <div class="form-group @error('nama_faskes')has-error @enderror">
-                                    <label>Nama Faskes TK I </label>
-                                    <input type="text" name="nama_faskes" id="nama_faskes"
-                                        value="{{ old('nama_faskes') ?? $bpjs->nama_faskes }}" class="form-control"
-                                        disabled required="" maxlength="255" placeholder="Nama Faskes"
-                                        autocomplete="off">
-                                </div>
-
-                                <div class="form-group @error('nama_ibu_kandung')has-error @enderror">
-                                    <label>Nama Ibu Kandung </label>
-                                    <input type="text" name="nama_ibu_kandung" id="nama_ibu_kandung"
-                                        value="{{ old('nama_ibu_kandung') ?? $bpjs->nama_ibu_kandung }}" disabled
-                                        class="form-control" required="" maxlength="255"
-                                        placeholder="Nama Ibu Kandung" autocomplete="off">
-                                </div>
-
-                                {{-- file_kartu_bpjs  --}}
-                                <div class="form-group @error('file_pengajuan_bpjs_regular')has-error @enderror">
-                                    <label>File Pengajuan BPJS Regular </label>
+                                <div class="form-group @error('file_pengajuan_kp')has-error @enderror">
+                                    <label>File Pengajuan Tunjangan Keluarga </label>
                                     {{-- <input class="form-control fileClass" type="file" id="file_kartu_bpjs"
                                         name="file_kartu_bpjs">
                                     <em>Silakan upload file kartu BPJS (pdf/doc/docx/rar/zip max 20Mb)</em>
                                     <br> --}}
-                                    @if ($bpjs->file_pengajuan_bpjs_regular)
-                                        <a href="{{ $bpjs->file_pengajuan_bpjs_regular }}" target="_blank">Download File
-                                            Pengajuan</a>
+                                    <br>
+                                    @if ($ptk->file_pengajuan_kp)
+                                        <a href="{{ $ptk->file_pengajuan_kp }}" target="_blank">Download File
+                                            Pengajuan KP 4</a>
                                     @endif
-                                    <input type="text" style="visibility: hidden" disabled class="form-control"
-                                        autocomplete="off">
                                 </div>
 
                                 <div class="form-group @error('status')has-error @enderror">
                                     <label>Status Saat Ini </label>
                                     <input type="text" name="status" id="status"
-                                        value="@if ($bpjs->status == 1) Pengajuan
-                                               @elseif($bpjs->status == 2) Ditolak
-                                               @elseif($bpjs->status == 3) Disetujui
-                                               @elseif($bpjs->status == 4) Daftar Ke BPJS
+                                        value="@if ($ptk->status == 1) Pengajuan
+                                               @elseif($ptk->status == 2) Ditolak
+                                               @elseif($ptk->status == 3) Disetujui
                                                @else Tidak Diketahui @endif"
                                         disabled class="form-control" required="" maxlength="50" placeholder=""
                                         autocomplete="off">
                                 </div>
 
-                            </div>
+                                <div class="form-group @error('keterangan_tolak')has-error @enderror">
+                                    <label>Keterangan Ditolak <span class="text-danger"><sup></sup></span></label>
+                                    <input type="text" name="keterangan_tolak" id="keterangan_tolak"
+                                        value="{{ old('keterangan_tolak') ?? $ptk->keterangan_tolak }}"
+                                        class="form-control" maxlength="255" placeholder="Keterangan ditolak"
+                                        autocomplete="off">
+                                </div>
 
+                                <div class="form-group @error('file_kp_ttd')has-error @enderror">
+                                    <label>Upload File KP 4 yang Di-TTD (Jika Disetujui) </label>
+                                    <input class="form-control fileClass" type="file" id="file_kp_ttd"
+                                        name="file_kp_ttd">
+
+                                    @if ($ptk->file_kp_ttd)
+                                        <a href="{{ $ptk->file_kp_ttd }}" target="_blank">Download</a>
+                                        <br>
+                                    @endif
+                                </div>
+                            </div>
                         </div>
 
-                        <a href="{{ route('pegawai-regular-bpjs.index') }}">
+                        <a href="{{ route('pegawai-tunjangan-keluarga.index') }}">
                             <button type="button" class="btn btn-sm btn-danger waves-effect waves-light">
                                 Kembali
                             </button>
@@ -190,6 +154,7 @@
                         <button type="submit" id="tolak-btn" class="btn btn-secondary btn-sm waves-effect waves-light">
                             <i class="fa fa-close text-white"></i> Tolak
                         </button>
+
                     </form>
                 </div>
             </div>

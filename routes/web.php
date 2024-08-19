@@ -47,7 +47,9 @@ use App\Http\Controllers\PengajuanRegularBpjsController;
 use App\Http\Controllers\PengajuanTambahanBpjsController;
 use App\Http\Controllers\PegawaiTambahanBpjsController;
 use App\Http\Controllers\PegawaiRegularBpjsController;
+
 use App\Http\Controllers\PengajuanTunjanganKeluargaController;
+use App\Http\Controllers\PegawaiTunjanganKeluargaController;
 
 use App\Http\Controllers\PegawaiRiwayatUmakController;
 use App\Http\Controllers\PegawaiRekeningController;
@@ -156,6 +158,9 @@ Route::middleware('auth')->group(function () {
         Route::post('/pegawai-tambahan-bpjs/kirim-bpjs/{pegawai_tambahan_bpj}', [PegawaiTambahanBpjsController::class, 'kirimBpjs'])->name('pegawai-tambahan-bpjs.kirim-bpjs');
         Route::get('/export-to-excel/bpjs-tambahan/{status}', [PegawaiTambahanBpjsController::class, 'exportToExcel'])->name('pegawai-tambahan-bpjs.export-excel-bpjs');
     });
+
+    Route::post('/pegawai-tunjangan-keluarga/datatable', [PegawaiTunjanganKeluargaController::class, 'datatable'])->name('pegawai-tunjangan-keluarga.datatable');
+    Route::resource('/pegawai-tunjangan-keluarga', PegawaiTunjanganKeluargaController::class)->except('create', 'store');
 
     Route::prefix('presensi')->group(function () {
 

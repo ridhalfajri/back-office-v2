@@ -52,6 +52,14 @@
                                         autocomplete="off">
                                 </div>
 
+                                <div class="form-group @error('status_keluarga')has-error @enderror">
+                                    <label>Status Hubungan Keluarga </label>
+                                    <input type="text" name="status_keluarga" id="status_keluarga"
+                                        value="{{ old('status_keluarga') ?? $bpjs->status_keluarga }}" disabled
+                                        class="form-control" required="" maxlength="50" placeholder=""
+                                        autocomplete="off">
+                                </div>
+
                                 <div class="form-group @error('nama_keluarga')has-error @enderror">
                                     <label>Nama Keluarga </label>
                                     <input type="text" name="nama_keluarga" id="nama_keluarga"
@@ -76,17 +84,8 @@
                                         autocomplete="off">
                                 </div>
 
-                                <div class="form-group @error('status_keluarga')has-error @enderror">
-                                    <label>Status Hubungan Keluarga </label>
-                                    <input type="text" name="status_keluarga" id="status_keluarga"
-                                        value="{{ old('status_keluarga') ?? $bpjs->status_keluarga }}" disabled
-                                        class="form-control" required="" maxlength="50" placeholder=""
-                                        autocomplete="off">
-                                </div>
-
-                                {{-- file_kartu_bpjs  --}}
-                                <div class="form-group @error('file_kartu_bpjs')has-error @enderror">
-                                    <label>File Pengajuan BPJS Keluarga Lain: </label>
+                                <div class="form-group @error('file_pengajuan_bpjs')has-error @enderror">
+                                    <label>File Pengajuan BPJS Keluarga Lain </label>
                                     {{-- <input class="form-control fileClass" type="file" id="file_kartu_bpjs"
                                         name="file_kartu_bpjs">
                                     <em>Silakan upload file kartu BPJS (pdf/doc/docx/rar/zip max 20Mb)</em>

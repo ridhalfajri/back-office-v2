@@ -45,11 +45,11 @@
                         <div class="row clearfix">
                             <div class="col-12 col-lg-6 col-md-6">
                                 <p style="color: black">Lihat dokumen yang harus diisi untuk pengajuan istri/suami: <a
-                                        href="{{ asset('assets/Form_Isi_KP4_Istri-Suami.zip') }}" target="_blank">Download
+                                        href="{{ asset('assets/Form_Isian_KP4_Istri-Suami.zip') }}" target="_blank">Download
                                         File</a>
                                 </p>
                                 <p style="color: black">Lihat dokumen yang harus diisi untuk pengajuan anak: <a
-                                        href="{{ asset('assets/Form_Isi_KP4_Anak.zip') }}" target="_blank">Download
+                                        href="{{ asset('assets/Form_Isian_KP4_Anak.zip') }}" target="_blank">Download
                                         File</a>
                                 </p>
                                 <br>
