@@ -28,7 +28,7 @@ class PegawaiTunjanganKeluargaController extends Controller
         $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
         $this->authorize('admin_sdmoh', $kabiro);
 
-        $title = 'Approval Tunjangan Kinerja (KP 4)';
+        $title = 'Approval Tunjangan Kinerja (KP4)';
 
         $dataUnitKerja = DB::table('unit_kerja')
             ->select('*')
@@ -139,7 +139,7 @@ class PegawaiTunjanganKeluargaController extends Controller
         $kabiro = PegawaiRiwayatJabatan::select('pegawai_id')->where('tx_tipe_jabatan_id', 5)->where('is_now', true)->first();
         $this->authorize('admin_sdmoh', $kabiro);
 
-        $title = 'Ubah Persetujuan Tunjangan Kinerja (KP 4)';
+        $title = 'Ubah Persetujuan Tunjangan Kinerja (KP4)';
 
         $pegawai = DB::table('pegawai_tunjangan_keluarga as ptm')
             ->select(

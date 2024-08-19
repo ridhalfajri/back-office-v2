@@ -54,11 +54,11 @@
                                 </p>
                                 <br>
                                 <p style="color: brown">Untuk Pengajuan Istri/Suami: file yang di-upload (1. Nodin
-                                    Permohonan dari Unit Kerja, 2. Form Tunjangan Keluarga (KP 4), 3. Laporan Perkawinan
+                                    Permohonan dari Unit Kerja, 2. Form Tunjangan Keluarga (KP4), 3. Laporan Perkawinan
                                     Pertama, 4. Daftar Isian Keluarga, 5. KK, 6. Surat/Akta Nikah, 7. KTP Istri/Suami,
                                     8. Pas Foto Suami/Istri)</p>
                                 <p style="color: brown">Untuk Pengajuan Anak: file yang di-upload (1. Nodin
-                                    Permohonan dari Unit Kerja, 2. Form Tunjangan Keluarga (KP 4), 3. Daftar Isian
+                                    Permohonan dari Unit Kerja, 2. Form Tunjangan Keluarga (KP4), 3. Daftar Isian
                                     Keluarga, 4. KK, 5. Surat/Akta Nikah, 6. Akta Kelahiran Anak
                                     )
                                 </p>
@@ -153,7 +153,7 @@
                                         Pengajuan-Tunjangan-Keluarga_(STATUS KELUARGA)_(NAMA)_(NIP)_(UNIT KERJA)</em>
                                     <br>
                                     <br>
-                                    <em style="color: red">Note: 'File Form Tunjangan Keluarga (KP 4), Laporan
+                                    <em style="color: red">Note: 'File Form Tunjangan Keluarga (KP4), Laporan
                                         Perkawinan
                                         Pertama, dan Daftar Isian Keluarga yg sudah di-download dan diisi',
                                         dimasukkan ke

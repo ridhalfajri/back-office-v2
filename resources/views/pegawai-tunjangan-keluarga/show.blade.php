@@ -43,14 +43,14 @@
                                 @if ($ptk->file_pengajuan_kp)
                                     <a href="//{{ $ptk->file_pengajuan_kp }}" target="_blank"><i
                                             class="dropdown-icon fa fa-file"></i>Download File Pengajuan Tunjangan Keluarga
-                                        KP 4</a>
+                                        KP4</a>
                                 @endif
                             </div>
 
                             <div class="form-group @error('file_kp_ttd')has-error @enderror">
                                 @if ($ptk->file_kp_ttd)
                                     <a href="{{ $ptk->file_kp_ttd }}" target="_blank"><i
-                                            class="dropdown-icon fa fa-file"></i>Download File KP 4 yang Sudah Di-TTD</a>
+                                            class="dropdown-icon fa fa-file"></i>Download File KP4 yang Sudah Di-TTD</a>
                                 @endif
                             </div>
 

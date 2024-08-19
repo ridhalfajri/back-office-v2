@@ -106,7 +106,7 @@
                                     <br>
                                     @if ($ptk->file_pengajuan_kp)
                                         <a href="{{ $ptk->file_pengajuan_kp }}" target="_blank">Download File
-                                            Pengajuan KP 4</a>
+                                            Pengajuan KP4</a>
                                     @endif
                                 </div>
 
@@ -130,7 +130,7 @@
                                 </div>
 
                                 <div class="form-group @error('file_kp_ttd')has-error @enderror">
-                                    <label>Upload File KP 4 yang Di-TTD (Jika Disetujui) </label>
+                                    <label>Upload File KP4 yang Di-TTD (Jika Disetujui) </label>
                                     <input class="form-control fileClass" type="file" id="file_kp_ttd"
                                         name="file_kp_ttd">
 
