@@ -106,7 +106,7 @@ class PengajuanTambahanBpjsController extends Controller
                 'status_keluarga.required' => 'data status keluarga harus diisi!',
 
                 'file_pengajuan_bpjs.required' => 'data file harus di-upload!',
-                'file_pengajuan_bpjs.mimes' => 'format file sk harus rar/zip!',
+                'file_pengajuan_bpjs.mimes' => 'format file harus rar/zip!',
                 'file_pengajuan_bpjs.max' => 'ukuran file terlalu besar (maksimal file 50Mb)!',
                 'file_pengajuan_bpjs.file' => 'upload data harus berupa file!',
             ]
@@ -212,7 +212,7 @@ class PengajuanTambahanBpjsController extends Controller
                 'no_kk_keluarga.required' => 'data no kk keluarga harus diisi!',
                 'status_keluarga.required' => 'data status keluarga harus diisi!',
 
-                'file_pengajuan_bpjs.mimes' => 'format file sk harus rar/zip!',
+                'file_pengajuan_bpjs.mimes' => 'format file harus rar/zip!',
                 'file_pengajuan_bpjs.max' => 'ukuran file terlalu besar (maksimal file 50Mb)!',
                 'file_pengajuan_bpjs.file' => 'upload data harus berupa file!',
             ]

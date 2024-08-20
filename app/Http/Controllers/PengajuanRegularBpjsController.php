@@ -137,7 +137,7 @@ class PengajuanRegularBpjsController extends Controller
                 'nama_ibu_kandung.required' => 'data nama ibu kandung harus diisi!',
 
                 'file_pengajuan_bpjs_regular.required' => 'data file harus di-upload!',
-                'file_pengajuan_bpjs_regular.mimes' => 'format file sk harus rar/zip!',
+                'file_pengajuan_bpjs_regular.mimes' => 'format file harus rar/zip!',
                 'file_pengajuan_bpjs_regular.max' => 'ukuran file terlalu besar (maksimal file 50Mb)!',
                 'file_pengajuan_bpjs_regular.file' => 'upload data harus berupa file!',
             ]
@@ -268,7 +268,7 @@ class PengajuanRegularBpjsController extends Controller
                 'nama_faskes.required' => 'data nama faskes harus diisi!',
                 'nama_ibu_kandung.required' => 'data nama ibu kandung harus diisi!',
 
-                'file_pengajuan_bpjs_regular.mimes' => 'format file sk harus rar/zip!',
+                'file_pengajuan_bpjs_regular.mimes' => 'format file harus rar/zip!',
                 'file_pengajuan_bpjs_regular.max' => 'ukuran file terlalu besar (maksimal file 50Mb)!',
                 'file_pengajuan_bpjs_regular.file' => 'upload data harus berupa file!',
             ]

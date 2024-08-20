@@ -50,7 +50,7 @@
                             <div class="form-group @error('file_kp_ttd')has-error @enderror">
                                 @if ($ptk->file_kp_ttd)
                                     <a href="{{ $ptk->file_kp_ttd }}" target="_blank"><i
-                                            class="dropdown-icon fa fa-file"></i>Download File KP4</a>
+                                            class="dropdown-icon fa fa-file"></i>Download File KP4 Yang Sudah Di-TTD</a>
                                 @endif
                             </div>
 

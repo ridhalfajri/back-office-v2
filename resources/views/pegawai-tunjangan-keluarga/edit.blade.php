@@ -61,28 +61,28 @@
                                 </div>
 
                                 <div class="form-group @error('nama')has-error @enderror">
-                                    <label>Nama </label>
+                                    <label>Nama Keluarga </label>
                                     <input type="text" name="nama" id="nama"
                                         value="{{ old('nama') ?? $ptk->nama }}" disabled class="form-control"
                                         required="" maxlength="255" placeholder="" autocomplete="off">
                                 </div>
 
                                 <div class="form-group @error('nik')has-error @enderror">
-                                    <label>NIK </label>
+                                    <label>NIK Keluarga </label>
                                     <input type="text" name="nik" id="nik"
                                         value="{{ old('nik') ?? $ptk->nik }}" disabled class="form-control" required=""
                                         maxlength="50" placeholder="" autocomplete="off">
                                 </div>
 
                                 <div class="form-group @error('no_kk')has-error @enderror">
-                                    <label>No. KK </label>
+                                    <label>No. KK Keluarga </label>
                                     <input type="text" name="no_kk" id="no_kk"
                                         value="{{ old('no_kk') ?? $ptk->no_kk }}" disabled class="form-control"
                                         required="" maxlength="50" placeholder="" autocomplete="off">
                                 </div>
 
                                 <div class="form-group @error('tgl_lahir')has-error @enderror">
-                                    <label>Tanggal Lahir </label>
+                                    <label>Tanggal Lahir Keluarga </label>
                                     <input type="date" data-date-format="YYYY MMMM DD" class="form-control floating"
                                         disabled id="tgl_lahir" name="tgl_lahir"
                                         value="{{ old('tgl_lahir') ?? $ptk->tgl_lahir }}">
@@ -90,7 +90,7 @@
 
                                 @if ($ptk->status_keluarga != 'Anak')
                                     <div class="form-group @error('tgl_perkawinan')has-error @enderror">
-                                        <label>Tanggal Perkawinan </label>
+                                        <label>Tanggal Perkawinan (Jika Memilih Istri/Suami) </label>
                                         <input type="date" data-date-format="YYYY MMMM DD" class="form-control floating"
                                             disabled id="tgl_perkawinan" name="tgl_perkawinan"
                                             value="{{ old('tgl_perkawinan') ?? $ptk->tgl_perkawinan }}">
@@ -130,7 +130,7 @@
                                 </div>
 
                                 <div class="form-group @error('file_kp_ttd')has-error @enderror">
-                                    <label>Upload File KP4 yang Di-TTD (Jika Disetujui) </label>
+                                    <label>Upload File KP4 yang Di-TTD (Jika Memilih Setujui) </label>
                                     <input class="form-control fileClass" type="file" id="file_kp_ttd"
                                         name="file_kp_ttd">
 
@@ -138,6 +138,12 @@
                                         <a href="{{ $ptk->file_kp_ttd }}" target="_blank">Download</a>
                                         <br>
                                     @endif
+                                    <br>
+                                    <em style="color: black">Silakan upload file kp4 yang di-ttd (pdf max
+                                        20Mb)</em>
+                                    <br>
+                                    <em style="color: red">Format nama file:
+                                        File-KP4-TTD_(STATUS KELUARGA)_(NAMA)_(NIP)_(UNIT KERJA)</em>
                                 </div>
                             </div>
                         </div>

@@ -192,6 +192,21 @@ class PegawaiTunjanganKeluargaController extends Controller
 
         DB::beginTransaction();
 
+        if ($request->button_clicked == "setuju") {
+            $this->validate(
+                $request,
+                [
+                    'file_kp_ttd' => ['required', 'file', 'mimes:pdf', 'max:20480'],
+                ],
+                [
+                    'file_kp_ttd.required' => 'data file harus di-upload saat menyetujui kp4!',
+                    'file_kp_ttd.mimes' => 'format file harus pdf!',
+                    'file_kp_ttd.max' => 'ukuran file terlalu besar (maksimal file 20Mb)!',
+                    'file_kp_ttd.file' => 'upload data harus berupa file!',
+                ]
+            );
+        }
+
         try {
             //update
             //jika button submit atau jika button tolak

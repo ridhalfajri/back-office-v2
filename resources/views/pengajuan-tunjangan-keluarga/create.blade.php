@@ -87,28 +87,28 @@
                                 </div>
 
                                 <div class="form-group @error('nama')has-error @enderror">
-                                    <label>Nama <span class="text-danger"><sup>*</sup></span></label>
+                                    <label>Nama Keluarga <span class="text-danger"><sup>*</sup></span></label>
                                     <input type="text" name="nama" id="nama" value="{{ old('nama') }}"
                                         class="form-control" required="" maxlength="255" placeholder="Nama"
                                         autocomplete="off">
                                 </div>
 
                                 <div class="form-group @error('nik')has-error @enderror">
-                                    <label>NIK <span class="text-danger"><sup>*</sup></span></label>
+                                    <label>NIK Keluarga <span class="text-danger"><sup>*</sup></span></label>
                                     <input type="text" name="nik" id="nik" value="{{ old('nik') }}"
                                         class="form-control" required="" ide maxlength="50" placeholder="NIK"
                                         autocomplete="off">
                                 </div>
 
                                 <div class="form-group @error('no_kk')has-error @enderror">
-                                    <label>No. KK <span class="text-danger"><sup>*</sup></span></label>
+                                    <label>No. KK Keluarga <span class="text-danger"><sup>*</sup></span></label>
                                     <input type="text" name="no_kk" id="no_kk" value="{{ old('no_kk') }}"
                                         class="form-control" required="" maxlength="50" placeholder="No. KK"
                                         autocomplete="off">
                                 </div>
 
                                 <div class="form-group @error('tgl_lahir')has-error @enderror">
-                                    <label>Tanggal Lahir <span class="text-danger"><sup>*</sup></span></label>
+                                    <label>Tanggal Lahir Keluarga <span class="text-danger"><sup>*</sup></span></label>
                                     <input type="date" data-date-format="YYYY MMMM DD" class="form-control floating"
                                         id="tgl_lahir" name="tgl_lahir" value="{{ old('tgl_lahir') }}">
                                 </div>

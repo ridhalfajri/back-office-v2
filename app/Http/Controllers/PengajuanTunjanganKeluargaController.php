@@ -167,7 +167,7 @@ class PengajuanTunjanganKeluargaController extends Controller
 
         $cek_media = $ptk->getMedia("file_kp_ttd")->count();
         if ($cek_media) {
-            $ptk->file_kp4_ttd = $ptk->getMedia("file_kp_ttd")[0]->getUrl();
+            $ptk->file_kp_ttd = $ptk->getMedia("file_kp_ttd")[0]->getUrl();
         }
 
         $cek_media = $ptk->getMedia("file_pengajuan_kp")->count();
@@ -217,7 +217,7 @@ class PengajuanTunjanganKeluargaController extends Controller
 
                 'tgl_perkawinan.required_if' => 'Tanggal perkawinan harus diisi!',
 
-                'file_pengajuan_kp.mimes' => 'format file sk harus rar/zip!',
+                'file_pengajuan_kp.mimes' => 'format file harus rar/zip!',
                 'file_pengajuan_kp.max' => 'ukuran file terlalu besar (maksimal file 50Mb)!',
                 'file_pengajuan_kp.file' => 'upload data harus berupa file!',
             ]
